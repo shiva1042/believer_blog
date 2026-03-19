@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Processes and Threads | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Processes and Threads</h1>
+  <p class="article-section-tag">&#9881;&#65039; Section 8: Operating System</p>
+
+  <!-- ===================== PROCESS CONCEPT ===================== -->
+  <h2>1. Process Concept</h2>
+  <p>A <strong>process</strong> is a program in execution. It includes the program code (text section), current activity represented by the program counter and CPU registers, a stack for temporary data, a data section for global variables, and possibly a heap for dynamically allocated memory.</p>
+
+  <h3>1.1 Process States</h3>
+  <p>A process transitions through several states during its lifetime:</p>
+  <table>
+    <tr><th>State</th><th>Description</th></tr>
+    <tr><td><strong>New</strong></td><td>The process is being created.</td></tr>
+    <tr><td><strong>Ready</strong></td><td>The process is waiting to be assigned to a processor.</td></tr>
+    <tr><td><strong>Running</strong></td><td>Instructions are being executed on the CPU.</td></tr>
+    <tr><td><strong>Waiting (Blocked)</strong></td><td>The process is waiting for an I/O event or signal.</td></tr>
+    <tr><td><strong>Terminated</strong></td><td>The process has finished execution.</td></tr>
+  </table>
+
+  <h3>1.2 Process State Diagram</h3>
+  <div class="mermaid">
+    stateDiagram-v2
+      [*] --> New
+      New --> Ready : Admitted
+      Ready --> Running : Scheduler Dispatch
+      Running --> Ready : Interrupt / Preemption
+      Running --> Waiting : I/O or Event Wait
+      Waiting --> Ready : I/O or Event Completion
+      Running --> Terminated : Exit
+      Terminated --> [*]
+  </div>
+
+  <h3>1.3 Process Control Block (PCB)</h3>
+  <p>The PCB is a data structure maintained by the OS for every process. It contains:</p>
+  <table>
+    <tr><th>Field</th><th>Purpose</th></tr>
+    <tr><td>Process ID (PID)</td><td>Unique identifier for the process</td></tr>
+    <tr><td>Process State</td><td>Current state (new, ready, running, waiting, terminated)</td></tr>
+    <tr><td>Program Counter</td><td>Address of the next instruction to execute</td></tr>
+    <tr><td>CPU Registers</td><td>Contents of all process-centric registers</td></tr>
+    <tr><td>Memory Management Info</td><td>Page tables, segment tables, base/limit registers</td></tr>
+    <tr><td>I/O Status Info</td><td>List of open files, allocated I/O devices</td></tr>
+    <tr><td>Scheduling Info</td><td>Priority, scheduling queue pointers, CPU time used</td></tr>
+    <tr><td>Accounting Info</td><td>CPU time used, time limits, job or process numbers</td></tr>
+  </table>
+
+  <!-- ===================== PROCESS CREATION ===================== -->
+  <h2>2. Process Creation and Termination</h2>
+
+  <h3>2.1 Process Creation</h3>
+  <p>Processes are created through system calls. In UNIX-like systems, the primary mechanism is the <code>fork()</code> system call, which creates a child process as a copy of the parent.</p>
+
+  <div class="example">
+    <strong>Example: fork() in C</strong>
+    <pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+
+int main() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        // Child process
+        printf("Child PID: %d\n", getpid());
+        execlp("/bin/ls", "ls", NULL);
+    } else if (pid > 0) {
+        // Parent process
+        wait(NULL);   // wait for child to finish
+        printf("Child completed\n");
+    }
+    return 0;
+}</code></pre>
+  </div>
+
+  <h3>2.2 Key System Calls</h3>
+  <table>
+    <tr><th>System Call</th><th>Description</th></tr>
+    <tr><td><code>fork()</code></td><td>Creates a new child process (copy of parent). Returns 0 in child, child PID in parent.</td></tr>
+    <tr><td><code>exec()</code></td><td>Replaces the process memory with a new program. Variants: <code>execlp</code>, <code>execvp</code>, etc.</td></tr>
+    <tr><td><code>wait()</code></td><td>Parent blocks until a child process terminates.</td></tr>
+    <tr><td><code>exit()</code></td><td>Terminates the calling process and returns a status code to the parent.</td></tr>
+  </table>
+
+  <h3>2.3 Process Termination</h3>
+  <p>A process terminates when it finishes its last statement and calls <code>exit()</code>. The parent can also terminate a child using <code>kill()</code>. A <strong>zombie process</strong> occurs when a child terminates but the parent has not yet called <code>wait()</code>. An <strong>orphan process</strong> results when the parent terminates before the child; the child is then adopted by the init process (PID 1).</p>
+
+  <!-- ===================== THREADS ===================== -->
+  <h2>3. Threads</h2>
+  <p>A <strong>thread</strong> is the smallest unit of CPU execution within a process. Threads within the same process share the code section, data section, and OS resources such as open files, but each thread has its own thread ID, program counter, register set, and stack.</p>
+
+  <h3>3.1 User-Level vs. Kernel-Level Threads</h3>
+  <table>
+    <tr><th>Feature</th><th>User-Level Threads (ULT)</th><th>Kernel-Level Threads (KLT)</th></tr>
+    <tr><td>Management</td><td>Thread library in user space</td><td>OS kernel</td></tr>
+    <tr><td>Context Switch</td><td>Fast (no kernel involvement)</td><td>Slower (requires kernel mode switch)</td></tr>
+    <tr><td>Scheduling</td><td>Not visible to OS scheduler</td><td>Scheduled by OS directly</td></tr>
+    <tr><td>Blocking</td><td>One thread blocks entire process</td><td>Only the blocked thread is suspended</td></tr>
+    <tr><td>Multiprocessor Support</td><td>Cannot run on multiple CPUs</td><td>Can run on multiple CPUs in parallel</td></tr>
+    <tr><td>Examples</td><td>POSIX Pthreads (user), GNU Portable Threads</td><td>Windows threads, Linux native threads</td></tr>
+  </table>
+
+  <h3>3.2 Multithreading Models</h3>
+  <table>
+    <tr><th>Model</th><th>Mapping</th><th>Description</th></tr>
+    <tr><td><strong>Many-to-One</strong></td><td>N user threads &rarr; 1 kernel thread</td><td>Efficient but one blocking call blocks all. No true parallelism.</td></tr>
+    <tr><td><strong>One-to-One</strong></td><td>1 user thread &rarr; 1 kernel thread</td><td>More concurrency, but creating a thread requires kernel thread. Used in Linux and Windows.</td></tr>
+    <tr><td><strong>Many-to-Many</strong></td><td>N user threads &rarr; M kernel threads (N &ge; M)</td><td>Best flexibility. OS creates sufficient kernel threads. Solaris prior to version 9 used this model.</td></tr>
+  </table>
+
+  <!-- ===================== IPC ===================== -->
+  <h2>4. Inter-Process Communication (IPC)</h2>
+  <p>Processes need to communicate and synchronize. The two fundamental IPC models are <strong>shared memory</strong> and <strong>message passing</strong>.</p>
+
+  <h3>4.1 Shared Memory</h3>
+  <p>Two or more processes share a region of memory. The OS sets up the shared region; after that, communication is handled entirely in user space without further kernel intervention. This is fast but requires explicit synchronization (e.g., semaphores) to avoid race conditions.</p>
+  <div class="example">
+    <strong>POSIX Shared Memory (conceptual):</strong>
+    <pre><code>// Producer creates shared memory
+int shm_fd = shm_open("/my_shm", O_CREAT | O_RDWR, 0666);
+ftruncate(shm_fd, 4096);
+void *ptr = mmap(0, 4096, PROT_WRITE, MAP_SHARED, shm_fd, 0);
+sprintf(ptr, "Hello from producer");</code></pre>
+  </div>
+
+  <h3>4.2 Message Passing</h3>
+  <p>Processes communicate by sending and receiving messages through a communication link managed by the kernel. This is simpler to program but slower than shared memory because every message requires a system call.</p>
+  <table>
+    <tr><th>Aspect</th><th>Shared Memory</th><th>Message Passing</th></tr>
+    <tr><td>Speed</td><td>Faster (after setup)</td><td>Slower (kernel involved per message)</td></tr>
+    <tr><td>Synchronization</td><td>Must be explicitly managed</td><td>Implicitly handled by send/receive</td></tr>
+    <tr><td>Ease of Use</td><td>More complex</td><td>Simpler API</td></tr>
+    <tr><td>Best for</td><td>Large data, same machine</td><td>Small messages, distributed systems</td></tr>
+  </table>
+
+  <h3>4.3 Pipes</h3>
+  <p><strong>Ordinary (unnamed) pipes</strong> provide one-way communication between a parent and child process. Data is written at one end and read at the other. They are created with the <code>pipe()</code> system call and exist only while processes are running.</p>
+  <p><strong>Named pipes (FIFOs)</strong> exist as special files in the file system and allow unrelated processes to communicate. They are created with <code>mkfifo()</code> and persist beyond process lifetime.</p>
+
+  <div class="example">
+    <strong>Pipe Example:</strong>
+    <pre><code>int fd[2];
+pipe(fd);       // fd[0] = read end, fd[1] = write end
+if (fork() == 0) {
+    close(fd[1]);
+    char buf[100];
+    read(fd[0], buf, sizeof(buf));
+    printf("Child received: %s\n", buf);
+} else {
+    close(fd[0]);
+    write(fd[1], "Hello child", 12);
+    wait(NULL);
+}</code></pre>
+  </div>
+
+  <h3>4.4 Signals</h3>
+  <p>Signals are software interrupts sent to a process to notify it of an event. Common signals include:</p>
+  <table>
+    <tr><th>Signal</th><th>Number</th><th>Description</th></tr>
+    <tr><td><code>SIGINT</code></td><td>2</td><td>Interrupt from keyboard (Ctrl+C)</td></tr>
+    <tr><td><code>SIGKILL</code></td><td>9</td><td>Kill signal (cannot be caught or ignored)</td></tr>
+    <tr><td><code>SIGSEGV</code></td><td>11</td><td>Invalid memory reference (segmentation fault)</td></tr>
+    <tr><td><code>SIGTERM</code></td><td>15</td><td>Termination signal (can be caught)</td></tr>
+    <tr><td><code>SIGCHLD</code></td><td>17</td><td>Child process stopped or terminated</td></tr>
+    <tr><td><code>SIGSTOP</code></td><td>19</td><td>Stop process (cannot be caught)</td></tr>
+  </table>
+  <p>A process can handle signals using <code>signal()</code> or <code>sigaction()</code> system calls. Default actions include termination, core dump, ignore, or stop.</p>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>5. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li><code>fork()</code> returns 0 to the child and the child's PID to the parent. A sequence of <em>n</em> <code>fork()</code> calls creates 2<sup>n</sup> &minus; 1 new processes.</li>
+      <li>Threads share code, data, and files but have separate stacks and registers.</li>
+      <li>User-level threads are invisible to the OS; a blocking system call blocks the entire process.</li>
+      <li>Shared memory is faster but needs explicit synchronization; message passing is simpler but slower.</li>
+      <li>A zombie process has terminated but its entry remains in the process table because the parent has not called <code>wait()</code>.</li>
+      <li>Context switching between processes is more expensive than between threads of the same process.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

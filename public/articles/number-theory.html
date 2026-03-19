@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Number Theory — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Number Theory for GATE CS</h1>
+  <p class="article-section-tag">📐 Engineering Mathematics</p>
+
+  <h2>1. Divisibility Rules</h2>
+  <table>
+    <tr><th>Divisor</th><th>Rule</th><th>Example</th></tr>
+    <tr><td>2</td><td>Last digit is even (0, 2, 4, 6, 8)</td><td>1234 is divisible by 2</td></tr>
+    <tr><td>3</td><td>Sum of digits is divisible by 3</td><td>123: 1+2+3 = 6, divisible by 3</td></tr>
+    <tr><td>4</td><td>Last two digits form a number divisible by 4</td><td>1324: 24 / 4 = 6, divisible</td></tr>
+    <tr><td>5</td><td>Last digit is 0 or 5</td><td>135 ends in 5, divisible</td></tr>
+    <tr><td>6</td><td>Divisible by both 2 and 3</td><td>312: even and 3+1+2=6</td></tr>
+    <tr><td>8</td><td>Last three digits divisible by 8</td><td>1048: 048 / 8 = 6, divisible</td></tr>
+    <tr><td>9</td><td>Sum of digits divisible by 9</td><td>729: 7+2+9 = 18, divisible</td></tr>
+    <tr><td>11</td><td>Alternating sum of digits divisible by 11</td><td>121: 1-2+1 = 0, divisible</td></tr>
+  </table>
+
+  <h2>2. GCD and LCM</h2>
+
+  <h3>2.1 Euclidean Algorithm</h3>
+  <p>The Euclidean algorithm computes GCD(a, b) by repeatedly applying: <code>GCD(a, b) = GCD(b, a mod b)</code> until the remainder is 0.</p>
+
+  <p><strong>Example: GCD(252, 105)</strong></p>
+  <pre><code>GCD(252, 105):
+  252 = 2 * 105 + 42     => GCD(105, 42)
+  105 = 2 * 42 + 21      => GCD(42, 21)
+  42  = 2 * 21 + 0        => GCD = 21
+
+Answer: GCD(252, 105) = 21</code></pre>
+
+  <h3>2.2 Properties</h3>
+  <ul>
+    <li><code>GCD(a, b) * LCM(a, b) = a * b</code></li>
+    <li><code>GCD(a, 0) = a</code></li>
+    <li><code>GCD(a, 1) = 1</code></li>
+    <li><code>GCD(a, b) = GCD(a - b, b)</code> if a &gt; b</li>
+    <li>If GCD(a, b) = 1, then a and b are <strong>coprime</strong> (relatively prime).</li>
+  </ul>
+
+  <h3>2.3 Extended Euclidean Algorithm</h3>
+  <p>Finds integers x, y such that: <code>ax + by = GCD(a, b)</code></p>
+  <p><strong>Example: Find x, y for 252x + 105y = 21</strong></p>
+  <pre><code>Back-substituting from Euclidean algorithm:
+  21 = 105 - 2 * 42
+  42 = 252 - 2 * 105
+
+  21 = 105 - 2 * (252 - 2*105)
+     = 105 - 2*252 + 4*105
+     = 5*105 - 2*252
+
+So x = -2, y = 5.  Check: 252*(-2) + 105*5 = -504 + 525 = 21</code></pre>
+
+  <h2>3. Modular Arithmetic</h2>
+
+  <h3>3.1 Basic Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Expression</th></tr>
+    <tr><td>Addition</td><td>(a + b) mod n = [(a mod n) + (b mod n)] mod n</td></tr>
+    <tr><td>Multiplication</td><td>(a * b) mod n = [(a mod n) * (b mod n)] mod n</td></tr>
+    <tr><td>Subtraction</td><td>(a - b) mod n = [(a mod n) - (b mod n) + n] mod n</td></tr>
+    <tr><td>Exponentiation</td><td>a^k mod n can be computed by repeated squaring</td></tr>
+  </table>
+  <div class="important"><strong>Warning:</strong> Division is NOT straightforward in modular arithmetic. You need the modular inverse (see below).</div>
+
+  <h3>3.2 Modular Inverse</h3>
+  <p>The modular inverse of a modulo n is a number x such that: <code>a * x ≡ 1 (mod n)</code></p>
+  <p>It exists if and only if <code>GCD(a, n) = 1</code> (a and n are coprime).</p>
+  <p><strong>Example:</strong> Find inverse of 3 mod 7.</p>
+  <pre><code>We need x such that 3x ≡ 1 (mod 7).
+Try x = 1: 3*1 = 3 (not 1 mod 7)
+Try x = 2: 3*2 = 6 (not 1 mod 7)
+Try x = 3: 3*3 = 9 ≡ 2 (mod 7) (no)
+Try x = 5: 3*5 = 15 ≡ 1 (mod 7) YES!
+
+Inverse of 3 mod 7 = 5</code></pre>
+  <p>For large numbers, use the Extended Euclidean Algorithm to find the inverse.</p>
+
+  <h2>4. Euler's Totient Function</h2>
+  <p><strong>Definition:</strong> &phi;(n) counts the number of integers from 1 to n that are coprime with n.</p>
+
+  <h3>4.1 Computation Rules</h3>
+  <table>
+    <tr><th>Case</th><th>Formula</th><th>Example</th></tr>
+    <tr><td>p is prime</td><td>&phi;(p) = p - 1</td><td>&phi;(7) = 6</td></tr>
+    <tr><td>p^k (prime power)</td><td>&phi;(p^k) = p^k - p^(k-1) = p^(k-1)(p-1)</td><td>&phi;(8) = &phi;(2^3) = 4</td></tr>
+    <tr><td>Multiplicative (coprime)</td><td>&phi;(mn) = &phi;(m)&phi;(n) if GCD(m,n)=1</td><td>&phi;(12) = &phi;(4)&phi;(3) = 2*2 = 4</td></tr>
+    <tr><td>General formula</td><td>&phi;(n) = n * &prod;(1 - 1/p) for each prime p dividing n</td><td>&phi;(12) = 12*(1-1/2)*(1-1/3) = 4</td></tr>
+  </table>
+
+  <h3>4.2 Euler's Theorem</h3>
+  <p>If GCD(a, n) = 1, then: <code>a^&phi;(n) ≡ 1 (mod n)</code></p>
+  <p><strong>Example:</strong> Find 2^100 mod 13.</p>
+  <pre><code>&phi;(13) = 12 (since 13 is prime)
+By Euler's theorem: 2^12 ≡ 1 (mod 13)
+100 = 12 * 8 + 4
+2^100 = (2^12)^8 * 2^4 ≡ 1^8 * 16 ≡ 16 mod 13 = 3
+
+Answer: 2^100 mod 13 = 3</code></pre>
+
+  <h2>5. Fermat's Little Theorem</h2>
+  <p>A special case of Euler's theorem when n is prime:</p>
+  <p>If p is prime and GCD(a, p) = 1, then: <code>a^(p-1) ≡ 1 (mod p)</code></p>
+  <p>Equivalently: <code>a^p ≡ a (mod p)</code> for any integer a.</p>
+
+  <p><strong>Example:</strong> Find 5^302 mod 7.</p>
+  <pre><code>By Fermat's little theorem: 5^6 ≡ 1 (mod 7)
+302 = 6 * 50 + 2
+5^302 = (5^6)^50 * 5^2 ≡ 1 * 25 ≡ 25 mod 7 = 4
+
+Answer: 5^302 mod 7 = 4</code></pre>
+
+  <h3>5.1 Application: Finding Modular Inverse Using Fermat</h3>
+  <p>If p is prime, the inverse of a mod p is: <code>a^(p-2) mod p</code></p>
+  <p>Example: Inverse of 3 mod 7 = 3^5 mod 7 = 243 mod 7 = 5.</p>
+
+  <h2>6. Chinese Remainder Theorem (CRT)</h2>
+  <p><strong>Statement:</strong> Given pairwise coprime moduli m1, m2, ..., mk, the system of congruences:</p>
+  <pre><code>x ≡ a1 (mod m1)
+x ≡ a2 (mod m2)
+...
+x ≡ ak (mod mk)</code></pre>
+  <p>has a unique solution modulo M = m1 * m2 * ... * mk.</p>
+
+  <p><strong>Example: Solve the system:</strong></p>
+  <pre><code>x ≡ 2 (mod 3)
+x ≡ 3 (mod 5)
+x ≡ 2 (mod 7)
+
+Step 1: M = 3 * 5 * 7 = 105
+Step 2: M1 = 105/3 = 35, M2 = 105/5 = 21, M3 = 105/7 = 15
+Step 3: Find inverses:
+  35 * y1 ≡ 1 (mod 3) => 2*y1 ≡ 1 (mod 3) => y1 = 2
+  21 * y2 ≡ 1 (mod 5) => 1*y2 ≡ 1 (mod 5) => y2 = 1
+  15 * y3 ≡ 1 (mod 7) => 1*y3 ≡ 1 (mod 7) => y3 = 1
+Step 4: x = a1*M1*y1 + a2*M2*y2 + a3*M3*y3
+         = 2*35*2 + 3*21*1 + 2*15*1
+         = 140 + 63 + 30 = 233
+Step 5: x = 233 mod 105 = 23
+
+Answer: x = 23 (and x = 23 + 105k for all integers k)</code></pre>
+  <p class="note"><strong>Verify:</strong> 23 mod 3 = 2, 23 mod 5 = 3, 23 mod 7 = 2. All conditions satisfied.</p>
+
+  <h2>7. Applications in GATE</h2>
+  <ul>
+    <li><strong>Cryptography questions:</strong> RSA algorithm relies on Euler's theorem and modular arithmetic.</li>
+    <li><strong>Hashing:</strong> Hash functions often use modular arithmetic (h(k) = k mod m).</li>
+    <li><strong>Counting problems:</strong> GCD/LCM used in combinatorics and scheduling problems.</li>
+    <li><strong>Finding remainders:</strong> Fermat and Euler theorems simplify large exponentiation mod problems.</li>
+    <li><strong>Group theory connections:</strong> &phi;(n) is the order of the group (Z/nZ)*.</li>
+  </ul>
+
+  <h2>8. Practice Problems</h2>
+
+  <p><strong>Problem 1:</strong> Find GCD(48, 18) using the Euclidean algorithm.</p>
+  <pre><code>48 = 2*18 + 12
+18 = 1*12 + 6
+12 = 2*6 + 0
+GCD = 6</code></pre>
+
+  <p><strong>Problem 2:</strong> Compute &phi;(36).</p>
+  <pre><code>36 = 2^2 * 3^2
+&phi;(36) = 36 * (1 - 1/2) * (1 - 1/3) = 36 * 1/2 * 2/3 = 12</code></pre>
+
+  <p><strong>Problem 3:</strong> Find 7^222 mod 11.</p>
+  <pre><code>11 is prime, so by Fermat: 7^10 ≡ 1 (mod 11)
+222 = 10*22 + 2
+7^222 ≡ 7^2 = 49 ≡ 5 (mod 11)
+Answer: 5</code></pre>
+
+  <p><strong>Problem 4:</strong> Find the modular inverse of 5 mod 11.</p>
+  <pre><code>By Fermat: inverse = 5^(11-2) mod 11 = 5^9 mod 11
+5^2 = 25 ≡ 3 (mod 11)
+5^4 ≡ 9 (mod 11)
+5^8 ≡ 81 ≡ 4 (mod 11)
+5^9 = 5^8 * 5 ≡ 4*5 = 20 ≡ 9 (mod 11)
+Answer: 9.  Check: 5*9 = 45 ≡ 1 (mod 11)</code></pre>
+
+  <p><strong>Problem 5:</strong> How many integers from 1 to 100 are coprime with 100?</p>
+  <pre><code>100 = 2^2 * 5^2
+&phi;(100) = 100 * (1 - 1/2) * (1 - 1/5) = 100 * 1/2 * 4/5 = 40
+Answer: 40</code></pre>
+
+</article>
+</body>
+</html>

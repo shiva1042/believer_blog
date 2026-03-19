@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Layers and Switching | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Network Layers and Switching</h1>
+  <p class="article-section-tag">&#127760; Section 10: Computer Networks</p>
+
+  <!-- ===================== OSI MODEL ===================== -->
+  <h2>1. OSI Reference Model</h2>
+  <p>The <strong>Open Systems Interconnection (OSI)</strong> model is a conceptual framework with seven layers that standardizes network communication functions.</p>
+
+  <table>
+    <tr><th>Layer</th><th>Name</th><th>Function</th><th>PDU</th><th>Example Protocols/Devices</th></tr>
+    <tr><td>7</td><td><strong>Application</strong></td><td>End-user services (file transfer, email, web)</td><td>Data</td><td>HTTP, FTP, SMTP, DNS</td></tr>
+    <tr><td>6</td><td><strong>Presentation</strong></td><td>Data translation, encryption, compression</td><td>Data</td><td>SSL/TLS, JPEG, ASCII, MPEG</td></tr>
+    <tr><td>5</td><td><strong>Session</strong></td><td>Session establishment, management, termination</td><td>Data</td><td>NetBIOS, RPC, PPTP</td></tr>
+    <tr><td>4</td><td><strong>Transport</strong></td><td>End-to-end delivery, reliability, flow control</td><td>Segment</td><td>TCP, UDP</td></tr>
+    <tr><td>3</td><td><strong>Network</strong></td><td>Logical addressing, routing, path determination</td><td>Packet</td><td>IP, ICMP, Router</td></tr>
+    <tr><td>2</td><td><strong>Data Link</strong></td><td>Framing, error detection, MAC addressing, access control</td><td>Frame</td><td>Ethernet, Switch, Bridge, PPP</td></tr>
+    <tr><td>1</td><td><strong>Physical</strong></td><td>Bit transmission over physical medium</td><td>Bits</td><td>Hub, Repeater, Cables, RS-232</td></tr>
+  </table>
+
+  <!-- ===================== TCP/IP MODEL ===================== -->
+  <h2>2. TCP/IP Model</h2>
+  <p>The TCP/IP model is the practical model used in the Internet. It has four layers (sometimes five when the link layer is split into data link and physical).</p>
+
+  <h3>2.1 OSI vs TCP/IP Comparison</h3>
+  <div class="mermaid">
+    flowchart LR
+      subgraph OSI["OSI Model (7 Layers)"]
+        direction TB
+        O7["Application"]
+        O6["Presentation"]
+        O5["Session"]
+        O4["Transport"]
+        O3["Network"]
+        O2["Data Link"]
+        O1["Physical"]
+        O7 --- O6 --- O5 --- O4 --- O3 --- O2 --- O1
+      end
+      subgraph TCP["TCP/IP Model (4 Layers)"]
+        direction TB
+        T4["Application\n(HTTP, FTP, DNS, SMTP)"]
+        T3["Transport\n(TCP, UDP)"]
+        T2["Internet\n(IP, ICMP, ARP)"]
+        T1["Network Access\n(Ethernet, Wi-Fi)"]
+        T4 --- T3 --- T2 --- T1
+      end
+      O7 ~~~ T4
+      O4 ~~~ T3
+      O3 ~~~ T2
+      O1 ~~~ T1
+  </div>
+
+  <table>
+    <tr><th>Feature</th><th>OSI Model</th><th>TCP/IP Model</th></tr>
+    <tr><td>Layers</td><td>7</td><td>4 (or 5)</td></tr>
+    <tr><td>Approach</td><td>Theoretical, protocol-independent</td><td>Practical, protocol-dependent</td></tr>
+    <tr><td>Session/Presentation</td><td>Separate layers</td><td>Merged into Application layer</td></tr>
+    <tr><td>Development</td><td>Model first, then protocols</td><td>Protocols first, then model</td></tr>
+    <tr><td>Reliability</td><td>Transport layer provides reliability</td><td>Same (TCP at transport layer)</td></tr>
+    <tr><td>Usage</td><td>Reference/teaching model</td><td>Actual Internet protocol suite</td></tr>
+  </table>
+
+  <h3>2.2 Encapsulation</h3>
+  <p>As data travels down the layers, each layer adds its own header (and sometimes trailer). At the receiving end, each layer strips its header. This is called encapsulation and decapsulation.</p>
+
+  <table>
+    <tr><th>Layer</th><th>Encapsulated Unit</th><th>Header Added</th></tr>
+    <tr><td>Application</td><td>Application data</td><td>Application-specific headers</td></tr>
+    <tr><td>Transport</td><td>Segment (TCP) / Datagram (UDP)</td><td>Source port, destination port, sequence numbers</td></tr>
+    <tr><td>Network</td><td>Packet</td><td>Source IP, destination IP, TTL</td></tr>
+    <tr><td>Data Link</td><td>Frame</td><td>Source MAC, destination MAC + CRC trailer</td></tr>
+    <tr><td>Physical</td><td>Bits</td><td>Preamble, signal encoding</td></tr>
+  </table>
+
+  <!-- ===================== SWITCHING ===================== -->
+  <h2>3. Switching Techniques</h2>
+  <p>Switching determines how data is transferred from source to destination through the network.</p>
+
+  <h3>3.1 Circuit Switching</h3>
+  <p>A dedicated communication path is established between sender and receiver for the entire duration of the communication. Resources are reserved end-to-end.</p>
+  <ul>
+    <li><strong>Advantages:</strong> Guaranteed bandwidth, constant delay, no congestion after setup</li>
+    <li><strong>Disadvantages:</strong> Wasted bandwidth during silence, setup delay, inflexible</li>
+    <li><strong>Example:</strong> Traditional telephone network (PSTN)</li>
+  </ul>
+
+  <h3>3.2 Packet Switching</h3>
+  <p>Data is divided into packets that are independently routed through the network. No dedicated path is established.</p>
+
+  <table>
+    <tr><th>Type</th><th>Description</th></tr>
+    <tr><td><strong>Datagram</strong></td><td>Each packet is routed independently. Packets may arrive out of order. No connection setup. Example: IP.</td></tr>
+    <tr><td><strong>Virtual Circuit</strong></td><td>A logical path is established before data transfer. All packets follow the same path. Packets arrive in order. Example: ATM, MPLS, X.25.</td></tr>
+  </table>
+
+  <h3>3.3 Message Switching</h3>
+  <p>The entire message is sent to an intermediate node, stored, and then forwarded to the next node (store-and-forward). No real-time communication. Used in early telegraph systems and email.</p>
+
+  <h3>3.4 Comparison of Switching Techniques</h3>
+  <table>
+    <tr><th>Feature</th><th>Circuit Switching</th><th>Packet Switching (Datagram)</th><th>Packet Switching (Virtual Circuit)</th><th>Message Switching</th></tr>
+    <tr><td>Path Setup</td><td>Required</td><td>Not required</td><td>Required (logical path)</td><td>Not required</td></tr>
+    <tr><td>Dedicated Path</td><td>Yes</td><td>No</td><td>Logical (not physical)</td><td>No</td></tr>
+    <tr><td>Bandwidth Usage</td><td>Fixed, may waste</td><td>Shared, efficient</td><td>Shared with guaranteed QoS</td><td>Shared</td></tr>
+    <tr><td>Packet Order</td><td>Guaranteed</td><td>Not guaranteed</td><td>Guaranteed</td><td>N/A (whole message)</td></tr>
+    <tr><td>Delay</td><td>Setup delay + constant transmission</td><td>Variable (queuing + routing)</td><td>Setup + lower variable delay</td><td>High store-and-forward delay</td></tr>
+    <tr><td>Congestion</td><td>No (after setup)</td><td>Possible</td><td>Less likely</td><td>Possible</td></tr>
+    <tr><td>Fault Tolerance</td><td>Low (path fails)</td><td>High (rerouting)</td><td>Medium</td><td>Medium</td></tr>
+    <tr><td>Best For</td><td>Real-time voice</td><td>Bursty data (Internet)</td><td>Streaming with QoS</td><td>Non-real-time messaging</td></tr>
+  </table>
+
+  <h3>3.5 Delay Calculations</h3>
+  <div class="note">
+    <strong>Total delay for packet switching (store-and-forward):</strong><br/>
+    For a message of size M bits, link bandwidth B bps, packet size P bits, and H hops:<br/>
+    <strong>Without pipelining:</strong> T = H &times; (M/B)<br/>
+    <strong>With pipelining (packet switching):</strong> T = (M/B) + (H &minus; 1) &times; (P/B)<br/>
+    Packet switching reduces delay by pipelining packet transmissions across links.
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> M = 10 Mb, P = 1 Kb, B = 1 Mbps, H = 3 hops.<br/>
+    <strong>Message switching:</strong> T = 3 &times; (10 Mb / 1 Mbps) = 30 seconds.<br/>
+    <strong>Packet switching:</strong> T = (10 Mb / 1 Mbps) + (3 &minus; 1) &times; (1 Kb / 1 Mbps) = 10 + 0.002 = 10.002 seconds.
+  </div>
+
+  <!-- ===================== NETWORK DEVICES ===================== -->
+  <h2>4. Network Devices by Layer</h2>
+  <table>
+    <tr><th>Device</th><th>OSI Layer</th><th>Function</th></tr>
+    <tr><td>Hub / Repeater</td><td>Layer 1 (Physical)</td><td>Signal regeneration, broadcasts to all ports</td></tr>
+    <tr><td>Bridge / Switch</td><td>Layer 2 (Data Link)</td><td>Forwards based on MAC address, creates collision domains</td></tr>
+    <tr><td>Router</td><td>Layer 3 (Network)</td><td>Forwards based on IP address, creates broadcast domains</td></tr>
+    <tr><td>Gateway</td><td>Layer 7 (Application)</td><td>Protocol translation between different network architectures</td></tr>
+  </table>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>5. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>OSI has 7 layers; TCP/IP has 4 layers. The top 3 OSI layers map to TCP/IP Application layer.</li>
+      <li>PDUs: Data (Application) &rarr; Segment (Transport) &rarr; Packet (Network) &rarr; Frame (Data Link) &rarr; Bits (Physical).</li>
+      <li>Circuit switching: dedicated path, guaranteed bandwidth, setup delay. Best for constant-rate traffic.</li>
+      <li>Packet switching (datagram): no setup, packets routed independently, efficient for bursty traffic.</li>
+      <li>Virtual circuit: setup required, all packets follow same path, in-order delivery.</li>
+      <li>Switches operate at Layer 2 (MAC); Routers at Layer 3 (IP).</li>
+      <li>Packet switching delay with pipelining: (M/B) + (H-1)(P/B), much less than message switching: H(M/B).</li>
+      <li>Hubs create a single collision domain; switches create separate collision domains per port; routers create separate broadcast domains.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

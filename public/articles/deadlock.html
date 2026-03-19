@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deadlock | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Deadlock</h1>
+  <p class="article-section-tag">&#9881;&#65039; Section 8: Operating System</p>
+
+  <!-- ===================== DEADLOCK CONDITIONS ===================== -->
+  <h2>1. Deadlock Conditions</h2>
+  <p>A <strong>deadlock</strong> is a situation where a set of processes are blocked, each waiting for a resource held by another process in the set. Deadlock can arise if and only if all four of the following conditions hold simultaneously:</p>
+
+  <table>
+    <tr><th>Condition</th><th>Description</th></tr>
+    <tr><td><strong>Mutual Exclusion</strong></td><td>At least one resource must be held in a non-shareable mode. Only one process can use the resource at a time.</td></tr>
+    <tr><td><strong>Hold and Wait</strong></td><td>A process is holding at least one resource and waiting to acquire additional resources held by other processes.</td></tr>
+    <tr><td><strong>No Preemption</strong></td><td>Resources cannot be forcibly taken from a process; they must be released voluntarily.</td></tr>
+    <tr><td><strong>Circular Wait</strong></td><td>There exists a circular chain of processes, each waiting for a resource held by the next process in the chain.</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Important:</strong> All four conditions are <em>necessary</em> for deadlock. If any one is broken, deadlock cannot occur. They are also jointly sufficient.
+  </div>
+
+  <!-- ===================== RESOURCE ALLOCATION GRAPH ===================== -->
+  <h2>2. Resource Allocation Graph</h2>
+  <p>A <strong>Resource Allocation Graph (RAG)</strong> is a directed graph used to describe deadlocks. It contains:</p>
+  <ul>
+    <li><strong>Process nodes</strong> (circles): represent processes</li>
+    <li><strong>Resource nodes</strong> (rectangles): represent resource types with dots for instances</li>
+    <li><strong>Request edge</strong>: P<sub>i</sub> &rarr; R<sub>j</sub> (process requests resource)</li>
+    <li><strong>Assignment edge</strong>: R<sub>j</sub> &rarr; P<sub>i</sub> (resource assigned to process)</li>
+  </ul>
+
+  <h3>2.1 Deadlock Example in RAG</h3>
+  <p>Below, P1 holds R1 and requests R2, while P2 holds R2 and requests R1, forming a circular wait:</p>
+
+  <div class="mermaid">
+    flowchart LR
+      P1((P1)) -->|requests| R2[R2]
+      R2 -->|held by| P2((P2))
+      P2 -->|requests| R1[R1]
+      R1 -->|held by| P1
+  </div>
+
+  <table>
+    <tr><th>Graph Property</th><th>Conclusion</th></tr>
+    <tr><td>No cycle</td><td>No deadlock</td></tr>
+    <tr><td>Cycle with single-instance resources</td><td>Deadlock exists</td></tr>
+    <tr><td>Cycle with multi-instance resources</td><td>Deadlock <em>may</em> exist (not guaranteed)</td></tr>
+  </table>
+
+  <!-- ===================== DEADLOCK PREVENTION ===================== -->
+  <h2>3. Deadlock Prevention</h2>
+  <p>Deadlock prevention ensures that at least one of the four necessary conditions cannot hold.</p>
+
+  <table>
+    <tr><th>Condition Negated</th><th>Strategy</th><th>Drawback</th></tr>
+    <tr><td>Mutual Exclusion</td><td>Make resources shareable (e.g., read-only files)</td><td>Not possible for all resources (printers, etc.)</td></tr>
+    <tr><td>Hold and Wait</td><td>Require a process to request all resources before starting, or release all before requesting new ones</td><td>Low resource utilization; possible starvation</td></tr>
+    <tr><td>No Preemption</td><td>If a process holding resources requests more and is denied, release all held resources</td><td>Practical only for resources whose state can be saved (CPU registers, memory)</td></tr>
+    <tr><td>Circular Wait</td><td>Impose a total ordering on resource types; each process requests in increasing order</td><td>May be restrictive but is the most practical approach</td></tr>
+  </table>
+
+  <!-- ===================== DEADLOCK AVOIDANCE ===================== -->
+  <h2>4. Deadlock Avoidance</h2>
+  <p>Deadlock avoidance requires advance knowledge of the maximum resources each process may need. The system only grants requests that keep it in a <strong>safe state</strong>.</p>
+
+  <h3>4.1 Safe State</h3>
+  <p>A state is <strong>safe</strong> if the system can allocate resources to each process (up to its maximum) in some order and still avoid deadlock. A safe sequence &lt;P<sub>1</sub>, P<sub>2</sub>, ..., P<sub>n</sub>&gt; exists where each P<sub>i</sub>'s remaining needs can be satisfied by currently available resources plus resources held by all P<sub>j</sub> where j &lt; i.</p>
+
+  <div class="note">
+    <strong>Key insight:</strong> Safe state &rArr; no deadlock. Unsafe state &rArr; deadlock <em>possible</em> (not certain). Deadlocked state &sub; Unsafe states.
+  </div>
+
+  <h3>4.2 Banker's Algorithm</h3>
+  <p>The Banker's Algorithm (by Dijkstra) works for multiple resource types and multiple instances. It uses the following data structures (n = number of processes, m = number of resource types):</p>
+
+  <table>
+    <tr><th>Structure</th><th>Size</th><th>Description</th></tr>
+    <tr><td><strong>Available</strong></td><td>m</td><td>Number of available instances of each resource type</td></tr>
+    <tr><td><strong>Max</strong></td><td>n &times; m</td><td>Maximum demand of each process</td></tr>
+    <tr><td><strong>Allocation</strong></td><td>n &times; m</td><td>Number of resources currently allocated to each process</td></tr>
+    <tr><td><strong>Need</strong></td><td>n &times; m</td><td>Remaining need: Need[i] = Max[i] &minus; Allocation[i]</td></tr>
+  </table>
+
+  <h3>4.3 Banker's Algorithm Example</h3>
+  <div class="example">
+    <strong>Given:</strong> 3 resource types (A, B, C) with total instances (10, 5, 7) and 5 processes.
+    <table>
+      <tr><th>Process</th><th>Allocation (A B C)</th><th>Max (A B C)</th><th>Need (A B C)</th></tr>
+      <tr><td>P0</td><td>0 1 0</td><td>7 5 3</td><td>7 4 3</td></tr>
+      <tr><td>P1</td><td>2 0 0</td><td>3 2 2</td><td>1 2 2</td></tr>
+      <tr><td>P2</td><td>3 0 2</td><td>9 0 2</td><td>6 0 0</td></tr>
+      <tr><td>P3</td><td>2 1 1</td><td>2 2 2</td><td>0 1 1</td></tr>
+      <tr><td>P4</td><td>0 0 2</td><td>4 3 3</td><td>4 3 1</td></tr>
+    </table>
+    <p><strong>Available = (3, 3, 2)</strong></p>
+    <p><strong>Safety Check (find a safe sequence):</strong></p>
+    <ol>
+      <li><strong>P1:</strong> Need (1,2,2) &le; Available (3,3,2). Execute P1. Available becomes (3,3,2) + (2,0,0) = (5,3,2).</li>
+      <li><strong>P3:</strong> Need (0,1,1) &le; Available (5,3,2). Execute P3. Available becomes (5,3,2) + (2,1,1) = (7,4,3).</li>
+      <li><strong>P4:</strong> Need (4,3,1) &le; Available (7,4,3). Execute P4. Available becomes (7,4,3) + (0,0,2) = (7,4,5).</li>
+      <li><strong>P2:</strong> Need (6,0,0) &le; Available (7,4,5). Execute P2. Available becomes (7,4,5) + (3,0,2) = (10,4,7).</li>
+      <li><strong>P0:</strong> Need (7,4,3) &le; Available (10,4,7). Execute P0. Available becomes (10,5,7).</li>
+    </ol>
+    <p><strong>Safe sequence: &lt;P1, P3, P4, P2, P0&gt;</strong>. System is in a safe state.</p>
+  </div>
+
+  <h3>4.4 Resource Request Algorithm</h3>
+  <p>When process P<sub>i</sub> makes a request <code>Request_i</code>:</p>
+  <ol>
+    <li>If Request<sub>i</sub> &le; Need<sub>i</sub>, proceed. Otherwise, error (exceeded claim).</li>
+    <li>If Request<sub>i</sub> &le; Available, proceed. Otherwise, P<sub>i</sub> must wait.</li>
+    <li>Pretend to allocate: Available -= Request<sub>i</sub>; Allocation<sub>i</sub> += Request<sub>i</sub>; Need<sub>i</sub> -= Request<sub>i</sub>.</li>
+    <li>Run safety algorithm. If safe, grant. If unsafe, rollback and make P<sub>i</sub> wait.</li>
+  </ol>
+
+  <!-- ===================== DEADLOCK DETECTION ===================== -->
+  <h2>5. Deadlock Detection</h2>
+
+  <h3>5.1 Single Instance of Each Resource Type</h3>
+  <p>Use a <strong>wait-for graph</strong>: remove resource nodes from the RAG and collapse edges. If a cycle exists, deadlock is present. Cycle detection takes O(n<sup>2</sup>) time.</p>
+
+  <h3>5.2 Multiple Instances</h3>
+  <p>Use an algorithm similar to Banker's but without the Max matrix. Instead, use current requests. If a process's request can be satisfied, assume it will release all resources. Processes that cannot finish are deadlocked.</p>
+
+  <table>
+    <tr><th>Aspect</th><th>Single Instance</th><th>Multiple Instances</th></tr>
+    <tr><td>Detection Method</td><td>Wait-for graph cycle detection</td><td>Detection algorithm (like Banker's)</td></tr>
+    <tr><td>Complexity</td><td>O(n<sup>2</sup>)</td><td>O(m &times; n<sup>2</sup>)</td></tr>
+    <tr><td>Frequency</td><td>Run periodically or on resource request</td><td>Same</td></tr>
+  </table>
+
+  <!-- ===================== DEADLOCK RECOVERY ===================== -->
+  <h2>6. Deadlock Recovery</h2>
+  <p>Once deadlock is detected, the system must recover:</p>
+
+  <h3>6.1 Process Termination</h3>
+  <table>
+    <tr><th>Strategy</th><th>Description</th></tr>
+    <tr><td>Abort all deadlocked processes</td><td>Guaranteed to break deadlock but expensive (loses all work)</td></tr>
+    <tr><td>Abort one process at a time</td><td>Less costly; re-run detection after each abort. Selection criteria: priority, CPU time used, resources held, remaining time, number of processes to terminate.</td></tr>
+  </table>
+
+  <h3>6.2 Resource Preemption</h3>
+  <ul>
+    <li><strong>Selecting a victim:</strong> Choose the process whose preemption causes minimum cost.</li>
+    <li><strong>Rollback:</strong> Roll back the process to a safe state (requires checkpointing).</li>
+    <li><strong>Starvation:</strong> Ensure a process is not always chosen as victim by including rollback count in the cost factor.</li>
+  </ul>
+
+  <!-- ===================== COMPARISON ===================== -->
+  <h2>7. Comparison of Deadlock Handling Strategies</h2>
+  <table>
+    <tr><th>Strategy</th><th>Resource Utilization</th><th>Overhead</th><th>When Used</th></tr>
+    <tr><td>Prevention</td><td>Low (restrictive)</td><td>Low runtime</td><td>When resource types are known and limited</td></tr>
+    <tr><td>Avoidance</td><td>Medium</td><td>Medium (safety check per request)</td><td>When max resource needs are known in advance</td></tr>
+    <tr><td>Detection + Recovery</td><td>High</td><td>High (periodic detection + recovery cost)</td><td>When deadlocks are rare</td></tr>
+    <tr><td>Ignorance (Ostrich)</td><td>Highest</td><td>None</td><td>Most general-purpose OS (Linux, Windows) use this</td></tr>
+  </table>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>8. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>All four conditions (mutual exclusion, hold and wait, no preemption, circular wait) must hold simultaneously for deadlock.</li>
+      <li>In a RAG with single-instance resources, a cycle is both necessary and sufficient for deadlock.</li>
+      <li>In a RAG with multi-instance resources, a cycle is necessary but not sufficient.</li>
+      <li>The Banker's Algorithm has time complexity O(m &times; n<sup>2</sup>) per request.</li>
+      <li>Circular wait prevention by resource ordering is the most practical prevention technique.</li>
+      <li>Safe state implies no deadlock. Unsafe state does not guarantee deadlock.</li>
+      <li>With <em>n</em> processes and <em>m</em> identical resources, deadlock-free minimum resources = n &times; (m&minus;1) + 1, where m is max need per process.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Deadlock Quiz",
+      "questions": [
+        {
+          "question": "There are 5 processes each requiring a maximum of 4 units of a resource. What is the minimum number of resource units needed to guarantee deadlock-free execution?",
+          "options": ["15", "16", "20", "17"],
+          "answer": 1,
+          "explanation": "Minimum resources for deadlock-free = n*(max-1) + 1 = 5*(4-1) + 1 = 15 + 1 = 16. With 15 units, each process could hold 3 and need 1 more, causing deadlock. The 16th unit breaks the deadlock."
+        },
+        {
+          "question": "In the Banker's algorithm, if Available = [2,1,0], and a process P has Need = [1,1,0], and another process Q has Need = [2,1,1], which is true?",
+          "options": ["Both P and Q can proceed", "Only P can proceed", "Only Q can proceed", "Neither can proceed"],
+          "answer": 1,
+          "explanation": "P's Need [1,1,0] <= Available [2,1,0], so P can proceed. Q's Need [2,1,1] but Available has 0 units of the third resource, so Q cannot proceed (0 < 1). Only P can run."
+        },
+        {
+          "question": "In a Resource Allocation Graph with single-instance resources, which condition is both necessary and sufficient for deadlock?",
+          "options": ["Existence of a cycle", "Existence of a knot", "Existence of multiple cycles", "Existence of a request edge"],
+          "answer": 0,
+          "explanation": "With single-instance resources, a cycle in the RAG is both necessary and sufficient for deadlock. With multi-instance resources, a cycle is necessary but not sufficient (deadlock may or may not exist)."
+        },
+        {
+          "question": "Which deadlock prevention strategy is the most practical and commonly used?",
+          "options": ["Eliminating mutual exclusion", "Eliminating hold and wait", "Allowing preemption of all resources", "Imposing a total ordering on resource types to prevent circular wait"],
+          "answer": 3,
+          "explanation": "Imposing a total ordering on resource types (circular wait prevention) is the most practical strategy. Mutual exclusion cannot be eliminated for many resources. Eliminating hold-and-wait leads to low utilization. Preemption is only feasible for certain resources like CPU and memory."
+        },
+        {
+          "question": "What is the time complexity of the Banker's algorithm for a system with n processes and m resource types?",
+          "options": ["O(n*m)", "O(n^2*m)", "O(n*m^2)", "O(n^2)"],
+          "answer": 1,
+          "explanation": "The safety algorithm iterates up to n times (for each process). In each iteration, it checks all n processes and compares m resource types. Total: O(n) iterations * O(n*m) per iteration = O(n^2 * m)."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

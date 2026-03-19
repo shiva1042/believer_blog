@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 3: Engineering Mathematics & Aptitude Focus — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 3: Engineering Mathematics & Aptitude Focus</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Discrete Mathematics (8), Linear Algebra (4), Calculus (4), Probability & Statistics (6), General Aptitude (8)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 3",
+      "questions": [
+        {
+          "question": "Q1. The number of functions from a set A with 3 elements to a set B with 4 elements is:",
+          "options": ["(A) 12", "(B) 24", "(C) 64", "(D) 81"],
+          "answer": 2,
+          "explanation": "The number of functions from set A to set B is |B|^|A|. Here |A| = 3, |B| = 4. So the number of functions = 4³ = 64. Each of the 3 elements in A can be mapped to any of the 4 elements in B independently."
+        },
+        {
+          "question": "Q2. In a group (Z₁₂, +₁₂), the order of the element 8 is:",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 6"],
+          "answer": 1,
+          "explanation": "The order of element a in (Zₙ, +ₙ) is n/gcd(a,n). Here n = 12, a = 8. gcd(8,12) = 4. Order = 12/4 = 3. Verification: 8×1 = 8, 8×2 = 16 mod 12 = 4, 8×3 = 24 mod 12 = 0. So the order is 3."
+        },
+        {
+          "question": "Q3. The number of edges in a complete graph K₁₀ is:",
+          "options": ["(A) 40", "(B) 45", "(C) 50", "(D) 90"],
+          "answer": 1,
+          "explanation": "A complete graph Kₙ has n(n-1)/2 edges. For K₁₀: 10 × 9 / 2 = 45 edges. Each vertex is connected to every other vertex, and each edge is counted once."
+        },
+        {
+          "question": "Q4. The number of onto (surjective) functions from a set of 4 elements to a set of 2 elements is:",
+          "options": ["(A) 8", "(B) 14", "(C) 16", "(D) 12"],
+          "answer": 1,
+          "explanation": "Total functions from 4-element set to 2-element set = 2⁴ = 16. Non-surjective functions (missing at least one element in codomain) = C(2,1)×1⁴ - C(2,2)×0⁴ = 2. By inclusion-exclusion, onto functions = 16 - 2 = 14. Alternatively, using the formula: Σ(-1)^k × C(2,k) × (2-k)⁴ = C(2,0)×2⁴ - C(2,1)×1⁴ = 16 - 2 = 14."
+        },
+        {
+          "question": "Q5. The number of equivalence relations on a set {a, b, c} is:",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) 8"],
+          "answer": 2,
+          "explanation": "The number of equivalence relations on a set equals the Bell number B(n). For n = 3: B(3) = 5. The partitions are: {{a,b,c}}, {{a},{b,c}}, {{b},{a,c}}, {{c},{a,b}}, {{a},{b},{c}}. Each partition corresponds to exactly one equivalence relation."
+        },
+        {
+          "question": "Q6. A relation R on set {1,2,3} given by R = {(1,1),(2,2),(3,3),(1,2),(2,1)} is:",
+          "options": ["(A) Reflexive, symmetric, not transitive", "(B) An equivalence relation", "(C) Reflexive, not symmetric", "(D) Not reflexive"],
+          "answer": 1,
+          "explanation": "Reflexive: (1,1), (2,2), (3,3) ∈ R — yes. Symmetric: (1,2) ∈ R and (2,1) ∈ R — yes. Transitive: check all pairs — (1,2) and (2,1) → (1,1) ∈ R, (2,1) and (1,2) → (2,2) ∈ R — yes. All required pairs are present. Since R is reflexive, symmetric, and transitive, it is an equivalence relation."
+        },
+        {
+          "question": "Q7. The maximum number of edges in a bipartite graph with 10 vertices is:",
+          "options": ["(A) 20", "(B) 25", "(C) 30", "(D) 45"],
+          "answer": 1,
+          "explanation": "A bipartite graph with n vertices has maximum edges when partitions are as equal as possible. For n = 10: partition sizes 5 and 5. Max edges = 5 × 5 = 25. This is a complete bipartite graph K₅,₅. By AM-GM inequality, a×b is maximized when a = b = n/2."
+        },
+        {
+          "question": "Q8. The number of distinct Hamiltonian circuits in K₅ is:",
+          "options": ["(A) 6", "(B) 12", "(C) 24", "(D) 60"],
+          "answer": 1,
+          "explanation": "The number of distinct Hamiltonian circuits in Kₙ is (n-1)!/2. For K₅: (5-1)!/2 = 24/2 = 12. We divide (n-1)! by 2 because each circuit can be traversed in two directions (clockwise and counterclockwise), and we fix one vertex to avoid counting rotations."
+        },
+        {
+          "question": "Q9. The eigenvalues of the matrix [[4, -1], [2, 1]] are:",
+          "options": ["(A) 2 and 3", "(B) 3 and 2", "(C) 1 and 4", "(D) 5 and 0"],
+          "answer": 1,
+          "explanation": "Characteristic equation: det(A - λI) = 0. (4-λ)(1-λ) - (-1)(2) = 0 → λ² - 5λ + 4 + 2 = 0 → λ² - 5λ + 6 = 0 → (λ-2)(λ-3) = 0. Eigenvalues are λ = 2 and λ = 3. We can verify: sum of eigenvalues = 2+3 = 5 = trace(A) = 4+1, and product = 6 = det(A) = 4×1-(-1)×2 = 6."
+        },
+        {
+          "question": "Q10. The system of equations x + 2y = 3, 2x + 4y = 6, 3x + 6y = 9 has:",
+          "options": ["(A) No solution", "(B) Exactly one solution", "(C) Infinitely many solutions", "(D) Exactly two solutions"],
+          "answer": 2,
+          "explanation": "All three equations are scalar multiples of x + 2y = 3. The rank of the coefficient matrix equals the rank of the augmented matrix = 1, which is less than the number of unknowns (2). By the Rouche-Capelli theorem, the system has infinitely many solutions. The general solution is x = 3 - 2t, y = t for any real number t."
+        },
+        {
+          "question": "Q11. If A is a 3×3 matrix with det(A) = 5, then det(2A) is:",
+          "options": ["(A) 10", "(B) 20", "(C) 40", "(D) 80"],
+          "answer": 2,
+          "explanation": "For an n×n matrix, det(kA) = kⁿ × det(A). Here n = 3, k = 2: det(2A) = 2³ × det(A) = 8 × 5 = 40. This is because multiplying each row by k multiplies the determinant by k, and there are n rows."
+        },
+        {
+          "question": "Q12. The dimension of the null space of the matrix [[1, 2, 3], [4, 5, 6], [7, 8, 9]] is:",
+          "options": ["(A) 0", "(B) 1", "(C) 2", "(D) 3"],
+          "answer": 1,
+          "explanation": "Row reduce: R2 = R2-4R1: [0,-3,-6]. R3 = R3-7R1: [0,-6,-12]. R3 = R3-2R2: [0,0,0]. Rank = 2. By rank-nullity theorem: nullity = number of columns - rank = 3 - 2 = 1. The null space has dimension 1."
+        },
+        {
+          "question": "Q13. The value of ∫₀¹ x·eˣ dx is:",
+          "options": ["(A) 1", "(B) e - 1", "(C) e", "(D) 2e - 1"],
+          "answer": 0,
+          "explanation": "Using integration by parts: let u = x, dv = eˣ dx. Then du = dx, v = eˣ. ∫x·eˣ dx = x·eˣ - ∫eˣ dx = x·eˣ - eˣ + C. Evaluating from 0 to 1: [1·e¹ - e¹] - [0·e⁰ - e⁰] = [e - e] - [0 - 1] = 0 + 1 = 1."
+        },
+        {
+          "question": "Q14. The Maclaurin series expansion of eˣ up to the x² term is:",
+          "options": ["(A) 1 + x + x²", "(B) 1 + x + x²/2", "(C) x + x²/2", "(D) 1 + x/2 + x²/2"],
+          "answer": 1,
+          "explanation": "The Maclaurin series for eˣ = Σ(xⁿ/n!) = 1 + x + x²/2! + x³/3! + ... Up to the x² term: 1 + x + x²/2. Here 2! = 2, so the coefficient of x² is 1/2."
+        },
+        {
+          "question": "Q15. The value of lim(n→∞) (1 + 1/n)^(2n) is:",
+          "options": ["(A) e", "(B) e²", "(C) 2e", "(D) 1"],
+          "answer": 1,
+          "explanation": "lim(n→∞) (1 + 1/n)^(2n) = [lim(n→∞) (1 + 1/n)^n]² = e² ≈ 7.389. We use the fundamental limit lim(n→∞) (1 + 1/n)^n = e, and the property that lim f(n)^(2n) = [lim f(n)^n]²."
+        },
+        {
+          "question": "Q16. The partial derivative ∂/∂x of f(x,y) = x²y + xy³ at point (1,2) is:",
+          "options": ["(A) 10", "(B) 12", "(C) 14", "(D) 20"],
+          "answer": 1,
+          "explanation": "∂f/∂x = 2xy + y³. At (1,2): ∂f/∂x = 2(1)(2) + 2³ = 4 + 8 = 12."
+        },
+        {
+          "question": "Q17. If P(A) = 0.4, P(B) = 0.5, and P(A ∩ B) = 0.2, then P(A | B) is:",
+          "options": ["(A) 0.3", "(B) 0.4", "(C) 0.5", "(D) 0.8"],
+          "answer": 1,
+          "explanation": "By Bayes' definition: P(A|B) = P(A ∩ B) / P(B) = 0.2 / 0.5 = 0.4. The conditional probability of A given B equals the joint probability divided by the probability of B."
+        },
+        {
+          "question": "Q18. A bag contains 5 red and 3 blue balls. Two balls are drawn without replacement. The probability that both are red is:",
+          "options": ["(A) 5/14", "(B) 25/64", "(C) 5/16", "(D) 10/28"],
+          "answer": 0,
+          "explanation": "P(both red) = P(1st red) × P(2nd red | 1st red) = (5/8) × (4/7) = 20/56 = 5/14. After drawing the first red ball, there are 4 red balls left out of 7 total. Option (D) 10/28 = 5/14 is the same value, but option (A) is the simplified form."
+        },
+        {
+          "question": "Q19. The variance of a uniform distribution over [0, 6] is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 6"],
+          "answer": 2,
+          "explanation": "For a continuous uniform distribution over [a, b], the variance is (b-a)²/12. Here a = 0, b = 6: Var = (6-0)²/12 = 36/12 = 3. The mean is (a+b)/2 = 3."
+        },
+        {
+          "question": "Q20. If X follows a Binomial distribution B(10, 0.3), then E(X) is:",
+          "options": ["(A) 0.3", "(B) 3", "(C) 7", "(D) 2.1"],
+          "answer": 1,
+          "explanation": "For Binomial distribution B(n, p): E(X) = np. Here n = 10, p = 0.3: E(X) = 10 × 0.3 = 3. The variance would be np(1-p) = 10 × 0.3 × 0.7 = 2.1."
+        },
+        {
+          "question": "Q21. Two dice are thrown. The probability that the sum is 7 is:",
+          "options": ["(A) 1/12", "(B) 5/36", "(C) 1/6", "(D) 7/36"],
+          "answer": 2,
+          "explanation": "Favorable outcomes for sum = 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1) = 6 outcomes. Total outcomes = 36. Probability = 6/36 = 1/6. The sum of 7 has the highest probability among all possible sums of two dice."
+        },
+        {
+          "question": "Q22. In a normal distribution, approximately what percentage of data falls within one standard deviation of the mean?",
+          "options": ["(A) 50%", "(B) 68%", "(C) 95%", "(D) 99.7%"],
+          "answer": 1,
+          "explanation": "The empirical rule (68-95-99.7 rule) for normal distribution states: approximately 68% of data falls within μ ± σ, 95% within μ ± 2σ, and 99.7% within μ ± 3σ. This is a fundamental property of the Gaussian distribution."
+        },
+        {
+          "question": "Q23. A train travels at 60 km/h for the first half of a journey and 40 km/h for the second half. The average speed for the entire journey is:",
+          "options": ["(A) 50 km/h", "(B) 48 km/h", "(C) 45 km/h", "(D) 52 km/h"],
+          "answer": 1,
+          "explanation": "When equal distances are covered at different speeds, average speed = 2×v₁×v₂/(v₁+v₂) = 2×60×40/(60+40) = 4800/100 = 48 km/h. This is the harmonic mean of the two speeds. Note: the arithmetic mean (50) would be wrong here since the time spent at each speed is different."
+        },
+        {
+          "question": "Q24. If 20% of a number is 80, what is 35% of that number?",
+          "options": ["(A) 120", "(B) 140", "(C) 160", "(D) 180"],
+          "answer": 1,
+          "explanation": "If 20% of x = 80, then x = 80/0.20 = 400. 35% of 400 = 0.35 × 400 = 140."
+        },
+        {
+          "question": "Q25. A person walks 3 km North, then 4 km East. The shortest distance from the starting point is:",
+          "options": ["(A) 5 km", "(B) 7 km", "(C) 6 km", "(D) 3.5 km"],
+          "answer": 0,
+          "explanation": "Using the Pythagorean theorem: distance = √(3² + 4²) = √(9 + 16) = √25 = 5 km. The north and east directions are perpendicular, forming a right triangle with legs 3 and 4."
+        },
+        {
+          "question": "Q26. A pipe can fill a tank in 6 hours and another can empty it in 8 hours. If both are opened simultaneously, the tank will be filled in:",
+          "options": ["(A) 12 hours", "(B) 24 hours", "(C) 14 hours", "(D) 48 hours"],
+          "answer": 1,
+          "explanation": "Rate of filling = 1/6 tank per hour. Rate of emptying = 1/8 tank per hour. Net rate = 1/6 - 1/8 = (4-3)/24 = 1/24 tank per hour. Time to fill = 24 hours."
+        },
+        {
+          "question": "Q27. In a class of 50 students, 30 play cricket and 25 play football. If 10 play both, how many play neither?",
+          "options": ["(A) 0", "(B) 5", "(C) 10", "(D) 15"],
+          "answer": 1,
+          "explanation": "By inclusion-exclusion: |Cricket ∪ Football| = |Cricket| + |Football| - |Both| = 30 + 25 - 10 = 45. Students playing neither = Total - |Cricket ∪ Football| = 50 - 45 = 5."
+        },
+        {
+          "question": "Q28. The next number in the series 2, 6, 12, 20, 30, ... is:",
+          "options": ["(A) 36", "(B) 40", "(C) 42", "(D) 48"],
+          "answer": 2,
+          "explanation": "The pattern is n(n+1): 1×2=2, 2×3=6, 3×4=12, 4×5=20, 5×6=30, 6×7=42. Alternatively, the differences are 4, 6, 8, 10, 12 (increasing by 2 each time). So the next term is 30 + 12 = 42."
+        },
+        {
+          "question": "Q29. If the letters of the word 'GATE' are permuted, how many arrangements have G before A (not necessarily adjacent)?",
+          "options": ["(A) 6", "(B) 12", "(C) 18", "(D) 24"],
+          "answer": 1,
+          "explanation": "Total permutations of GATE = 4! = 24. By symmetry, exactly half have G before A and half have A before G. So arrangements with G before A = 24/2 = 12. This symmetry argument works because all letters are distinct."
+        },
+        {
+          "question": "Q30. A shopkeeper marks up the price by 25% and then gives a discount of 20%. The net profit or loss percentage is:",
+          "options": ["(A) 5% profit", "(B) 5% loss", "(C) 0% (no profit, no loss)", "(D) 10% profit"],
+          "answer": 2,
+          "explanation": "Let cost price = 100. Marked price = 125 (25% markup). Selling price = 125 × 0.80 = 100 (20% discount). Net effect: SP = CP = 100. So there is 0% profit/loss. In general, if markup is m% and discount is d%, the effective factor is (1 + m/100)(1 - d/100) = 1.25 × 0.80 = 1.00."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

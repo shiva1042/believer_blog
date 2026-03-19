@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Theory | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+    .mermaid { text-align: center; margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Graph Theory</h1>
+  <p class="article-section-tag">Section 1: Engineering Mathematics</p>
+
+  <h2>1. Basic Definitions</h2>
+  <p>A <strong>graph</strong> G = (V, E) consists of a set of <strong>vertices</strong> (nodes) V and a set of <strong>edges</strong> E connecting pairs of vertices.</p>
+
+  <table>
+    <tr><th>Term</th><th>Definition</th></tr>
+    <tr><td>Degree of vertex</td><td>Number of edges incident to the vertex (deg(v))</td></tr>
+    <tr><td>Adjacent vertices</td><td>Two vertices connected by an edge</td></tr>
+    <tr><td>Path</td><td>Sequence of distinct vertices connected by edges</td></tr>
+    <tr><td>Cycle</td><td>Path that starts and ends at the same vertex</td></tr>
+    <tr><td>Simple graph</td><td>No self-loops or multiple edges</td></tr>
+    <tr><td>Connected graph</td><td>Path exists between every pair of vertices</td></tr>
+  </table>
+
+  <div class="formula">
+    Handshaking Theorem: &sum; deg(v) = 2|E| for all v in V<br>
+    Corollary: Number of vertices with odd degree is always even.
+  </div>
+
+  <h2>2. Types of Graphs</h2>
+
+  <h3>2.1 Undirected Graph Example</h3>
+  <div class="mermaid">
+graph LR
+    A --- B
+    B --- C
+    C --- D
+    D --- A
+    A --- C
+    B --- D
+  </div>
+  <p>This is a complete graph K<sub>4</sub> with 4 vertices and 6 edges. Every vertex has degree 3.</p>
+
+  <h3>2.2 Directed Graph (Digraph) Example</h3>
+  <div class="mermaid">
+graph LR
+    A -->|5| B
+    B -->|3| C
+    C -->|7| D
+    D -->|2| A
+    A -->|4| C
+  </div>
+  <p>A weighted directed graph where edges have directions and weights. In-degree and out-degree are defined separately.</p>
+
+  <h3>2.3 Bipartite Graph Example</h3>
+  <div class="mermaid">
+graph LR
+    subgraph Set X
+        X1
+        X2
+        X3
+    end
+    subgraph Set Y
+        Y1
+        Y2
+        Y3
+    end
+    X1 --- Y1
+    X1 --- Y2
+    X2 --- Y2
+    X2 --- Y3
+    X3 --- Y1
+    X3 --- Y3
+  </div>
+  <p>A bipartite graph has vertices partitioned into two sets X and Y, with edges only between sets, never within. A graph is bipartite iff it contains no odd-length cycle.</p>
+
+  <h3>2.4 Summary of Graph Types</h3>
+  <table>
+    <tr><th>Graph Type</th><th>Description</th><th>Key Property</th></tr>
+    <tr><td>Complete (K<sub>n</sub>)</td><td>Every pair of vertices is connected</td><td>Edges = n(n-1)/2</td></tr>
+    <tr><td>Complete Bipartite (K<sub>m,n</sub>)</td><td>Every vertex in X connects to every vertex in Y</td><td>Edges = m &times; n</td></tr>
+    <tr><td>Cycle (C<sub>n</sub>)</td><td>Single cycle through all n vertices</td><td>Each vertex has degree 2</td></tr>
+    <tr><td>Tree</td><td>Connected acyclic graph</td><td>Edges = n - 1</td></tr>
+    <tr><td>Planar Graph</td><td>Can be drawn without edge crossings</td><td>E &le; 3V - 6 (Euler)</td></tr>
+    <tr><td>DAG</td><td>Directed acyclic graph</td><td>Has topological ordering</td></tr>
+  </table>
+
+  <h2>3. Connectivity</h2>
+
+  <h3>3.1 Connected Components</h3>
+  <p>A <strong>connected component</strong> is a maximal connected subgraph. An undirected graph with n vertices and k connected components has at least n - k edges.</p>
+
+  <h3>3.2 Cut Vertices and Bridges</h3>
+  <ul>
+    <li><strong>Cut vertex (articulation point):</strong> A vertex whose removal disconnects the graph.</li>
+    <li><strong>Bridge:</strong> An edge whose removal disconnects the graph.</li>
+    <li>A connected graph with no cut vertex is called <strong>biconnected</strong>.</li>
+  </ul>
+
+  <h3>3.3 Strong and Weak Connectivity (Digraphs)</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th></tr>
+    <tr><td>Strongly connected</td><td>Directed path exists from u to v and v to u for all pairs u, v</td></tr>
+    <tr><td>Weakly connected</td><td>Connected when direction of edges is ignored</td></tr>
+    <tr><td>Strongly connected component</td><td>Maximal strongly connected subgraph</td></tr>
+  </table>
+
+  <h2>4. Euler Paths and Circuits</h2>
+  <p>An <strong>Euler path</strong> visits every edge exactly once. An <strong>Euler circuit</strong> is an Euler path that starts and ends at the same vertex.</p>
+
+  <table>
+    <tr><th>Type</th><th>Undirected Graph Condition</th><th>Directed Graph Condition</th></tr>
+    <tr><td>Euler Circuit</td><td>Connected, all vertices have even degree</td><td>Strongly connected, in-degree = out-degree for all</td></tr>
+    <tr><td>Euler Path</td><td>Connected, exactly 0 or 2 vertices with odd degree</td><td>Weakly connected, at most one vertex has out - in = 1, at most one has in - out = 1, rest equal</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Example:</strong> K<sub>4</sub> has all vertices of degree 3 (odd), so it does NOT have an Euler circuit. But K<sub>3</sub> has all vertices of degree 2 (even), so it HAS an Euler circuit.
+  </div>
+
+  <h2>5. Hamilton Paths and Circuits</h2>
+  <p>A <strong>Hamilton path</strong> visits every vertex exactly once. A <strong>Hamilton circuit</strong> visits every vertex exactly once and returns to the start.</p>
+
+  <h3>5.1 Sufficient Conditions (not necessary)</h3>
+  <ul>
+    <li><strong>Dirac's Theorem:</strong> If deg(v) &ge; n/2 for all vertices in a simple graph with n &ge; 3, then G has a Hamiltonian circuit.</li>
+    <li><strong>Ore's Theorem:</strong> If deg(u) + deg(v) &ge; n for every pair of non-adjacent vertices u, v, then G has a Hamiltonian circuit.</li>
+  </ul>
+
+  <p><strong>Key difference from Euler:</strong> No simple necessary and sufficient condition exists for Hamilton paths/circuits. The problem of determining if a Hamiltonian path exists is NP-complete.</p>
+
+  <h2>6. Graph Coloring</h2>
+  <p>A <strong>proper k-coloring</strong> assigns one of k colors to each vertex such that no two adjacent vertices share a color. The <strong>chromatic number</strong> &chi;(G) is the minimum k for which G has a proper k-coloring.</p>
+
+  <table>
+    <tr><th>Graph</th><th>Chromatic Number</th></tr>
+    <tr><td>K<sub>n</sub></td><td>&chi; = n</td></tr>
+    <tr><td>C<sub>n</sub> (n even)</td><td>&chi; = 2</td></tr>
+    <tr><td>C<sub>n</sub> (n odd)</td><td>&chi; = 3</td></tr>
+    <tr><td>Bipartite graph</td><td>&chi; = 2</td></tr>
+    <tr><td>Tree (n &ge; 2)</td><td>&chi; = 2</td></tr>
+    <tr><td>Planar graph</td><td>&chi; &le; 4 (Four Color Theorem)</td></tr>
+    <tr><td>K<sub>m,n</sub></td><td>&chi; = 2</td></tr>
+  </table>
+
+  <div class="formula">
+    &chi;(G) &ge; &omega;(G) where &omega;(G) is the clique number (size of largest complete subgraph)<br>
+    &chi;(G) &ge; n / &alpha;(G) where &alpha;(G) is the independence number
+  </div>
+
+  <h2>7. Matching</h2>
+  <p>A <strong>matching</strong> in a graph is a set of edges with no shared vertices.</p>
+
+  <h3>7.1 Key Definitions</h3>
+  <table>
+    <tr><th>Term</th><th>Definition</th></tr>
+    <tr><td>Maximum matching</td><td>Matching with the largest possible number of edges</td></tr>
+    <tr><td>Perfect matching</td><td>Matching that covers all vertices</td></tr>
+    <tr><td>Maximal matching</td><td>Matching that cannot be extended by adding an edge</td></tr>
+  </table>
+
+  <h3>7.2 Hall's Marriage Theorem</h3>
+  <p>A bipartite graph G = (X &cup; Y, E) has a matching that saturates every vertex in X if and only if for every subset S &sube; X:</p>
+  <div class="formula">
+    |N(S)| &ge; |S| (Hall's condition)
+  </div>
+  <p>where N(S) is the set of vertices in Y adjacent to at least one vertex in S.</p>
+
+  <h2>8. Planar Graphs and Euler's Formula</h2>
+  <div class="formula">
+    Euler's Formula: V - E + F = 2 (for connected planar graphs)<br>
+    where V = vertices, E = edges, F = faces (including the outer face)
+  </div>
+
+  <h3>8.1 Consequences</h3>
+  <ul>
+    <li>For simple connected planar graph (V &ge; 3): E &le; 3V - 6</li>
+    <li>For bipartite planar graph (V &ge; 3): E &le; 2V - 4</li>
+    <li>K<sub>5</sub> is not planar (10 edges > 3(5) - 6 = 9)</li>
+    <li>K<sub>3,3</sub> is not planar (9 edges > 2(6) - 4 = 8)</li>
+    <li><strong>Kuratowski's Theorem:</strong> G is planar iff it contains no subdivision of K<sub>5</sub> or K<sub>3,3</sub></li>
+  </ul>
+
+  <h2>9. Trees</h2>
+  <h3>9.1 Equivalent Definitions</h3>
+  <p>For a graph G with n vertices, any two of the following imply the third (and that G is a tree):</p>
+  <ul>
+    <li>G is connected</li>
+    <li>G is acyclic</li>
+    <li>G has n - 1 edges</li>
+  </ul>
+
+  <h3>9.2 Tree Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Number of edges</td><td>n - 1</td></tr>
+    <tr><td>Number of labeled trees on n vertices</td><td>n<sup>n-2</sup> (Cayley's formula)</td></tr>
+    <tr><td>Unique path between any two vertices</td><td>Yes</td></tr>
+    <tr><td>Chromatic number (n &ge; 2)</td><td>2</td></tr>
+    <tr><td>Every edge is a bridge</td><td>Yes</td></tr>
+    <tr><td>Leaves in a tree (n &ge; 2)</td><td>At least 2</td></tr>
+  </table>
+
+  <h2>10. Key GATE Takeaways</h2>
+  <ul>
+    <li>Master the Handshaking theorem and its applications in degree calculations.</li>
+    <li>Know Euler path/circuit conditions for both directed and undirected graphs.</li>
+    <li>Chromatic number questions are very common: know values for standard graphs.</li>
+    <li>Euler's formula V - E + F = 2 and its corollaries for planarity testing.</li>
+    <li>Trees: n vertices means n - 1 edges, Cayley's formula for labeled trees.</li>
+    <li>Bipartite iff no odd cycle. Hall's theorem for perfect matchings.</li>
+    <li>Hamilton path existence is NP-complete; know Dirac's and Ore's sufficient conditions.</li>
+  </ul>
+
+</article>
+</body>
+</html>

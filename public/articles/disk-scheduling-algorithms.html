@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disk Scheduling Algorithms — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Disk Scheduling Algorithms</h1>
+  <p class="article-section-tag">⚙️ Operating System</p>
+
+  <h2>1. Introduction</h2>
+  <p>Disk scheduling algorithms determine the order in which disk I/O requests are serviced. The goal is to minimize the total <strong>seek time</strong> (time to move the disk arm to the desired track/cylinder).</p>
+  <p><strong>Disk Access Time</strong> = Seek Time + Rotational Latency + Transfer Time</p>
+  <p>Since seek time is the largest component and the only one affected by scheduling, algorithms focus on minimizing total head movement.</p>
+
+  <h2>2. Common Setup for Examples</h2>
+  <p>We will use the following example throughout all algorithms:</p>
+  <ul>
+    <li><strong>Disk queue (request order):</strong> 98, 183, 37, 122, 14, 124, 65, 67</li>
+    <li><strong>Initial head position:</strong> 53</li>
+    <li><strong>Disk range:</strong> 0 to 199 (200 cylinders)</li>
+  </ul>
+
+  <h2>3. FCFS (First Come First Served)</h2>
+  <p>Requests are served in the order they arrive. Simple but not optimal.</p>
+
+  <h3>Calculation</h3>
+  <pre><code>Head movement: 53 -> 98 -> 183 -> 37 -> 122 -> 14 -> 124 -> 65 -> 67
+
+Seek distances:
+|53-98|   = 45
+|98-183|  = 85
+|183-37|  = 146
+|37-122|  = 85
+|122-14|  = 108
+|14-124|  = 110
+|124-65|  = 59
+|65-67|   = 2
+
+Total seek time = 45 + 85 + 146 + 85 + 108 + 110 + 59 + 2 = 640 cylinders</code></pre>
+
+  <h2>4. SSTF (Shortest Seek Time First)</h2>
+  <p>Always service the request closest to the current head position. Greedy approach.</p>
+
+  <h3>Calculation</h3>
+  <pre><code>Start at 53.
+Closest to 53: 65 (distance 12)
+Closest to 65: 67 (distance 2)
+Closest to 67: 37 (distance 30)
+Closest to 37: 14 (distance 23)
+Closest to 14: 98 (distance 84)
+Closest to 98: 122 (distance 24)
+Closest to 122: 124 (distance 2)
+Closest to 124: 183 (distance 59)
+
+Order: 53 -> 65 -> 67 -> 37 -> 14 -> 98 -> 122 -> 124 -> 183
+Total = 12 + 2 + 30 + 23 + 84 + 24 + 2 + 59 = 236 cylinders</code></pre>
+  <div class="note"><strong>Note:</strong> SSTF can cause <strong>starvation</strong> for requests far from the head if new close requests keep arriving.</div>
+
+  <h2>5. SCAN (Elevator Algorithm)</h2>
+  <p>The head moves in one direction, servicing all requests until it reaches the end of the disk, then reverses direction.</p>
+
+  <h3>Calculation (initially moving toward 0)</h3>
+  <pre><code>Start at 53, moving toward 0.
+Service requests in decreasing order until 0:
+53 -> 37 -> 14 -> 0 (reach end)
+Reverse direction, service in increasing order:
+0 -> 65 -> 67 -> 98 -> 122 -> 124 -> 183
+
+Seek distances:
+|53-37| = 16, |37-14| = 23, |14-0| = 14
+|0-65| = 65, |65-67| = 2, |67-98| = 31
+|98-122| = 24, |122-124| = 2, |124-183| = 59
+
+Total = 16 + 23 + 14 + 65 + 2 + 31 + 24 + 2 + 59 = 236 cylinders</code></pre>
+
+  <h2>6. C-SCAN (Circular SCAN)</h2>
+  <p>Like SCAN, but after reaching one end, the head jumps to the other end without servicing requests on the return trip. Provides more uniform wait times.</p>
+
+  <h3>Calculation (moving toward 199)</h3>
+  <pre><code>Start at 53, moving toward 199.
+Service in increasing order:
+53 -> 65 -> 67 -> 98 -> 122 -> 124 -> 183 -> 199 (reach end)
+Jump to 0 (no service during jump):
+199 -> 0 -> 14 -> 37
+
+Seek distances (counting the jump as movement):
+|53-65| = 12, |65-67| = 2, |67-98| = 31, |98-122| = 24
+|122-124| = 2, |124-183| = 59, |183-199| = 16
+|199-0| = 199 (jump), |0-14| = 14, |14-37| = 23
+
+Total = 12 + 2 + 31 + 24 + 2 + 59 + 16 + 199 + 14 + 23 = 382 cylinders</code></pre>
+  <div class="note"><strong>Note:</strong> In some formulations, the jump from end to beginning is not counted as seek time (treated as instantaneous). In that case, subtract 199 to get 183.</div>
+
+  <h2>7. LOOK</h2>
+  <p>Like SCAN, but the head only goes as far as the last request in each direction (does not go all the way to 0 or 199).</p>
+
+  <h3>Calculation (initially moving toward 0)</h3>
+  <pre><code>Start at 53, moving toward 0.
+Go to lowest request (14), not all the way to 0:
+53 -> 37 -> 14
+Reverse:
+14 -> 65 -> 67 -> 98 -> 122 -> 124 -> 183
+
+Seek distances:
+|53-37| = 16, |37-14| = 23
+|14-65| = 51, |65-67| = 2, |67-98| = 31
+|98-122| = 24, |122-124| = 2, |124-183| = 59
+
+Total = 16 + 23 + 51 + 2 + 31 + 24 + 2 + 59 = 208 cylinders</code></pre>
+
+  <h2>8. C-LOOK (Circular LOOK)</h2>
+  <p>Like C-SCAN, but only goes as far as the last request in each direction.</p>
+
+  <h3>Calculation (moving toward 199)</h3>
+  <pre><code>Start at 53, moving toward 199.
+Go to highest request (183):
+53 -> 65 -> 67 -> 98 -> 122 -> 124 -> 183
+Jump to lowest request (14):
+183 -> 14 -> 37
+
+Seek distances:
+|53-65| = 12, |65-67| = 2, |67-98| = 31, |98-122| = 24
+|122-124| = 2, |124-183| = 59
+|183-14| = 169 (jump), |14-37| = 23
+
+Total = 12 + 2 + 31 + 24 + 2 + 59 + 169 + 23 = 322 cylinders</code></pre>
+
+  <h2>9. Disk Arm Movement Diagram</h2>
+  <div class="mermaid">
+graph LR
+    subgraph SCAN Direction
+    A[0] --- B[14] --- C[37] --- D[53 Start] --- E[65] --- F[67] --- G[98] --- H[122] --- I[124] --- J[183] --- K[199]
+    end
+  </div>
+  <p>In SCAN moving left first: 53 &rarr; 37 &rarr; 14 &rarr; 0 &rarr; 65 &rarr; 67 &rarr; 98 &rarr; 122 &rarr; 124 &rarr; 183</p>
+  <p>In LOOK moving left first: 53 &rarr; 37 &rarr; 14 &rarr; (reverse) &rarr; 65 &rarr; 67 &rarr; 98 &rarr; 122 &rarr; 124 &rarr; 183</p>
+
+  <h2>10. Comparison Table</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Total Seek (example)</th><th>Starvation</th><th>Pros</th><th>Cons</th></tr>
+    <tr><td>FCFS</td><td>640</td><td>No</td><td>Simple, fair</td><td>High seek time, wild arm movement</td></tr>
+    <tr><td>SSTF</td><td>236</td><td>Yes</td><td>Low seek time</td><td>Starvation of far requests</td></tr>
+    <tr><td>SCAN</td><td>236</td><td>No</td><td>No starvation, good throughput</td><td>Requests at just-visited end wait longest</td></tr>
+    <tr><td>C-SCAN</td><td>382*</td><td>No</td><td>Uniform wait time</td><td>Higher total movement due to jump</td></tr>
+    <tr><td>LOOK</td><td>208</td><td>No</td><td>Better than SCAN (less movement)</td><td>Slightly more complex</td></tr>
+    <tr><td>C-LOOK</td><td>322*</td><td>No</td><td>Uniform wait + less movement than C-SCAN</td><td>Jump overhead</td></tr>
+  </table>
+  <p>* If jump is not counted, C-SCAN and C-LOOK have lower effective seek times.</p>
+
+  <h2>11. Key Points for GATE</h2>
+  <ul>
+    <li>Always clarify the <strong>initial direction</strong> of head movement for SCAN/LOOK variants.</li>
+    <li>For SCAN and C-SCAN, the head goes to the <strong>end of the disk</strong> (0 or max cylinder).</li>
+    <li>For LOOK and C-LOOK, the head goes only to the <strong>last request</strong> in that direction.</li>
+    <li>SSTF is a greedy algorithm. It does not guarantee optimal seek time globally.</li>
+    <li>FCFS is the only algorithm where request arrival order matters.</li>
+    <li>In NAT questions, count each seek distance carefully. Off-by-one errors are common.</li>
+  </ul>
+
+  <div class="important"><strong>GATE Tip:</strong> The most frequently asked question type is: "Given a request queue and initial head position, compute total seek time for [algorithm]." Practice the calculation for each algorithm until it becomes mechanical.</div>
+
+</article>
+</body>
+</html>

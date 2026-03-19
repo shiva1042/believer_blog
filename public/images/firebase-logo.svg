@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <rect width="400" height="200" rx="12" fill="#1b1b2f"/>
+  <polygon points="200,40 160,160 240,160" fill="#ffca28" opacity="0.9"/>
+  <polygon points="175,110 200,65 225,110" fill="#ff8f00" opacity="0.9"/>
+  <polygon points="160,160 200,130 240,160" fill="#f57c00" opacity="0.9"/>
+  <text x="200" y="185" text-anchor="middle" fill="#ffca28" font-size="14" font-family="sans-serif" font-weight="bold">Firebase</text>
+</svg>

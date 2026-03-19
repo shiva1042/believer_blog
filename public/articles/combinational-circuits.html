@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Combinational Circuits — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Combinational Circuits</h1>
+  <p class="article-section-tag">🔲 Section 2: Digital Logic</p>
+
+  <h2>1. Introduction</h2>
+  <p>Combinational circuits are digital logic circuits where the output depends solely on the current input values, with no memory or feedback. The output is a pure function of the present inputs. These circuits form the building blocks of arithmetic logic units, data selectors, and code converters.</p>
+
+  <h2>2. Adders</h2>
+
+  <h3>2.1 Half Adder</h3>
+  <p>A half adder adds two single-bit binary numbers and produces a Sum and a Carry output.</p>
+  <table>
+    <tr><th>A</th><th>B</th><th>Sum (S)</th><th>Carry (C)</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+  </table>
+  <p><strong>Equations:</strong> S = A XOR B, C = A AND B</p>
+
+  <h3>2.2 Full Adder</h3>
+  <p>A full adder adds three single-bit numbers: two inputs (A, B) and a carry-in (C<sub>in</sub>).</p>
+  <table>
+    <tr><th>A</th><th>B</th><th>C<sub>in</sub></th><th>Sum</th><th>C<sub>out</sub></th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+    <tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+  </table>
+  <p><strong>Equations:</strong> Sum = A XOR B XOR C<sub>in</sub>, C<sub>out</sub> = AB + BC<sub>in</sub> + AC<sub>in</sub></p>
+
+  <h3>2.3 Ripple Carry Adder</h3>
+  <p>An n-bit ripple carry adder chains n full adders, where the carry output of each stage feeds the carry input of the next stage.</p>
+
+  <div class="mermaid">
+flowchart LR
+    subgraph FA0["Full Adder 0"]
+        A0["A0, B0"] --> S0["S0"]
+    end
+    subgraph FA1["Full Adder 1"]
+        A1["A1, B1"] --> S1["S1"]
+    end
+    subgraph FA2["Full Adder 2"]
+        A2["A2, B2"] --> S2["S2"]
+    end
+    subgraph FA3["Full Adder 3"]
+        A3["A3, B3"] --> S3["S3"]
+    end
+    Cin["C_in=0"] --> FA0
+    FA0 -- "C1" --> FA1
+    FA1 -- "C2" --> FA2
+    FA2 -- "C3" --> FA3
+    FA3 --> Cout["C_out"]
+  </div>
+
+  <div class="note">
+    <p><strong>Delay:</strong> The worst-case propagation delay of an n-bit ripple carry adder is <code>2n &middot; t_gate</code> because the carry must ripple through all n stages. This is improved by carry lookahead adders.</p>
+  </div>
+
+  <h3>2.4 Carry Lookahead Adder (CLA)</h3>
+  <p>CLA computes carries in parallel using generate (G) and propagate (P) signals:</p>
+  <ul>
+    <li><code>G<sub>i</sub> = A<sub>i</sub> &middot; B<sub>i</sub></code> (generate)</li>
+    <li><code>P<sub>i</sub> = A<sub>i</sub> XOR B<sub>i</sub></code> (propagate)</li>
+    <li><code>C<sub>i+1</sub> = G<sub>i</sub> + P<sub>i</sub> &middot; C<sub>i</sub></code></li>
+  </ul>
+
+  <h2>3. Subtractors</h2>
+
+  <h3>3.1 Half Subtractor</h3>
+  <table>
+    <tr><th>A</th><th>B</th><th>Difference</th><th>Borrow</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+  </table>
+  <p><strong>Equations:</strong> D = A XOR B, Borrow = A' &middot; B</p>
+
+  <h3>3.2 Full Subtractor</h3>
+  <p>D = A XOR B XOR B<sub>in</sub>, B<sub>out</sub> = A'B + A'B<sub>in</sub> + BB<sub>in</sub></p>
+
+  <h2>4. Multiplexer (MUX)</h2>
+  <p>A multiplexer selects one of 2<sup>n</sup> input lines using n select lines and routes it to a single output.</p>
+
+  <h3>4.1 2:1 MUX</h3>
+  <p><code>Y = S'&middot;I<sub>0</sub> + S&middot;I<sub>1</sub></code></p>
+
+  <h3>4.2 4:1 MUX</h3>
+  <table>
+    <tr><th>S<sub>1</sub></th><th>S<sub>0</sub></th><th>Output Y</th></tr>
+    <tr><td>0</td><td>0</td><td>I<sub>0</sub></td></tr>
+    <tr><td>0</td><td>1</td><td>I<sub>1</sub></td></tr>
+    <tr><td>1</td><td>0</td><td>I<sub>2</sub></td></tr>
+    <tr><td>1</td><td>1</td><td>I<sub>3</sub></td></tr>
+  </table>
+
+  <h3>4.3 MUX Tree (Building larger MUX from smaller ones)</h3>
+  <p>An 8:1 MUX can be constructed from two 4:1 MUXes and one 2:1 MUX:</p>
+
+  <div class="mermaid">
+flowchart TD
+    I0["I0-I3"] --> MUX1["4:1 MUX A"]
+    I4["I4-I7"] --> MUX2["4:1 MUX B"]
+    MUX1 -- "Output A" --> MUX3["2:1 MUX"]
+    MUX2 -- "Output B" --> MUX3
+    S01["S1, S0"] --> MUX1
+    S01 --> MUX2
+    S2["S2"] --> MUX3
+    MUX3 --> Y["Output Y"]
+  </div>
+
+  <h3>4.4 Implementing Boolean Functions with MUX</h3>
+  <p>Any n-variable Boolean function can be implemented using a 2<sup>n-1</sup>:1 MUX. Use (n-1) variables as select lines and connect the inputs to 0, 1, the remaining variable, or its complement.</p>
+
+  <div class="note">
+    <p><strong>Example:</strong> F(A,B,C) = &Sigma;m(1,2,6,7) using a 4:1 MUX with A,B as select lines:<br/>
+    S1=A, S0=B: I0=C, I1=C', I2=0, I3=1</p>
+  </div>
+
+  <h2>5. Demultiplexer (DEMUX)</h2>
+  <p>A DEMUX routes a single input to one of 2<sup>n</sup> output lines based on n select lines. It is the reverse of a MUX.</p>
+  <table>
+    <tr><th>S<sub>1</sub></th><th>S<sub>0</sub></th><th>Y<sub>0</sub></th><th>Y<sub>1</sub></th><th>Y<sub>2</sub></th><th>Y<sub>3</sub></th></tr>
+    <tr><td>0</td><td>0</td><td>D</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>D</td><td>0</td><td>0</td></tr>
+    <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>D</td><td>0</td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>D</td></tr>
+  </table>
+
+  <h2>6. Encoder</h2>
+  <p>An encoder converts 2<sup>n</sup> input lines to n output lines. Only one input is active (high) at a time.</p>
+
+  <h3>6.1 Priority Encoder</h3>
+  <p>When multiple inputs are active, a priority encoder encodes the highest-priority input.</p>
+  <table>
+    <tr><th>D<sub>3</sub></th><th>D<sub>2</sub></th><th>D<sub>1</sub></th><th>D<sub>0</sub></th><th>Y<sub>1</sub></th><th>Y<sub>0</sub></th><th>Valid</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>X</td><td>X</td><td>0</td></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+    <tr><td>0</td><td>0</td><td>1</td><td>X</td><td>0</td><td>1</td><td>1</td></tr>
+    <tr><td>0</td><td>1</td><td>X</td><td>X</td><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td>1</td><td>X</td><td>X</td><td>X</td><td>1</td><td>1</td><td>1</td></tr>
+  </table>
+
+  <h2>7. Decoder</h2>
+  <p>A decoder converts n input lines to 2<sup>n</sup> output lines. Exactly one output is active for each input combination.</p>
+
+  <h3>7.1 2-to-4 Decoder</h3>
+  <table>
+    <tr><th>A<sub>1</sub></th><th>A<sub>0</sub></th><th>D<sub>0</sub></th><th>D<sub>1</sub></th><th>D<sub>2</sub></th><th>D<sub>3</sub></th></tr>
+    <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+  </table>
+
+  <div class="note">
+    <p><strong>Key Fact:</strong> A decoder with an enable input can function as a demultiplexer. Also, any Boolean function can be implemented using a decoder and OR gates.</p>
+  </div>
+
+  <h2>8. Comparator</h2>
+  <p>A comparator compares two n-bit numbers and indicates whether A &gt; B, A &lt; B, or A = B.</p>
+
+  <h3>8.1 1-Bit Comparator</h3>
+  <table>
+    <tr><th>A</th><th>B</th><th>A&gt;B</th><th>A=B</th><th>A&lt;B</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+  </table>
+  <p><strong>Equations:</strong> A&gt;B = AB', A&lt;B = A'B, A=B = (A XNOR B)</p>
+
+  <h2>9. Summary Comparison Table</h2>
+  <table>
+    <tr><th>Circuit</th><th>Inputs</th><th>Outputs</th><th>Function</th></tr>
+    <tr><td>Half Adder</td><td>2</td><td>2 (S, C)</td><td>Adds two bits</td></tr>
+    <tr><td>Full Adder</td><td>3</td><td>2 (S, C<sub>out</sub>)</td><td>Adds three bits</td></tr>
+    <tr><td>MUX 2<sup>n</sup>:1</td><td>2<sup>n</sup> data + n select</td><td>1</td><td>Selects one input</td></tr>
+    <tr><td>DEMUX 1:2<sup>n</sup></td><td>1 data + n select</td><td>2<sup>n</sup></td><td>Routes input to one output</td></tr>
+    <tr><td>Encoder 2<sup>n</sup>:n</td><td>2<sup>n</sup></td><td>n</td><td>Encodes active input</td></tr>
+    <tr><td>Decoder n:2<sup>n</sup></td><td>n</td><td>2<sup>n</sup></td><td>Activates one output</td></tr>
+    <tr><td>Comparator</td><td>2n</td><td>3</td><td>Compares two numbers</td></tr>
+  </table>
+
+  <h2>10. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Know how to implement any Boolean function using MUX or decoder + OR gates.</li>
+      <li>Ripple carry adder delay = 2n gate delays. CLA delay = O(log n).</li>
+      <li>A 1:2<sup>n</sup> DEMUX is equivalent to an n:2<sup>n</sup> decoder with enable.</li>
+      <li>Priority encoders handle simultaneous inputs; simple encoders do not.</li>
+      <li>For n-variable function: use 2<sup>n-1</sup>:1 MUX or n-to-2<sup>n</sup> decoder.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

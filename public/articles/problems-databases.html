@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Database Problem Solving - GATE Practice</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-family:monospace}
+pre{background:#263238;color:#eee;padding:15px;border-radius:6px;overflow-x:auto}
+</style>
+</head>
+<body>
+<article>
+<h1>Database Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>12 GATE-level database problems covering relational algebra, SQL, functional dependencies, normalization, B+ trees, transaction serializability, and concurrency control.</p>
+
+<h2>Problem 1: Relational Algebra Queries</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given relations:<br>
+<strong>Student</strong>(RollNo, Name, Dept), <strong>Enrollment</strong>(RollNo, CourseID, Grade), <strong>Course</strong>(CourseID, CourseName, Credits).<br>
+Write relational algebra for: (a) Names of students enrolled in "DBMS". (b) Students enrolled in all 3-credit courses.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> (a) Join + Select + Project. (b) Division operation.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a)</strong> Names of students enrolled in "DBMS":<br>
+1. Select DBMS course: &sigma;<sub>CourseName='DBMS'</sub>(Course)<br>
+2. Join with Enrollment: Enrollment &#10781; &sigma;<sub>CourseName='DBMS'</sub>(Course)<br>
+3. Join with Student and project Name:<br>
+<code>&pi;<sub>Name</sub>(Student &#10781; (Enrollment &#10781; &sigma;<sub>CourseName='DBMS'</sub>(Course)))</code><br><br>
+<strong>(b)</strong> Students enrolled in ALL 3-credit courses (division):<br>
+1. Get all 3-credit CourseIDs: T1 = &pi;<sub>CourseID</sub>(&sigma;<sub>Credits=3</sub>(Course))<br>
+2. Get (RollNo, CourseID) from Enrollment: T2 = &pi;<sub>RollNo, CourseID</sub>(Enrollment)<br>
+3. Division: T3 = T2 &div; T1<br>
+4. Get names: <code>&pi;<sub>Name</sub>(Student &#10781; (T2 &div; T1))</code>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Division (R &div; S) finds tuples in R that are associated with ALL tuples in S. It's equivalent to the "for all" quantifier. Division can be expressed as: &pi;<sub>A</sub>(R) - &pi;<sub>A</sub>((&pi;<sub>A</sub>(R) &times; S) - R).
+</div>
+
+<h2>Problem 2: SQL Queries</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Using the same schema. Write SQL for: (a) Find departments where average grade (numeric) > 8.0. (b) Find students who have enrolled in more than 3 courses. (c) Find courses with no enrollments.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> (a) GROUP BY + HAVING. (b) GROUP BY + HAVING COUNT. (c) LEFT JOIN or NOT IN/NOT EXISTS.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a)</strong>
+<pre>SELECT S.Dept, AVG(E.Grade) as AvgGrade
+FROM Student S JOIN Enrollment E ON S.RollNo = E.RollNo
+GROUP BY S.Dept
+HAVING AVG(E.Grade) > 8.0;</pre>
+<strong>(b)</strong>
+<pre>SELECT S.RollNo, S.Name
+FROM Student S JOIN Enrollment E ON S.RollNo = E.RollNo
+GROUP BY S.RollNo, S.Name
+HAVING COUNT(E.CourseID) > 3;</pre>
+<strong>(c) Three equivalent methods:</strong>
+<pre>-- Method 1: LEFT JOIN
+SELECT C.CourseID, C.CourseName
+FROM Course C LEFT JOIN Enrollment E ON C.CourseID = E.CourseID
+WHERE E.CourseID IS NULL;
+
+-- Method 2: NOT IN
+SELECT CourseID, CourseName FROM Course
+WHERE CourseID NOT IN (SELECT CourseID FROM Enrollment);
+
+-- Method 3: NOT EXISTS
+SELECT C.CourseID, C.CourseName FROM Course C
+WHERE NOT EXISTS (SELECT 1 FROM Enrollment E
+                  WHERE E.CourseID = C.CourseID);</pre>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> HAVING filters groups, WHERE filters rows before grouping. NOT EXISTS is generally preferred over NOT IN because NOT IN has unexpected behavior with NULLs (if subquery returns NULL, NOT IN returns no rows).
+</div>
+
+<h2>Problem 3: Finding Candidate Keys from FDs</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Relation R(A, B, C, D, E) with FDs: A &rarr; B, BC &rarr; D, D &rarr; E, E &rarr; A. Find all candidate keys.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Find attributes not on RHS (must be in every key). Compute closures starting from those. Check if they determine all attributes.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Attributes on RHS:</strong> B, D, E, A &rarr; all except C.<br>
+<strong>C is not on any RHS, so C must be in every candidate key.</strong><br><br>
+Try C alone: C<sup>+</sup> = {C}. Not a superkey.<br><br>
+Try CA: (CA)<sup>+</sup> = {C, A, B} (A&rarr;B) &rarr; {C, A, B, D} (BC&rarr;D) &rarr; {C, A, B, D, E} (D&rarr;E) = ABCDE. <strong>CA is a candidate key.</strong><br><br>
+Try CB: (CB)<sup>+</sup> = {C, B, D} (BC&rarr;D) &rarr; {C, B, D, E} (D&rarr;E) &rarr; {C, B, D, E, A} (E&rarr;A) = ABCDE. <strong>CB is a candidate key.</strong><br><br>
+Try CD: (CD)<sup>+</sup> = {C, D, E} (D&rarr;E) &rarr; {C, D, E, A} (E&rarr;A) &rarr; {C, D, E, A, B} (A&rarr;B) = ABCDE. <strong>CD is a candidate key.</strong><br><br>
+Try CE: (CE)<sup>+</sup> = {C, E, A} (E&rarr;A) &rarr; {C, E, A, B} (A&rarr;B) &rarr; {C, E, A, B, D} (BC&rarr;D) = ABCDE. <strong>CE is a candidate key.</strong><br><br>
+<strong>All candidate keys: {AC, BC, CD, CE}</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Attributes that appear only on LHS (never on RHS) must be in every key. Attributes that appear only on RHS are never in any key. Attributes on both sides may or may not be in keys -- compute closures to check. There can be multiple candidate keys.
+</div>
+
+<h2>Problem 4: Normalization to 3NF</h2>
+<div class="problem-box">
+<strong>Problem:</strong> R(A, B, C, D, E) with FDs: A &rarr; BC, C &rarr; D, D &rarr; E. Candidate key is A. Current form? Decompose into 3NF.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Check: 2NF (no partial dependency on key), 3NF (no transitive dependency). Decompose using the synthesis algorithm.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Key = {A}. All attributes are fully dependent on A (no partial dependency possible with single-attribute key).<br>
+<strong>R is in 2NF.</strong><br><br>
+But: A &rarr; C &rarr; D (transitive). Also A &rarr; D &rarr; E (transitive).<br>
+<strong>R is NOT in 3NF.</strong> (Non-prime attributes D and E are transitively dependent on key A.)<br><br>
+<strong>3NF Decomposition (Synthesis Algorithm):</strong><br>
+1. Minimal cover: {A &rarr; BC, C &rarr; D, D &rarr; E} (already minimal)<br>
+2. Create a relation for each FD:<br>
+&nbsp;&nbsp;R1(A, B, C) -- from A &rarr; BC<br>
+&nbsp;&nbsp;R2(C, D) -- from C &rarr; D<br>
+&nbsp;&nbsp;R3(D, E) -- from D &rarr; E<br>
+3. Check if any relation contains a candidate key of R. R1 contains A. Yes.<br><br>
+<strong>3NF decomposition: R1(A, B, C), R2(C, D), R3(D, E)</strong><br>
+This is lossless-join and dependency-preserving.
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> 3NF synthesis algorithm always gives lossless-join, dependency-preserving decomposition. BCNF decomposition may lose some FDs. If the question says "decompose into 3NF," use synthesis. If "BCNF," use the decomposition algorithm (may not preserve all FDs).
+</div>
+
+<h2>Problem 5: BCNF Decomposition</h2>
+<div class="problem-box">
+<strong>Problem:</strong> R(A, B, C, D) with FDs: AB &rarr; C, C &rarr; A, BC &rarr; D. Candidate keys? Is R in BCNF? If not, decompose.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Find candidate keys. BCNF: every non-trivial FD X&rarr;Y, X must be a superkey. If not, decompose on the violating FD.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Finding keys:</strong><br>
+B is not on any RHS &rarr; B must be in every key.<br>
+(AB)<sup>+</sup> = {A,B,C,D} (AB&rarr;C, BC&rarr;D). <strong>AB is a key.</strong><br>
+(BC)<sup>+</sup> = {B,C,A,D} (C&rarr;A, BC&rarr;D). <strong>BC is a key.</strong><br><br>
+<strong>BCNF check:</strong><br>
+- AB &rarr; C: AB is a superkey. OK.<br>
+- C &rarr; A: C is not a superkey (C<sup>+</sup> = {C, A} &ne; ABCD). <strong>BCNF violation!</strong><br>
+- BC &rarr; D: BC is a superkey. OK.<br><br>
+<strong>Decompose on C &rarr; A:</strong><br>
+R1(C, A) -- from the violating FD<br>
+R2(B, C, D) -- remaining attributes with C<br><br>
+Check R1(C, A): C &rarr; A, C is key. In BCNF.<br>
+Check R2(B, C, D): FD BC &rarr; D holds. BC is key. In BCNF.<br><br>
+<strong>BCNF decomposition: R1(C, A), R2(B, C, D)</strong><br><br>
+<strong>Dependency preservation?</strong> AB &rarr; C cannot be checked within R1 or R2 alone (A and B are in different relations). <strong>Not dependency-preserving!</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> BCNF decomposition is always lossless but may not preserve all FDs. 3NF is the highest normal form that guarantees both. In GATE, if asked "is the decomposition dependency-preserving?" check if the closure of FDs projected onto each sub-relation equals the original FD set.
+</div>
+
+<h2>Problem 6: B+ Tree Insertion</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Insert keys 5, 8, 1, 7, 3, 12, 9, 6 into a B+ tree of order 3 (max 2 keys per node, min 1). Show the tree after all insertions.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Order 3: each node holds max 2 keys. When full, split: middle key goes up. Leaf nodes linked for range queries.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Insert 5:</strong> [5]<br>
+<strong>Insert 8:</strong> [5, 8]<br>
+<strong>Insert 1:</strong> [1, 5, 8] -- overflow! Split at middle (5).<br>
+<div class="mermaid">
+graph TD
+    R5((5)) --> L1["[1]"]
+    R5 --> L2["[5, 8]"]
+</div>
+<strong>Insert 7:</strong> Goes to right leaf [5, 7, 8] -- overflow! Split at 7.<br>
+<div class="mermaid">
+graph TD
+    R57["[5, 7]"] --> L1["[1]"]
+    R57 --> L2["[5]"]
+    R57 --> L3["[7, 8]"]
+</div>
+Wait -- let me be more careful. In a B+ tree of order 3, internal nodes have max 2 keys and 3 children. Leaf nodes have max 2 keys.<br><br>
+<strong>Insert 7:</strong> Search: 7 > 5, go to [5, 8]. Insert: [5, 7, 8] overflow.<br>
+Split leaf: left = [5], right = [7, 8], push 7 up.<br>
+Root becomes [5, 7] with children [1], [5], [7, 8].<br><br>
+<strong>Insert 3:</strong> 3 < 5, go to [1]. Insert: [1, 3]. Fits.<br>
+<strong>Insert 12:</strong> 12 > 7, go to [7, 8]. Insert: [7, 8, 12] overflow.<br>
+Split: left = [7], right = [8, 12], push 8 up.<br>
+Root = [5, 7, 8] -- overflow in root!<br>
+Split root at 7: new root [7], left child [5], right child [8].<br>
+<div class="mermaid">
+graph TD
+    R7((7)) --> I5["[5]"]
+    R7 --> I8["[8]"]
+    I5 --> L1["[1,3]"]
+    I5 --> L2["[5]"]
+    I8 --> L3["[7]"]
+    I8 --> L4["[8,12]"]
+</div>
+<strong>Insert 9:</strong> 9 > 7, then > 8, go to [8, 12]. Insert: [8, 9, 12] overflow.<br>
+Split: [8], [9, 12], push 9 up. Internal [8, 9]. Fits.<br><br>
+<strong>Insert 6:</strong> 6 < 7, then > 5, go to [5]. Insert: [5, 6]. Fits.<br><br>
+<strong>Final tree:</strong>
+<div class="mermaid">
+graph TD
+    R7((7)) --> I5["[5]"]
+    R7 --> I89["[8, 9]"]
+    I5 --> L1["[1,3]"]
+    I5 --> L2["[5,6]"]
+    I89 --> L3["[7]"]
+    I89 --> L4["[8]"]
+    I89 --> L5["[9,12]"]
+</div>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> B+ tree of order p: internal nodes have max p-1 keys and p children, min &lceil;p/2&rceil; children. Leaf nodes have max p-1 keys, min &lceil;(p-1)/2&rceil; keys. All leaf nodes are at the same level. GATE often asks for the number of levels given n keys and order p.
+</div>
+
+<h2>Problem 7: Transaction Serializability</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given schedule S: R1(A), R2(A), W1(A), R1(B), W2(A), W1(B), R2(B), W2(B). Is S conflict-serializable? If yes, find the equivalent serial order.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Build a precedence graph. Find conflicting operations (same data item, at least one write, different transactions). Check for cycles.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Conflicting pairs:</strong><br>
+1. R2(A) before W1(A): T2 &rarr; T1 (R-W conflict on A)<br>
+2. W1(A) before W2(A): T1 &rarr; T2 (W-W conflict on A)<br>
+3. R1(A) before W2(A): T1 &rarr; T2 (R-W conflict on A)<br>
+4. W1(B) before R2(B): T1 &rarr; T2 (W-R conflict on B)<br>
+5. W1(B) before W2(B): T1 &rarr; T2 (W-W conflict on B)<br><br>
+<strong>Precedence graph:</strong><br>
+Edges: T2 &rarr; T1 (from conflict 1), T1 &rarr; T2 (from conflicts 2,3,4,5)<br><br>
+<div class="mermaid">
+graph LR
+    T1((T1)) -->|"W1(A) before W2(A)"| T2((T2))
+    T2 -->|"R2(A) before W1(A)"| T1
+</div>
+<strong>Cycle exists: T1 &rarr; T2 &rarr; T1</strong><br><br>
+<strong>Schedule S is NOT conflict-serializable.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> A schedule is conflict-serializable iff the precedence graph is acyclic. The topological sort of the graph gives the equivalent serial order. GATE often gives a schedule and asks you to draw the precedence graph and check for cycles.
+</div>
+
+<h2>Problem 8: Two-Phase Locking Analysis</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given operations of T1 and T2 with lock requests: T1: Lock-S(A), Read(A), Lock-X(B), Write(B), Unlock(A), Unlock(B). T2: Lock-S(B), Read(B), Lock-X(A), Write(A), Unlock(B), Unlock(A). Can these transactions deadlock? Does each follow 2PL?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> 2PL: locks only acquired before any release (growing phase before shrinking). Check if concurrent execution can lead to circular wait.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>2PL check for T1:</strong><br>
+Locks acquired: Lock-S(A), Lock-X(B). Then unlocks: Unlock(A), Unlock(B).<br>
+All locks before all unlocks. <strong>T1 follows 2PL.</strong><br><br>
+<strong>2PL check for T2:</strong><br>
+Locks acquired: Lock-S(B), Lock-X(A). Then unlocks: Unlock(B), Unlock(A).<br>
+All locks before all unlocks. <strong>T2 follows 2PL.</strong><br><br>
+<strong>Deadlock analysis:</strong><br>
+If interleaved: T1: Lock-S(A) [granted], T2: Lock-S(B) [granted]<br>
+T1: Lock-X(B) [blocked -- T2 holds S-lock on B]<br>
+T2: Lock-X(A) [blocked -- T1 holds S-lock on A]<br><br>
+<strong>Circular wait: T1 waits for T2 (on B), T2 waits for T1 (on A). DEADLOCK!</strong><br><br>
+2PL guarantees serializability but does NOT prevent deadlocks.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> 2PL prevents non-serializable schedules but allows deadlocks. Strict 2PL (hold all locks until commit) prevents cascading rollbacks. Rigorous 2PL additionally prevents deadlocks in some implementations. To prevent deadlock: use wait-die or wound-wait schemes, or timeout.
+</div>
+
+<h2>Problem 9: SQL Aggregation and Subqueries</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Table: Employee(EmpID, Name, Dept, Salary, MgrID). Write SQL to find: (a) Second highest salary, (b) Employees earning more than their department average, (c) Departments where all employees earn > 50000.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> (a) Subquery with MAX, or DENSE_RANK. (b) Correlated subquery. (c) NOT EXISTS with negation, or HAVING MIN.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) Second highest salary:</strong>
+<pre>-- Method 1: Subquery
+SELECT MAX(Salary) FROM Employee
+WHERE Salary < (SELECT MAX(Salary) FROM Employee);
+
+-- Method 2: DENSE_RANK
+SELECT Salary FROM (
+    SELECT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) as rnk
+    FROM Employee
+) t WHERE rnk = 2;</pre>
+<strong>(b) Employees earning more than department average:</strong>
+<pre>SELECT E.Name, E.Salary, E.Dept
+FROM Employee E
+WHERE E.Salary > (
+    SELECT AVG(E2.Salary)
+    FROM Employee E2
+    WHERE E2.Dept = E.Dept
+);</pre>
+<strong>(c) Departments where ALL employees earn > 50000:</strong>
+<pre>SELECT Dept FROM Employee
+GROUP BY Dept
+HAVING MIN(Salary) > 50000;</pre>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> "For all" conditions can be written as: HAVING MIN/MAX, NOT EXISTS with negation, or using COUNT matching. DENSE_RANK handles ties properly for "nth highest" questions. MAX-based approach fails when there are ties for the highest value.
+</div>
+
+<h2>Problem 10: Functional Dependency &mdash; Canonical Cover</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find the canonical (minimal) cover of: F = {A &rarr; BC, B &rarr; C, AB &rarr; D, D &rarr; B}.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> (1) Split RHS to singletons. (2) Remove extraneous attributes from LHS. (3) Remove redundant FDs.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Step 1: Split RHS:</strong><br>
+A &rarr; B, A &rarr; C, B &rarr; C, AB &rarr; D, D &rarr; B<br><br>
+<strong>Step 2: Remove extraneous LHS attributes:</strong><br>
+AB &rarr; D: Is B extraneous? Check if A &rarr; D under remaining FDs.<br>
+A<sup>+</sup> = {A, B, C} (using A&rarr;B, A&rarr;C). Does not include D.<br>
+But wait: A<sup>+</sup> = {A} &rarr; {A,B} (A&rarr;B) &rarr; {A,B,C} (A&rarr;C, B&rarr;C) -- still no D.<br>
+B is NOT extraneous.<br><br>
+Is A extraneous in AB&rarr;D? Check B<sup>+</sup> = {B, C}. No D. A is NOT extraneous.<br>
+AB &rarr; D stays.<br><br>
+<strong>Step 3: Remove redundant FDs:</strong><br>
+Check A &rarr; C: Without it, can we derive A &rarr; C? A<sup>+</sup> = {A, B} (A&rarr;B) &rarr; {A, B, C} (B&rarr;C). Yes! A &rarr; C is redundant via A &rarr; B &rarr; C.<br>
+<strong>Remove A &rarr; C.</strong><br><br>
+Remaining: A &rarr; B, B &rarr; C, AB &rarr; D, D &rarr; B<br><br>
+Check AB &rarr; D: Without it, A<sup>+</sup> (with A&rarr;B) = {A,B,C}. No D. Not redundant.<br><br>
+Check A &rarr; B: Without it, A<sup>+</sup> = {A}. Cannot get B. Not redundant.<br><br>
+<strong>Canonical cover: {A &rarr; B, B &rarr; C, AB &rarr; D, D &rarr; B}</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Canonical cover has: (1) Single attribute on RHS, (2) No extraneous LHS attributes, (3) No redundant FDs. The canonical cover is not unique if you remove redundant FDs in different orders. It's used in 3NF synthesis.
+</div>
+
+<h2>Problem 11: Recoverable and Cascadeless Schedules</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Schedule S: W1(A), R2(A), W2(B), Commit2, Commit1. Is S (a) recoverable? (b) cascadeless? (c) strict?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Recoverable: if Tj reads from Ti, Ti commits before Tj. Cascadeless: Tj reads A only after Ti (that wrote A) commits. Strict: no read or write of A until Ti commits.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+T2 reads A after T1 writes A (R2(A) after W1(A)), so T2 reads from T1.<br><br>
+<strong>(a) Recoverable?</strong><br>
+T2 reads from T1. T2 commits (Commit2) BEFORE T1 commits (Commit1).<br>
+If T1 aborts after T2 has committed, T2 used an invalid value. Cannot undo T2.<br>
+<strong>NOT recoverable.</strong><br><br>
+<strong>(b) Cascadeless?</strong><br>
+T2 reads A before T1 commits. <strong>NOT cascadeless.</strong> (Cascadeless requires T1 to commit before T2 reads A.)<br><br>
+<strong>(c) Strict?</strong><br>
+T2 reads A before T1 commits. <strong>NOT strict.</strong><br><br>
+<strong>Hierarchy: Strict &sub; Cascadeless &sub; Recoverable &sub; Serializable (in general).</strong><br>
+This schedule is NONE of the above.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> The schedule hierarchy: Serial &sub; Strict &sub; Cascadeless &sub; Recoverable. A non-recoverable schedule should never be allowed by a DBMS. Strict 2PL ensures strict schedules. In GATE, carefully track which transaction's write was read by which transaction.
+</div>
+
+<h2>Problem 12: Relational Algebra &mdash; Equivalence</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Show that &sigma;<sub>p&and;q</sub>(R) = &sigma;<sub>p</sub>(&sigma;<sub>q</sub>(R)). Also, is &pi;<sub>A</sub>(&sigma;<sub>p(B)</sub>(R)) = &sigma;<sub>p(B)</sub>(&pi;<sub>A</sub>(R)) always valid? When can selection be pushed below projection?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Selection is commutative and can be cascaded. Projection and selection can be swapped only if the selection condition involves only projected attributes.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Part 1: &sigma;<sub>p&and;q</sub>(R) = &sigma;<sub>p</sub>(&sigma;<sub>q</sub>(R))</strong><br>
+A tuple t is in &sigma;<sub>p&and;q</sub>(R) iff t satisfies both p and q.<br>
+&sigma;<sub>q</sub>(R) keeps tuples satisfying q. Then &sigma;<sub>p</sub> keeps those also satisfying p.<br>
+Both sides select tuples satisfying p AND q. <strong>They are equivalent.</strong><br><br>
+Also: &sigma;<sub>p</sub>(&sigma;<sub>q</sub>(R)) = &sigma;<sub>q</sub>(&sigma;<sub>p</sub>(R)) -- selection is commutative.<br><br>
+<strong>Part 2: &pi;<sub>A</sub>(&sigma;<sub>p(B)</sub>(R)) vs &sigma;<sub>p(B)</sub>(&pi;<sub>A</sub>(R))</strong><br>
+If B &notin; A, then &pi;<sub>A</sub>(R) does not contain attribute B. The condition p(B) cannot be evaluated.<br>
+<strong>NOT always valid.</strong><br><br>
+<strong>Valid only when the selection attributes are a subset of the projected attributes (B &subseteq; A).</strong><br><br>
+Example: R(X, Y, Z). &pi;<sub>X</sub>(&sigma;<sub>Y>5</sub>(R)) &ne; &sigma;<sub>Y>5</sub>(&pi;<sub>X</sub>(R)) because Y is not available after &pi;<sub>X</sub>.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Query optimization rules: (1) Push selections down (reduces intermediate result size). (2) Push projections down (reduces tuple width). (3) Selection before join is almost always better. These equivalence rules are the basis of query optimization and frequently appear in GATE.
+</div>
+
+</article>
+</body>
+</html>

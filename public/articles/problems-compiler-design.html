@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compiler Design Problem Solving - GATE Practice</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-family:monospace}
+pre{background:#263238;color:#eee;padding:15px;border-radius:6px;overflow-x:auto}
+</style>
+</head>
+<body>
+<article>
+<h1>Compiler Design Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>10 GATE-level compiler design problems covering FIRST/FOLLOW sets, LL(1) parsing tables, LR(0) items, operator precedence, three-address code, live variable analysis, common subexpression elimination, and syntax-directed translation.</p>
+
+<h2>Problem 1: FIRST and FOLLOW Sets</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Compute FIRST and FOLLOW sets for the grammar:<br>
+E &rarr; TE'<br>
+E' &rarr; +TE' | &epsilon;<br>
+T &rarr; FT'<br>
+T' &rarr; *FT' | &epsilon;<br>
+F &rarr; (E) | id
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> FIRST: for each non-terminal, find all terminals that can begin a string derived from it. FOLLOW: find terminals that can appear immediately after a non-terminal.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>FIRST sets:</strong><br>
+FIRST(F) = FIRST((E)) &cup; FIRST(id) = { (, id }<br>
+FIRST(T') = { *, &epsilon; }<br>
+FIRST(T) = FIRST(F) = { (, id }<br>
+FIRST(E') = { +, &epsilon; }<br>
+FIRST(E) = FIRST(T) = { (, id }<br><br>
+<table>
+<tr><th>Non-terminal</th><th>FIRST</th></tr>
+<tr><td>E</td><td>{ (, id }</td></tr>
+<tr><td>E'</td><td>{ +, &epsilon; }</td></tr>
+<tr><td>T</td><td>{ (, id }</td></tr>
+<tr><td>T'</td><td>{ *, &epsilon; }</td></tr>
+<tr><td>F</td><td>{ (, id }</td></tr>
+</table>
+
+<strong>FOLLOW sets:</strong><br>
+FOLLOW(E): E is start symbol, so $ &in; FOLLOW(E). Also E appears in (E), so ) &in; FOLLOW(E).<br>
+<strong>FOLLOW(E) = { ), $ }</strong><br><br>
+FOLLOW(E'): E' is at the end of E &rarr; TE', so FOLLOW(E') = FOLLOW(E) = { ), $ }.<br>
+<strong>FOLLOW(E') = { ), $ }</strong><br><br>
+FOLLOW(T): T is followed by E' in E &rarr; TE'. FIRST(E') = {+, &epsilon;}. So + &in; FOLLOW(T). Since &epsilon; &in; FIRST(E'), FOLLOW(E) &sub; FOLLOW(T). Also T appears in E' &rarr; +TE', same analysis.<br>
+<strong>FOLLOW(T) = { +, ), $ }</strong><br><br>
+FOLLOW(T'): T' is at end of T &rarr; FT'. FOLLOW(T') = FOLLOW(T).<br>
+<strong>FOLLOW(T') = { +, ), $ }</strong><br><br>
+FOLLOW(F): F is followed by T' in T &rarr; FT'. FIRST(T') = {*, &epsilon;}. So * &in; FOLLOW(F). Since &epsilon; &in; FIRST(T'), FOLLOW(T) &sub; FOLLOW(F).<br>
+<strong>FOLLOW(F) = { *, +, ), $ }</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> FIRST rules: (1) terminal a: FIRST(a)={a}. (2) A&rarr;&epsilon;: &epsilon; &in; FIRST(A). (3) A&rarr;B&alpha;: FIRST(B)-{&epsilon;} &sub; FIRST(A); if &epsilon; &in; FIRST(B), continue with &alpha;. FOLLOW rules: (1) Start symbol has $. (2) A&rarr;&alpha;B&beta;: FIRST(&beta;)-{&epsilon;} &sub; FOLLOW(B). (3) If &epsilon; &in; FIRST(&beta;) or &beta; is empty: FOLLOW(A) &sub; FOLLOW(B).
+</div>
+
+<h2>Problem 2: LL(1) Parsing Table</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Using the FIRST and FOLLOW sets from Problem 1, construct the LL(1) parsing table for the grammar. Verify that the grammar is LL(1).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> For each production A &rarr; &alpha;: for each terminal a in FIRST(&alpha;), add A &rarr; &alpha; to M[A, a]. If &epsilon; &in; FIRST(&alpha;), add A &rarr; &alpha; to M[A, b] for each b in FOLLOW(A).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th></th><th>id</th><th>+</th><th>*</th><th>(</th><th>)</th><th>$</th></tr>
+<tr><td>E</td><td>E&rarr;TE'</td><td></td><td></td><td>E&rarr;TE'</td><td></td><td></td></tr>
+<tr><td>E'</td><td></td><td>E'&rarr;+TE'</td><td></td><td></td><td>E'&rarr;&epsilon;</td><td>E'&rarr;&epsilon;</td></tr>
+<tr><td>T</td><td>T&rarr;FT'</td><td></td><td></td><td>T&rarr;FT'</td><td></td><td></td></tr>
+<tr><td>T'</td><td></td><td>T'&rarr;&epsilon;</td><td>T'&rarr;*FT'</td><td></td><td>T'&rarr;&epsilon;</td><td>T'&rarr;&epsilon;</td></tr>
+<tr><td>F</td><td>F&rarr;id</td><td></td><td></td><td>F&rarr;(E)</td><td></td><td></td></tr>
+</table>
+<strong>No cell has multiple entries. The grammar IS LL(1).</strong><br><br>
+<strong>Example parse of "id + id * id":</strong><br>
+<table>
+<tr><th>Stack</th><th>Input</th><th>Action</th></tr>
+<tr><td>$E</td><td>id+id*id$</td><td>E&rarr;TE'</td></tr>
+<tr><td>$E'T</td><td>id+id*id$</td><td>T&rarr;FT'</td></tr>
+<tr><td>$E'T'F</td><td>id+id*id$</td><td>F&rarr;id</td></tr>
+<tr><td>$E'T'id</td><td>id+id*id$</td><td>match id</td></tr>
+<tr><td>$E'T'</td><td>+id*id$</td><td>T'&rarr;&epsilon;</td></tr>
+<tr><td>$E'</td><td>+id*id$</td><td>E'&rarr;+TE'</td></tr>
+<tr><td>$E'T+</td><td>+id*id$</td><td>match +</td></tr>
+<tr><td>$E'T</td><td>id*id$</td><td>T&rarr;FT'</td></tr>
+<tr><td>$E'T'F</td><td>id*id$</td><td>F&rarr;id</td></tr>
+<tr><td>$E'T'id</td><td>id*id$</td><td>match id</td></tr>
+<tr><td>$E'T'</td><td>*id$</td><td>T'&rarr;*FT'</td></tr>
+<tr><td>$E'T'F*</td><td>*id$</td><td>match *</td></tr>
+<tr><td>$E'T'F</td><td>id$</td><td>F&rarr;id</td></tr>
+<tr><td>$E'T'id</td><td>id$</td><td>match id</td></tr>
+<tr><td>$E'T'</td><td>$</td><td>T'&rarr;&epsilon;</td></tr>
+<tr><td>$E'</td><td>$</td><td>E'&rarr;&epsilon;</td></tr>
+<tr><td>$</td><td>$</td><td>Accept</td></tr>
+</table>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> A grammar is LL(1) iff the parsing table has at most one entry per cell. Left recursion and common prefixes make a grammar non-LL(1). Eliminate left recursion and left-factor before building the table. This expression grammar is the standard LL(1) example.
+</div>
+
+<h2>Problem 3: LR(0) Items and DFA</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Construct LR(0) item sets for the grammar: S &rarr; AA, A &rarr; aA | b. Determine if the grammar is SLR(1).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Add augmented production S' &rarr; S. Compute closure and goto for each item set. Check for shift-reduce or reduce-reduce conflicts in SLR.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Augmented grammar: S' &rarr; S, S &rarr; AA, A &rarr; aA, A &rarr; b.<br><br>
+<strong>I0 = closure({S' &rarr; .S}):</strong><br>
+S' &rarr; .S<br>
+S &rarr; .AA<br>
+A &rarr; .aA<br>
+A &rarr; .b<br><br>
+
+<strong>I1 = goto(I0, S):</strong> S' &rarr; S.<br>
+<strong>I2 = goto(I0, A):</strong> S &rarr; A.A, A &rarr; .aA, A &rarr; .b<br>
+<strong>I3 = goto(I0, a):</strong> A &rarr; a.A, A &rarr; .aA, A &rarr; .b<br>
+<strong>I4 = goto(I0, b):</strong> A &rarr; b.<br>
+<strong>I5 = goto(I2, A):</strong> S &rarr; AA.<br>
+<strong>I6 = goto(I2, a):</strong> same as I3 (A &rarr; a.A, A &rarr; .aA, A &rarr; .b)<br>
+<strong>I7 = goto(I2, b):</strong> same as I4 (A &rarr; b.)<br>
+<strong>I8 = goto(I3, A):</strong> A &rarr; aA.<br>
+<strong>I9 = goto(I3, a):</strong> same as I3<br>
+<strong>I10 = goto(I3, b):</strong> same as I4<br><br>
+
+So the distinct states are I0-I5, I8 (with I6=I3, I7=I4, I9=I3, I10=I4).<br>
+States: I0, I1, I2, I3, I4, I5, I8. Total = <strong>7 states</strong>.<br><br>
+
+<strong>SLR check:</strong><br>
+FOLLOW(S') = {$}, FOLLOW(S) = {$}, FOLLOW(A) = {a, b, $}<br>
+I1: S' &rarr; S. Reduce on $. No shift. No conflict.<br>
+I4: A &rarr; b. Reduce on FOLLOW(A) = {a, b, $}. No shift. No conflict.<br>
+I5: S &rarr; AA. Reduce on FOLLOW(S) = {$}. No shift. No conflict.<br>
+I8: A &rarr; aA. Reduce on FOLLOW(A) = {a, b, $}. No shift. No conflict.<br><br>
+<strong>No conflicts. The grammar IS SLR(1).</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> SLR uses FOLLOW sets for reduce actions. CLR uses exact lookahead (more precise). LALR merges CLR states with same core. Power: LR(0) &sub; SLR(1) &sub; LALR(1) &sub; CLR(1). GATE most often asks for SLR parsing table construction.
+</div>
+
+<h2>Problem 4: Operator Precedence Parsing</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given operators with precedence (* > + > id) and the operator precedence table below, parse the expression "id + id * id" using shift-reduce with operator precedence relations.
+<table>
+<tr><th></th><th>id</th><th>+</th><th>*</th><th>$</th></tr>
+<tr><td>id</td><td></td><td>&gt;</td><td>&gt;</td><td>&gt;</td></tr>
+<tr><td>+</td><td>&lt;</td><td>&gt;</td><td>&lt;</td><td>&gt;</td></tr>
+<tr><td>*</td><td>&lt;</td><td>&gt;</td><td>&gt;</td><td>&gt;</td></tr>
+<tr><td>$</td><td>&lt;</td><td>&lt;</td><td>&lt;</td><td></td></tr>
+</table>
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Compare top stack terminal with input. &lt;: shift. &gt;: reduce (find handle between last &lt; and current &gt;). =: shift (for matching brackets).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Stack</th><th>Relation</th><th>Input</th><th>Action</th></tr>
+<tr><td>$</td><td>&lt;</td><td>id+id*id$</td><td>Shift id</td></tr>
+<tr><td>$id</td><td>&gt;</td><td>+id*id$</td><td>Reduce id to E</td></tr>
+<tr><td>$E</td><td>&lt;</td><td>+id*id$</td><td>Shift +</td></tr>
+<tr><td>$E+</td><td>&lt;</td><td>id*id$</td><td>Shift id</td></tr>
+<tr><td>$E+id</td><td>&gt;</td><td>*id$</td><td>Reduce id to E</td></tr>
+<tr><td>$E+E</td><td>&lt;</td><td>*id$</td><td>Shift * (+ &lt; *)</td></tr>
+<tr><td>$E+E*</td><td>&lt;</td><td>id$</td><td>Shift id</td></tr>
+<tr><td>$E+E*id</td><td>&gt;</td><td>$</td><td>Reduce id to E</td></tr>
+<tr><td>$E+E*E</td><td>&gt;</td><td>$</td><td>Reduce E*E to E</td></tr>
+<tr><td>$E+E</td><td>&gt;</td><td>$</td><td>Reduce E+E to E</td></tr>
+<tr><td>$E</td><td></td><td>$</td><td>Accept</td></tr>
+</table>
+<strong>Parse successful. * binds tighter than + as expected.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Operator precedence parsing works only for operator grammars (no two adjacent non-terminals, no &epsilon; productions). The precedence relations encode associativity and precedence: higher precedence operator gets &lt; before and &gt; after. Left-associative: same level gets &gt;.
+</div>
+
+<h2>Problem 5: Three-Address Code Generation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Generate three-address code for: <code>a = b + c * d - e / f + g</code>. Also show the quadruple and triple representations.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Respect operator precedence: * and / first, then + and - left to right. Generate temporaries for each sub-expression.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Expression tree (respecting precedence):<br>
+a = ((b + (c * d)) - (e / f)) + g<br><br>
+<strong>Three-address code:</strong>
+<pre>t1 = c * d
+t2 = b + t1
+t3 = e / f
+t4 = t2 - t3
+t5 = t4 + g
+a = t5</pre>
+<strong>Quadruple representation:</strong>
+<table>
+<tr><th>#</th><th>Op</th><th>Arg1</th><th>Arg2</th><th>Result</th></tr>
+<tr><td>0</td><td>*</td><td>c</td><td>d</td><td>t1</td></tr>
+<tr><td>1</td><td>+</td><td>b</td><td>t1</td><td>t2</td></tr>
+<tr><td>2</td><td>/</td><td>e</td><td>f</td><td>t3</td></tr>
+<tr><td>3</td><td>-</td><td>t2</td><td>t3</td><td>t4</td></tr>
+<tr><td>4</td><td>+</td><td>t4</td><td>g</td><td>t5</td></tr>
+<tr><td>5</td><td>=</td><td>t5</td><td></td><td>a</td></tr>
+</table>
+<strong>Triple representation:</strong>
+<table>
+<tr><th>#</th><th>Op</th><th>Arg1</th><th>Arg2</th></tr>
+<tr><td>0</td><td>*</td><td>c</td><td>d</td></tr>
+<tr><td>1</td><td>+</td><td>b</td><td>(0)</td></tr>
+<tr><td>2</td><td>/</td><td>e</td><td>f</td></tr>
+<tr><td>3</td><td>-</td><td>(1)</td><td>(2)</td></tr>
+<tr><td>4</td><td>+</td><td>(3)</td><td>g</td></tr>
+<tr><td>5</td><td>=</td><td>a</td><td>(4)</td></tr>
+</table>
+(Numbers in parentheses refer to the result of that triple.)
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Quadruples use explicit temporary names (easy to reorder). Triples use position references (no extra names but reordering requires updating references). Indirect triples add an indirection table to allow reordering while keeping triple format.
+</div>
+
+<h2>Problem 6: Live Variable Analysis</h2>
+<div class="problem-box">
+<strong>Problem:</strong> For the following basic block, compute the live variables at each program point:
+<pre>1: a = b + c
+2: d = a * e
+3: f = d + b
+4: a = f - c
+5: g = a + d</pre>
+Assume g is live at exit.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Work backwards. A variable is live if it is used before being redefined. At each point: LIVE_before = (LIVE_after - DEF) &cup; USE.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Work from bottom to top.<br><br>
+<strong>After line 5:</strong> LIVE = {g} (g is live at exit)<br>
+<strong>Line 5: g = a + d</strong> DEF={g}, USE={a,d}.<br>
+Before 5: ({g} - {g}) &cup; {a,d} = <strong>{a, d}</strong><br><br>
+<strong>Line 4: a = f - c</strong> DEF={a}, USE={f,c}.<br>
+Before 4: ({a,d} - {a}) &cup; {f,c} = <strong>{d, f, c}</strong><br><br>
+<strong>Line 3: f = d + b</strong> DEF={f}, USE={d,b}.<br>
+Before 3: ({d,f,c} - {f}) &cup; {d,b} = <strong>{d, c, b}</strong><br><br>
+<strong>Line 2: d = a * e</strong> DEF={d}, USE={a,e}.<br>
+Before 2: ({d,c,b} - {d}) &cup; {a,e} = <strong>{c, b, a, e}</strong><br><br>
+<strong>Line 1: a = b + c</strong> DEF={a}, USE={b,c}.<br>
+Before 1: ({c,b,a,e} - {a}) &cup; {b,c} = <strong>{b, c, e}</strong><br><br>
+<table>
+<tr><th>Point</th><th>Live Variables</th></tr>
+<tr><td>Entry</td><td>{b, c, e}</td></tr>
+<tr><td>After line 1</td><td>{a, b, c, e}</td></tr>
+<tr><td>After line 2</td><td>{b, c, d}</td></tr>
+<tr><td>After line 3</td><td>{c, d, f}</td></tr>
+<tr><td>After line 4</td><td>{a, d}</td></tr>
+<tr><td>After line 5 (exit)</td><td>{g}</td></tr>
+</table>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Live variable analysis is a backward data flow analysis. It tells us which variables need to be kept in registers. A variable that is defined but not live afterward is a dead assignment and can be eliminated. This is crucial for register allocation and dead code elimination.
+</div>
+
+<h2>Problem 7: Common Subexpression Elimination</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Optimize the following code using common subexpression elimination (CSE):
+<pre>t1 = a + b
+t2 = c * d
+t3 = a + b
+t4 = t2 + t3
+t5 = c * d
+t6 = t1 + t5</pre>
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Identify expressions computed more than once with the same operand values. Replace duplicates with the previously computed result.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Identify common subexpressions:</strong><br>
+- t3 = a + b: same as t1 (a and b not modified between lines 1 and 3)<br>
+- t5 = c * d: same as t2 (c and d not modified between lines 2 and 5)<br><br>
+<strong>Optimized code:</strong>
+<pre>t1 = a + b
+t2 = c * d
+t3 = t1         (reuse t1 instead of recomputing a+b)
+t4 = t2 + t3
+t5 = t2         (reuse t2 instead of recomputing c*d)
+t6 = t1 + t5</pre>
+<strong>Further simplification (copy propagation):</strong>
+<pre>t1 = a + b
+t2 = c * d
+t4 = t2 + t1    (substitute t3=t1)
+t6 = t1 + t2    (substitute t5=t2)</pre>
+<strong>Eliminated 2 additions/multiplications. If t3 and t5 are dead, their assignments are also removed.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> CSE requires that operands are not modified between the original and duplicate computation. Use a DAG (Directed Acyclic Graph) to systematically detect common subexpressions. In GATE, DAG-based optimization questions are common.
+</div>
+
+<h2>Problem 8: Syntax-Directed Translation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given the SDT for a desk calculator:<br>
+E &rarr; E<sub>1</sub> + T { E.val = E<sub>1</sub>.val + T.val }<br>
+E &rarr; T { E.val = T.val }<br>
+T &rarr; T<sub>1</sub> * F { T.val = T<sub>1</sub>.val * F.val }<br>
+T &rarr; F { T.val = F.val }<br>
+F &rarr; (E) { F.val = E.val }<br>
+F &rarr; num { F.val = num.lexval }<br>
+Evaluate "3 + 4 * 2" using this SDT.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Build parse tree bottom-up, evaluate attributes (synthesized) at each node.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Parse tree for "3 + 4 * 2":<br>
+E &rarr; E + T &rarr; T + T &rarr; F + T &rarr; 3 + T<br>
+T &rarr; T * F &rarr; F * F &rarr; 4 * F &rarr; 4 * 2<br><br>
+<strong>Bottom-up evaluation:</strong><br>
+1. F.val = 3 (from num.lexval)<br>
+2. T.val = F.val = 3 (T &rarr; F)<br>
+3. E<sub>1</sub>.val = T.val = 3 (E &rarr; T)<br>
+4. F.val = 4 (from num.lexval)<br>
+5. T<sub>1</sub>.val = F.val = 4 (T &rarr; F)<br>
+6. F.val = 2 (from num.lexval)<br>
+7. T.val = T<sub>1</sub>.val * F.val = 4 * 2 = 8 (T &rarr; T*F)<br>
+8. E.val = E<sub>1</sub>.val + T.val = 3 + 8 = <strong>11</strong> (E &rarr; E+T)<br><br>
+<strong>Result: E.val = 11</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> S-attributed SDTs (only synthesized attributes) can be evaluated bottom-up during LR parsing. L-attributed SDTs (inherited attributes flow left-to-right) can be evaluated during LL parsing. GATE often asks you to evaluate an SDT for a given input string.
+</div>
+
+<h2>Problem 9: SLR Parsing Table and Parse</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Construct the SLR(1) parsing table for: S &rarr; CC, C &rarr; cC | d. Then parse the input "cdd".
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Build LR(0) item sets (from Problem 3 pattern), compute FOLLOW for reduce actions, fill the ACTION and GOTO table.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Using the item sets from Problem 3 (same grammar pattern with a&rarr;c, b&rarr;d):<br>
+I0: S'&rarr;.S, S&rarr;.CC, C&rarr;.cC, C&rarr;.d<br>
+I1: S'&rarr;S.<br>
+I2: S&rarr;C.C, C&rarr;.cC, C&rarr;.d<br>
+I3: C&rarr;c.C, C&rarr;.cC, C&rarr;.d<br>
+I4: C&rarr;d.<br>
+I5: S&rarr;CC.<br>
+I8: C&rarr;cC.<br><br>
+
+FOLLOW(S) = {$}, FOLLOW(C) = {c, d, $}<br><br>
+<strong>SLR Parsing Table:</strong>
+<table>
+<tr><th>State</th><th>c</th><th>d</th><th>$</th><th>S</th><th>C</th></tr>
+<tr><td>0</td><td>s3</td><td>s4</td><td></td><td>1</td><td>2</td></tr>
+<tr><td>1</td><td></td><td></td><td>accept</td><td></td><td></td></tr>
+<tr><td>2</td><td>s3</td><td>s4</td><td></td><td></td><td>5</td></tr>
+<tr><td>3</td><td>s3</td><td>s4</td><td></td><td></td><td>8</td></tr>
+<tr><td>4</td><td>r3</td><td>r3</td><td>r3</td><td></td><td></td></tr>
+<tr><td>5</td><td></td><td></td><td>r1</td><td></td><td></td></tr>
+<tr><td>8</td><td>r2</td><td>r2</td><td>r2</td><td></td><td></td></tr>
+</table>
+(r1: S&rarr;CC, r2: C&rarr;cC, r3: C&rarr;d)<br><br>
+<strong>Parse "cdd":</strong>
+<table>
+<tr><th>Stack</th><th>Input</th><th>Action</th></tr>
+<tr><td>0</td><td>cdd$</td><td>s3</td></tr>
+<tr><td>0 3</td><td>dd$</td><td>s4</td></tr>
+<tr><td>0 3 4</td><td>d$</td><td>r3 (C&rarr;d)</td></tr>
+<tr><td>0 3 8</td><td>d$</td><td>r2 (C&rarr;cC)</td></tr>
+<tr><td>0 2</td><td>d$</td><td>s4</td></tr>
+<tr><td>0 2 4</td><td>$</td><td>r3 (C&rarr;d)</td></tr>
+<tr><td>0 2 5</td><td>$</td><td>r1 (S&rarr;CC)</td></tr>
+<tr><td>0 1</td><td>$</td><td>accept</td></tr>
+</table>
+<strong>"cdd" is accepted.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> In SLR parsing: shift puts state on stack, reduce pops |RHS| states, then push goto[new_top, LHS]. Reduce actions go in FOLLOW columns. This is the most commonly tested parsing technique in GATE.
+</div>
+
+<h2>Problem 10: DAG for Basic Block Optimization</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Construct a DAG for the following basic block and identify the optimized code:
+<pre>a = b + c
+d = a - e
+f = b + c
+g = d * f</pre>
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Build DAG node by node. Before creating a new node, check if an identical expression exists. Reuse existing nodes.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Line 1: a = b + c</strong><br>
+Create leaf nodes for b and c. Create + node. Label it 'a'.<br><br>
+<strong>Line 2: d = a - e</strong><br>
+Node 'a' exists (the + node). Create leaf for e. Create - node. Label it 'd'.<br><br>
+<strong>Line 3: f = b + c</strong><br>
+Check: b + c already exists (line 1's node). <strong>Common subexpression!</strong><br>
+Add label 'f' to the existing + node. f and a point to the same node.<br><br>
+<strong>Line 4: g = d * f</strong><br>
+d and f both exist as nodes. Create * node. Label it 'g'.<br><br>
+<strong>DAG has 6 nodes: b, c, e, (b+c)[a,f], (a-e)[d], (d*f)[g]</strong><br><br>
+<strong>Optimized code from DAG:</strong>
+<pre>a = b + c
+d = a - e
+f = a          (copy, or simply use 'a' wherever 'f' was used)
+g = d * a      (since f = a)</pre>
+<strong>Or with copy propagation:</strong>
+<pre>a = b + c
+d = a - e
+g = d * a</pre>
+<strong>Saved one addition operation.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> DAG construction: (1) check if node for variable exists, (2) check if identical expression node exists. Labels on nodes indicate all variables holding that value. DAGs identify common subexpressions, dead code, and enable algebraic simplifications. GATE may ask you to draw the DAG and count the nodes.
+</div>
+
+</article>
+</body>
+</html>

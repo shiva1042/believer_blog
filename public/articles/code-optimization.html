@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Optimization and Data Flow Analysis — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fce4ec; color: #c62828; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Code Optimization and Data Flow Analysis</h1>
+  <p class="article-section-tag">🔧 Section 7: Compiler Design</p>
+
+  <h2>1. Overview of Code Optimization</h2>
+  <p>Code optimization transforms intermediate or target code to improve performance (execution time, memory usage) while preserving the program's semantics. Optimization never changes what the program computes — only how efficiently it computes it.</p>
+
+  <h3>Optimization Pipeline</h3>
+  <div class="mermaid">
+flowchart LR
+    A["Intermediate Code"] --> B["Local Optimization<br>(Within Basic Blocks)"]
+    B --> C["Global Optimization<br>(Across Basic Blocks)"]
+    C --> D["Loop Optimization"]
+    D --> E["Machine-Dependent<br>Optimization"]
+    E --> F["Optimized Target Code"]
+    style A fill:#ff9800,color:#fff
+    style F fill:#4caf50,color:#fff
+  </div>
+
+  <h3>Levels of Optimization</h3>
+  <table>
+    <tr><th>Level</th><th>Scope</th><th>Examples</th></tr>
+    <tr><td><strong>Local</strong></td><td>Within a single basic block</td><td>Constant folding, algebraic simplification</td></tr>
+    <tr><td><strong>Global (Intraprocedural)</strong></td><td>Across basic blocks within a function</td><td>Common subexpression elimination, dead code removal</td></tr>
+    <tr><td><strong>Interprocedural</strong></td><td>Across function boundaries</td><td>Inline expansion, interprocedural constant propagation</td></tr>
+  </table>
+
+  <h2>2. Basic Blocks and Control Flow Graphs</h2>
+  <p>A <strong>basic block</strong> is a maximal sequence of consecutive instructions with:</p>
+  <ul>
+    <li>One entry point (no instruction within is a target of a jump, except the first).</li>
+    <li>One exit point (no instruction within is a jump, except possibly the last).</li>
+  </ul>
+
+  <h3>Constructing Basic Blocks</h3>
+  <ol>
+    <li>Identify <strong>leaders</strong>: first instruction, target of any jump, instruction following a jump.</li>
+    <li>Each leader starts a basic block that continues until the next leader.</li>
+  </ol>
+
+  <pre>
+Example:
+  (1) i = 1               --&gt; Block B1 (leader: first instruction)
+  (2) if i &gt; n goto (8)
+  (3) t1 = a[i]           --&gt; Block B2 (leader: target after conditional)
+  (4) t2 = t1 * t1
+  (5) sum = sum + t2
+  (6) i = i + 1
+  (7) goto (2)
+  (8) ...                  --&gt; Block B3 (leader: target of goto)
+  </pre>
+
+  <p>A <strong>Control Flow Graph (CFG)</strong> has basic blocks as nodes and edges representing possible flow of control between blocks.</p>
+
+  <h2>3. Local Optimization Techniques</h2>
+
+  <h3>3.1 Constant Folding</h3>
+  <p>Evaluate constant expressions at compile time rather than at runtime.</p>
+  <pre>
+Before:  x = 2 + 3          After:  x = 5
+Before:  y = x * 0          After:  y = 0
+Before:  z = x * 1          After:  z = x
+  </pre>
+
+  <h3>3.2 Constant Propagation</h3>
+  <p>If a variable has a known constant value at a program point, replace uses of that variable with the constant.</p>
+  <pre>
+Before:                  After:
+  x = 5                   x = 5
+  y = x + 3               y = 5 + 3    (then fold to y = 8)
+  z = x * y               z = 5 * 8    (then fold to z = 40)
+  </pre>
+
+  <h3>3.3 Strength Reduction</h3>
+  <p>Replace expensive operations with cheaper equivalent ones.</p>
+  <table>
+    <tr><th>Before</th><th>After</th><th>Savings</th></tr>
+    <tr><td>x = y * 2</td><td>x = y + y (or x = y &lt;&lt; 1)</td><td>Multiply to add/shift</td></tr>
+    <tr><td>x = y * 8</td><td>x = y &lt;&lt; 3</td><td>Multiply to shift</td></tr>
+    <tr><td>x = y / 4</td><td>x = y &gt;&gt; 2</td><td>Divide to shift</td></tr>
+    <tr><td>x = y ** 2</td><td>x = y * y</td><td>Exponent to multiply</td></tr>
+  </table>
+
+  <h3>3.4 Dead Code Elimination</h3>
+  <p>Remove code whose results are never used (dead definitions).</p>
+  <pre>
+Before:                  After:
+  x = a + b               (removed — x never used)
+  y = c * d               y = c * d
+  z = y + 1               z = y + 1
+  </pre>
+
+  <h3>3.5 Algebraic Simplification and Identity</h3>
+  <table>
+    <tr><th>Pattern</th><th>Simplification</th></tr>
+    <tr><td>x + 0</td><td>x</td></tr>
+    <tr><td>x * 1</td><td>x</td></tr>
+    <tr><td>x * 0</td><td>0</td></tr>
+    <tr><td>x - x</td><td>0</td></tr>
+    <tr><td>x / x</td><td>1 (if x != 0)</td></tr>
+    <tr><td>x ** 1</td><td>x</td></tr>
+  </table>
+
+  <h3>3.6 Copy Propagation</h3>
+  <p>After a copy statement <code>x = y</code>, replace subsequent uses of x with y (if x is not redefined).</p>
+  <pre>
+Before:                  After:
+  x = y                   x = y           (may be eliminated as dead code)
+  z = x + 1               z = y + 1
+  </pre>
+
+  <h2>4. Common Subexpression Elimination (CSE)</h2>
+  <p>If an expression E has been previously computed and the values of its operands have not changed, reuse the stored result instead of recomputing E.</p>
+
+  <pre>
+Before:                  After:
+  t1 = a + b               t1 = a + b
+  t2 = a + b               t2 = t1        (reuse)
+  t3 = t1 * t2             t3 = t1 * t1
+  </pre>
+
+  <h3>Local CSE</h3>
+  <p>Within a single basic block, use a DAG (Directed Acyclic Graph) representation. Nodes represent operations; shared subexpressions share nodes.</p>
+
+  <h3>Global CSE</h3>
+  <p>Across basic blocks, use <strong>available expressions analysis</strong> (a data flow analysis) to determine which expressions are available at each point.</p>
+
+  <h2>5. Data Flow Analysis Framework</h2>
+  <p>Data flow analysis computes information about the flow of data through a program's CFG. It propagates facts along edges using transfer functions.</p>
+
+  <h3>General Framework</h3>
+  <table>
+    <tr><th>Component</th><th>Description</th></tr>
+    <tr><td>Domain</td><td>Set of possible data flow values (e.g., sets of expressions, variables)</td></tr>
+    <tr><td>Direction</td><td>Forward (entry to exit) or backward (exit to entry)</td></tr>
+    <tr><td>Transfer Function</td><td>How a basic block transforms data flow values: OUT[B] = f(IN[B])</td></tr>
+    <tr><td>Meet Operator</td><td>How to combine values at confluence points (union or intersection)</td></tr>
+    <tr><td>Boundary Condition</td><td>Initial value at entry (forward) or exit (backward) of CFG</td></tr>
+  </table>
+
+  <h3>Iterative Algorithm</h3>
+  <pre>
+Initialize all blocks
+repeat:
+  for each block B:
+    IN[B] = meet of OUT[predecessors of B]     (forward analysis)
+    OUT[B] = transfer_function(IN[B])
+until no changes occur (fixed point reached)
+  </pre>
+
+  <h2>6. Common Data Flow Analyses</h2>
+
+  <h3>6.1 Reaching Definitions</h3>
+  <p>A definition d: x = ... <strong>reaches</strong> a point p if there is a path from d to p on which x is not redefined.</p>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Direction</td><td>Forward</td></tr>
+    <tr><td>Domain</td><td>Sets of definitions</td></tr>
+    <tr><td>Meet operator</td><td>Union (any path)</td></tr>
+    <tr><td>Transfer function</td><td>OUT[B] = GEN[B] union (IN[B] - KILL[B])</td></tr>
+    <tr><td>Initialization</td><td>OUT[entry] = empty set</td></tr>
+  </table>
+
+  <h3>6.2 Available Expressions</h3>
+  <p>An expression e is <strong>available</strong> at a point p if on every path from entry to p, e has been computed and none of its operands has been redefined since.</p>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Direction</td><td>Forward</td></tr>
+    <tr><td>Domain</td><td>Sets of expressions</td></tr>
+    <tr><td>Meet operator</td><td>Intersection (all paths)</td></tr>
+    <tr><td>Transfer function</td><td>OUT[B] = GEN[B] union (IN[B] - KILL[B])</td></tr>
+    <tr><td>Initialization</td><td>OUT[entry] = empty set; others = universal set</td></tr>
+  </table>
+
+  <h3>6.3 Live Variable Analysis</h3>
+  <p>A variable v is <strong>live</strong> at a point p if there exists a path from p to a use of v along which v is not redefined.</p>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Direction</td><td><strong>Backward</strong></td></tr>
+    <tr><td>Domain</td><td>Sets of variables</td></tr>
+    <tr><td>Meet operator</td><td>Union</td></tr>
+    <tr><td>Transfer function</td><td>IN[B] = USE[B] union (OUT[B] - DEF[B])</td></tr>
+    <tr><td>Initialization</td><td>IN[exit] = empty set</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Applications of Liveness:</strong> Dead code elimination (if a variable is not live after its definition, the definition is dead), register allocation (live variables need registers; non-live variables do not).
+  </div>
+
+  <h3>6.4 Use-Def and Def-Use Chains</h3>
+  <ul>
+    <li><strong>Use-Def Chain (ud-chain):</strong> For each use of a variable, links to all definitions that may reach that use.</li>
+    <li><strong>Def-Use Chain (du-chain):</strong> For each definition of a variable, links to all uses that it may reach.</li>
+  </ul>
+  <p>These chains are built from reaching definitions analysis and are fundamental to many optimizations.</p>
+
+  <h2>7. Loop Optimizations</h2>
+
+  <h3>7.1 Loop-Invariant Code Motion</h3>
+  <p>Move computations whose values do not change within the loop to before the loop.</p>
+  <pre>
+Before:                    After:
+  while (i &lt; n) {           t = n * 2;
+    x = n * 2;              while (i &lt; n) {
+    a[i] = x + i;             a[i] = t + i;
+    i++;                       i++;
+  }                          }
+  </pre>
+
+  <h3>7.2 Induction Variable Elimination</h3>
+  <p>Replace induction variables (variables that change by a constant amount each iteration) with simpler forms.</p>
+  <pre>
+Before:                    After:
+  j = 0;                     t = &amp;a[0];
+  while (j &lt; n) {           while (t &lt; &amp;a[n]) {
+    a[j] = 0;                 *t = 0;
+    j++;                       t += sizeof(a[0]);
+  }                          }
+  </pre>
+
+  <h3>7.3 Loop Unrolling</h3>
+  <p>Replicate the loop body multiple times to reduce loop overhead (fewer comparisons and branches).</p>
+
+  <h2>8. Summary of Data Flow Analyses</h2>
+  <table>
+    <tr><th>Analysis</th><th>Direction</th><th>Meet Op</th><th>Used For</th></tr>
+    <tr><td>Reaching Definitions</td><td>Forward</td><td>Union</td><td>Use-def chains, constant propagation</td></tr>
+    <tr><td>Available Expressions</td><td>Forward</td><td>Intersection</td><td>Common subexpression elimination</td></tr>
+    <tr><td>Live Variables</td><td>Backward</td><td>Union</td><td>Dead code elimination, register allocation</td></tr>
+    <tr><td>Very Busy Expressions</td><td>Backward</td><td>Intersection</td><td>Code hoisting</td></tr>
+  </table>
+
+  <h2>9. Key GATE Takeaways</h2>
+  <ul>
+    <li>Optimization preserves program semantics while improving efficiency.</li>
+    <li>Constant folding evaluates compile-time constants. Constant propagation replaces variables with known values.</li>
+    <li>Dead code elimination removes definitions whose values are never used (requires liveness analysis).</li>
+    <li>Common subexpression elimination avoids redundant computation (requires available expressions).</li>
+    <li>Data flow analysis uses iterative fixed-point algorithms on the CFG.</li>
+    <li>Reaching definitions is forward/union; available expressions is forward/intersection; live variables is backward/union.</li>
+    <li>Loop optimizations (code motion, induction variable elimination) provide the largest speedups in practice.</li>
+    <li>Know how to compute GEN, KILL, IN, and OUT sets for basic blocks.</li>
+  </ul>
+</article>
+</body>
+</html>

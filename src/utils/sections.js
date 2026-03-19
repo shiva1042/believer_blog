@@ -1,0 +1,18 @@
+export const SECTIONS = [
+  'GATE Essentials',
+  'General Aptitude',
+  'Engineering Mathematics',
+  'Digital Logic',
+  'Computer Organization',
+  'Data Structures',
+  'Algorithms',
+  'Theory of Computation',
+  'Compiler Design',
+  'Operating System',
+  'Databases',
+  'Computer Networks',
+  'Artificial Intelligence',
+  'Quick Revision',
+  'Test Series',
+  'Problem Solving',
+]

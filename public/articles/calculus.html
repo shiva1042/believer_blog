@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculus | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+    .mermaid { text-align: center; margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Calculus</h1>
+  <p class="article-section-tag">Section 1: Engineering Mathematics</p>
+
+  <h2>1. Limits</h2>
+  <p>The <strong>limit</strong> of f(x) as x approaches a is L, written lim<sub>x&rarr;a</sub> f(x) = L, if f(x) can be made arbitrarily close to L by taking x sufficiently close to a (but not equal to a).</p>
+
+  <h3>1.1 Important Limits</h3>
+  <table>
+    <tr><th>Limit</th><th>Value</th></tr>
+    <tr><td>lim<sub>x&rarr;0</sub> sin(x)/x</td><td>1</td></tr>
+    <tr><td>lim<sub>x&rarr;0</sub> (1 - cos(x))/x<sup>2</sup></td><td>1/2</td></tr>
+    <tr><td>lim<sub>x&rarr;0</sub> (e<sup>x</sup> - 1)/x</td><td>1</td></tr>
+    <tr><td>lim<sub>x&rarr;0</sub> ln(1 + x)/x</td><td>1</td></tr>
+    <tr><td>lim<sub>x&rarr;&infin;</sub> (1 + 1/x)<sup>x</sup></td><td>e</td></tr>
+    <tr><td>lim<sub>x&rarr;0</sub> (1 + x)<sup>1/x</sup></td><td>e</td></tr>
+    <tr><td>lim<sub>x&rarr;0</sub> (a<sup>x</sup> - 1)/x</td><td>ln(a)</td></tr>
+    <tr><td>lim<sub>x&rarr;&infin;</sub> x<sup>n</sup>/e<sup>x</sup></td><td>0 (for any n)</td></tr>
+    <tr><td>lim<sub>x&rarr;&infin;</sub> ln(x)/x<sup>n</sup></td><td>0 (for any n > 0)</td></tr>
+  </table>
+
+  <h3>1.2 L'Hopital's Rule</h3>
+  <p>If lim<sub>x&rarr;a</sub> f(x)/g(x) gives the indeterminate form 0/0 or &infin;/&infin;, then:</p>
+  <div class="formula">
+    lim<sub>x&rarr;a</sub> f(x)/g(x) = lim<sub>x&rarr;a</sub> f'(x)/g'(x) (provided the right-hand limit exists)
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> lim<sub>x&rarr;0</sub> (e<sup>x</sup> - 1 - x) / x<sup>2</sup><br>
+    This is 0/0. Apply L'Hopital: lim<sub>x&rarr;0</sub> (e<sup>x</sup> - 1) / 2x &mdash; still 0/0.<br>
+    Apply again: lim<sub>x&rarr;0</sub> e<sup>x</sup> / 2 = <strong>1/2</strong>
+  </div>
+
+  <h3>1.3 Squeeze Theorem</h3>
+  <p>If g(x) &le; f(x) &le; h(x) near a, and lim<sub>x&rarr;a</sub> g(x) = lim<sub>x&rarr;a</sub> h(x) = L, then lim<sub>x&rarr;a</sub> f(x) = L.</p>
+
+  <h2>2. Continuity and Differentiability</h2>
+
+  <h3>2.1 Continuity</h3>
+  <p>f(x) is continuous at x = a if: (1) f(a) is defined, (2) lim<sub>x&rarr;a</sub> f(x) exists, (3) lim<sub>x&rarr;a</sub> f(x) = f(a).</p>
+
+  <h3>2.2 Differentiability</h3>
+  <div class="formula">
+    f'(a) = lim<sub>h&rarr;0</sub> [f(a + h) - f(a)] / h
+  </div>
+
+  <table>
+    <tr><th>Statement</th><th>True/False</th></tr>
+    <tr><td>Differentiable implies continuous</td><td>True (always)</td></tr>
+    <tr><td>Continuous implies differentiable</td><td>False (e.g., f(x) = |x| at x = 0)</td></tr>
+    <tr><td>Discontinuous implies not differentiable</td><td>True (contrapositive of above)</td></tr>
+  </table>
+
+  <h3>2.3 Standard Derivatives</h3>
+  <table>
+    <tr><th>f(x)</th><th>f'(x)</th></tr>
+    <tr><td>x<sup>n</sup></td><td>nx<sup>n-1</sup></td></tr>
+    <tr><td>e<sup>x</sup></td><td>e<sup>x</sup></td></tr>
+    <tr><td>a<sup>x</sup></td><td>a<sup>x</sup> ln(a)</td></tr>
+    <tr><td>ln(x)</td><td>1/x</td></tr>
+    <tr><td>sin(x)</td><td>cos(x)</td></tr>
+    <tr><td>cos(x)</td><td>-sin(x)</td></tr>
+    <tr><td>tan(x)</td><td>sec<sup>2</sup>(x)</td></tr>
+  </table>
+
+  <h2>3. Mean Value Theorems</h2>
+
+  <h3>3.1 Rolle's Theorem</h3>
+  <p>If f is continuous on [a, b], differentiable on (a, b), and f(a) = f(b), then there exists c &isin; (a, b) such that f'(c) = 0.</p>
+
+  <h3>3.2 Lagrange's Mean Value Theorem (MVT)</h3>
+  <div class="formula">
+    If f is continuous on [a, b] and differentiable on (a, b), then there exists c in (a, b) such that:<br>
+    f'(c) = [f(b) - f(a)] / (b - a)
+  </div>
+  <p>Rolle's theorem is a special case of MVT where f(a) = f(b).</p>
+
+  <h3>3.3 Cauchy's Mean Value Theorem</h3>
+  <div class="formula">
+    If f and g are continuous on [a, b], differentiable on (a, b), and g'(x) &ne; 0 on (a, b), then:<br>
+    f'(c) / g'(c) = [f(b) - f(a)] / [g(b) - g(a)] for some c in (a, b)
+  </div>
+  <p>Lagrange's MVT is a special case with g(x) = x.</p>
+
+  <div class="example">
+    <strong>Example:</strong> Verify MVT for f(x) = x<sup>2</sup> on [1, 3].<br>
+    f(1) = 1, f(3) = 9. [f(3) - f(1)]/(3 - 1) = 8/2 = 4.<br>
+    f'(x) = 2x. Setting f'(c) = 4: 2c = 4 &rArr; c = 2.<br>
+    Since c = 2 &isin; (1, 3), MVT is verified.
+  </div>
+
+  <h2>4. Maxima and Minima</h2>
+
+  <h3>4.1 Flowchart for Finding Maxima/Minima</h3>
+  <div class="mermaid">
+graph TD
+    A["Given f(x)"] --> B["Find f'(x)"]
+    B --> C["Solve f'(x) = 0<br/>to find critical points"]
+    C --> D["Find f''(x)"]
+    D --> E{"Evaluate f''(c)<br/>at each critical point c"}
+    E -- "f''(c) < 0" --> F["Local Maximum at c"]
+    E -- "f''(c) > 0" --> G["Local Minimum at c"]
+    E -- "f''(c) = 0" --> H["Test inconclusive:<br/>Use first derivative test<br/>or higher derivatives"]
+    H --> I{"Check sign change of f'(x)<br/>around c"}
+    I -- "+ to -" --> F
+    I -- "- to +" --> G
+    I -- "No sign change" --> J["Inflection Point<br/>(neither max nor min)"]
+  </div>
+
+  <h3>4.2 First Derivative Test</h3>
+  <table>
+    <tr><th>Sign of f'(x) before c</th><th>Sign of f'(x) after c</th><th>Conclusion</th></tr>
+    <tr><td>+</td><td>-</td><td>Local maximum</td></tr>
+    <tr><td>-</td><td>+</td><td>Local minimum</td></tr>
+    <tr><td>+</td><td>+</td><td>Neither (increasing through c)</td></tr>
+    <tr><td>-</td><td>-</td><td>Neither (decreasing through c)</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Example:</strong> Find extrema of f(x) = x<sup>3</sup> - 3x + 2.<br>
+    f'(x) = 3x<sup>2</sup> - 3 = 3(x-1)(x+1) = 0 &rArr; x = &plusmn;1<br>
+    f''(x) = 6x<br>
+    f''(1) = 6 > 0 &rArr; local minimum at x = 1, f(1) = 0<br>
+    f''(-1) = -6 < 0 &rArr; local maximum at x = -1, f(-1) = 4
+  </div>
+
+  <h2>5. Integration</h2>
+
+  <h3>5.1 Indefinite Integrals (Standard Forms)</h3>
+  <table>
+    <tr><th>Function</th><th>Integral</th></tr>
+    <tr><td>x<sup>n</sup> (n &ne; -1)</td><td>x<sup>n+1</sup>/(n+1) + C</td></tr>
+    <tr><td>1/x</td><td>ln|x| + C</td></tr>
+    <tr><td>e<sup>x</sup></td><td>e<sup>x</sup> + C</td></tr>
+    <tr><td>a<sup>x</sup></td><td>a<sup>x</sup>/ln(a) + C</td></tr>
+    <tr><td>sin(x)</td><td>-cos(x) + C</td></tr>
+    <tr><td>cos(x)</td><td>sin(x) + C</td></tr>
+    <tr><td>sec<sup>2</sup>(x)</td><td>tan(x) + C</td></tr>
+    <tr><td>1/(1 + x<sup>2</sup>)</td><td>arctan(x) + C</td></tr>
+    <tr><td>1/sqrt(1 - x<sup>2</sup>)</td><td>arcsin(x) + C</td></tr>
+  </table>
+
+  <h3>5.2 Techniques of Integration</h3>
+
+  <h4>Substitution (u-substitution)</h4>
+  <div class="formula">
+    &int; f(g(x)) g'(x) dx = &int; f(u) du where u = g(x)
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> &int; 2x &middot; e<sup>x&sup2;</sup> dx<br>
+    Let u = x<sup>2</sup>, du = 2x dx<br>
+    = &int; e<sup>u</sup> du = e<sup>u</sup> + C = e<sup>x&sup2;</sup> + C
+  </div>
+
+  <h4>Integration by Parts</h4>
+  <div class="formula">
+    &int; u dv = uv - &int; v du
+  </div>
+  <p><strong>LIATE rule</strong> for choosing u (in priority order): Logarithmic, Inverse trig, Algebraic, Trigonometric, Exponential.</p>
+
+  <div class="example">
+    <strong>Example:</strong> &int; x e<sup>x</sup> dx<br>
+    Let u = x, dv = e<sup>x</sup> dx &rArr; du = dx, v = e<sup>x</sup><br>
+    = xe<sup>x</sup> - &int; e<sup>x</sup> dx = xe<sup>x</sup> - e<sup>x</sup> + C = e<sup>x</sup>(x - 1) + C
+  </div>
+
+  <h3>5.3 Definite Integrals</h3>
+  <div class="formula">
+    &int;<sub>a</sub><sup>b</sup> f(x) dx = F(b) - F(a) where F'(x) = f(x) (Fundamental Theorem of Calculus)
+  </div>
+
+  <h3>5.4 Properties of Definite Integrals</h3>
+  <table>
+    <tr><th>Property</th><th>Formula</th></tr>
+    <tr><td>Linearity</td><td>&int;<sub>a</sub><sup>b</sup> [f + g] = &int;<sub>a</sub><sup>b</sup> f + &int;<sub>a</sub><sup>b</sup> g</td></tr>
+    <tr><td>Reversal</td><td>&int;<sub>a</sub><sup>b</sup> f = -&int;<sub>b</sub><sup>a</sup> f</td></tr>
+    <tr><td>Splitting</td><td>&int;<sub>a</sub><sup>b</sup> f = &int;<sub>a</sub><sup>c</sup> f + &int;<sub>c</sub><sup>b</sup> f</td></tr>
+    <tr><td>Even function on [-a, a]</td><td>2 &int;<sub>0</sub><sup>a</sup> f(x) dx</td></tr>
+    <tr><td>Odd function on [-a, a]</td><td>0</td></tr>
+    <tr><td>King's rule</td><td>&int;<sub>a</sub><sup>b</sup> f(x) dx = &int;<sub>a</sub><sup>b</sup> f(a + b - x) dx</td></tr>
+  </table>
+
+  <h2>6. Taylor and Maclaurin Series</h2>
+  <div class="formula">
+    Taylor series of f(x) about x = a:<br>
+    f(x) = f(a) + f'(a)(x-a) + f''(a)(x-a)<sup>2</sup>/2! + f'''(a)(x-a)<sup>3</sup>/3! + ...
+  </div>
+
+  <h3>6.1 Common Maclaurin Series (a = 0)</h3>
+  <table>
+    <tr><th>Function</th><th>Series</th></tr>
+    <tr><td>e<sup>x</sup></td><td>1 + x + x<sup>2</sup>/2! + x<sup>3</sup>/3! + ...</td></tr>
+    <tr><td>sin(x)</td><td>x - x<sup>3</sup>/3! + x<sup>5</sup>/5! - ...</td></tr>
+    <tr><td>cos(x)</td><td>1 - x<sup>2</sup>/2! + x<sup>4</sup>/4! - ...</td></tr>
+    <tr><td>ln(1+x)</td><td>x - x<sup>2</sup>/2 + x<sup>3</sup>/3 - ... (|x| &le; 1)</td></tr>
+    <tr><td>1/(1-x)</td><td>1 + x + x<sup>2</sup> + x<sup>3</sup> + ... (|x| < 1)</td></tr>
+    <tr><td>(1+x)<sup>n</sup></td><td>1 + nx + n(n-1)x<sup>2</sup>/2! + ... (Binomial)</td></tr>
+  </table>
+
+  <h2>7. Key GATE Takeaways</h2>
+  <ul>
+    <li>Memorize standard limits, especially sin(x)/x and (e<sup>x</sup> - 1)/x.</li>
+    <li>L'Hopital's rule: only for 0/0 or &infin;/&infin; forms. Check the form before applying.</li>
+    <li>Differentiable &rArr; Continuous, but not the converse. Know counterexamples.</li>
+    <li>MVT and Rolle's theorem: check hypotheses (continuity and differentiability).</li>
+    <li>For maxima/minima: second derivative test is fastest; use first derivative test when f'' = 0.</li>
+    <li>Integration by parts with LIATE ordering. Know reduction formulas.</li>
+    <li>Taylor series are useful for evaluating limits and approximations.</li>
+    <li>For definite integrals, exploit symmetry (even/odd functions) to simplify.</li>
+  </ul>
+
+</article>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Formulas Cheat Sheet — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Formulas Cheat Sheet</h1>
+  <p class="article-section-tag">📋 GATE Essentials</p>
+  <p>This is the one-stop formula reference for GATE CS. Every important formula organized by section.</p>
+
+  <h2>1. Discrete Mathematics</h2>
+
+  <h3>1.1 Combinatorics</h3>
+  <table>
+    <tr><th>Formula</th><th>Expression</th><th>Notes</th></tr>
+    <tr><td>Permutations</td><td>P(n, r) = n! / (n-r)!</td><td>Order matters</td></tr>
+    <tr><td>Combinations</td><td>C(n, r) = n! / [r!(n-r)!]</td><td>Order does not matter</td></tr>
+    <tr><td>With repetition (permutation)</td><td>n^r</td><td>r selections from n items, repetition allowed</td></tr>
+    <tr><td>With repetition (combination)</td><td>C(n+r-1, r)</td><td>Stars and bars</td></tr>
+    <tr><td>Derangements</td><td>D(n) = n! [1 - 1/1! + 1/2! - ... + (-1)^n/n!]</td><td>No element in original position</td></tr>
+    <tr><td>Pigeonhole Principle</td><td>If n items in m boxes, at least one box has ceil(n/m) items</td><td>Useful for existence proofs</td></tr>
+    <tr><td>Inclusion-Exclusion</td><td>|A &cup; B| = |A| + |B| - |A &cap; B|</td><td>Extends to 3+ sets</td></tr>
+    <tr><td>Catalan Number</td><td>C_n = C(2n, n) / (n+1)</td><td>Binary trees, balanced parentheses</td></tr>
+  </table>
+
+  <h3>1.2 Graph Theory</h3>
+  <table>
+    <tr><th>Result</th><th>Formula / Statement</th></tr>
+    <tr><td>Handshaking Lemma</td><td>Sum of degrees = 2 * |E|</td></tr>
+    <tr><td>Trees</td><td>|E| = |V| - 1 for a tree</td></tr>
+    <tr><td>Complete Graph K_n</td><td>Edges = n(n-1)/2</td></tr>
+    <tr><td>Chromatic number of K_n</td><td>chi(K_n) = n</td></tr>
+    <tr><td>Planar graph (Euler)</td><td>V - E + F = 2</td></tr>
+    <tr><td>Planar graph bound</td><td>E &le; 3V - 6 (for V &ge; 3)</td></tr>
+    <tr><td>Bipartite planar</td><td>E &le; 2V - 4</td></tr>
+    <tr><td>Number of spanning trees (K_n)</td><td>n^(n-2) (Cayley's formula)</td></tr>
+    <tr><td>Euler circuit exists</td><td>Connected + all vertices even degree</td></tr>
+    <tr><td>Euler path exists</td><td>Connected + exactly 2 odd-degree vertices</td></tr>
+  </table>
+
+  <h2>2. Probability &amp; Statistics</h2>
+
+  <h3>2.1 Basic Formulas</h3>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>Bayes' Theorem</td><td>P(A|B) = P(B|A) * P(A) / P(B)</td></tr>
+    <tr><td>Total Probability</td><td>P(B) = &Sigma; P(B|A_i) * P(A_i)</td></tr>
+    <tr><td>Conditional Probability</td><td>P(A|B) = P(A &cap; B) / P(B)</td></tr>
+    <tr><td>Independence</td><td>P(A &cap; B) = P(A) * P(B)</td></tr>
+    <tr><td>Expected Value</td><td>E[X] = &Sigma; x_i * P(x_i)</td></tr>
+    <tr><td>Variance</td><td>Var(X) = E[X^2] - (E[X])^2</td></tr>
+  </table>
+
+  <h3>2.2 Distribution Formulas</h3>
+  <table>
+    <tr><th>Distribution</th><th>PMF / PDF</th><th>Mean</th><th>Variance</th></tr>
+    <tr><td>Binomial(n, p)</td><td>C(n,k) p^k (1-p)^(n-k)</td><td>np</td><td>np(1-p)</td></tr>
+    <tr><td>Poisson(&lambda;)</td><td>e^(-&lambda;) &lambda;^k / k!</td><td>&lambda;</td><td>&lambda;</td></tr>
+    <tr><td>Geometric(p)</td><td>p(1-p)^(k-1)</td><td>1/p</td><td>(1-p)/p^2</td></tr>
+    <tr><td>Uniform(a, b)</td><td>1/(b-a)</td><td>(a+b)/2</td><td>(b-a)^2/12</td></tr>
+    <tr><td>Exponential(&lambda;)</td><td>&lambda; e^(-&lambda;x)</td><td>1/&lambda;</td><td>1/&lambda;^2</td></tr>
+    <tr><td>Normal(&mu;, &sigma;^2)</td><td>(1/&sigma;&radic;2&pi;) e^(-(x-&mu;)^2 / 2&sigma;^2)</td><td>&mu;</td><td>&sigma;^2</td></tr>
+  </table>
+
+  <h2>3. Data Structures — Time Complexities</h2>
+
+  <h3>3.1 Basic Data Structures</h3>
+  <table>
+    <tr><th>Data Structure</th><th>Access</th><th>Search</th><th>Insertion</th><th>Deletion</th></tr>
+    <tr><td>Array</td><td>O(1)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>Linked List</td><td>O(n)</td><td>O(n)</td><td>O(1)*</td><td>O(1)*</td></tr>
+    <tr><td>Stack</td><td>O(n)</td><td>O(n)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Queue</td><td>O(n)</td><td>O(n)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Hash Table (avg)</td><td>N/A</td><td>O(1)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Hash Table (worst)</td><td>N/A</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+  </table>
+  <p class="note">* Linked list insertion/deletion is O(1) if position is known; O(n) if you need to search first.</p>
+
+  <h3>3.2 Tree Data Structures</h3>
+  <table>
+    <tr><th>Data Structure</th><th>Search</th><th>Insert</th><th>Delete</th><th>Space</th></tr>
+    <tr><td>BST (avg)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>BST (worst)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>AVL Tree</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Red-Black Tree</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>B-Tree (order m)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Min/Max Heap</td><td>O(n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Trie</td><td>O(L)</td><td>O(L)</td><td>O(L)</td><td>O(ALPHABET * L * n)</td></tr>
+  </table>
+
+  <h2>4. Algorithms</h2>
+
+  <h3>4.1 Master Theorem</h3>
+  <p>For recurrences of the form: <code>T(n) = aT(n/b) + O(n^c)</code></p>
+  <table>
+    <tr><th>Case</th><th>Condition</th><th>Result</th></tr>
+    <tr><td>Case 1</td><td>c &lt; log_b(a)</td><td>T(n) = O(n^(log_b a))</td></tr>
+    <tr><td>Case 2</td><td>c = log_b(a)</td><td>T(n) = O(n^c log n)</td></tr>
+    <tr><td>Case 3</td><td>c &gt; log_b(a)</td><td>T(n) = O(n^c)</td></tr>
+  </table>
+
+  <h3>4.2 Sorting Algorithm Complexities</h3>
+  <table>
+    <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable</th></tr>
+    <tr><td>Bubble Sort</td><td>O(n)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>Yes</td></tr>
+    <tr><td>Selection Sort</td><td>O(n^2)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>No</td></tr>
+    <tr><td>Insertion Sort</td><td>O(n)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>Yes</td></tr>
+    <tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>Yes</td></tr>
+    <tr><td>Quick Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n^2)</td><td>O(log n)</td><td>No</td></tr>
+    <tr><td>Heap Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td>No</td></tr>
+    <tr><td>Counting Sort</td><td>O(n+k)</td><td>O(n+k)</td><td>O(n+k)</td><td>O(k)</td><td>Yes</td></tr>
+    <tr><td>Radix Sort</td><td>O(nk)</td><td>O(nk)</td><td>O(nk)</td><td>O(n+k)</td><td>Yes</td></tr>
+  </table>
+
+  <h3>4.3 Graph Algorithm Complexities</h3>
+  <table>
+    <tr><th>Algorithm</th><th>Time Complexity</th><th>Space</th><th>Notes</th></tr>
+    <tr><td>BFS</td><td>O(V + E)</td><td>O(V)</td><td>Adjacency list</td></tr>
+    <tr><td>DFS</td><td>O(V + E)</td><td>O(V)</td><td>Adjacency list</td></tr>
+    <tr><td>Dijkstra (min-heap)</td><td>O((V+E) log V)</td><td>O(V)</td><td>Non-negative weights</td></tr>
+    <tr><td>Bellman-Ford</td><td>O(VE)</td><td>O(V)</td><td>Handles negative weights</td></tr>
+    <tr><td>Floyd-Warshall</td><td>O(V^3)</td><td>O(V^2)</td><td>All-pairs shortest path</td></tr>
+    <tr><td>Prim's (min-heap)</td><td>O((V+E) log V)</td><td>O(V)</td><td>MST</td></tr>
+    <tr><td>Kruskal's</td><td>O(E log E)</td><td>O(V)</td><td>MST, uses Union-Find</td></tr>
+    <tr><td>Topological Sort</td><td>O(V + E)</td><td>O(V)</td><td>DAG only</td></tr>
+  </table>
+
+  <h2>5. Operating Systems</h2>
+
+  <h3>5.1 Memory Management</h3>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>Page Fault Rate</td><td>Page Faults / Total Memory Accesses</td></tr>
+    <tr><td>Effective Access Time (EAT)</td><td>(1 - p) * memory_access_time + p * page_fault_time</td></tr>
+    <tr><td>AMAT (Avg Memory Access Time)</td><td>Hit_time + Miss_rate * Miss_penalty</td></tr>
+    <tr><td>Number of pages</td><td>Virtual Address Space / Page Size</td></tr>
+    <tr><td>Page table entries</td><td>2^(virtual address bits - page offset bits)</td></tr>
+    <tr><td>Page offset bits</td><td>log2(Page Size)</td></tr>
+    <tr><td>TLB EAT</td><td>h*(TLB_time + mem_time) + (1-h)*(TLB_time + 2*mem_time)</td></tr>
+  </table>
+
+  <h3>5.2 Disk Scheduling</h3>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>Disk Access Time</td><td>Seek Time + Rotational Latency + Transfer Time</td></tr>
+    <tr><td>Average Rotational Latency</td><td>1 / (2 * RPM / 60) seconds</td></tr>
+    <tr><td>Transfer Time</td><td>Data Size / Transfer Rate</td></tr>
+  </table>
+
+  <h3>5.3 CPU Scheduling</h3>
+  <table>
+    <tr><th>Metric</th><th>Formula</th></tr>
+    <tr><td>Turnaround Time</td><td>Completion Time - Arrival Time</td></tr>
+    <tr><td>Waiting Time</td><td>Turnaround Time - Burst Time</td></tr>
+    <tr><td>Response Time</td><td>First Response Time - Arrival Time</td></tr>
+    <tr><td>Throughput</td><td>Number of processes / Total time</td></tr>
+  </table>
+
+  <h2>6. Computer Networks</h2>
+
+  <h3>6.1 Performance Formulas</h3>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>Throughput</td><td>Data Size / Total Time</td></tr>
+    <tr><td>Propagation Delay</td><td>Distance / Propagation Speed</td></tr>
+    <tr><td>Transmission Delay</td><td>Packet Size / Bandwidth</td></tr>
+    <tr><td>Total Delay</td><td>Propagation + Transmission + Queuing + Processing</td></tr>
+    <tr><td>Bandwidth-Delay Product</td><td>Bandwidth * RTT</td></tr>
+    <tr><td>Utilization (Stop-and-Wait)</td><td>T_trans / (T_trans + 2 * T_prop)</td></tr>
+    <tr><td>Utilization (Sliding Window)</td><td>min(1, W * T_trans / (T_trans + 2 * T_prop))</td></tr>
+    <tr><td>Efficiency</td><td>1 / (1 + 2a) where a = T_prop / T_trans</td></tr>
+  </table>
+
+  <h3>6.2 Subnetting Formulas</h3>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>Number of subnets</td><td>2^(subnet bits)</td></tr>
+    <tr><td>Hosts per subnet</td><td>2^(host bits) - 2</td></tr>
+    <tr><td>Subnet mask</td><td>First n bits = 1, remaining = 0</td></tr>
+    <tr><td>Network address</td><td>IP AND Subnet Mask</td></tr>
+    <tr><td>Broadcast address</td><td>Network address OR (NOT Subnet Mask)</td></tr>
+    <tr><td>CIDR: /n notation</td><td>n = number of network bits</td></tr>
+  </table>
+
+  <h2>7. Digital Logic</h2>
+
+  <h3>7.1 Boolean Algebra Laws</h3>
+  <table>
+    <tr><th>Law</th><th>AND Form</th><th>OR Form</th></tr>
+    <tr><td>Identity</td><td>A &middot; 1 = A</td><td>A + 0 = A</td></tr>
+    <tr><td>Null</td><td>A &middot; 0 = 0</td><td>A + 1 = 1</td></tr>
+    <tr><td>Complement</td><td>A &middot; A' = 0</td><td>A + A' = 1</td></tr>
+    <tr><td>Idempotent</td><td>A &middot; A = A</td><td>A + A = A</td></tr>
+    <tr><td>De Morgan's</td><td>(AB)' = A' + B'</td><td>(A+B)' = A' &middot; B'</td></tr>
+    <tr><td>Absorption</td><td>A(A+B) = A</td><td>A + AB = A</td></tr>
+    <tr><td>Consensus</td><td>AB + A'C + BC = AB + A'C</td><td>(A+B)(A'+C)(B+C) = (A+B)(A'+C)</td></tr>
+  </table>
+
+  <h3>7.2 Number System Conversions</h3>
+  <table>
+    <tr><th>Representation</th><th>Range (n bits)</th></tr>
+    <tr><td>Unsigned</td><td>0 to 2^n - 1</td></tr>
+    <tr><td>Sign-magnitude</td><td>-(2^(n-1) - 1) to +(2^(n-1) - 1)</td></tr>
+    <tr><td>1's complement</td><td>-(2^(n-1) - 1) to +(2^(n-1) - 1)</td></tr>
+    <tr><td>2's complement</td><td>-2^(n-1) to +(2^(n-1) - 1)</td></tr>
+    <tr><td>IEEE 754 Single</td><td>1 sign + 8 exponent + 23 mantissa</td></tr>
+    <tr><td>IEEE 754 Double</td><td>1 sign + 11 exponent + 52 mantissa</td></tr>
+  </table>
+
+  <h2>8. Computer Organization</h2>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>Pipeline Speedup</td><td>n * k / (k + n - 1) stages, n instructions</td></tr>
+    <tr><td>Pipeline Throughput</td><td>n / [(k + n - 1) * cycle_time]</td></tr>
+    <tr><td>CPI (Cycles Per Instruction)</td><td>&Sigma; (CPI_i * Freq_i)</td></tr>
+    <tr><td>CPU Time</td><td>Instruction Count * CPI * Cycle Time</td></tr>
+    <tr><td>MIPS</td><td>Clock Rate / (CPI * 10^6)</td></tr>
+    <tr><td>Cache Hit Rate</td><td>Hits / Total Accesses</td></tr>
+    <tr><td>Cache AMAT</td><td>L1_hit_time + L1_miss_rate * (L2_hit_time + L2_miss_rate * Memory_time)</td></tr>
+    <tr><td>Speedup (Amdahl's Law)</td><td>1 / [(1-f) + f/S] where f = fraction improved, S = speedup of fraction</td></tr>
+  </table>
+
+  <h2>9. Theory of Computation</h2>
+  <table>
+    <tr><th>Result</th><th>Formula / Rule</th></tr>
+    <tr><td>Min states DFA (complement)</td><td>Same as original DFA</td></tr>
+    <tr><td>NFA to DFA max states</td><td>2^n (n = NFA states)</td></tr>
+    <tr><td>Pumping length</td><td>= number of states in DFA</td></tr>
+    <tr><td>Chomsky Normal Form</td><td>A &rarr; BC or A &rarr; a</td></tr>
+    <tr><td>CYK parsing time</td><td>O(n^3 * |G|)</td></tr>
+  </table>
+
+  <h2>10. Compiler Design</h2>
+  <table>
+    <tr><th>Concept</th><th>Formula / Rule</th></tr>
+    <tr><td>FIRST set rule</td><td>If A &rarr; a&alpha;, then a is in FIRST(A)</td></tr>
+    <tr><td>FOLLOW set rule</td><td>If A &rarr; &alpha;B&beta;, FIRST(&beta;) - {&epsilon;} &sube; FOLLOW(B)</td></tr>
+    <tr><td>LL(1) condition</td><td>For A &rarr; &alpha; | &beta;: FIRST(&alpha;) &cap; FIRST(&beta;) = &empty;</td></tr>
+    <tr><td>SLR parse table size</td><td>States * (Terminals + Non-terminals)</td></tr>
+    <tr><td>LR(0) items</td><td>Productions with dot at each position</td></tr>
+  </table>
+
+  <div class="important"><strong>Print this page!</strong> Keep this cheat sheet handy during your revision. Review it every night before sleeping during the last month of preparation.</div>
+
+</article>
+</body>
+</html>

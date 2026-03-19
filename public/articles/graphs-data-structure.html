@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graphs as Data Structure — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Graphs as Data Structure</h1>
+  <p class="article-section-tag">💻 Section 4: Programming and Data Structures</p>
+
+  <h2>1. Introduction</h2>
+  <p>A graph G = (V, E) consists of a set of vertices V and a set of edges E. Graphs model relationships between objects and are fundamental to computer science algorithms.</p>
+
+  <h3>1.1 Graph Terminology</h3>
+  <table>
+    <tr><th>Term</th><th>Definition</th></tr>
+    <tr><td>Vertex (Node)</td><td>A fundamental unit/entity in the graph</td></tr>
+    <tr><td>Edge</td><td>A connection between two vertices</td></tr>
+    <tr><td>Directed Graph (Digraph)</td><td>Edges have direction (u -> v)</td></tr>
+    <tr><td>Undirected Graph</td><td>Edges have no direction (u -- v)</td></tr>
+    <tr><td>Weighted Graph</td><td>Edges have associated weights/costs</td></tr>
+    <tr><td>Degree</td><td>Number of edges incident on a vertex</td></tr>
+    <tr><td>In-degree</td><td>Number of incoming edges (directed graph)</td></tr>
+    <tr><td>Out-degree</td><td>Number of outgoing edges (directed graph)</td></tr>
+    <tr><td>Path</td><td>Sequence of vertices connected by edges</td></tr>
+    <tr><td>Cycle</td><td>Path that starts and ends at the same vertex</td></tr>
+    <tr><td>Connected</td><td>Path exists between every pair of vertices</td></tr>
+    <tr><td>DAG</td><td>Directed Acyclic Graph</td></tr>
+  </table>
+
+  <h3>1.2 Key Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Undirected</th><th>Directed</th></tr>
+    <tr><td>Max edges (simple graph)</td><td>V(V-1)/2</td><td>V(V-1)</td></tr>
+    <tr><td>Sum of degrees</td><td>2|E|</td><td>Sum(in-deg) = Sum(out-deg) = |E|</td></tr>
+    <tr><td>Min edges for connected</td><td>V - 1</td><td>V (strongly connected)</td></tr>
+  </table>
+
+  <h3>1.3 Example Graph</h3>
+  <div class="mermaid">
+flowchart LR
+    A["A"] --- B["B"]
+    A --- C["C"]
+    B --- D["D"]
+    C --- D
+    B --- C
+    D --- E["E"]
+  </div>
+
+  <h2>2. Graph Representations</h2>
+
+  <h3>2.1 Adjacency Matrix</h3>
+  <p>A V &times; V matrix where <code>M[i][j] = 1</code> if edge (i,j) exists, 0 otherwise. For weighted graphs, <code>M[i][j]</code> stores the weight.</p>
+
+  <p>For the above graph (A=0, B=1, C=2, D=3, E=4):</p>
+  <table>
+    <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>
+    <tr><td><strong>A</strong></td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td><strong>B</strong></td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><td><strong>C</strong></td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td><strong>D</strong></td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td><strong>E</strong></td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+  </table>
+
+  <h3>2.2 Adjacency List</h3>
+  <p>Each vertex stores a list of its neighbors.</p>
+  <pre><code>A: [B, C]
+B: [A, C, D]
+C: [A, B, D]
+D: [B, C, E]
+E: [D]</code></pre>
+
+  <h3>2.3 Comparison</h3>
+  <table>
+    <tr><th>Feature</th><th>Adjacency Matrix</th><th>Adjacency List</th></tr>
+    <tr><td>Space</td><td>O(V<sup>2</sup>)</td><td>O(V + E)</td></tr>
+    <tr><td>Check edge (u,v)</td><td>O(1)</td><td>O(degree(u))</td></tr>
+    <tr><td>List all neighbors of u</td><td>O(V)</td><td>O(degree(u))</td></tr>
+    <tr><td>Add edge</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Remove edge</td><td>O(1)</td><td>O(degree(u))</td></tr>
+    <tr><td>Best for</td><td>Dense graphs (E close to V<sup>2</sup>)</td><td>Sparse graphs (E much less than V<sup>2</sup>)</td></tr>
+  </table>
+
+  <div class="note">
+    <p><strong>Space tip:</strong> For an undirected graph, the adjacency matrix is symmetric. For a directed graph, it is not. Adjacency list is preferred when E = O(V), which is typical in practice.</p>
+  </div>
+
+  <h2>3. Breadth-First Search (BFS)</h2>
+  <p>BFS explores all vertices at the current depth level before moving to vertices at the next depth level. It uses a <strong>queue</strong>.</p>
+
+  <h3>3.1 Algorithm</h3>
+  <pre><code>void BFS(int graph[][], int V, int source) {
+    bool visited[V] = {false};
+    Queue q;
+    visited[source] = true;
+    enqueue(&amp;q, source);
+
+    while (!isEmpty(&amp;q)) {
+        int u = dequeue(&amp;q);
+        printf("%d ", u);
+        for (int v = 0; v &lt; V; v++) {
+            if (graph[u][v] &amp;&amp; !visited[v]) {
+                visited[v] = true;
+                enqueue(&amp;q, v);
+            }
+        }
+    }
+}</code></pre>
+
+  <h3>3.2 BFS Traversal Example</h3>
+  <p>Starting from vertex A on the example graph:</p>
+  <div class="mermaid">
+flowchart TD
+    subgraph BFS_Order["BFS from A"]
+        L0["Level 0: A"]
+        L1["Level 1: B, C"]
+        L2["Level 2: D"]
+        L3["Level 3: E"]
+        L0 --> L1 --> L2 --> L3
+    end
+  </div>
+  <p>BFS order: A, B, C, D, E</p>
+
+  <h3>3.3 BFS Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Time complexity (adj. list)</td><td>O(V + E)</td></tr>
+    <tr><td>Time complexity (adj. matrix)</td><td>O(V<sup>2</sup>)</td></tr>
+    <tr><td>Space complexity</td><td>O(V)</td></tr>
+    <tr><td>Finds shortest path?</td><td>Yes (unweighted graphs)</td></tr>
+    <tr><td>Data structure</td><td>Queue</td></tr>
+  </table>
+
+  <h3>3.4 BFS Applications</h3>
+  <ul>
+    <li>Shortest path in unweighted graph</li>
+    <li>Level-order traversal of trees</li>
+    <li>Finding connected components</li>
+    <li>Bipartiteness testing</li>
+    <li>Web crawling</li>
+  </ul>
+
+  <h2>4. Depth-First Search (DFS)</h2>
+  <p>DFS explores as far as possible along each branch before backtracking. It uses a <strong>stack</strong> (or recursion).</p>
+
+  <h3>4.1 Algorithm</h3>
+  <pre><code>void DFS(int graph[][], int V, int u, bool visited[]) {
+    visited[u] = true;
+    printf("%d ", u);
+    for (int v = 0; v &lt; V; v++) {
+        if (graph[u][v] &amp;&amp; !visited[v])
+            DFS(graph, V, v, visited);
+    }
+}</code></pre>
+
+  <h3>4.2 DFS Traversal Example</h3>
+  <div class="mermaid">
+flowchart TD
+    subgraph DFS_Order["DFS from A"]
+        A["A"] --> B["B"]
+        B --> C["C"]
+        C --> D["D"]
+        D --> E["E"]
+    end
+  </div>
+  <p>DFS order (one possible): A, B, C, D, E</p>
+
+  <h3>4.3 DFS Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Time complexity (adj. list)</td><td>O(V + E)</td></tr>
+    <tr><td>Time complexity (adj. matrix)</td><td>O(V<sup>2</sup>)</td></tr>
+    <tr><td>Space complexity</td><td>O(V) (recursion stack)</td></tr>
+    <tr><td>Finds shortest path?</td><td>No</td></tr>
+    <tr><td>Data structure</td><td>Stack (implicit via recursion)</td></tr>
+  </table>
+
+  <h3>4.4 DFS Edge Classification (Directed Graphs)</h3>
+  <table>
+    <tr><th>Edge Type</th><th>Description</th><th>Detection</th></tr>
+    <tr><td>Tree Edge</td><td>Edge in the DFS tree</td><td>Visits unvisited vertex</td></tr>
+    <tr><td>Back Edge</td><td>Edge to an ancestor in DFS tree</td><td>Visits vertex currently in stack (gray)</td></tr>
+    <tr><td>Forward Edge</td><td>Edge to a descendant (non-tree)</td><td>Visits completed vertex with higher discovery time</td></tr>
+    <tr><td>Cross Edge</td><td>Edge between unrelated vertices</td><td>Visits completed vertex with lower discovery time</td></tr>
+  </table>
+
+  <div class="important">
+    <p><strong>Cycle detection:</strong> A directed graph has a cycle if and only if DFS finds a back edge. For undirected graphs, any edge to a visited vertex (that is not the parent) indicates a cycle.</p>
+  </div>
+
+  <h3>4.5 DFS Applications</h3>
+  <ul>
+    <li>Cycle detection</li>
+    <li>Topological sorting</li>
+    <li>Strongly connected components (Kosaraju's, Tarjan's)</li>
+    <li>Path finding</li>
+    <li>Articulation points and bridges</li>
+  </ul>
+
+  <h2>5. Topological Sort</h2>
+  <p>A topological sort of a DAG is a linear ordering of vertices such that for every directed edge (u, v), u comes before v. It is only possible on DAGs.</p>
+
+  <h3>5.1 DFS-Based Algorithm</h3>
+  <pre><code>void topologicalSortUtil(int u, bool visited[], Stack *stack, int graph[][], int V) {
+    visited[u] = true;
+    for (int v = 0; v &lt; V; v++) {
+        if (graph[u][v] &amp;&amp; !visited[v])
+            topologicalSortUtil(v, visited, stack, graph, V);
+    }
+    push(stack, u);  // push after all descendants are processed
+}
+
+// Pop stack to get topological order</code></pre>
+
+  <h3>5.2 Kahn's Algorithm (BFS-Based)</h3>
+  <pre><code>// 1. Compute in-degree of all vertices
+// 2. Enqueue all vertices with in-degree 0
+// 3. While queue is not empty:
+//    a. Dequeue vertex u, add to result
+//    b. For each neighbor v of u:
+//       - Decrease in-degree of v
+//       - If in-degree of v becomes 0, enqueue v
+// 4. If result has all V vertices, it's a valid topological order
+//    Otherwise, graph has a cycle</code></pre>
+
+  <h3>5.3 Topological Sort Example</h3>
+  <div class="mermaid">
+flowchart LR
+    A["A"] --> C["C"]
+    A --> D["D"]
+    B["B"] --> D
+    C --> E["E"]
+    D --> E
+  </div>
+  <p>Possible topological orders: A, B, C, D, E or A, B, D, C, E or B, A, C, D, E or B, A, D, C, E</p>
+
+  <div class="note">
+    <p><strong>Key fact:</strong> Topological sort is not unique unless the graph is a Hamiltonian path (a path that visits every vertex exactly once).</p>
+  </div>
+
+  <h2>6. Connected Components</h2>
+
+  <h3>6.1 Undirected Graphs</h3>
+  <p>A connected component is a maximal set of vertices such that there is a path between every pair. Use BFS or DFS from each unvisited vertex to find all components.</p>
+
+  <pre><code>int countComponents(int graph[][], int V) {
+    bool visited[V] = {false};
+    int count = 0;
+    for (int i = 0; i &lt; V; i++) {
+        if (!visited[i]) {
+            DFS(graph, V, i, visited);
+            count++;
+        }
+    }
+    return count;
+}</code></pre>
+
+  <h3>6.2 Strongly Connected Components (Directed Graphs)</h3>
+  <p>In a directed graph, a strongly connected component (SCC) is a maximal set of vertices where every vertex is reachable from every other vertex in the set.</p>
+
+  <table>
+    <tr><th>Algorithm</th><th>Approach</th><th>Time</th></tr>
+    <tr><td>Kosaraju's</td><td>Two DFS passes (on graph and reverse graph)</td><td>O(V + E)</td></tr>
+    <tr><td>Tarjan's</td><td>Single DFS with low-link values</td><td>O(V + E)</td></tr>
+  </table>
+
+  <h2>7. Time and Space Complexity Summary</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Time (Adj. List)</th><th>Time (Adj. Matrix)</th><th>Space</th></tr>
+    <tr><td>BFS</td><td>O(V + E)</td><td>O(V<sup>2</sup>)</td><td>O(V)</td></tr>
+    <tr><td>DFS</td><td>O(V + E)</td><td>O(V<sup>2</sup>)</td><td>O(V)</td></tr>
+    <tr><td>Topological Sort</td><td>O(V + E)</td><td>O(V<sup>2</sup>)</td><td>O(V)</td></tr>
+    <tr><td>Connected Components</td><td>O(V + E)</td><td>O(V<sup>2</sup>)</td><td>O(V)</td></tr>
+    <tr><td>SCC (Kosaraju/Tarjan)</td><td>O(V + E)</td><td>O(V<sup>2</sup>)</td><td>O(V)</td></tr>
+  </table>
+
+  <h2>8. BFS vs DFS Comparison</h2>
+  <table>
+    <tr><th>Feature</th><th>BFS</th><th>DFS</th></tr>
+    <tr><td>Data structure</td><td>Queue</td><td>Stack</td></tr>
+    <tr><td>Traversal pattern</td><td>Level by level</td><td>As deep as possible first</td></tr>
+    <tr><td>Shortest path (unweighted)</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Cycle detection</td><td>Possible</td><td>Easier (back edge)</td></tr>
+    <tr><td>Topological sort</td><td>Kahn's algorithm</td><td>Post-order on DFS</td></tr>
+    <tr><td>Memory for wide graph</td><td>High (stores entire frontier)</td><td>Low (stores single path)</td></tr>
+    <tr><td>Memory for deep graph</td><td>Low</td><td>High (deep recursion stack)</td></tr>
+    <tr><td>Completeness</td><td>Complete (finds solution if exists)</td><td>Complete for finite graphs</td></tr>
+  </table>
+
+  <h2>9. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>BFS and DFS both have O(V + E) time with adjacency list, O(V^2) with adjacency matrix.</li>
+      <li>BFS gives shortest path in unweighted graphs; use Dijkstra for weighted graphs.</li>
+      <li>A directed graph has a cycle iff DFS finds a back edge.</li>
+      <li>Topological sort exists only for DAGs. If Kahn's algorithm does not include all vertices, the graph has a cycle.</li>
+      <li>For an undirected connected graph: E >= V - 1. If E = V - 1, it is a tree.</li>
+      <li>Number of connected components using DFS/BFS: count the number of DFS/BFS calls from the outer loop.</li>
+      <li>Adjacency matrix is symmetric for undirected graphs; not necessarily for directed graphs.</li>
+      <li>Handshaking lemma: sum of all degrees = 2|E| (undirected graph).</li>
+    </ul>
+  </div>
+
+  <h2>10. Practice Problems</h2>
+  <ol>
+    <li>Given a graph with 6 vertices and edges: (0,1), (0,2), (1,3), (2,3), (3,4), (4,5). Write the BFS and DFS traversal starting from vertex 0.</li>
+    <li>Is topological sort possible for a graph with a cycle? Why or why not?</li>
+    <li>Given an adjacency matrix, determine if the graph is connected.</li>
+    <li>How many edges does a complete directed graph with n vertices have?</li>
+    <li>Using Kahn's algorithm, find a topological order for: prerequisites {(A,C), (B,C), (C,D), (B,D), (D,E)}.</li>
+  </ol>
+
+</article>
+</body>
+</html>

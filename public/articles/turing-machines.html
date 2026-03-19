@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turing Machines and Undecidability — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #e8eaf6; color: #1a237e; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Turing Machines and Undecidability</h1>
+  <p class="article-section-tag">🔄 Section 6: Theory of Computation</p>
+
+  <h2>1. Turing Machine Definition</h2>
+
+  <h3>1.1 Formal Definition</h3>
+  <p>A Turing Machine (TM) is a 7-tuple M = (Q, Sigma, Gamma, delta, q0, B, F) where:</p>
+  <ul>
+    <li><strong>Q:</strong> Finite set of states</li>
+    <li><strong>Sigma:</strong> Input alphabet (does not include blank symbol B)</li>
+    <li><strong>Gamma:</strong> Tape alphabet (Sigma is a subset of Gamma, B is in Gamma)</li>
+    <li><strong>delta:</strong> Transition function, delta: Q x Gamma -> Q x Gamma x {L, R}</li>
+    <li><strong>q0:</strong> Start state</li>
+    <li><strong>B:</strong> Blank symbol (in Gamma but not in Sigma)</li>
+    <li><strong>F:</strong> Set of accept (final) states</li>
+  </ul>
+
+  <h3>1.2 TM Configuration</h3>
+  <p>A configuration (instantaneous description) is a triple (state, tape contents, head position) that captures the complete state of the TM at any moment. Written as alpha q beta where q is the current state, and the head points to the first symbol of beta.</p>
+
+  <h3>1.3 TM Operation</h3>
+  <div class="mermaid">
+flowchart LR
+    A["Read symbol under head"] --> B["Look up transition<br>delta(q, a) = (q', b, D)"]
+    B --> C["Write symbol b<br>on current cell"]
+    C --> D["Move head<br>Left or Right"]
+    D --> E["Change state to q'"]
+    E --> F{"Accept state?"}
+    F -->|Yes| G["ACCEPT"]
+    F -->|No| H{"Any transition?"}
+    H -->|Yes| A
+    H -->|No| I["REJECT / HALT"]
+    style G fill:#4caf50,color:#fff
+    style I fill:#f44336,color:#fff
+  </div>
+
+  <h2>2. TM as Language Acceptor</h2>
+  <p>A TM M <strong>accepts</strong> a string w if M enters an accept state when started with w on its tape.</p>
+  <p>A TM M <strong>rejects</strong> a string w if M halts in a non-accept state.</p>
+  <p>A TM M may also <strong>loop forever</strong> on input w (neither accepting nor rejecting).</p>
+
+  <table>
+    <tr><th>Language Class</th><th>TM Behavior</th><th>Definition</th></tr>
+    <tr><td>Recursively Enumerable (RE)</td><td>Accept or loop</td><td>TM halts and accepts for w in L; may loop for w not in L</td></tr>
+    <tr><td>Recursive (Decidable)</td><td>Always halts</td><td>TM halts and accepts for w in L; halts and rejects for w not in L</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Key Insight:</strong> Every recursive language is RE, but not every RE language is recursive. The complement of a recursive language is recursive. If both L and its complement are RE, then L is recursive.
+  </div>
+
+  <h2>3. TM as Function Computer</h2>
+  <p>A TM can compute functions f: Sigma* -> Sigma*. Given input w on the tape, if the TM halts, the output f(w) is what remains on the tape. If f is total (defined for all inputs), it is a <strong>total computable function</strong>.</p>
+
+  <h2>4. Variants of Turing Machines</h2>
+
+  <h3>4.1 Multi-tape TM</h3>
+  <p>Has k tapes, each with its own head. Transition function: delta: Q x Gamma^k -> Q x Gamma^k x {L,R,S}^k.</p>
+  <p><strong>Equivalence:</strong> Every multi-tape TM can be simulated by a single-tape TM (with polynomial slowdown: if multi-tape runs in T(n), single-tape simulates in O(T(n)^2)).</p>
+
+  <h3>4.2 Non-deterministic TM (NTM)</h3>
+  <p>delta: Q x Gamma -> P(Q x Gamma x {L, R}). Multiple possible transitions from each configuration.</p>
+  <p><strong>Equivalence:</strong> Every NTM can be simulated by a deterministic TM (with exponential slowdown). NTM does NOT add computational power beyond DTM — both recognize the same class of languages (RE).</p>
+
+  <h3>4.3 Other Variants (All Equivalent)</h3>
+  <table>
+    <tr><th>Variant</th><th>Feature</th><th>Equivalent to Standard TM?</th></tr>
+    <tr><td>Multi-tape TM</td><td>Multiple tapes and heads</td><td>Yes</td></tr>
+    <tr><td>NTM</td><td>Non-deterministic transitions</td><td>Yes</td></tr>
+    <tr><td>Two-stack PDA</td><td>PDA with two stacks</td><td>Yes</td></tr>
+    <tr><td>Counter machine</td><td>Two or more counters</td><td>Yes</td></tr>
+    <tr><td>Multi-dimensional TM</td><td>2D or higher tape</td><td>Yes</td></tr>
+    <tr><td>Semi-infinite tape TM</td><td>Tape extends only right</td><td>Yes</td></tr>
+  </table>
+
+  <h2>5. Church-Turing Thesis</h2>
+  <p>The Church-Turing thesis states that any function that can be computed by an effective procedure (algorithm) can be computed by a Turing machine.</p>
+  <p>This is a <strong>thesis, not a theorem</strong> — it cannot be formally proved but is universally accepted. It means Turing machines capture our intuitive notion of "computability."</p>
+
+  <h2>6. Chomsky Hierarchy with Examples</h2>
+  <div class="mermaid">
+graph TD
+    subgraph "Type 0: Recursively Enumerable"
+        A["L_halt = Halting Problem Language"]
+        subgraph "Recursive/Decidable"
+            B["L = a^n b^n c^n d^n"]
+            subgraph "Type 1: Context-Sensitive"
+                C["L = a^n b^n c^n"]
+                subgraph "Type 2: Context-Free"
+                    D["L = a^n b^n"]
+                    subgraph "Type 3: Regular"
+                        E["L = a*b*"]
+                    end
+                end
+            end
+        end
+    end
+    style E fill:#2196f3,color:#fff
+    style D fill:#4caf50,color:#fff
+    style C fill:#ff9800,color:#fff
+    style B fill:#9c27b0,color:#fff
+    style A fill:#f44336,color:#fff
+  </div>
+
+  <h2>7. Decidable and Undecidable Languages</h2>
+
+  <h3>7.1 Decidable Problems</h3>
+  <table>
+    <tr><th>Problem</th><th>Description</th><th>Decidable?</th></tr>
+    <tr><td>DFA emptiness</td><td>Is L(A) = empty?</td><td>Yes</td></tr>
+    <tr><td>DFA equivalence</td><td>L(A) = L(B)?</td><td>Yes</td></tr>
+    <tr><td>CFG membership</td><td>Is w in L(G)?</td><td>Yes (CYK)</td></tr>
+    <tr><td>CFG emptiness</td><td>Is L(G) = empty?</td><td>Yes</td></tr>
+    <tr><td>CFG finiteness</td><td>Is L(G) finite?</td><td>Yes</td></tr>
+  </table>
+
+  <h3>7.2 Undecidable Problems</h3>
+  <table>
+    <tr><th>Problem</th><th>Description</th><th>RE?</th></tr>
+    <tr><td>Halting Problem</td><td>Does TM M halt on input w?</td><td>Yes (RE but not recursive)</td></tr>
+    <tr><td>TM emptiness</td><td>Is L(M) = empty?</td><td>No (not RE)</td></tr>
+    <tr><td>TM equivalence</td><td>L(M1) = L(M2)?</td><td>No</td></tr>
+    <tr><td>TM regularity</td><td>Is L(M) regular?</td><td>No</td></tr>
+    <tr><td>CFG equivalence</td><td>L(G1) = L(G2)?</td><td>No</td></tr>
+    <tr><td>CFG ambiguity</td><td>Is G ambiguous?</td><td>No</td></tr>
+    <tr><td>Post Correspondence Problem</td><td>PCP instance solvable?</td><td>Yes (RE but not recursive)</td></tr>
+  </table>
+
+  <h2>8. The Halting Problem</h2>
+  <p><strong>Problem:</strong> Given a TM M and input w, determine whether M halts on w.</p>
+
+  <h3>Proof of Undecidability (by Diagonalization)</h3>
+  <ol>
+    <li>Assume for contradiction that a TM H exists that decides the halting problem: H(M, w) = "accept" if M halts on w, "reject" otherwise.</li>
+    <li>Construct a new TM D that takes a TM M as input:
+      <ul>
+        <li>D(M) = run H(M, encoding of M)</li>
+        <li>If H accepts (M halts on itself), then D loops forever.</li>
+        <li>If H rejects (M doesn't halt on itself), then D halts and accepts.</li>
+      </ul>
+    </li>
+    <li>Now run D on itself — D(D):
+      <ul>
+        <li>If D halts on D, then by construction, D should loop. Contradiction.</li>
+        <li>If D loops on D, then by construction, D should halt. Contradiction.</li>
+      </ul>
+    </li>
+    <li>Therefore, H cannot exist. The halting problem is undecidable.</li>
+  </ol>
+
+  <h2>9. Rice's Theorem</h2>
+  <p><strong>Statement:</strong> Every non-trivial property of the language of a Turing machine is undecidable.</p>
+  <p>A property is <strong>non-trivial</strong> if it is satisfied by some but not all RE languages.</p>
+
+  <h3>Examples</h3>
+  <table>
+    <tr><th>Property</th><th>Non-trivial?</th><th>Decidable?</th></tr>
+    <tr><td>L(M) is empty</td><td>Yes</td><td>No (by Rice's)</td></tr>
+    <tr><td>L(M) is finite</td><td>Yes</td><td>No</td></tr>
+    <tr><td>L(M) is regular</td><td>Yes</td><td>No</td></tr>
+    <tr><td>L(M) = Sigma*</td><td>Yes</td><td>No</td></tr>
+    <tr><td>L(M) contains epsilon</td><td>Yes</td><td>No</td></tr>
+    <tr><td>M has exactly 5 states</td><td>N/A</td><td>Yes (property of TM, not language)</td></tr>
+  </table>
+
+  <div class="warning">
+    <strong>Critical:</strong> Rice's theorem applies only to properties of the LANGUAGE recognized by the TM, not to structural properties of the TM itself (like number of states or transitions).
+  </div>
+
+  <h2>10. Reducibility</h2>
+  <p>A <strong>reduction</strong> from problem A to problem B is a computable function f such that: w is in A if and only if f(w) is in B.</p>
+
+  <h3>Key Results</h3>
+  <ul>
+    <li>If A reduces to B and B is decidable, then A is decidable.</li>
+    <li>If A reduces to B and A is undecidable, then B is undecidable.</li>
+    <li>Reduction is used to prove new problems undecidable by reducing known undecidable problems to them.</li>
+  </ul>
+
+  <h3>Common Reduction Chain</h3>
+  <pre>
+Halting Problem (undecidable)
+  reduces to -> TM acceptance problem
+  reduces to -> TM emptiness problem
+  reduces to -> TM equivalence problem
+  reduces to -> PCP
+  reduces to -> CFG ambiguity
+  </pre>
+
+  <h2>11. Key GATE Takeaways</h2>
+  <ul>
+    <li>A TM is the most powerful computational model. All variants (multi-tape, NTM) are equivalent.</li>
+    <li>Recursive languages (decidable): TM always halts. RE languages: TM may loop on non-members.</li>
+    <li>L is recursive iff both L and complement(L) are RE.</li>
+    <li>The halting problem is RE but not recursive (undecidable).</li>
+    <li>Rice's theorem: any non-trivial property of L(M) is undecidable.</li>
+    <li>Church-Turing thesis equates effective computability with Turing computability.</li>
+    <li>Reduction is the primary tool for proving undecidability of new problems.</li>
+  </ul>
+</article>
+</body>
+</html>

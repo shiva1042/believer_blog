@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discrete Mathematics Problem Solving - GATE Practice</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+h3{color:#303f9f}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-size:0.95em}
+pre{background:#263238;color:#eee;padding:15px;border-radius:6px;overflow-x:auto}
+</style>
+</head>
+<body>
+<article>
+<h1>Discrete Mathematics Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>This article presents 12 GATE-level problems in discrete mathematics spanning propositional logic, set theory, relations, graph theory, combinatorics, recurrence relations, and group theory. Each problem includes a detailed step-by-step solution.</p>
+
+<h2>Problem 1: Propositional Logic Proof</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Determine whether the following argument is valid using resolution:
+Premises: (P &or; Q), (&not;P &or; R), (&not;Q &or; R). Conclusion: R.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Negate the conclusion and add to premises. Apply resolution repeatedly. If we derive the empty clause, the argument is valid.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+1. Clauses from premises: C1 = {P, Q}, C2 = {&not;P, R}, C3 = {&not;Q, R}<br>
+2. Negate conclusion: C4 = {&not;R}<br>
+3. Resolve C2 with C4 (on R): C5 = {&not;P}<br>
+4. Resolve C3 with C4 (on R): C6 = {&not;Q}<br>
+5. Resolve C1 with C5 (on P): C7 = {Q}<br>
+6. Resolve C7 with C6 (on Q): C8 = {} (empty clause)<br>
+<strong>The empty clause is derived, so the argument is valid.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Resolution works by negating the conclusion and showing contradiction. Always convert to clause form first. In GATE, resolution questions often appear in the propositional logic section.
+</div>
+
+<h2>Problem 2: Inclusion-Exclusion Principle</h2>
+<div class="problem-box">
+<strong>Problem:</strong> In a class of 120 students, 50 study Mathematics, 45 study Physics, 40 study Chemistry, 15 study both Math and Physics, 12 study both Math and Chemistry, 10 study both Physics and Chemistry, and 5 study all three. How many study none of the three subjects?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Apply |A &cup; B &cup; C| = |A| + |B| + |C| - |A &cap; B| - |A &cap; C| - |B &cap; C| + |A &cap; B &cap; C|.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+|M &cup; P &cup; C| = 50 + 45 + 40 - 15 - 12 - 10 + 5 = 103<br>
+Students studying none = 120 - 103 = <strong>17</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> In inclusion-exclusion, signs alternate: add individual, subtract pairs, add triples, subtract quadruples, etc. Be careful with "at least one" vs "exactly one" vs "none."
+</div>
+
+<h2>Problem 3: Transitive Closure of a Relation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Let A = {1, 2, 3, 4} and R = {(1,2), (2,3), (3,4)}. Find the transitive closure of R.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use Warshall's algorithm or repeatedly add (a,c) whenever (a,b) and (b,c) are in R until no new pairs appear.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Start: R = {(1,2), (2,3), (3,4)}<br><br>
+<strong>Iteration 1:</strong> (1,2) &and; (2,3) &rArr; add (1,3). (2,3) &and; (3,4) &rArr; add (2,4).<br>
+R = {(1,2), (2,3), (3,4), (1,3), (2,4)}<br><br>
+<strong>Iteration 2:</strong> (1,3) &and; (3,4) &rArr; add (1,4).<br>
+R = {(1,2), (2,3), (3,4), (1,3), (2,4), (1,4)}<br><br>
+<strong>Iteration 3:</strong> No new pairs can be added. Closure complete.<br><br>
+<strong>Transitive closure R<sup>+</sup> = {(1,2), (1,3), (1,4), (2,3), (2,4), (3,4)}</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> The transitive closure of a relation on n elements can have at most n(n-1)/2 pairs (for a strict order). Warshall's algorithm runs in O(n^3) and is the standard approach.
+</div>
+
+<h2>Problem 4: Graph Coloring</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find the chromatic number of the following graph (Petersen graph has &chi; = 3; here consider a simpler graph): a cycle C<sub>5</sub> on vertices {A, B, C, D, E}.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> For an odd cycle C<sub>n</sub>, &chi;(C<sub>n</sub>) = 3. For even cycle, &chi; = 2. Demonstrate by attempting a 2-coloring and showing failure.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<div class="mermaid">
+graph LR
+    A((A)) --- B((B))
+    B --- C((C))
+    C --- D((D))
+    D --- E((E))
+    E --- A
+</div>
+Attempt 2-coloring (colors: Red, Blue):<br>
+- A = Red, B = Blue, C = Red, D = Blue, E = Red<br>
+- But E and A are both Red and adjacent. Contradiction!<br><br>
+Try 3-coloring (add Green):<br>
+- A = Red, B = Blue, C = Red, D = Blue, E = Green<br>
+- All adjacent vertices have different colors. Valid!<br><br>
+<strong>&chi;(C<sub>5</sub>) = 3</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Chromatic number of C<sub>n</sub>: 2 if n is even, 3 if n is odd. Complete graph K<sub>n</sub> has &chi; = n. A planar graph has &chi; &le; 4 (Four Color Theorem).
+</div>
+
+<h2>Problem 5: Euler and Hamiltonian Paths</h2>
+<div class="problem-box">
+<strong>Problem:</strong> For the graph below, determine: (a) Does it have an Euler circuit? (b) Does it have an Euler path? (c) Does it have a Hamiltonian cycle?<br>
+Vertices: {1,2,3,4,5}. Edges: (1,2),(1,3),(2,3),(2,4),(3,4),(4,5),(3,5).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> For Euler: check vertex degrees. Euler circuit needs all even degrees; Euler path needs exactly 2 odd-degree vertices. For Hamiltonian: attempt to find a cycle visiting all vertices exactly once.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<div class="mermaid">
+graph TD
+    1((1)) --- 2((2))
+    1 --- 3((3))
+    2 --- 3
+    2 --- 4((4))
+    3 --- 4
+    4 --- 5((5))
+    3 --- 5
+</div>
+Compute degrees: deg(1)=2, deg(2)=3, deg(3)=4, deg(4)=3, deg(5)=2<br><br>
+<strong>(a) Euler circuit?</strong> Vertices 2 and 4 have odd degree. Not all even. <strong>No Euler circuit.</strong><br><br>
+<strong>(b) Euler path?</strong> Exactly 2 vertices (2 and 4) have odd degree. <strong>Yes, Euler path exists</strong> (starts at 2 or 4).<br>
+One such path: 2-1-3-2-4-3-5-4<br><br>
+<strong>(c) Hamiltonian cycle?</strong> Try: 1-2-4-5-3-1. All vertices visited exactly once and returns to start. <strong>Yes, Hamiltonian cycle exists.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Euler is about edges (visit every edge once); Hamiltonian is about vertices (visit every vertex once). Euler conditions are exact (degree check). Hamiltonian has no simple necessary and sufficient condition (NP-complete to decide in general).
+</div>
+
+<h2>Problem 6: Counting &mdash; Permutations and Combinations</h2>
+<div class="problem-box">
+<strong>Problem:</strong> How many 5-letter words can be formed from the letters of "MISSISSIPPI" such that no two S's are adjacent?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Available letters: M(1), I(4), S(4), P(2). First place non-S letters, then insert S's in gaps so no two S's are adjacent.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Total letters: M=1, I=4, S=4, P=2. We choose 5 letters.<br><br>
+<strong>Case analysis by number of S's in the word:</strong><br><br>
+<strong>Case 0 (0 S's):</strong> Choose 5 from {M,I,I,I,I,P,P}. Possible multisets and their arrangements:<br>
+- {M,P,P,I,I}: 5!/(2!2!) = 30<br>
+- {M,P,I,I,I}: 5!/(3!) = 20<br>
+- {M,I,I,I,I}: 5!/(4!) = 5<br>
+- {P,P,I,I,I}: 5!/(2!3!) = 10<br>
+- {P,I,I,I,I}: 5!/(4!) = 5<br>
+Subtotal: 30+20+5+10+5 = 70<br><br>
+<strong>Case 1 (1 S):</strong> Choose 4 non-S letters, arrange all 5, no adjacency constraint needed with 1 S.<br>
+Multisets of 4 from {M,I,I,I,I,P,P} with 1 S:<br>
+- {S,M,P,P,I}: 5!/(2!) = 60<br>
+- {S,M,P,I,I}: 5!/(2!) = 60<br>
+- {S,M,I,I,I}: 5!/(3!) = 20<br>
+- {S,P,P,I,I}: 5!/(2!2!) = 30<br>
+- {S,P,I,I,I}: 5!/(3!) = 20<br>
+- {S,I,I,I,I}: 5!/(4!) = 5<br>
+Subtotal: 195<br><br>
+<strong>Case 2 (2 S's, non-adjacent):</strong> Choose 3 non-S, arrange them (k arrangements), place 2 S's in gaps.<br>
+For 3 non-S letters arranged, there are 4 gaps. Choose 2 of 4 = C(4,2)=6 positions for S's.<br>
+Multisets of 3 from non-S letters and their arrangements:<br>
+- {M,P,P}: 3!/2!=3, then 3&times;6=18<br>
+- {M,P,I}: 3!=6, then 6&times;6=36<br>
+- {M,I,I}: 3!/2!=3, then 3&times;6=18<br>
+- {P,P,I}: 3!/2!=3, then 3&times;6=18<br>
+- {P,I,I}: 3!/2!=3, then 3&times;6=18<br>
+- {I,I,I}: 3!/3!=1, then 1&times;6=6<br>
+Subtotal: 114<br><br>
+<strong>Total = 70 + 195 + 114 = 379</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> For "no two identical items adjacent" problems, the gap method is standard: place other items first, then insert restricted items into gaps. Case analysis by count of restricted items is often necessary.
+</div>
+
+<h2>Problem 7: Recurrence Relations</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Solve the recurrence relation: T(n) = 4T(n/2) + n, T(1) = 1.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use the Master Theorem. Compare with T(n) = aT(n/b) + f(n) where a=4, b=2, f(n)=n.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+a = 4, b = 2, f(n) = n<br>
+log<sub>b</sub>(a) = log<sub>2</sub>(4) = 2<br>
+n<sup>log<sub>b</sub>(a)</sup> = n<sup>2</sup><br><br>
+Compare f(n) = n with n<sup>2</sup>:<br>
+f(n) = n = O(n<sup>2-&epsilon;</sup>) for &epsilon; = 1<br><br>
+This is <strong>Case 1</strong> of the Master Theorem: f(n) = O(n<sup>log<sub>b</sub>a - &epsilon;</sup>)<br><br>
+Therefore: <strong>T(n) = &Theta;(n<sup>2</sup>)</strong><br><br>
+<strong>Verification by substitution (n=4):</strong><br>
+T(1) = 1<br>
+T(2) = 4&middot;1 + 2 = 6<br>
+T(4) = 4&middot;6 + 4 = 28<br>
+n<sup>2</sup> = 16. The ratio T(n)/n<sup>2</sup> converges, confirming &Theta;(n<sup>2</sup>).
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Master Theorem cases: Case 1: f(n) polynomially smaller than n<sup>log<sub>b</sub>a</sup> &rArr; T = &Theta;(n<sup>log<sub>b</sub>a</sup>). Case 2: f(n) = &Theta;(n<sup>log<sub>b</sub>a</sup>) &rArr; T = &Theta;(n<sup>log<sub>b</sub>a</sup> log n). Case 3: f(n) polynomially larger &rArr; T = &Theta;(f(n)).
+</div>
+
+<h2>Problem 8: Pigeonhole Principle</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Show that in any group of 6 people, there exist either 3 mutual friends or 3 mutual strangers (Ramsey number R(3,3) = 6).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Consider one person and their 5 relationships. By pigeonhole, at least 3 are friends or at least 3 are strangers. Then examine the triangle among those 3.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+1. Pick any person A. A has a relationship (friend or stranger) with each of the other 5 people.<br>
+2. By pigeonhole principle: at least &lceil;5/2&rceil; = 3 of these are the same type.<br>
+3. <strong>Case 1:</strong> A has at least 3 friends, say B, C, D.<br>
+&nbsp;&nbsp;- If any pair among {B,C,D} are friends (say B-C), then A,B,C are mutual friends. Done.<br>
+&nbsp;&nbsp;- If no pair among {B,C,D} are friends, then B,C,D are mutual strangers. Done.<br>
+4. <strong>Case 2:</strong> A has at least 3 strangers, say B, C, D.<br>
+&nbsp;&nbsp;- If any pair among {B,C,D} are strangers, those two plus A give 3 mutual strangers. Done.<br>
+&nbsp;&nbsp;- If no pair among {B,C,D} are strangers, then B,C,D are mutual friends. Done.<br><br>
+<strong>In every case, we find either 3 mutual friends or 3 mutual strangers.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Pigeonhole problems in GATE usually involve choosing the right "pigeons" and "holes." The generalized pigeonhole principle states: if n items are in k boxes, some box has at least &lceil;n/k&rceil; items.
+</div>
+
+<h2>Problem 9: Functions &mdash; Counting Onto Functions</h2>
+<div class="problem-box">
+<strong>Problem:</strong> How many onto (surjective) functions are there from a set A with 5 elements to a set B with 3 elements?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use the inclusion-exclusion formula for surjections: S(n,k) &middot; k! = &sum;<sub>i=0</sub><sup>k</sup> (-1)<sup>i</sup> C(k,i) (k-i)<sup>n</sup>.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+n = 5 (domain size), k = 3 (codomain size)<br><br>
+Number of onto functions = &sum;<sub>i=0</sub><sup>3</sup> (-1)<sup>i</sup> C(3,i) (3-i)<sup>5</sup><br><br>
+<table>
+<tr><th>i</th><th>(-1)<sup>i</sup></th><th>C(3,i)</th><th>(3-i)<sup>5</sup></th><th>Term</th></tr>
+<tr><td>0</td><td>+1</td><td>1</td><td>3<sup>5</sup>=243</td><td>+243</td></tr>
+<tr><td>1</td><td>-1</td><td>3</td><td>2<sup>5</sup>=32</td><td>-96</td></tr>
+<tr><td>2</td><td>+1</td><td>3</td><td>1<sup>5</sup>=1</td><td>+3</td></tr>
+<tr><td>3</td><td>-1</td><td>1</td><td>0<sup>5</sup>=0</td><td>0</td></tr>
+</table>
+Total = 243 - 96 + 3 - 0 = <strong>150</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> The number of surjections from n elements to k elements equals S(n,k)&middot;k! where S(n,k) is the Stirling number of the second kind. Total functions = k<sup>n</sup>. If k &gt; n, surjections = 0.
+</div>
+
+<h2>Problem 10: Group Theory &mdash; Finding Order of Elements</h2>
+<div class="problem-box">
+<strong>Problem:</strong> In Z<sub>12</sub> (integers mod 12 under addition), find the order of every element and identify all subgroups.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> The order of element a in Z<sub>n</sub> is n/gcd(a,n). Subgroups of Z<sub>n</sub> correspond to divisors of n, and for each divisor d, there is exactly one subgroup of order d.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Element a</th><th>gcd(a,12)</th><th>Order = 12/gcd(a,12)</th></tr>
+<tr><td>0</td><td>12</td><td>1</td></tr>
+<tr><td>1</td><td>1</td><td>12</td></tr>
+<tr><td>2</td><td>2</td><td>6</td></tr>
+<tr><td>3</td><td>3</td><td>4</td></tr>
+<tr><td>4</td><td>4</td><td>3</td></tr>
+<tr><td>5</td><td>1</td><td>12</td></tr>
+<tr><td>6</td><td>6</td><td>2</td></tr>
+<tr><td>7</td><td>1</td><td>12</td></tr>
+<tr><td>8</td><td>4</td><td>3</td></tr>
+<tr><td>9</td><td>3</td><td>4</td></tr>
+<tr><td>10</td><td>2</td><td>6</td></tr>
+<tr><td>11</td><td>1</td><td>12</td></tr>
+</table>
+<br>
+Divisors of 12: 1, 2, 3, 4, 6, 12. Subgroups:<br>
+- Order 1: {0}<br>
+- Order 2: {0, 6}<br>
+- Order 3: {0, 4, 8}<br>
+- Order 4: {0, 3, 6, 9}<br>
+- Order 6: {0, 2, 4, 6, 8, 10}<br>
+- Order 12: Z<sub>12</sub> itself<br>
+<strong>Total: 6 subgroups.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Z<sub>n</sub> is cyclic, so it has exactly one subgroup of each order d dividing n. The number of generators (elements of order n) equals &phi;(n) (Euler's totient). For Z<sub>12</sub>, generators are {1,5,7,11} and &phi;(12)=4.
+</div>
+
+<h2>Problem 11: Lattice and Partial Order</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Draw the Hasse diagram of (D<sub>30</sub>, |) where D<sub>30</sub> = divisors of 30 = {1,2,3,5,6,10,15,30}. Is it a lattice? Find all maximal chains.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Build divisibility poset. Check if every pair has a unique LUB (lcm) and GLB (gcd). A lattice requires both for every pair.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<div class="mermaid">
+graph BT
+    1((1)) --> 2((2))
+    1 --> 3((3))
+    1 --> 5((5))
+    2 --> 6((6))
+    2 --> 10((10))
+    3 --> 6
+    3 --> 15((15))
+    5 --> 10
+    5 --> 15
+    6 --> 30((30))
+    10 --> 30
+    15 --> 30
+</div>
+<strong>Lattice check:</strong> For any two elements a, b in D<sub>30</sub>:<br>
+- GLB(a,b) = gcd(a,b), which is always a divisor of 30.<br>
+- LUB(a,b) = lcm(a,b), which is always a divisor of 30 (since lcm of any two divisors of 30 divides 30).<br>
+<strong>Yes, (D<sub>30</sub>, |) is a lattice.</strong><br><br>
+<strong>Maximal chains</strong> (from 1 to 30):<br>
+1. 1 &rarr; 2 &rarr; 6 &rarr; 30<br>
+2. 1 &rarr; 2 &rarr; 10 &rarr; 30<br>
+3. 1 &rarr; 3 &rarr; 6 &rarr; 30<br>
+4. 1 &rarr; 3 &rarr; 15 &rarr; 30<br>
+5. 1 &rarr; 5 &rarr; 10 &rarr; 30<br>
+6. 1 &rarr; 5 &rarr; 15 &rarr; 30
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> The divisibility poset (D<sub>n</sub>, |) is always a lattice with gcd as meet and lcm as join. It is a Boolean lattice only when n is square-free. 30 = 2&times;3&times;5 is square-free, so D<sub>30</sub> is isomorphic to the power set lattice of a 3-element set.
+</div>
+
+<h2>Problem 12: Equivalence Relations and Partitions</h2>
+<div class="problem-box">
+<strong>Problem:</strong> On A = {1,2,3,4,5,6}, R is defined by: a R b iff (a mod 3) = (b mod 3). (a) Prove R is an equivalence relation. (b) Find the partition. (c) How many equivalence relations on a 4-element set exist?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Verify reflexivity, symmetry, transitivity. Partition by equivalence classes. Count using Bell number B<sub>4</sub>.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) Proof:</strong><br>
+- Reflexive: a mod 3 = a mod 3. So a R a for all a.<br>
+- Symmetric: If a mod 3 = b mod 3, then b mod 3 = a mod 3. So a R b &rArr; b R a.<br>
+- Transitive: If a mod 3 = b mod 3 and b mod 3 = c mod 3, then a mod 3 = c mod 3. So a R b &and; b R c &rArr; a R c.<br>
+<strong>R is an equivalence relation.</strong><br><br>
+<strong>(b) Equivalence classes / Partition:</strong><br>
+- [0] = {3, 6} (elements with remainder 0 mod 3)<br>
+- [1] = {1, 4} (remainder 1)<br>
+- [2] = {2, 5} (remainder 2)<br>
+Partition: {{3,6}, {1,4}, {2,5}}<br><br>
+<strong>(c) Bell number B<sub>4</sub>:</strong><br>
+The number of equivalence relations on an n-element set equals the Bell number B<sub>n</sub>.<br>
+B<sub>0</sub>=1, B<sub>1</sub>=1, B<sub>2</sub>=2, B<sub>3</sub>=5, <strong>B<sub>4</sub>=15</strong>.<br><br>
+The 15 partitions of {1,2,3,4} are: {{1,2,3,4}}, {{1},{2,3,4}}, {{2},{1,3,4}}, {{3},{1,2,4}}, {{4},{1,2,3}}, {{1,2},{3,4}}, {{1,3},{2,4}}, {{1,4},{2,3}}, {{1},{2},{3,4}}, {{1},{3},{2,4}}, {{1},{4},{2,3}}, {{2},{3},{1,4}}, {{2},{4},{1,3}}, {{3},{4},{1,2}}, {{1},{2},{3},{4}}.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Memorize Bell numbers: B<sub>0</sub>=1, B<sub>1</sub>=1, B<sub>2</sub>=2, B<sub>3</sub>=5, B<sub>4</sub>=15, B<sub>5</sub>=52. Every equivalence relation corresponds to a unique partition, and vice versa. The number of equivalence relations on a set of n elements is a very common GATE question.
+</div>
+
+</article>
+</body>
+</html>

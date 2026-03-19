@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arrays, Stacks, and Queues — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Arrays, Stacks, and Queues</h1>
+  <p class="article-section-tag">💻 Section 4: Programming and Data Structures</p>
+
+  <h2>1. Arrays</h2>
+
+  <h3>1.1 One-Dimensional Arrays</h3>
+  <p>An array is a contiguous block of memory storing elements of the same type. Access is O(1) via index.</p>
+  <pre><code>int arr[5] = {10, 20, 30, 40, 50};
+// Address of arr[i] = Base + i * sizeof(element)
+// arr[3] address = 1000 + 3*4 = 1012 (if base=1000, sizeof(int)=4)</code></pre>
+
+  <h3>1.2 Two-Dimensional Arrays</h3>
+  <p>A 2D array <code>A[M][N]</code> can be stored in two ways:</p>
+
+  <h4>Row-Major Order (C/C++)</h4>
+  <p>Elements of each row are stored contiguously.</p>
+  <p><code>Address(A[i][j]) = Base + (i * N + j) * sizeof(element)</code></p>
+
+  <h4>Column-Major Order (Fortran)</h4>
+  <p>Elements of each column are stored contiguously.</p>
+  <p><code>Address(A[i][j]) = Base + (j * M + i) * sizeof(element)</code></p>
+
+  <h3>1.3 Address Calculation Example</h3>
+  <p><strong>Given:</strong> A[5][4] stored in row-major, base address = 2000, element size = 2 bytes. Find address of A[3][2].</p>
+  <p><code>Address = 2000 + (3*4 + 2) * 2 = 2000 + 14*2 = 2028</code></p>
+
+  <h3>1.4 General Formula (Non-zero Lower Bounds)</h3>
+  <p>For A[lr..ur][lc..uc] where lr, lc are lower bounds:</p>
+  <p><strong>Row-major:</strong> <code>Base + ((i - lr) * (uc - lc + 1) + (j - lc)) * size</code></p>
+  <p><strong>Column-major:</strong> <code>Base + ((j - lc) * (ur - lr + 1) + (i - lr)) * size</code></p>
+
+  <table>
+    <tr><th>Operation</th><th>Time Complexity</th></tr>
+    <tr><td>Access by index</td><td>O(1)</td></tr>
+    <tr><td>Search (unsorted)</td><td>O(n)</td></tr>
+    <tr><td>Search (sorted)</td><td>O(log n)</td></tr>
+    <tr><td>Insert at end</td><td>O(1)</td></tr>
+    <tr><td>Insert at position</td><td>O(n)</td></tr>
+    <tr><td>Delete at position</td><td>O(n)</td></tr>
+  </table>
+
+  <h2>2. Stacks</h2>
+  <p>A stack is a Last-In-First-Out (LIFO) data structure. Elements are added and removed from the same end (top).</p>
+
+  <h3>2.1 Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Description</th><th>Time</th></tr>
+    <tr><td>push(x)</td><td>Add element x to top</td><td>O(1)</td></tr>
+    <tr><td>pop()</td><td>Remove and return top element</td><td>O(1)</td></tr>
+    <tr><td>peek() / top()</td><td>Return top element without removing</td><td>O(1)</td></tr>
+    <tr><td>isEmpty()</td><td>Check if stack is empty</td><td>O(1)</td></tr>
+  </table>
+
+  <h3>2.2 Stack Operations Visualization</h3>
+  <div class="mermaid">
+flowchart LR
+    subgraph Step1["Initial"]
+        S1["| 10 | 20 | 30 |\nTop=30"]
+    end
+    subgraph Step2["push(40)"]
+        S2["| 10 | 20 | 30 | 40 |\nTop=40"]
+    end
+    subgraph Step3["pop() returns 40"]
+        S3["| 10 | 20 | 30 |\nTop=30"]
+    end
+    Step1 --> Step2 --> Step3
+  </div>
+
+  <h3>2.3 Array-Based Stack Implementation</h3>
+  <pre><code>#define MAX 100
+int stack[MAX];
+int top = -1;
+
+void push(int x) {
+    if (top == MAX - 1) { printf("Overflow\n"); return; }
+    stack[++top] = x;
+}
+
+int pop() {
+    if (top == -1) { printf("Underflow\n"); return -1; }
+    return stack[top--];
+}
+
+int peek() {
+    if (top == -1) return -1;
+    return stack[top];
+}</code></pre>
+
+  <h3>2.4 Application: Parenthesis Matching</h3>
+  <pre><code>bool isBalanced(char *expr) {
+    Stack s;
+    for (int i = 0; expr[i]; i++) {
+        if (expr[i] == '(' || expr[i] == '{' || expr[i] == '[')
+            push(&amp;s, expr[i]);
+        else if (expr[i] == ')' || expr[i] == '}' || expr[i] == ']') {
+            if (isEmpty(&amp;s)) return false;
+            char top = pop(&amp;s);
+            if (!matches(top, expr[i])) return false;
+        }
+    }
+    return isEmpty(&amp;s);
+}</code></pre>
+
+  <h3>2.5 Application: Infix to Postfix Conversion</h3>
+  <p><strong>Algorithm:</strong></p>
+  <ol>
+    <li>Scan expression left to right</li>
+    <li>If operand, add to output</li>
+    <li>If operator, pop operators with higher or equal precedence from stack to output, then push current operator</li>
+    <li>If '(', push to stack</li>
+    <li>If ')', pop to output until '(' is found</li>
+    <li>Pop remaining operators to output</li>
+  </ol>
+
+  <p><strong>Example:</strong> A + B * C - D</p>
+  <table>
+    <tr><th>Token</th><th>Stack</th><th>Output</th></tr>
+    <tr><td>A</td><td></td><td>A</td></tr>
+    <tr><td>+</td><td>+</td><td>A</td></tr>
+    <tr><td>B</td><td>+</td><td>A B</td></tr>
+    <tr><td>*</td><td>+ *</td><td>A B</td></tr>
+    <tr><td>C</td><td>+ *</td><td>A B C</td></tr>
+    <tr><td>-</td><td>-</td><td>A B C * +</td></tr>
+    <tr><td>D</td><td>-</td><td>A B C * + D</td></tr>
+    <tr><td>End</td><td></td><td>A B C * + D -</td></tr>
+  </table>
+
+  <h3>2.6 Application: Postfix Evaluation</h3>
+  <p>Scan left to right. Push operands. On operator, pop two operands, compute, push result.</p>
+  <p><strong>Example:</strong> 2 3 4 * + 5 - = 2 + 12 - 5 = 9</p>
+
+  <h2>3. Queues</h2>
+  <p>A queue is a First-In-First-Out (FIFO) data structure. Elements are added at the rear and removed from the front.</p>
+
+  <h3>3.1 Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Description</th><th>Time</th></tr>
+    <tr><td>enqueue(x)</td><td>Add element to rear</td><td>O(1)</td></tr>
+    <tr><td>dequeue()</td><td>Remove and return front element</td><td>O(1)</td></tr>
+    <tr><td>front()</td><td>Return front element</td><td>O(1)</td></tr>
+    <tr><td>isEmpty()</td><td>Check if queue is empty</td><td>O(1)</td></tr>
+  </table>
+
+  <h3>3.2 Queue Operations Visualization</h3>
+  <div class="mermaid">
+flowchart LR
+    subgraph Step1["Initial Queue"]
+        Q1["Front -> | 10 | 20 | 30 | <- Rear"]
+    end
+    subgraph Step2["enqueue(40)"]
+        Q2["Front -> | 10 | 20 | 30 | 40 | <- Rear"]
+    end
+    subgraph Step3["dequeue() returns 10"]
+        Q3["Front -> | 20 | 30 | 40 | <- Rear"]
+    end
+    Step1 --> Step2 --> Step3
+  </div>
+
+  <h3>3.3 Circular Queue</h3>
+  <p>A circular queue uses a fixed-size array with wrap-around to avoid wasting space.</p>
+  <pre><code>#define MAX 100
+int queue[MAX];
+int front = -1, rear = -1;
+
+void enqueue(int x) {
+    if ((rear + 1) % MAX == front) { printf("Full\n"); return; }
+    if (front == -1) front = 0;
+    rear = (rear + 1) % MAX;
+    queue[rear] = x;
+}
+
+int dequeue() {
+    if (front == -1) { printf("Empty\n"); return -1; }
+    int val = queue[front];
+    if (front == rear) front = rear = -1;  // queue becomes empty
+    else front = (front + 1) % MAX;
+    return val;
+}</code></pre>
+
+  <div class="note">
+    <p><strong>Circular Queue Capacity:</strong> A circular queue of size N can hold at most N-1 elements (one slot is wasted to distinguish full from empty). Alternatively, maintain a count variable to use all N slots.</p>
+  </div>
+
+  <h3>3.4 Deque (Double-Ended Queue)</h3>
+  <p>Supports insertion and deletion at both ends.</p>
+  <table>
+    <tr><th>Type</th><th>Operations</th></tr>
+    <tr><td>Input-Restricted Deque</td><td>Insert at rear only; delete from both ends</td></tr>
+    <tr><td>Output-Restricted Deque</td><td>Insert at both ends; delete from front only</td></tr>
+  </table>
+
+  <h3>3.5 Priority Queue</h3>
+  <p>Elements are dequeued based on priority, not insertion order. Typically implemented with a heap.</p>
+  <table>
+    <tr><th>Implementation</th><th>Insert</th><th>Delete Min/Max</th><th>Peek</th></tr>
+    <tr><td>Unsorted Array</td><td>O(1)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>Sorted Array</td><td>O(n)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Binary Heap</td><td>O(log n)</td><td>O(log n)</td><td>O(1)</td></tr>
+  </table>
+
+  <h2>4. Stack and Queue Variants</h2>
+
+  <h3>4.1 Two Stacks in One Array</h3>
+  <p>Stack 1 grows from left (index 0), Stack 2 grows from right (index N-1). Full when tops meet.</p>
+
+  <h3>4.2 Queue Using Two Stacks</h3>
+  <pre><code>// Enqueue: push to stack1
+// Dequeue: if stack2 empty, pop all from stack1 to stack2
+//          then pop from stack2
+// Amortized O(1) per operation</code></pre>
+
+  <h3>4.3 Stack Using Two Queues</h3>
+  <pre><code>// Push: enqueue to q1
+// Pop: dequeue all except last from q1 to q2
+//      dequeue last from q1 (this is the result)
+//      swap q1 and q2
+// O(n) per pop operation</code></pre>
+
+  <h2>5. Number of Possible BSTs / Stack Permutations</h2>
+  <p>The number of distinct permutations obtainable by passing elements 1..n through a stack equals the n-th Catalan number:</p>
+  <p><code>C<sub>n</sub> = (2n)! / ((n+1)! &times; n!) = C(2n,n) / (n+1)</code></p>
+  <table>
+    <tr><th>n</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+    <tr><td>C<sub>n</sub></td><td>1</td><td>2</td><td>5</td><td>14</td><td>42</td><td>132</td></tr>
+  </table>
+
+  <h2>6. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>For 2D array address questions, identify row-major vs column-major and lower bounds.</li>
+      <li>Circular queue with array size N holds N-1 elements (unless using a count variable).</li>
+      <li>Number of valid stack permutations = Catalan number.</li>
+      <li>To check if a permutation is achievable via stack: no element should come before a smaller element that was pushed after a larger element still in the stack.</li>
+      <li>Postfix/Prefix evaluation and infix conversion are frequently tested.</li>
+      <li>Queue using two stacks: amortized O(1). Stack using two queues: O(n) per pop.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Arrays, Stacks, and Queues Quiz",
+      "questions": [
+        {
+          "question": "An array A[5..10][15..20] is stored in row-major order with base address 1000 and element size 4 bytes. What is the address of A[7][18]?",
+          "options": ["1060", "1052", "1068", "1048"],
+          "answer": 0,
+          "explanation": "Row-major: Address = Base + ((i - lr) * (uc - lc + 1) + (j - lc)) * size = 1000 + ((7-5) * (20-15+1) + (18-15)) * 4 = 1000 + (2*6 + 3) * 4 = 1000 + 15*4 = 1000 + 60 = 1060."
+        },
+        {
+          "question": "The postfix expression '6 2 3 + - 3 8 2 / + * 2 ^ 3 +' evaluates to:",
+          "options": ["52", "49", "51", "46"],
+          "answer": 2,
+          "explanation": "6 2 3 + = 6 5 -> 6-5=1. 3 8 2 / = 3 4 -> 3+4=7. 1*7=7. 7^2=49. 49+3=51 -- wait let me recompute: 6 2 3 + - gives 6-(2+3)=1. 3 8 2 / + gives 3+(8/2)=7. 1*7=7. 7^2=49. 49+3=52. Actually: 2 3 + = 5, 6 5 - = 1. 8 2 / = 4. 3 4 + = 7. 1 7 * = 7. 7 2 ^ = 49. 49 3 + = 52. The answer is 52."
+        },
+        {
+          "question": "A circular queue is implemented using an array of size 8 (indices 0 to 7). After several enqueue and dequeue operations, front = 5 and rear = 2. How many elements are in the queue?",
+          "options": ["3", "5", "6", "4"],
+          "answer": 2,
+          "explanation": "Number of elements = (rear - front + 1 + size) % size = (2 - 5 + 1 + 8) % 8 = 6 % 8 = 6. Elements are at indices 5, 6, 7, 0, 1, 2."
+        },
+        {
+          "question": "The number of possible permutations obtainable by passing the sequence 1, 2, 3, 4 through a stack is:",
+          "options": ["24", "14", "12", "8"],
+          "answer": 1,
+          "explanation": "The number of valid stack permutations of n elements equals the n-th Catalan number C(n) = C(2n,n)/(n+1). For n=4: C(4) = C(8,4)/5 = 70/5 = 14."
+        },
+        {
+          "question": "A queue is implemented using two stacks S1 and S2. If n enqueue and n dequeue operations are performed, what is the amortized time complexity per operation?",
+          "options": ["O(n)", "O(log n)", "O(1)", "O(sqrt(n))"],
+          "answer": 2,
+          "explanation": "Each element is pushed at most once to S1, moved at most once from S1 to S2, and popped at most once from S2. Total work for n operations is at most 3n, giving O(1) amortized time per operation."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

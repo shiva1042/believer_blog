@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Revision: Digital Logic — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Quick Revision: Digital Logic</h1>
+  <p class="article-section-tag">📝 Quick Revision</p>
+
+  <h2>1. Boolean Algebra Laws</h2>
+  <table>
+    <tr><th>Law</th><th>AND Form</th><th>OR Form</th></tr>
+    <tr><td>Identity</td><td>A &middot; 1 = A</td><td>A + 0 = A</td></tr>
+    <tr><td>Null</td><td>A &middot; 0 = 0</td><td>A + 1 = 1</td></tr>
+    <tr><td>Complement</td><td>A &middot; A' = 0</td><td>A + A' = 1</td></tr>
+    <tr><td>Idempotent</td><td>A &middot; A = A</td><td>A + A = A</td></tr>
+    <tr><td>De Morgan's</td><td>(AB)' = A'+B'</td><td>(A+B)' = A'B'</td></tr>
+    <tr><td>Absorption</td><td>A(A+B) = A</td><td>A + AB = A</td></tr>
+    <tr><td>Consensus</td><td>AB + A'C + BC = AB + A'C</td><td>-</td></tr>
+    <tr><td>Involution</td><td colspan="2">(A')' = A</td></tr>
+  </table>
+
+  <h2>2. K-Map Rules</h2>
+  <ul>
+    <li>Groups must be powers of 2: 1, 2, 4, 8, 16.</li>
+    <li>Make groups as large as possible.</li>
+    <li>Groups can wrap around edges (left-right, top-bottom).</li>
+    <li>Each 1 must be in at least one group. Overlapping is allowed.</li>
+    <li>Don't-cares (X) can be 0 or 1 — use them to make bigger groups.</li>
+    <li>SOP: group the 1s. POS: group the 0s.</li>
+    <li>For n variables: 2-var = 4 cells, 3-var = 8 cells, 4-var = 16 cells.</li>
+  </ul>
+  <div class="note"><strong>Remember:</strong> Adjacent columns in K-map differ by exactly 1 bit (Gray code): 00, 01, 11, 10.</div>
+
+  <h2>3. Flip-Flop Summary</h2>
+  <table>
+    <tr><th>Flip-Flop</th><th>Inputs</th><th>Characteristic Equation</th><th>Key Property</th></tr>
+    <tr><td>SR</td><td>S, R</td><td>Q+ = S + R'Q (S&middot;R = 0)</td><td>S=R=1 is invalid</td></tr>
+    <tr><td>JK</td><td>J, K</td><td>Q+ = JQ' + K'Q</td><td>J=K=1 toggles</td></tr>
+    <tr><td>D</td><td>D</td><td>Q+ = D</td><td>Output follows input</td></tr>
+    <tr><td>T</td><td>T</td><td>Q+ = TQ' + T'Q = T XOR Q</td><td>T=1 toggles, T=0 holds</td></tr>
+  </table>
+
+  <h3>Excitation Tables</h3>
+  <table>
+    <tr><th>Q &rarr; Q+</th><th>SR</th><th>JK</th><th>D</th><th>T</th></tr>
+    <tr><td>0 &rarr; 0</td><td>0X</td><td>0X</td><td>0</td><td>0</td></tr>
+    <tr><td>0 &rarr; 1</td><td>10</td><td>1X</td><td>1</td><td>1</td></tr>
+    <tr><td>1 &rarr; 0</td><td>01</td><td>X1</td><td>0</td><td>1</td></tr>
+    <tr><td>1 &rarr; 1</td><td>X0</td><td>X0</td><td>1</td><td>0</td></tr>
+  </table>
+
+  <h2>4. IEEE 754 Floating Point</h2>
+  <table>
+    <tr><th>Format</th><th>Sign</th><th>Exponent</th><th>Mantissa</th><th>Bias</th><th>Total Bits</th></tr>
+    <tr><td>Single Precision</td><td>1 bit</td><td>8 bits</td><td>23 bits</td><td>127</td><td>32</td></tr>
+    <tr><td>Double Precision</td><td>1 bit</td><td>11 bits</td><td>52 bits</td><td>1023</td><td>64</td></tr>
+  </table>
+  <ul>
+    <li>Value = (-1)^S * 1.M * 2^(E - bias) (normalized)</li>
+    <li>Denormalized: E = 0, value = (-1)^S * 0.M * 2^(1 - bias)</li>
+    <li>Special: E = all 1s, M = 0 &rarr; Infinity. E = all 1s, M &ne; 0 &rarr; NaN.</li>
+  </ul>
+  <div class="note"><strong>Remember:</strong> Bias for single = 127, double = 1023. Actual exponent = stored - bias.</div>
+
+  <h2>5. Number Representations</h2>
+  <table>
+    <tr><th>System (n bits)</th><th>Range</th></tr>
+    <tr><td>Unsigned</td><td>0 to 2^n - 1</td></tr>
+    <tr><td>Sign-magnitude</td><td>-(2^(n-1)-1) to +(2^(n-1)-1)</td></tr>
+    <tr><td>1's complement</td><td>-(2^(n-1)-1) to +(2^(n-1)-1)</td></tr>
+    <tr><td>2's complement</td><td>-2^(n-1) to +(2^(n-1)-1)</td></tr>
+  </table>
+  <ul>
+    <li>2's complement of N: invert all bits, add 1.</li>
+    <li>Overflow in 2's complement: occurs when adding same-sign numbers gives different-sign result.</li>
+  </ul>
+
+  <h2>6. Combinational Circuits Quick Facts</h2>
+  <ul>
+    <li><strong>Multiplexer:</strong> 2^n inputs, n select lines, 1 output. Can implement any n-variable function.</li>
+    <li><strong>Decoder:</strong> n inputs, 2^n outputs. Each output = one minterm.</li>
+    <li><strong>Full Adder:</strong> Sum = A XOR B XOR Cin. Carry = AB + BCin + ACin.</li>
+    <li><strong>n-bit Ripple Carry Adder:</strong> delay = 2n gate delays (for carry propagation).</li>
+  </ul>
+
+  <h2>7. Sequential Circuits Quick Facts</h2>
+  <ul>
+    <li><strong>Mod-N counter:</strong> needs ceil(log2(N)) flip-flops.</li>
+    <li><strong>Ring counter:</strong> N flip-flops for mod-N. Johnson counter: N flip-flops for mod-2N.</li>
+    <li><strong>Mealy machine:</strong> output depends on state AND input. <strong>Moore machine:</strong> output depends only on state.</li>
+    <li>Moore has at least as many states as equivalent Mealy (often more).</li>
+  </ul>
+
+  <div class="important"><strong>Focus Areas:</strong> K-map minimization, flip-flop conversions, IEEE 754 representation, and 2's complement overflow detection are the most commonly tested topics.</div>
+
+</article>
+</body>
+</html>

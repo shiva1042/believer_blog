@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solving Recurrence Relations — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Solving Recurrence Relations</h1>
+  <p class="article-section-tag">⚡ Algorithms</p>
+
+  <h2>1. Why Recurrences Matter</h2>
+  <p>Recurrence relations describe the running time of recursive algorithms. Solving them gives us the closed-form time complexity. This is one of the most important topics in GATE Algorithms.</p>
+
+  <h2>2. Substitution Method</h2>
+  <p>Guess the solution, then prove it correct using mathematical induction.</p>
+
+  <h3>Example 1: T(n) = 2T(n/2) + n</h3>
+  <pre><code>Guess: T(n) = O(n log n). Prove T(n) <= c * n * log(n).
+
+Assume T(k) <= c*k*log(k) for all k < n.
+
+T(n) = 2T(n/2) + n
+     <= 2 * c * (n/2) * log(n/2) + n
+     = c * n * (log n - 1) + n
+     = c * n * log n - c*n + n
+     <= c * n * log n   (when c >= 1)
+
+The guess holds. T(n) = O(n log n).</code></pre>
+
+  <h3>Example 2: T(n) = T(n-1) + n</h3>
+  <pre><code>Guess: T(n) = O(n^2). Prove T(n) <= c*n^2.
+
+T(n) = T(n-1) + n
+     <= c*(n-1)^2 + n
+     = c*n^2 - 2cn + c + n
+     = c*n^2 - (2c-1)*n + c
+     <= c*n^2   (when c >= 1 and n >= 1)
+
+T(n) = O(n^2).</code></pre>
+
+  <div class="note"><strong>Tip:</strong> The hardest part is guessing correctly. Use the recursion tree method to make an informed guess, then verify with substitution.</div>
+
+  <h2>3. Recursion Tree Method</h2>
+  <p>Draw the call tree. At each level, compute the total work done. Sum across all levels.</p>
+
+  <h3>Example: T(n) = 2T(n/2) + n</h3>
+  <div class="mermaid">
+graph TD
+    A["n (cost: n)"] --> B["n/2 (cost: n/2)"]
+    A --> C["n/2 (cost: n/2)"]
+    B --> D["n/4 (cost: n/4)"]
+    B --> E["n/4 (cost: n/4)"]
+    C --> F["n/4 (cost: n/4)"]
+    C --> G["n/4 (cost: n/4)"]
+  </div>
+
+  <pre><code>Level 0: 1 node, cost = n             → total = n
+Level 1: 2 nodes, cost = n/2 each     → total = n
+Level 2: 4 nodes, cost = n/4 each     → total = n
+...
+Level k: 2^k nodes, cost = n/2^k each → total = n
+
+Number of levels: log2(n) (tree ends when n/2^k = 1)
+
+Total = n * log2(n) = O(n log n)</code></pre>
+
+  <h3>Example: T(n) = 3T(n/4) + n^2</h3>
+  <div class="mermaid">
+graph TD
+    A2["n^2"] --> B2["(n/4)^2"]
+    A2 --> C2["(n/4)^2"]
+    A2 --> D2["(n/4)^2"]
+  </div>
+  <pre><code>Level 0: cost = n^2
+Level 1: 3 nodes, cost = (n/4)^2 each → 3n^2/16
+Level 2: 9 nodes, cost = (n/16)^2 each → 9n^2/256
+Level k: 3^k * (n/4^k)^2 = n^2 * (3/16)^k
+
+Geometric series with ratio 3/16 < 1.
+Sum = n^2 * 1/(1 - 3/16) = n^2 * 16/13 = O(n^2)</code></pre>
+
+  <h2>4. Master Theorem</h2>
+  <p>For recurrences of the form: <code>T(n) = aT(n/b) + O(n^c * (log n)^k)</code> where a &ge; 1, b &gt; 1.</p>
+  <p>Let <code>p = log_b(a)</code> (critical exponent).</p>
+
+  <h3>Standard Master Theorem (3 Cases)</h3>
+  <table>
+    <tr><th>Case</th><th>Condition</th><th>Result</th></tr>
+    <tr><td>Case 1</td><td>c &lt; p (work dominated by leaves)</td><td>T(n) = O(n^p)</td></tr>
+    <tr><td>Case 2</td><td>c = p and k = 0</td><td>T(n) = O(n^c * log n)</td></tr>
+    <tr><td>Case 2 (extended)</td><td>c = p and k &ge; 0</td><td>T(n) = O(n^c * (log n)^(k+1))</td></tr>
+    <tr><td>Case 3</td><td>c &gt; p (work dominated by root)</td><td>T(n) = O(n^c)</td></tr>
+  </table>
+
+  <h3>Master Theorem Examples</h3>
+
+  <p><strong>Example 1:</strong> T(n) = 2T(n/2) + n</p>
+  <pre><code>a=2, b=2, c=1. p = log2(2) = 1.
+c = p → Case 2. T(n) = O(n log n).</code></pre>
+
+  <p><strong>Example 2:</strong> T(n) = 4T(n/2) + n</p>
+  <pre><code>a=4, b=2, c=1. p = log2(4) = 2.
+c < p → Case 1. T(n) = O(n^2).</code></pre>
+
+  <p><strong>Example 3:</strong> T(n) = 2T(n/2) + n^2</p>
+  <pre><code>a=2, b=2, c=2. p = log2(2) = 1.
+c > p → Case 3. T(n) = O(n^2).</code></pre>
+
+  <p><strong>Example 4:</strong> T(n) = 3T(n/4) + n log n</p>
+  <pre><code>a=3, b=4, c=1 (the n part), k=1 (log factor).
+p = log4(3) ≈ 0.793.
+c=1 > p → Case 3. T(n) = O(n log n).</code></pre>
+
+  <p><strong>Example 5:</strong> T(n) = 2T(n/4) + sqrt(n)</p>
+  <pre><code>a=2, b=4, c=0.5. p = log4(2) = 0.5.
+c = p → Case 2. T(n) = O(sqrt(n) * log n).</code></pre>
+
+  <h3>When Master Theorem Does NOT Apply</h3>
+  <ul>
+    <li>T(n) = T(n-1) + n (subtractive, not divide)</li>
+    <li>T(n) = T(n/2) + T(n/3) + n (unequal subproblems)</li>
+    <li>T(n) = 2^n * T(n/2) + n (a is not constant)</li>
+  </ul>
+
+  <h2>5. Extended Master Theorem</h2>
+  <p>Handles the case where f(n) = n^c (log n)^k with c = log_b(a):</p>
+  <table>
+    <tr><th>Condition</th><th>Result</th></tr>
+    <tr><td>c = p, k > -1</td><td>T(n) = O(n^p (log n)^(k+1))</td></tr>
+    <tr><td>c = p, k = -1</td><td>T(n) = O(n^p log(log n))</td></tr>
+    <tr><td>c = p, k &lt; -1</td><td>T(n) = O(n^p)</td></tr>
+  </table>
+
+  <h2>6. Akra-Bazzi Method (Brief)</h2>
+  <p>For recurrences of the form: <code>T(n) = &Sigma; a_i * T(n/b_i) + g(n)</code> with possibly unequal subproblems.</p>
+  <ol>
+    <li>Find p such that &Sigma; a_i / b_i^p = 1.</li>
+    <li>T(n) = &Theta;(n^p * (1 + integral from 1 to n of g(u)/u^(p+1) du)).</li>
+  </ol>
+  <p>This is rarely tested directly in GATE but useful for non-standard recurrences.</p>
+
+  <h2>7. Common Recurrence Patterns</h2>
+  <table>
+    <tr><th>Recurrence</th><th>Solution</th><th>Algorithm Example</th></tr>
+    <tr><td>T(n) = T(n/2) + O(1)</td><td>O(log n)</td><td>Binary search</td></tr>
+    <tr><td>T(n) = T(n/2) + O(n)</td><td>O(n)</td><td>Randomized select (avg)</td></tr>
+    <tr><td>T(n) = 2T(n/2) + O(1)</td><td>O(n)</td><td>Tree traversal</td></tr>
+    <tr><td>T(n) = 2T(n/2) + O(n)</td><td>O(n log n)</td><td>Merge sort</td></tr>
+    <tr><td>T(n) = 2T(n/2) + O(n^2)</td><td>O(n^2)</td><td>-</td></tr>
+    <tr><td>T(n) = 4T(n/2) + O(n)</td><td>O(n^2)</td><td>Naive matrix multiply helper</td></tr>
+    <tr><td>T(n) = 7T(n/2) + O(n^2)</td><td>O(n^2.81)</td><td>Strassen's matrix multiply</td></tr>
+    <tr><td>T(n) = T(n-1) + O(1)</td><td>O(n)</td><td>Linear scan</td></tr>
+    <tr><td>T(n) = T(n-1) + O(n)</td><td>O(n^2)</td><td>Selection sort</td></tr>
+    <tr><td>T(n) = 2T(n-1) + O(1)</td><td>O(2^n)</td><td>Tower of Hanoi</td></tr>
+    <tr><td>T(n) = T(n-1) + T(n-2)</td><td>O(1.618^n)</td><td>Naive Fibonacci</td></tr>
+  </table>
+
+  <h2>8. Practice Problems</h2>
+
+  <p><strong>P1:</strong> Solve T(n) = 9T(n/3) + n.</p>
+  <pre><code>a=9, b=3, c=1. p = log3(9) = 2.
+c=1 < p=2 → Case 1. T(n) = O(n^2).</code></pre>
+
+  <p><strong>P2:</strong> Solve T(n) = T(2n/3) + 1.</p>
+  <pre><code>a=1, b=3/2, c=0. p = log(3/2)(1) = 0.
+c=0 = p → Case 2. T(n) = O(log n).</code></pre>
+
+  <p><strong>P3:</strong> Solve T(n) = 3T(n/9) + sqrt(n).</p>
+  <pre><code>a=3, b=9, c=0.5. p = log9(3) = 0.5.
+c = p → Case 2. T(n) = O(sqrt(n) * log n).</code></pre>
+
+  <p><strong>P4:</strong> Solve T(n) = T(n-1) + n^2.</p>
+  <pre><code>Not divide-and-conquer. Expand:
+T(n) = n^2 + (n-1)^2 + ... + 1^2 = n(n+1)(2n+1)/6 = O(n^3).</code></pre>
+
+  <p><strong>P5:</strong> Solve T(n) = 4T(n/2) + n^2.</p>
+  <pre><code>a=4, b=2, c=2. p = log2(4) = 2.
+c = p → Case 2. T(n) = O(n^2 log n).</code></pre>
+
+  <p><strong>P6:</strong> Solve T(n) = 2T(n/4) + 1.</p>
+  <pre><code>a=2, b=4, c=0. p = log4(2) = 0.5.
+c=0 < p=0.5 → Case 1. T(n) = O(sqrt(n)).</code></pre>
+
+  <p><strong>P7:</strong> Solve T(n) = T(n/2) + n log n.</p>
+  <pre><code>a=1, b=2, c=1 (with k=1). p = log2(1) = 0.
+c=1 > p=0 → Case 3. T(n) = O(n log n).</code></pre>
+
+  <p><strong>P8:</strong> Solve T(n) = 8T(n/2) + n^2.</p>
+  <pre><code>a=8, b=2, c=2. p = log2(8) = 3.
+c=2 < p=3 → Case 1. T(n) = O(n^3).</code></pre>
+
+  <p><strong>P9:</strong> Solve T(n) = 2T(n-1) + 1, T(0) = 1.</p>
+  <pre><code>Expand: T(n) = 2^n + 2^(n-1) + ... + 2 + 1 = 2^(n+1) - 1 = O(2^n).</code></pre>
+
+  <p><strong>P10:</strong> Solve T(n) = T(n/3) + T(2n/3) + n.</p>
+  <pre><code>Recursion tree: every level sums to n.
+Depth = log(3/2)(n) (longest path is the 2n/3 branch).
+T(n) = O(n log n).</code></pre>
+
+  <div class="important"><strong>GATE Strategy:</strong> Try Master Theorem first. If it does not apply (subtractive recurrence or unequal splits), use the recursion tree method. Save substitution for verification.</div>
+
+</article>
+</body>
+</html>

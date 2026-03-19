@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Algorithms in AI | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Search Algorithms in AI</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. Problem-Solving as Search</h2>
+  <p>Many AI problems can be formulated as search problems. A search problem is defined by:</p>
+  <ul>
+    <li><strong>Initial state:</strong> The starting state of the agent</li>
+    <li><strong>Actions:</strong> The set of actions available in a given state</li>
+    <li><strong>Transition model:</strong> A description of what each action does (Result(s, a))</li>
+    <li><strong>Goal test:</strong> Determines whether a given state is a goal state</li>
+    <li><strong>Path cost:</strong> A function that assigns a numeric cost to each path</li>
+  </ul>
+  <p>A <strong>solution</strong> is a sequence of actions from the initial state to a goal state. An <strong>optimal solution</strong> is a solution with the lowest path cost.</p>
+
+  <h2>2. Uninformed (Blind) Search Strategies</h2>
+  <p>Uninformed search strategies have no additional information about states beyond the problem definition. They differ in the order in which nodes are expanded.</p>
+
+  <h3>2.1 Breadth-First Search (BFS)</h3>
+  <p>Expands the <strong>shallowest unexpanded node</strong> first. Uses a FIFO queue.</p>
+  <ul>
+    <li><strong>Complete:</strong> Yes (if branching factor b is finite)</li>
+    <li><strong>Optimal:</strong> Yes (if all step costs are equal)</li>
+    <li><strong>Time complexity:</strong> O(b<sup>d</sup>)</li>
+    <li><strong>Space complexity:</strong> O(b<sup>d</sup>) &mdash; stores all nodes at the current level</li>
+  </ul>
+
+  <h3>2.2 Depth-First Search (DFS)</h3>
+  <p>Expands the <strong>deepest unexpanded node</strong> first. Uses a LIFO stack (or recursion).</p>
+  <ul>
+    <li><strong>Complete:</strong> No (may loop in infinite-depth or cyclic spaces; complete in finite spaces with cycle detection)</li>
+    <li><strong>Optimal:</strong> No</li>
+    <li><strong>Time complexity:</strong> O(b<sup>m</sup>) where m is maximum depth</li>
+    <li><strong>Space complexity:</strong> O(bm) &mdash; linear in maximum depth</li>
+  </ul>
+
+  <h3>2.3 Uniform-Cost Search (UCS)</h3>
+  <p>Expands the node with the <strong>lowest path cost g(n)</strong>. Uses a priority queue ordered by g(n). Equivalent to BFS when all step costs are equal. This is essentially Dijkstra's algorithm for search.</p>
+  <ul>
+    <li><strong>Complete:</strong> Yes (if step costs &ge; &epsilon; > 0)</li>
+    <li><strong>Optimal:</strong> Yes</li>
+    <li><strong>Time complexity:</strong> O(b<sup>1 + &lfloor;C*/&epsilon;&rfloor;</sup>) where C* is the optimal cost</li>
+    <li><strong>Space complexity:</strong> O(b<sup>1 + &lfloor;C*/&epsilon;&rfloor;</sup>)</li>
+  </ul>
+
+  <h3>2.4 Depth-Limited Search (DLS)</h3>
+  <p>DFS with a predetermined depth limit <code>l</code>. Nodes at depth <code>l</code> are treated as if they have no successors.</p>
+  <ul>
+    <li><strong>Complete:</strong> No (goal may be beyond depth limit)</li>
+    <li><strong>Optimal:</strong> No</li>
+    <li><strong>Time complexity:</strong> O(b<sup>l</sup>)</li>
+    <li><strong>Space complexity:</strong> O(bl)</li>
+  </ul>
+
+  <h3>2.5 Iterative Deepening Depth-First Search (IDDFS)</h3>
+  <p>Repeatedly applies DLS with increasing depth limits (0, 1, 2, ...). Combines the benefits of BFS (completeness, optimality with uniform costs) with DFS (linear space).</p>
+  <ul>
+    <li><strong>Complete:</strong> Yes</li>
+    <li><strong>Optimal:</strong> Yes (if all step costs are equal)</li>
+    <li><strong>Time complexity:</strong> O(b<sup>d</sup>)</li>
+    <li><strong>Space complexity:</strong> O(bd) &mdash; linear!</li>
+  </ul>
+
+  <div class="formula">
+    IDDFS total nodes generated = d&middot;b + (d-1)&middot;b&sup2; + ... + 1&middot;b<sup>d</sup><br>
+    The overhead of re-expansion is at most a factor of b/(b-1) compared to BFS.
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> For b = 10, d = 5:<br>
+    BFS generates: 10 + 100 + 1,000 + 10,000 + 100,000 = 111,110 nodes<br>
+    IDDFS generates: 50 + 400 + 3,000 + 20,000 + 100,000 = 123,450 nodes<br>
+    Only about 11% overhead, but IDDFS uses O(50) space vs. O(100,000) for BFS.
+  </div>
+
+  <h2>3. Informed (Heuristic) Search Strategies</h2>
+  <p>Informed search uses a <strong>heuristic function h(n)</strong> that estimates the cost from node n to the nearest goal. A good heuristic can dramatically reduce the search effort.</p>
+
+  <h3>3.1 Greedy Best-First Search</h3>
+  <p>Expands the node that appears closest to the goal, i.e., the node with the <strong>smallest h(n)</strong>.</p>
+  <ul>
+    <li><strong>Complete:</strong> No (can get stuck in loops; complete with repeated-state checking in finite spaces)</li>
+    <li><strong>Optimal:</strong> No</li>
+    <li><strong>Time complexity:</strong> O(b<sup>m</sup>) in worst case</li>
+    <li><strong>Space complexity:</strong> O(b<sup>m</sup>)</li>
+  </ul>
+
+  <h3>3.2 A* Search</h3>
+  <p>The most widely used informed search algorithm. Evaluates nodes using:</p>
+  <div class="formula">
+    f(n) = g(n) + h(n)<br>
+    where g(n) = actual cost from start to n, h(n) = estimated cost from n to goal
+  </div>
+  <p>A* expands the node with the <strong>smallest f(n)</strong>. Uses a priority queue ordered by f(n).</p>
+  <ul>
+    <li><strong>Complete:</strong> Yes (if step costs &ge; &epsilon; > 0 and b is finite)</li>
+    <li><strong>Optimal:</strong> Yes (if h(n) is admissible; for graph search, h(n) must also be consistent)</li>
+    <li><strong>Time complexity:</strong> Exponential in worst case, but much better with good heuristics</li>
+    <li><strong>Space complexity:</strong> O(b<sup>d</sup>) &mdash; keeps all nodes in memory</li>
+  </ul>
+
+  <h2>4. Heuristic Properties</h2>
+
+  <h3>4.1 Admissibility</h3>
+  <p>A heuristic h(n) is <strong>admissible</strong> if it <strong>never overestimates</strong> the true cost to reach the goal from n.</p>
+  <div class="formula">
+    h(n) &le; h*(n) for all n<br>
+    where h*(n) is the true cost from n to the nearest goal
+  </div>
+  <p>An admissible heuristic is also called an <strong>optimistic</strong> heuristic. A* with an admissible heuristic is guaranteed to find the optimal solution (for tree search).</p>
+
+  <h3>4.2 Consistency (Monotonicity)</h3>
+  <p>A heuristic h(n) is <strong>consistent</strong> if for every node n and every successor n' generated by action a:</p>
+  <div class="formula">
+    h(n) &le; c(n, a, n') + h(n')<br>
+    (triangle inequality)
+  </div>
+  <p>Every consistent heuristic is admissible, but the converse is not always true. A* with a consistent heuristic is optimal for graph search (with closed list).</p>
+
+  <h3>4.3 Dominance</h3>
+  <p>If h<sub>1</sub>(n) &ge; h<sub>2</sub>(n) for all n (both admissible), then h<sub>1</sub> <strong>dominates</strong> h<sub>2</sub>. A dominating heuristic is always better or equal &mdash; it never expands more nodes than the dominated one.</p>
+
+  <div class="example">
+    <strong>Example &mdash; 8-Puzzle Heuristics:</strong>
+    <ul>
+      <li><strong>h<sub>1</sub></strong> = number of misplaced tiles (admissible)</li>
+      <li><strong>h<sub>2</sub></strong> = sum of Manhattan distances (admissible)</li>
+      <li>h<sub>2</sub> dominates h<sub>1</sub> because h<sub>2</sub>(n) &ge; h<sub>1</sub>(n) for all n</li>
+      <li>Therefore, A* with h<sub>2</sub> will expand fewer or equal nodes than A* with h<sub>1</sub></li>
+    </ul>
+  </div>
+
+  <h2>5. Complexity Comparison Table</h2>
+  <table>
+    <tr>
+      <th>Algorithm</th><th>Complete?</th><th>Optimal?</th><th>Time</th><th>Space</th>
+    </tr>
+    <tr>
+      <td>BFS</td><td>Yes*</td><td>Yes**</td><td>O(b<sup>d</sup>)</td><td>O(b<sup>d</sup>)</td>
+    </tr>
+    <tr>
+      <td>DFS</td><td>No</td><td>No</td><td>O(b<sup>m</sup>)</td><td>O(bm)</td>
+    </tr>
+    <tr>
+      <td>UCS</td><td>Yes</td><td>Yes</td><td>O(b<sup>1+&lfloor;C*/&epsilon;&rfloor;</sup>)</td><td>O(b<sup>1+&lfloor;C*/&epsilon;&rfloor;</sup>)</td>
+    </tr>
+    <tr>
+      <td>DLS</td><td>No</td><td>No</td><td>O(b<sup>l</sup>)</td><td>O(bl)</td>
+    </tr>
+    <tr>
+      <td>IDDFS</td><td>Yes</td><td>Yes**</td><td>O(b<sup>d</sup>)</td><td>O(bd)</td>
+    </tr>
+    <tr>
+      <td>Greedy Best-First</td><td>No</td><td>No</td><td>O(b<sup>m</sup>)</td><td>O(b<sup>m</sup>)</td>
+    </tr>
+    <tr>
+      <td>A*</td><td>Yes</td><td>Yes***</td><td>Exponential</td><td>O(b<sup>d</sup>)</td>
+    </tr>
+  </table>
+  <p><small>* if b is finite; ** if all step costs are equal; *** if h is admissible (tree) / consistent (graph). b = branching factor, d = solution depth, m = max depth, l = depth limit, C* = optimal cost, &epsilon; = minimum step cost.</small></p>
+
+  <h2>6. Important Points for GATE</h2>
+  <ul>
+    <li>IDDFS is the preferred uninformed search method when the search space is large and the solution depth is unknown.</li>
+    <li>A* is optimally efficient &mdash; no other optimal algorithm using the same heuristic expands fewer nodes.</li>
+    <li>If h(n) = 0 for all n, A* reduces to UCS.</li>
+    <li>If h(n) = 0 and all step costs are 1, A*/UCS reduces to BFS.</li>
+    <li>Bidirectional search can reduce time complexity from O(b<sup>d</sup>) to O(b<sup>d/2</sup>).</li>
+  </ul>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "Search Algorithms in AI - GATE Quiz",
+    "questions": [
+      {
+        "question": "Which uninformed search strategy combines the completeness of BFS with the space efficiency of DFS?",
+        "options": ["Uniform-Cost Search", "Depth-Limited Search", "Iterative Deepening Depth-First Search", "Bidirectional Search"],
+        "answer": 2,
+        "explanation": "IDDFS performs repeated DFS with increasing depth limits. It achieves BFS-level completeness and optimality (with uniform costs) while maintaining DFS-level O(bd) space complexity."
+      },
+      {
+        "question": "A* search is guaranteed to find the optimal solution in graph search when the heuristic is:",
+        "options": ["Admissible only", "Consistent (monotonic)", "Dominant", "Any heuristic will do"],
+        "answer": 1,
+        "explanation": "For tree search, admissibility suffices for A* optimality. However, for graph search (which avoids re-expanding nodes using a closed list), the heuristic must be consistent (monotonic) to guarantee optimality. Every consistent heuristic is admissible."
+      },
+      {
+        "question": "For the 8-puzzle, which of the following is true about h1 (misplaced tiles) and h2 (Manhattan distance)?",
+        "options": ["h1 dominates h2", "h2 dominates h1", "Neither dominates the other", "Both are inadmissible"],
+        "answer": 1,
+        "explanation": "h2 (Manhattan distance) is always >= h1 (misplaced tiles) for any state, and both are admissible. Therefore h2 dominates h1, meaning A* with h2 will never expand more nodes than A* with h1."
+      },
+      {
+        "question": "What is the space complexity of DFS with branching factor b and maximum depth m?",
+        "options": ["O(b^m)", "O(bm)", "O(b^d)", "O(m)"],
+        "answer": 1,
+        "explanation": "DFS only needs to store the nodes along a single path from root to leaf, plus the siblings of each node on that path. This gives O(bm) space complexity, which is linear in the maximum depth."
+      },
+      {
+        "question": "If h(n) = 0 for all nodes n, A* search becomes equivalent to:",
+        "options": ["Breadth-First Search", "Depth-First Search", "Uniform-Cost Search", "Greedy Best-First Search"],
+        "answer": 2,
+        "explanation": "When h(n) = 0 for all n, f(n) = g(n) + 0 = g(n). A* then expands nodes in order of their path cost g(n), which is exactly what Uniform-Cost Search does."
+      },
+      {
+        "question": "A heuristic function h(n) is admissible if:",
+        "options": ["h(n) >= h*(n) for all n (overestimates)", "h(n) <= h*(n) for all n (never overestimates)", "h(n) = h*(n) for all n (exact)", "h(n) satisfies the triangle inequality"],
+        "answer": 1,
+        "explanation": "An admissible heuristic never overestimates the true cost to reach the goal. Formally, h(n) <= h*(n) for all n, where h*(n) is the actual minimum cost from n to the goal. This optimistic estimate ensures A* finds optimal solutions."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

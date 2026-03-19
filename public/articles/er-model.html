@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ER Model | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>ER Model</h1>
+  <p class="article-section-tag">&#128451;&#65039; Section 9: Databases</p>
+
+  <!-- ===================== ENTITIES ===================== -->
+  <h2>1. Entity</h2>
+  <p>An <strong>entity</strong> is a real-world object or concept that is distinguishable from other objects. An <strong>entity set</strong> is a collection of entities of the same type (e.g., all students in a university).</p>
+
+  <table>
+    <tr><th>Entity Type</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>Strong Entity</strong></td><td>Has a primary key that uniquely identifies each instance</td><td>Student (with StudentID)</td></tr>
+    <tr><td><strong>Weak Entity</strong></td><td>Does not have a sufficient primary key on its own; depends on an identifying (owner) entity</td><td>Dependent (depends on Employee)</td></tr>
+  </table>
+
+  <!-- ===================== ATTRIBUTES ===================== -->
+  <h2>2. Attributes</h2>
+  <p>An <strong>attribute</strong> is a property that describes an entity. Attributes are classified as follows:</p>
+
+  <table>
+    <tr><th>Attribute Type</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>Simple (Atomic)</strong></td><td>Cannot be divided further</td><td>Age, SSN</td></tr>
+    <tr><td><strong>Composite</strong></td><td>Can be divided into sub-attributes</td><td>Name (FirstName, MiddleName, LastName)</td></tr>
+    <tr><td><strong>Single-Valued</strong></td><td>Has one value for each entity</td><td>DateOfBirth</td></tr>
+    <tr><td><strong>Multivalued</strong></td><td>Can have multiple values for a single entity</td><td>PhoneNumbers, EmailAddresses</td></tr>
+    <tr><td><strong>Derived</strong></td><td>Value can be computed from other attributes</td><td>Age (derived from DateOfBirth)</td></tr>
+    <tr><td><strong>Key Attribute</strong></td><td>Uniquely identifies an entity within its entity set</td><td>StudentID, EmployeeID</td></tr>
+    <tr><td><strong>Stored</strong></td><td>Actually stored in the database (source of derived attributes)</td><td>DateOfBirth</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>ER Diagram Notation:</strong>
+    <ul>
+      <li>Simple attribute: plain oval</li>
+      <li>Composite attribute: oval connected to sub-ovals</li>
+      <li>Multivalued attribute: double oval</li>
+      <li>Derived attribute: dashed oval</li>
+      <li>Key attribute: underlined name inside oval</li>
+    </ul>
+  </div>
+
+  <!-- ===================== RELATIONSHIPS ===================== -->
+  <h2>3. Relationships</h2>
+  <p>A <strong>relationship</strong> is an association among two or more entities. A <strong>relationship set</strong> is a set of relationships of the same type.</p>
+
+  <h3>3.1 Degree of a Relationship</h3>
+  <table>
+    <tr><th>Degree</th><th>Description</th><th>Example</th></tr>
+    <tr><td>Unary (Recursive)</td><td>Single entity set participates in multiple roles</td><td>Employee manages Employee</td></tr>
+    <tr><td>Binary</td><td>Two entity sets are involved</td><td>Student enrolls in Course</td></tr>
+    <tr><td>Ternary</td><td>Three entity sets are involved</td><td>Supplier supplies Part to Project</td></tr>
+  </table>
+
+  <h3>3.2 Cardinality Constraints</h3>
+  <p>Cardinality defines the number of entities to which another entity can be associated via a relationship:</p>
+
+  <table>
+    <tr><th>Cardinality</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>1:1 (One-to-One)</strong></td><td>Each entity in A is associated with at most one entity in B, and vice versa</td><td>Person has Passport</td></tr>
+    <tr><td><strong>1:N (One-to-Many)</strong></td><td>Each entity in A can be associated with many in B, but each in B is associated with at most one in A</td><td>Department has Employees</td></tr>
+    <tr><td><strong>M:N (Many-to-Many)</strong></td><td>Each entity in A can be associated with many in B, and vice versa</td><td>Student enrolls in Course</td></tr>
+  </table>
+
+  <h3>3.3 Participation Constraints</h3>
+  <table>
+    <tr><th>Type</th><th>Description</th><th>Notation</th></tr>
+    <tr><td><strong>Total Participation</strong></td><td>Every entity must participate in the relationship</td><td>Double line in ER diagram</td></tr>
+    <tr><td><strong>Partial Participation</strong></td><td>Not every entity needs to participate</td><td>Single line in ER diagram</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Example:</strong> Every employee MUST work in a department (total participation of Employee in "works_in"). Not every department must have a manager (partial participation of Department in "managed_by").
+  </div>
+
+  <!-- ===================== ER DIAGRAM ===================== -->
+  <h2>4. ER Diagram Example</h2>
+  <p>The following diagram models a university database with Students, Courses, and Departments:</p>
+
+  <div class="mermaid">
+    erDiagram
+      STUDENT {
+        int StudentID PK
+        string Name
+        date DateOfBirth
+        string Email
+      }
+      COURSE {
+        string CourseID PK
+        string Title
+        int Credits
+      }
+      DEPARTMENT {
+        int DeptID PK
+        string DeptName
+        string Location
+      }
+      INSTRUCTOR {
+        int InstructorID PK
+        string Name
+        string Rank
+      }
+
+      STUDENT ||--o{ ENROLLS : enrolls_in
+      COURSE ||--o{ ENROLLS : has_students
+      ENROLLS {
+        string Grade
+        date EnrollDate
+      }
+
+      DEPARTMENT ||--|{ COURSE : offers
+      DEPARTMENT ||--|{ INSTRUCTOR : employs
+      INSTRUCTOR ||--o{ COURSE : teaches
+  </div>
+
+  <!-- ===================== WEAK ENTITIES ===================== -->
+  <h2>5. Weak Entities and Identifying Relationships</h2>
+  <p>A <strong>weak entity</strong> cannot be uniquely identified by its own attributes alone. It depends on an <strong>owner (strong) entity</strong> through an <strong>identifying relationship</strong>.</p>
+
+  <table>
+    <tr><th>Concept</th><th>Description</th></tr>
+    <tr><td><strong>Partial Key (Discriminator)</strong></td><td>An attribute that distinguishes weak entities associated with the same owner. Represented with a dashed underline.</td></tr>
+    <tr><td><strong>Identifying Relationship</strong></td><td>The relationship connecting the weak entity to its owner. Represented with a double diamond.</td></tr>
+    <tr><td><strong>Total Participation</strong></td><td>A weak entity always has total participation in its identifying relationship.</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Example:</strong> <code>Dependent</code> is a weak entity depending on <code>Employee</code>.
+    <ul>
+      <li>Employee has EmployeeID (primary key)</li>
+      <li>Dependent has DependentName (partial key / discriminator)</li>
+      <li>Full key of Dependent = (EmployeeID, DependentName)</li>
+    </ul>
+  </div>
+
+  <div class="mermaid">
+    erDiagram
+      EMPLOYEE {
+        int EmployeeID PK
+        string Name
+        float Salary
+      }
+      DEPENDENT {
+        string DependentName PK
+        date BirthDate
+        string Relationship
+      }
+      EMPLOYEE ||--|{ DEPENDENT : has
+  </div>
+
+  <!-- ===================== ER TO RELATIONAL ===================== -->
+  <h2>6. ER to Relational Model Mapping</h2>
+  <p>Converting an ER diagram to relational tables follows systematic rules:</p>
+
+  <table>
+    <tr><th>ER Construct</th><th>Relational Mapping</th></tr>
+    <tr><td>Strong Entity</td><td>Create a table with all simple attributes; primary key becomes table PK</td></tr>
+    <tr><td>Weak Entity</td><td>Create a table with partial key + owner's PK as composite primary key; add foreign key to owner</td></tr>
+    <tr><td>1:1 Relationship</td><td>Add foreign key to either side (prefer the side with total participation); or merge into one table</td></tr>
+    <tr><td>1:N Relationship</td><td>Add foreign key to the "many" side (N-side) referencing the "one" side</td></tr>
+    <tr><td>M:N Relationship</td><td>Create a new junction table with PKs of both entities as composite PK; include relationship attributes</td></tr>
+    <tr><td>Multivalued Attribute</td><td>Create a separate table with the entity's PK and the attribute as composite PK</td></tr>
+    <tr><td>Composite Attribute</td><td>Include only the leaf (simple) sub-attributes in the table</td></tr>
+    <tr><td>Derived Attribute</td><td>Typically not stored; computed at query time (or stored for performance)</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Mapping Example:</strong> For the university ER diagram above:
+    <pre><code>Student(StudentID, Name, DateOfBirth, Email)
+Course(CourseID, Title, Credits, DeptID, InstructorID)
+  -- DeptID is FK to Department (1:N "offers")
+  -- InstructorID is FK to Instructor (1:N "teaches")
+Department(DeptID, DeptName, Location)
+Instructor(InstructorID, Name, Rank, DeptID)
+  -- DeptID is FK to Department (1:N "employs")
+Enrolls(StudentID, CourseID, Grade, EnrollDate)
+  -- Composite PK (StudentID, CourseID)
+  -- StudentID FK to Student, CourseID FK to Course</code></pre>
+  </div>
+
+  <h3>6.1 Minimum Number of Tables</h3>
+  <div class="note">
+    <strong>GATE Tip:</strong> To find the minimum number of tables:
+    <ul>
+      <li>Each strong entity = 1 table</li>
+      <li>Each weak entity = 1 table</li>
+      <li>Each M:N relationship = 1 table</li>
+      <li>1:1 and 1:N relationships can be merged (FK added, no new table needed)</li>
+      <li>Each multivalued attribute = 1 table</li>
+    </ul>
+  </div>
+
+  <!-- ===================== GENERALIZATION ===================== -->
+  <h2>7. Generalization, Specialization, and Aggregation</h2>
+
+  <table>
+    <tr><th>Concept</th><th>Description</th><th>Direction</th></tr>
+    <tr><td><strong>Generalization</strong></td><td>Combining entity sets that share common attributes into a higher-level entity</td><td>Bottom-up</td></tr>
+    <tr><td><strong>Specialization</strong></td><td>Dividing an entity set into subgroups based on distinguishing characteristics</td><td>Top-down</td></tr>
+    <tr><td><strong>Aggregation</strong></td><td>Treating a relationship as a higher-level entity to participate in another relationship</td><td>Abstraction</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Specialization Example:</strong> Person entity specialized into Student and Employee. Student has GPA attribute; Employee has Salary. Both share Name, DOB from Person.
+  </div>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>8. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>A weak entity always has total participation in its identifying relationship and the cardinality is always 1:N (owner:weak).</li>
+      <li>For M:N relationships, a separate table is always required.</li>
+      <li>For 1:N relationships, add the FK on the N-side. No extra table needed.</li>
+      <li>For 1:1 relationships, add the FK on the side with total participation (if any).</li>
+      <li>Minimum tables = strong entities + weak entities + M:N relationships + multivalued attributes.</li>
+      <li>A ternary relationship requires a separate table with the PKs of all three entities.</li>
+      <li>Aggregation is used when a relationship itself needs to participate in another relationship.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

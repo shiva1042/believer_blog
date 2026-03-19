@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Systems | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>File Systems</h1>
+  <p class="article-section-tag">&#9881;&#65039; Section 8: Operating System</p>
+
+  <!-- ===================== FILE CONCEPT ===================== -->
+  <h2>1. File Concept</h2>
+  <p>A <strong>file</strong> is a named collection of related information stored on secondary storage. The OS abstracts the physical properties of storage devices to define a logical unit &mdash; the file.</p>
+
+  <h3>1.1 File Attributes</h3>
+  <table>
+    <tr><th>Attribute</th><th>Description</th></tr>
+    <tr><td>Name</td><td>Human-readable identifier (the only attribute in human-readable form)</td></tr>
+    <tr><td>Identifier</td><td>Unique tag (number) within the file system</td></tr>
+    <tr><td>Type</td><td>Information needed if the system supports different types</td></tr>
+    <tr><td>Location</td><td>Pointer to the file's location on the device</td></tr>
+    <tr><td>Size</td><td>Current size in bytes, words, or blocks</td></tr>
+    <tr><td>Protection</td><td>Access control information (read, write, execute permissions)</td></tr>
+    <tr><td>Timestamps</td><td>Creation, last modification, last access times</td></tr>
+    <tr><td>Owner</td><td>User who created or owns the file</td></tr>
+  </table>
+
+  <h3>1.2 File Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Description</th></tr>
+    <tr><td><code>create</code></td><td>Allocate space, create directory entry</td></tr>
+    <tr><td><code>open</code></td><td>Locate directory entry, load metadata into memory, return file descriptor</td></tr>
+    <tr><td><code>read</code></td><td>Read data from current file position</td></tr>
+    <tr><td><code>write</code></td><td>Write data at current file position</td></tr>
+    <tr><td><code>seek</code></td><td>Reposition the current file position pointer</td></tr>
+    <tr><td><code>delete</code></td><td>Free allocated space, remove directory entry</td></tr>
+    <tr><td><code>truncate</code></td><td>Erase contents but keep attributes and directory entry</td></tr>
+  </table>
+
+  <p>Most OS maintain an <strong>open-file table</strong> (per-process and system-wide) to track currently open files, avoiding repeated directory searches.</p>
+
+  <!-- ===================== DIRECTORY STRUCTURE ===================== -->
+  <h2>2. Directory Structure</h2>
+  <p>A directory is a file-system structure that contains information about files. Different organizational schemes exist:</p>
+
+  <table>
+    <tr><th>Structure</th><th>Description</th><th>Pros</th><th>Cons</th></tr>
+    <tr><td><strong>Single-Level</strong></td><td>All files in one directory</td><td>Simple</td><td>Naming collisions, no grouping</td></tr>
+    <tr><td><strong>Two-Level</strong></td><td>Separate directory per user</td><td>Isolates users</td><td>No grouping within a user's files</td></tr>
+    <tr><td><strong>Tree-Structured</strong></td><td>Hierarchical directories with subdirectories</td><td>Logical grouping, path names</td><td>No sharing of files/directories</td></tr>
+    <tr><td><strong>Acyclic Graph</strong></td><td>Tree + shared files/directories via links</td><td>Allows sharing</td><td>Dangling pointers on deletion; requires reference counting or back-pointers</td></tr>
+    <tr><td><strong>General Graph</strong></td><td>Allows cycles (symbolic links can create cycles)</td><td>Maximum flexibility</td><td>Must handle cycles in traversal (garbage collection needed)</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Hard link vs Symbolic link:</strong> A hard link is another directory entry pointing to the same inode (file data). A symbolic (soft) link is a special file containing the path to the target. Hard links cannot cross file systems or link to directories; symbolic links can.
+  </div>
+
+  <!-- ===================== FILE ALLOCATION METHODS ===================== -->
+  <h2>3. File Allocation Methods</h2>
+  <p>File allocation methods determine how disk blocks are allocated to files.</p>
+
+  <h3>3.1 Comparison of Allocation Methods</h3>
+  <div class="mermaid">
+    flowchart TB
+      subgraph Contiguous
+        direction LR
+        C1["Block 4"] --- C2["Block 5"] --- C3["Block 6"] --- C4["Block 7"]
+      end
+      subgraph Linked
+        direction LR
+        L1["Block 9\nnext:16"] --> L2["Block 16\nnext:1"] --> L3["Block 1\nnext:25"] --> L4["Block 25\nnext:null"]
+      end
+      subgraph Indexed
+        direction LR
+        IX["Index Block\n[14, 18, 3, 21]"]
+        IX --> I1["Block 14"]
+        IX --> I2["Block 18"]
+        IX --> I3["Block 3"]
+        IX --> I4["Block 21"]
+      end
+  </div>
+
+  <h3>3.2 Contiguous Allocation</h3>
+  <p>Each file occupies a set of contiguous blocks on disk. The directory entry stores the starting block and length.</p>
+  <table>
+    <tr><th>Pros</th><th>Cons</th></tr>
+    <tr><td>Simple to implement</td><td>External fragmentation</td></tr>
+    <tr><td>Excellent sequential and direct access</td><td>File size must be known at creation</td></tr>
+    <tr><td>Minimal disk seeks</td><td>Difficult to grow files</td></tr>
+  </table>
+  <p><strong>Direct access:</strong> Block <em>i</em> of a file is at starting_block + <em>i</em>. O(1) access time.</p>
+
+  <h3>3.3 Linked Allocation</h3>
+  <p>Each file is a linked list of disk blocks. Each block contains a pointer to the next block. The directory entry stores the first and last block pointers.</p>
+  <table>
+    <tr><th>Pros</th><th>Cons</th></tr>
+    <tr><td>No external fragmentation</td><td>No efficient direct access (must traverse links)</td></tr>
+    <tr><td>Files can grow dynamically</td><td>Pointer overhead in each block</td></tr>
+    <tr><td>Simple to implement</td><td>Reliability: one bad pointer loses rest of file</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>FAT (File Allocation Table):</strong> An improvement over linked allocation. The pointers are collected into a separate table (FAT) at the beginning of the disk. The FAT is cached in memory, making direct access much faster. Used in FAT12, FAT16, FAT32 file systems.
+  </div>
+
+  <h3>3.4 Indexed Allocation</h3>
+  <p>Each file has an <strong>index block</strong> (also called an inode in Unix). The index block contains an array of pointers to all the data blocks of the file.</p>
+  <table>
+    <tr><th>Pros</th><th>Cons</th></tr>
+    <tr><td>Supports direct access efficiently</td><td>Wasted space for small files (index block overhead)</td></tr>
+    <tr><td>No external fragmentation</td><td>Index block size limits max file size</td></tr>
+    <tr><td>No sequential traversal needed</td><td>May need multi-level index for large files</td></tr>
+  </table>
+
+  <h3>3.5 Unix Inode Structure</h3>
+  <p>Unix uses a multi-level indexed scheme:</p>
+  <table>
+    <tr><th>Pointer Type</th><th>Count</th><th>Blocks Addressable</th></tr>
+    <tr><td>Direct pointers</td><td>12</td><td>12 blocks</td></tr>
+    <tr><td>Single indirect</td><td>1</td><td>n blocks (where n = block_size / pointer_size)</td></tr>
+    <tr><td>Double indirect</td><td>1</td><td>n<sup>2</sup> blocks</td></tr>
+    <tr><td>Triple indirect</td><td>1</td><td>n<sup>3</sup> blocks</td></tr>
+  </table>
+  <div class="example">
+    <strong>Example:</strong> Block size = 4 KB, pointer size = 4 bytes. n = 4096/4 = 1024.
+    <ul>
+      <li>Direct: 12 &times; 4 KB = 48 KB</li>
+      <li>Single indirect: 1024 &times; 4 KB = 4 MB</li>
+      <li>Double indirect: 1024<sup>2</sup> &times; 4 KB = 4 GB</li>
+      <li>Triple indirect: 1024<sup>3</sup> &times; 4 KB = 4 TB</li>
+      <li>Maximum file size &asymp; 4 TB</li>
+    </ul>
+  </div>
+
+  <h3>3.6 Overall Comparison</h3>
+  <table>
+    <tr><th>Feature</th><th>Contiguous</th><th>Linked</th><th>Indexed</th></tr>
+    <tr><td>Sequential Access</td><td>Excellent</td><td>Good</td><td>Good</td></tr>
+    <tr><td>Direct Access</td><td>Excellent (O(1))</td><td>Poor (O(n))</td><td>Good (O(1) with index)</td></tr>
+    <tr><td>External Fragmentation</td><td>Yes</td><td>No</td><td>No</td></tr>
+    <tr><td>Internal Fragmentation</td><td>No</td><td>No</td><td>Yes (index block for small files)</td></tr>
+    <tr><td>File Growth</td><td>Difficult</td><td>Easy</td><td>Easy</td></tr>
+    <tr><td>Reliability</td><td>High</td><td>Low (pointer loss)</td><td>High</td></tr>
+  </table>
+
+  <!-- ===================== FREE SPACE MANAGEMENT ===================== -->
+  <h2>4. Free Space Management</h2>
+  <p>The file system must track which disk blocks are free and available for allocation.</p>
+
+  <h3>4.1 Bitmap (Bit Vector)</h3>
+  <p>Each bit represents a block: 1 = free, 0 = allocated (or vice versa). Block number calculation: (number of bits per word) &times; (number of 0-value words) + offset of first 1 bit.</p>
+  <table>
+    <tr><th>Pros</th><th>Cons</th></tr>
+    <tr><td>Simple and efficient for finding contiguous free blocks</td><td>Bitmap can be large for big disks</td></tr>
+    <tr><td>Fast using hardware bit-manipulation instructions</td><td>Must be kept on disk and cached in memory</td></tr>
+  </table>
+  <div class="example">
+    <strong>Example:</strong> A 1 TB disk with 4 KB blocks needs 1 TB / 4 KB = 2<sup>28</sup> bits = 32 MB for the bitmap.
+  </div>
+
+  <h3>4.2 Linked List</h3>
+  <p>All free blocks are linked together. The first free block pointer is stored in a special location. Simple but traversing the list to find free space is slow.</p>
+
+  <h3>4.3 Other Methods</h3>
+  <table>
+    <tr><th>Method</th><th>Description</th></tr>
+    <tr><td><strong>Grouping</strong></td><td>First free block stores addresses of n free blocks; the last of these points to another group of n free blocks</td></tr>
+    <tr><td><strong>Counting</strong></td><td>Store (start_block, count) pairs for contiguous runs of free blocks; efficient when blocks are contiguously allocated and freed</td></tr>
+  </table>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>5. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>Contiguous allocation supports fast direct access but causes external fragmentation.</li>
+      <li>Linked allocation eliminates fragmentation but has O(n) direct access time.</li>
+      <li>Indexed allocation (Unix inodes) provides O(1) direct access with multi-level indexing for large files.</li>
+      <li>FAT improves linked allocation by storing all pointers in a table cached in memory.</li>
+      <li>For Unix inode: max file size = (12 + n + n<sup>2</sup> + n<sup>3</sup>) &times; block_size, where n = block_size / pointer_size.</li>
+      <li>Bitmap free space management needs (total_blocks / 8) bytes of storage.</li>
+      <li>Acyclic graph directory structure allows file sharing; hard links and symbolic links are the mechanisms.</li>
+      <li>Number of disk accesses for reading block <em>i</em>: contiguous = 1, linked = i+1, indexed = 2 (index block + data block).</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

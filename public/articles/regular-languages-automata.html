@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regular Languages and Finite Automata — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #e8eaf6; color: #1a237e; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Regular Languages and Finite Automata</h1>
+  <p class="article-section-tag">🔄 Section 6: Theory of Computation</p>
+
+  <h2>1. Basic Definitions</h2>
+
+  <h3>1.1 Alphabets, Strings, and Languages</h3>
+  <ul>
+    <li><strong>Alphabet (Sigma):</strong> A finite, non-empty set of symbols. Example: Sigma = {0, 1}.</li>
+    <li><strong>String:</strong> A finite sequence of symbols from an alphabet. The empty string is denoted by epsilon.</li>
+    <li><strong>Language:</strong> A set of strings over an alphabet. Can be finite or infinite.</li>
+    <li><strong>Sigma*:</strong> The set of all strings over Sigma, including epsilon.</li>
+    <li><strong>Sigma+:</strong> Sigma* minus epsilon (all non-empty strings).</li>
+  </ul>
+
+  <h2>2. Deterministic Finite Automaton (DFA)</h2>
+
+  <h3>2.1 Formal Definition</h3>
+  <p>A DFA is a 5-tuple M = (Q, Sigma, delta, q0, F) where:</p>
+  <ul>
+    <li><strong>Q:</strong> Finite set of states</li>
+    <li><strong>Sigma:</strong> Input alphabet</li>
+    <li><strong>delta:</strong> Transition function, delta: Q x Sigma -> Q</li>
+    <li><strong>q0:</strong> Start state (q0 in Q)</li>
+    <li><strong>F:</strong> Set of accept (final) states (F subset of Q)</li>
+  </ul>
+
+  <h3>2.2 DFA Example: Strings ending in "01"</h3>
+  <p>Language: L = {w in {0,1}* | w ends with 01}</p>
+
+  <div class="mermaid">
+stateDiagram-v2
+    direction LR
+    [*] --> q0
+    q0 --> q0: 1
+    q0 --> q1: 0
+    q1 --> q1: 0
+    q1 --> q2: 1
+    q2 --> q0: 1
+    q2 --> q1: 0
+    q2 --> [*]
+  </div>
+
+  <table>
+    <tr><th>State</th><th>Input 0</th><th>Input 1</th><th>Description</th></tr>
+    <tr><td>q0</td><td>q1</td><td>q0</td><td>Start; last symbol not 0</td></tr>
+    <tr><td>q1</td><td>q1</td><td>q2</td><td>Last symbol was 0</td></tr>
+    <tr><td>q2 (accept)</td><td>q1</td><td>q0</td><td>Last two symbols were 01</td></tr>
+  </table>
+
+  <h3>2.3 DFA Properties</h3>
+  <ul>
+    <li>Exactly one transition for each symbol from each state (deterministic).</li>
+    <li>No epsilon transitions.</li>
+    <li>A DFA with n states can have at most 2^n distinct languages it distinguishes.</li>
+    <li>Minimum DFA is unique (up to isomorphism) for any regular language.</li>
+  </ul>
+
+  <h2>3. Non-deterministic Finite Automaton (NFA)</h2>
+
+  <h3>3.1 Formal Definition</h3>
+  <p>An NFA is a 5-tuple M = (Q, Sigma, delta, q0, F) where delta: Q x Sigma -> P(Q) (power set of Q). Multiple transitions from a state on the same input are allowed, including transitions to no state.</p>
+
+  <h3>3.2 NFA Example: Strings containing "101"</h3>
+
+  <div class="mermaid">
+stateDiagram-v2
+    direction LR
+    [*] --> q0
+    q0 --> q0: 0,1
+    q0 --> q1: 1
+    q1 --> q2: 0
+    q2 --> q3: 1
+    q3 --> q3: 0,1
+    q3 --> [*]
+  </div>
+
+  <p>The NFA non-deterministically "guesses" when the substring 101 begins. A string is accepted if any computational path leads to an accept state.</p>
+
+  <h3>3.3 NFA to DFA Conversion (Subset Construction)</h3>
+  <p>Every NFA can be converted to an equivalent DFA using the subset construction algorithm:</p>
+  <ol>
+    <li>Each DFA state corresponds to a <strong>subset of NFA states</strong>.</li>
+    <li>Start state of DFA = epsilon-closure of NFA start state.</li>
+    <li>For each DFA state S and input symbol a: compute the set of NFA states reachable from any state in S on input a (including epsilon-closure).</li>
+    <li>A DFA state is accepting if it contains at least one NFA accept state.</li>
+  </ol>
+
+  <div class="warning">
+    <strong>Worst case:</strong> An NFA with n states can require a DFA with up to 2^n states. This exponential blowup is sometimes unavoidable.
+  </div>
+
+  <h2>4. Epsilon-NFA</h2>
+  <p>An epsilon-NFA allows transitions on epsilon (empty string) in addition to input symbols. delta: Q x (Sigma union {epsilon}) -> P(Q).</p>
+  <p><strong>Epsilon-closure:</strong> The set of states reachable from a state following only epsilon transitions. Used in NFA-to-DFA conversion.</p>
+  <p><strong>Equivalence:</strong> epsilon-NFA = NFA = DFA in terms of the languages they recognize (all recognize exactly the regular languages).</p>
+
+  <h2>5. Regular Expressions</h2>
+
+  <h3>5.1 Syntax</h3>
+  <table>
+    <tr><th>Operation</th><th>Notation</th><th>Meaning</th></tr>
+    <tr><td>Union</td><td>R1 + R2 (or R1 | R2)</td><td>Strings in R1 or R2</td></tr>
+    <tr><td>Concatenation</td><td>R1 R2</td><td>String from R1 followed by string from R2</td></tr>
+    <tr><td>Kleene Star</td><td>R*</td><td>Zero or more repetitions of R</td></tr>
+    <tr><td>Kleene Plus</td><td>R+</td><td>One or more repetitions (R+ = RR*)</td></tr>
+  </table>
+  <p><strong>Precedence:</strong> Star > Concatenation > Union.</p>
+
+  <h3>5.2 Examples</h3>
+  <table>
+    <tr><th>Regular Expression</th><th>Language</th></tr>
+    <tr><td>(0+1)*</td><td>All strings over {0,1}</td></tr>
+    <tr><td>0*10*</td><td>Strings with exactly one 1</td></tr>
+    <tr><td>(0+1)*01</td><td>Strings ending in 01</td></tr>
+    <tr><td>(00)*(11)*</td><td>Even number of 0s followed by even number of 1s</td></tr>
+  </table>
+
+  <h3>5.3 Equivalence with Finite Automata</h3>
+  <p><strong>Kleene's Theorem:</strong> A language is regular if and only if it can be described by a regular expression. The conversions are:</p>
+  <ul>
+    <li>RE to NFA: Thompson's construction</li>
+    <li>NFA to DFA: Subset construction</li>
+    <li>DFA to RE: State elimination method</li>
+  </ul>
+
+  <h2>6. Pumping Lemma for Regular Languages</h2>
+  <p>Used to prove a language is <strong>NOT regular</strong>.</p>
+
+  <h3>Statement</h3>
+  <p>If L is regular, then there exists a pumping length p such that for every string s in L with |s| >= p, s can be written as s = xyz where:</p>
+  <ol>
+    <li>|y| > 0 (y is not empty)</li>
+    <li>|xy| <= p</li>
+    <li>For all i >= 0, xy^i z is in L</li>
+  </ol>
+
+  <h3>Usage (Proof by Contradiction)</h3>
+  <pre>
+To prove L is not regular:
+1. Assume L is regular (for contradiction).
+2. Let p be the pumping length (exists by lemma).
+3. Choose a string s in L with |s| >= p.
+4. For ALL possible decompositions s = xyz satisfying conditions 1 and 2:
+   Show there exists some i such that xy^i z is NOT in L.
+5. Contradiction. L is not regular.
+  </pre>
+
+  <h3>Example: L = {0^n 1^n | n >= 0} is not regular</h3>
+  <p>Choose s = 0^p 1^p. Since |xy| <= p, y = 0^k for some k > 0. Pumping: xy^2 z = 0^(p+k) 1^p, which has more 0s than 1s, so it is not in L. Contradiction.</p>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> The pumping lemma can only prove a language is NOT regular. It cannot prove a language IS regular. To show regularity, construct a DFA, NFA, or regular expression.
+  </div>
+
+  <h2>7. Closure Properties of Regular Languages</h2>
+  <table>
+    <tr><th>Operation</th><th>Closed?</th><th>Construction</th></tr>
+    <tr><td>Union</td><td>Yes</td><td>NFA with new start state</td></tr>
+    <tr><td>Intersection</td><td>Yes</td><td>Product construction of DFAs</td></tr>
+    <tr><td>Complement</td><td>Yes</td><td>Swap accept/non-accept in DFA</td></tr>
+    <tr><td>Concatenation</td><td>Yes</td><td>NFA with epsilon transition</td></tr>
+    <tr><td>Kleene Star</td><td>Yes</td><td>NFA with epsilon loops</td></tr>
+    <tr><td>Reversal</td><td>Yes</td><td>Reverse all edges, swap start/accept</td></tr>
+    <tr><td>Difference</td><td>Yes</td><td>L1 intersection complement(L2)</td></tr>
+    <tr><td>Homomorphism</td><td>Yes</td><td>Replace symbols in FA</td></tr>
+    <tr><td>Inverse Homomorphism</td><td>Yes</td><td>Modify transitions in DFA</td></tr>
+  </table>
+
+  <h2>8. Myhill-Nerode Theorem</h2>
+  <p>A language L is regular if and only if it has a finite number of equivalence classes under the relation: x and y are equivalent if for all strings z, xz in L iff yz in L.</p>
+  <p>The number of equivalence classes equals the number of states in the minimum DFA for L.</p>
+
+  <h2>9. DFA Minimization</h2>
+  <p>Given a DFA, find the equivalent DFA with the minimum number of states:</p>
+  <ol>
+    <li>Remove unreachable states.</li>
+    <li>Use table-filling algorithm (or Hopcroft's algorithm) to identify equivalent states.</li>
+    <li>Merge equivalent states.</li>
+  </ol>
+  <p><strong>Time:</strong> O(n2) for table-filling, O(n log n) for Hopcroft's.</p>
+
+  <h2>10. Key GATE Takeaways</h2>
+  <ul>
+    <li>DFA, NFA, epsilon-NFA, and regular expressions all define the same class: regular languages.</li>
+    <li>NFA to DFA conversion may cause exponential state blowup (n states to 2^n).</li>
+    <li>Pumping lemma is the primary tool for proving languages are non-regular.</li>
+    <li>Regular languages are closed under union, intersection, complement, concatenation, and Kleene star.</li>
+    <li>Minimum DFA is unique and can be found using state equivalence.</li>
+    <li>Common non-regular languages: {0^n 1^n}, {ww^R}, languages requiring counting.</li>
+  </ul>
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Regular Languages and Finite Automata Quiz",
+      "questions": [
+        {
+          "question": "What is the minimum number of states in a DFA that accepts all binary strings whose length is divisible by 3?",
+          "options": ["2", "3", "4", "6"],
+          "answer": 1,
+          "explanation": "We need to track the length modulo 3. States: q0 (length mod 3 = 0, accept), q1 (length mod 3 = 1), q2 (length mod 3 = 2). Each state transitions on 0 or 1 to the next state. Minimum 3 states are needed."
+        },
+        {
+          "question": "An NFA with 5 states is converted to an equivalent DFA using subset construction. What is the maximum number of states the resulting DFA can have?",
+          "options": ["5", "10", "25", "32"],
+          "answer": 3,
+          "explanation": "The subset construction creates states corresponding to subsets of NFA states. With 5 NFA states, there are 2^5 = 32 possible subsets, so the DFA can have at most 32 states."
+        },
+        {
+          "question": "Which of the following languages is NOT regular?",
+          "options": ["Set of all binary strings with an even number of 0s", "Set of all strings of the form 0^n where n is prime", "Set of all binary strings that contain '101' as a substring", "Set of all binary strings with length at most 100"],
+          "answer": 1,
+          "explanation": "The set of strings 0^n where n is prime is not regular. This can be proven using the pumping lemma: pumping a string of 0s with prime length produces strings whose lengths are not always prime. The other three languages are all regular."
+        },
+        {
+          "question": "The regular expression (0+1)*0(0+1)*0(0+1)* describes which language over {0,1}?",
+          "options": ["Strings with exactly two 0s", "Strings with at least two 0s", "Strings ending with 00", "Strings beginning with 00"],
+          "answer": 1,
+          "explanation": "The expression matches any string that has a 0, followed by any string, followed by another 0, with arbitrary strings before, between, and after. This means the string contains at least two 0s."
+        },
+        {
+          "question": "Regular languages are closed under all of the following EXCEPT:",
+          "options": ["Complementation", "Intersection", "Kleene star", "Regular languages are closed under all of these"],
+          "answer": 3,
+          "explanation": "Regular languages are closed under union, intersection, complementation, concatenation, Kleene star, reversal, homomorphism, and inverse homomorphism. All the listed operations preserve regularity."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

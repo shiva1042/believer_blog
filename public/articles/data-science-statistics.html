@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Science &amp; Statistical Methods — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Data Science &amp; Statistical Methods</h1>
+  <p class="article-section-tag">🤖 Artificial Intelligence</p>
+
+  <h2>1. Descriptive Statistics Review</h2>
+
+  <h3>1.1 Measures of Central Tendency</h3>
+  <table>
+    <tr><th>Measure</th><th>Formula</th><th>When to Use</th></tr>
+    <tr><td>Mean</td><td>&mu; = &Sigma;x<sub>i</sub> / n</td><td>Symmetric data, no outliers</td></tr>
+    <tr><td>Median</td><td>Middle value when sorted</td><td>Skewed data, outliers present</td></tr>
+    <tr><td>Mode</td><td>Most frequent value</td><td>Categorical data</td></tr>
+  </table>
+
+  <h3>1.2 Measures of Spread</h3>
+  <pre>
+Variance:  sigma^2 = (1/n) * SUM(x_i - mean)^2       (population)
+                   = (1/(n-1)) * SUM(x_i - mean)^2   (sample)
+
+Standard Deviation: sigma = sqrt(variance)
+
+Range = max - min
+
+IQR = Q3 - Q1  (Interquartile Range)
+
+Example: Data = {2, 4, 4, 4, 5, 5, 7, 9}
+  Mean = 40/8 = 5
+  Variance = [(9+1+1+1+0+0+4+16)/8] = 32/8 = 4
+  Std Dev = sqrt(4) = 2
+  </pre>
+
+  <h3>1.3 Skewness and Kurtosis</h3>
+  <table>
+    <tr><th>Property</th><th>Left (Negative) Skew</th><th>Symmetric</th><th>Right (Positive) Skew</th></tr>
+    <tr><td>Tail direction</td><td>Left</td><td>None</td><td>Right</td></tr>
+    <tr><td>Mean vs Median</td><td>Mean &lt; Median</td><td>Mean = Median</td><td>Mean &gt; Median</td></tr>
+    <tr><td>Skewness value</td><td>&lt; 0</td><td>= 0</td><td>&gt; 0</td></tr>
+  </table>
+
+  <h2>2. Hypothesis Testing</h2>
+
+  <h3>2.1 Framework</h3>
+  <div class="mermaid">
+graph TD
+    A["State Hypotheses<br>H0 and H1"] --> B["Choose Significance<br>Level alpha"]
+    B --> C["Compute Test<br>Statistic"]
+    C --> D["Find p-value or<br>Critical Value"]
+    D --> E{"p-value &lt; alpha?"}
+    E -->|Yes| F["Reject H0"]
+    E -->|No| G["Fail to Reject H0"]
+
+    style F fill:#c62828,color:#fff
+    style G fill:#2e7d32,color:#fff
+  </div>
+
+  <h3>2.2 Key Concepts</h3>
+  <pre>
+Null Hypothesis (H0):  "No effect" or "no difference" (status quo)
+Alt Hypothesis (H1):   What we want to prove
+
+Significance level (alpha): Probability of rejecting H0 when it's true
+  Common values: 0.05, 0.01, 0.10
+
+p-value: Probability of observing data as extreme as seen,
+         assuming H0 is true.
+  If p-value &lt; alpha -> reject H0
+  If p-value >= alpha -> fail to reject H0
+  </pre>
+
+  <h3>2.3 Type I and Type II Errors</h3>
+  <table>
+    <tr><th></th><th>H0 True</th><th>H0 False</th></tr>
+    <tr><td><strong>Reject H0</strong></td><td>Type I Error (&alpha;)</td><td>Correct (Power = 1-&beta;)</td></tr>
+    <tr><td><strong>Fail to Reject H0</strong></td><td>Correct</td><td>Type II Error (&beta;)</td></tr>
+  </table>
+
+  <h3>2.4 t-Test</h3>
+  <pre>
+One-sample t-test: Is the population mean equal to mu_0?
+  t = (x_bar - mu_0) / (s / sqrt(n))
+  df = n - 1
+
+Two-sample t-test (independent):
+  t = (x1_bar - x2_bar) / sqrt(s1^2/n1 + s2^2/n2)
+
+Example: Sample mean = 52, H0: mu = 50, s = 4, n = 16
+  t = (52 - 50) / (4 / sqrt(16)) = 2 / 1 = 2.0
+  df = 15
+  For alpha = 0.05 (two-tailed), t_critical ≈ 2.131
+  t = 2.0 &lt; 2.131, so fail to reject H0.
+  </pre>
+
+  <h3>2.5 Chi-Square Test</h3>
+  <pre>
+Test for independence between two categorical variables.
+
+chi^2 = SUM[ (O - E)^2 / E ]
+
+where O = observed frequency, E = expected frequency
+  E = (row_total * col_total) / grand_total
+
+df = (rows - 1) * (cols - 1)
+
+Example:
+              Male    Female    Total
+Pass           30       45       75
+Fail           20        5       25
+Total          50       50      100
+
+Expected (Pass, Male) = 75*50/100 = 37.5
+Expected (Pass, Female) = 75*50/100 = 37.5
+Expected (Fail, Male) = 25*50/100 = 12.5
+Expected (Fail, Female) = 25*50/100 = 12.5
+
+chi^2 = (30-37.5)^2/37.5 + (45-37.5)^2/37.5
+      + (20-12.5)^2/12.5 + (5-12.5)^2/12.5
+      = 1.5 + 1.5 + 4.5 + 4.5 = 12.0
+
+df = (2-1)(2-1) = 1
+Critical value at alpha=0.05: 3.841
+chi^2 = 12.0 &gt; 3.841 -> Reject H0 (variables are dependent)
+  </pre>
+
+  <h2>3. Correlation vs Causation</h2>
+  <table>
+    <tr><th>Aspect</th><th>Correlation</th><th>Causation</th></tr>
+    <tr><td>Definition</td><td>Statistical relationship between variables</td><td>One variable causes change in another</td></tr>
+    <tr><td>Direction</td><td>Bidirectional</td><td>Unidirectional</td></tr>
+    <tr><td>Proven by</td><td>Observational data</td><td>Controlled experiments</td></tr>
+    <tr><td>Coefficient</td><td>Pearson r &isin; [-1, 1]</td><td>N/A</td></tr>
+  </table>
+  <pre>
+Pearson Correlation:
+  r = SUM[(x_i - x_bar)(y_i - y_bar)] /
+      sqrt(SUM[(x_i-x_bar)^2] * SUM[(y_i-y_bar)^2])
+
+  r = +1: perfect positive correlation
+  r = -1: perfect negative correlation
+  r =  0: no linear correlation
+  </pre>
+  <div class="warning"><strong>Key Insight:</strong> Correlation does NOT imply causation. Ice cream sales and drowning deaths are correlated (both increase in summer) but ice cream doesn't cause drowning!</div>
+
+  <h2>4. Principal Component Analysis (PCA)</h2>
+  <p>PCA reduces dimensionality by projecting data onto directions of maximum variance.</p>
+
+  <h3>4.1 PCA Algorithm</h3>
+  <pre>
+Step 1: Standardize the data (zero mean, unit variance)
+Step 2: Compute covariance matrix C = (1/n) X^T X
+Step 3: Find eigenvalues and eigenvectors of C
+Step 4: Sort eigenvectors by decreasing eigenvalue
+Step 5: Select top k eigenvectors (principal components)
+Step 6: Project data: Z = X * W_k  (W_k = matrix of top k eigenvectors)
+  </pre>
+
+  <h3>4.2 Explained Variance</h3>
+  <pre>
+Explained variance ratio for component i:
+  EVR_i = lambda_i / SUM(lambda_j)
+
+Example: Eigenvalues = [4.2, 1.8, 0.8, 0.2]
+  Total = 7.0
+  PC1 explains: 4.2/7.0 = 60%
+  PC1+PC2 explain: 6.0/7.0 = 85.7%
+  Choose k such that cumulative EVR >= 95%
+  </pre>
+
+  <h2>5. Clustering</h2>
+
+  <h3>5.1 K-Means Clustering</h3>
+  <pre>
+Algorithm:
+1. Initialize k centroids randomly
+2. Assign each point to nearest centroid
+3. Recompute centroids as mean of assigned points
+4. Repeat steps 2-3 until convergence
+
+Objective: Minimize SUM_{i=1}^{k} SUM_{x in C_i} ||x - mu_i||^2
+  </pre>
+
+  <div class="mermaid">
+graph TD
+    A["Initialize K centroids"] --> B["Assign points to nearest centroid"]
+    B --> C["Recompute centroids"]
+    C --> D{"Centroids changed?"}
+    D -->|Yes| B
+    D -->|No| E["Done: Output clusters"]
+
+    style A fill:#1565c0,color:#fff
+    style E fill:#2e7d32,color:#fff
+  </div>
+
+  <h3>5.2 K-Means Example</h3>
+  <pre>
+Points: (1,1), (1,2), (2,1), (8,8), (8,9), (9,8), k=2
+
+Iteration 1:
+  Init centroids: C1=(1,1), C2=(8,8)
+  Assign: {(1,1),(1,2),(2,1)} -> C1,  {(8,8),(8,9),(9,8)} -> C2
+  Update: C1 = (4/3, 4/3) = (1.33, 1.33)
+          C2 = (25/3, 25/3) = (8.33, 8.33)
+
+Iteration 2: Same assignments -> Converged!
+  </pre>
+
+  <h3>5.3 Hierarchical Clustering</h3>
+  <table>
+    <tr><th>Approach</th><th>Agglomerative (Bottom-up)</th><th>Divisive (Top-down)</th></tr>
+    <tr><td>Start</td><td>Each point is a cluster</td><td>All points in one cluster</td></tr>
+    <tr><td>Process</td><td>Merge closest clusters</td><td>Split clusters</td></tr>
+    <tr><td>Result</td><td>Dendrogram</td><td>Dendrogram</td></tr>
+    <tr><td>Linkage</td><td>Single, complete, average, Ward's</td><td>Various splitting criteria</td></tr>
+  </table>
+
+  <h2>6. Evaluation Metrics for Classification</h2>
+
+  <h3>6.1 Confusion Matrix</h3>
+  <table>
+    <tr><th></th><th>Predicted Positive</th><th>Predicted Negative</th></tr>
+    <tr><td><strong>Actual Positive</strong></td><td>True Positive (TP)</td><td>False Negative (FN)</td></tr>
+    <tr><td><strong>Actual Negative</strong></td><td>False Positive (FP)</td><td>True Negative (TN)</td></tr>
+  </table>
+
+  <h3>6.2 Metrics from Confusion Matrix</h3>
+  <pre>
+Accuracy  = (TP + TN) / (TP + TN + FP + FN)
+Precision = TP / (TP + FP)        -- of predicted positives, how many are correct?
+Recall    = TP / (TP + FN)        -- of actual positives, how many did we find?
+F1 Score  = 2 * (Precision * Recall) / (Precision + Recall)
+Specificity = TN / (TN + FP)
+  </pre>
+
+  <h3>6.3 Detailed Example</h3>
+  <pre>
+Spam classifier results on 200 emails:
+  TP = 80 (spam correctly identified)
+  FP = 10 (ham marked as spam)
+  FN = 20 (spam missed)
+  TN = 90 (ham correctly identified)
+
+Accuracy  = (80+90)/200 = 85%
+Precision = 80/(80+10) = 88.9%   (of emails flagged spam, 88.9% were actually spam)
+Recall    = 80/(80+20) = 80%     (caught 80% of all spam)
+F1        = 2*(0.889*0.8)/(0.889+0.8) = 0.842 = 84.2%
+  </pre>
+
+  <h3>6.4 ROC Curve and AUC</h3>
+  <pre>
+ROC Curve: Plot of TPR (Recall) vs FPR at various thresholds
+  TPR = TP / (TP + FN) = Recall
+  FPR = FP / (FP + TN) = 1 - Specificity
+
+AUC (Area Under ROC Curve):
+  AUC = 1.0: Perfect classifier
+  AUC = 0.5: Random classifier (diagonal line)
+  AUC &lt; 0.5: Worse than random
+
+Higher AUC = better model (threshold-independent metric)
+  </pre>
+
+  <h2>7. When to Use Which Metric</h2>
+  <table>
+    <tr><th>Scenario</th><th>Best Metric</th><th>Reason</th></tr>
+    <tr><td>Balanced classes</td><td>Accuracy</td><td>Works well when classes are equal</td></tr>
+    <tr><td>Imbalanced classes</td><td>F1 Score</td><td>Accuracy can be misleading</td></tr>
+    <tr><td>Medical diagnosis</td><td>Recall</td><td>Missing disease is costly (minimize FN)</td></tr>
+    <tr><td>Spam detection</td><td>Precision</td><td>False positives lose important emails</td></tr>
+    <tr><td>Model comparison</td><td>AUC-ROC</td><td>Threshold-independent</td></tr>
+  </table>
+
+  <div class="note"><strong>GATE Tip:</strong> Be comfortable computing confusion matrix metrics by hand. Also know that accuracy is misleading for imbalanced datasets (e.g., 99% accuracy on data where 99% is one class).</div>
+
+</article>
+</body>
+</html>

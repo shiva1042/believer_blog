@@ -1,0 +1,166 @@
+/* ── TOC Sidebar (Desktop — Left Side) ── */
+.toc-sidebar {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  width: 220px;
+  flex-shrink: 0;
+  padding: 1rem 0;
+  display: none;
+  order: -1;
+}
+
+@media (min-width: 1100px) {
+  .toc-sidebar {
+    display: block;
+  }
+}
+
+.toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding: 0 0.5rem;
+}
+
+.toc-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-light);
+}
+
+.toc-close-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--color-text-light);
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-left: 2px solid var(--color-border);
+}
+
+.toc-item {
+  margin: 0;
+}
+
+.toc-item--h2 {
+  padding-left: 12px;
+}
+
+.toc-item--h3 {
+  padding-left: 24px;
+}
+
+.toc-link {
+  display: block;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--color-text-light);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.toc-link:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.toc-link--active {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-left: 2px solid var(--color-primary);
+  margin-left: -2px;
+}
+
+/* ── Mobile floating button ── */
+.toc-mobile-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 200;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.toc-mobile-btn:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 1099px) {
+  .toc-mobile-btn {
+    display: flex;
+  }
+}
+
+/* ── Mobile drawer overlay ── */
+.toc-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 1099px) {
+  .toc-overlay {
+    display: block;
+  }
+
+  .toc-sidebar {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100vh;
+    max-height: 100vh;
+    z-index: 300;
+    background: var(--color-bg);
+    border-right: 1px solid var(--color-border);
+    padding: 1.25rem 1rem;
+    transition: left 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .toc-sidebar--open {
+    left: 0;
+  }
+
+  .toc-close-btn {
+    display: block;
+  }
+}
+
+/* Scrollbar styling for TOC */
+.toc-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toc-sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}

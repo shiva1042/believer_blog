@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL Practice Problems — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>SQL Practice Problems for GATE</h1>
+  <p class="article-section-tag">🗄️ Databases</p>
+
+  <h2>Schema for Problems</h2>
+  <p>The following tables are used across all problems:</p>
+  <pre><code>Student(sid INT PK, sname VARCHAR, age INT, gpa FLOAT)
+Course(cid INT PK, cname VARCHAR, credits INT, dept VARCHAR)
+Enrolled(sid INT FK, cid INT FK, grade CHAR(1))
+  -- Primary key: (sid, cid)
+
+Employee(eid INT PK, ename VARCHAR, salary INT, dept_id INT FK)
+Department(dept_id INT PK, dname VARCHAR, manager_id INT)</code></pre>
+
+  <h2>Problem 1: Basic SELECT</h2>
+  <p><strong>Q:</strong> Find names of all students with GPA greater than 3.5.</p>
+  <pre><code>SELECT sname
+FROM Student
+WHERE gpa > 3.5;</code></pre>
+  <p><strong>Explanation:</strong> Simple filtering with WHERE clause.</p>
+
+  <h2>Problem 2: SELECT with ORDER BY</h2>
+  <p><strong>Q:</strong> List all students sorted by GPA in descending order. Show name and GPA.</p>
+  <pre><code>SELECT sname, gpa
+FROM Student
+ORDER BY gpa DESC;</code></pre>
+
+  <h2>Problem 3: INNER JOIN</h2>
+  <p><strong>Q:</strong> Find names of students enrolled in course with cid = 101.</p>
+  <pre><code>SELECT S.sname
+FROM Student S INNER JOIN Enrolled E ON S.sid = E.sid
+WHERE E.cid = 101;</code></pre>
+  <p><strong>Explanation:</strong> INNER JOIN returns only rows where the join condition matches in both tables.</p>
+
+  <h2>Problem 4: Multi-table JOIN</h2>
+  <p><strong>Q:</strong> Find student names and course names for all enrollments.</p>
+  <pre><code>SELECT S.sname, C.cname
+FROM Student S
+JOIN Enrolled E ON S.sid = E.sid
+JOIN Course C ON E.cid = C.cid;</code></pre>
+
+  <h2>Problem 5: LEFT JOIN</h2>
+  <p><strong>Q:</strong> Find all students and their enrolled courses. Include students not enrolled in any course.</p>
+  <pre><code>SELECT S.sname, C.cname
+FROM Student S
+LEFT JOIN Enrolled E ON S.sid = E.sid
+LEFT JOIN Course C ON E.cid = C.cid;</code></pre>
+  <p><strong>Explanation:</strong> LEFT JOIN keeps all rows from the left table (Student). If no match in Enrolled/Course, NULLs appear.</p>
+
+  <h2>Problem 6: RIGHT JOIN</h2>
+  <p><strong>Q:</strong> Find all courses and the students enrolled. Include courses with no students.</p>
+  <pre><code>SELECT C.cname, S.sname
+FROM Student S
+RIGHT JOIN Enrolled E ON S.sid = E.sid
+RIGHT JOIN Course C ON E.cid = C.cid;</code></pre>
+
+  <h2>Problem 7: FULL OUTER JOIN</h2>
+  <p><strong>Q:</strong> List all students and all courses, showing enrollment where it exists.</p>
+  <pre><code>SELECT S.sname, C.cname
+FROM Student S
+FULL OUTER JOIN Enrolled E ON S.sid = E.sid
+FULL OUTER JOIN Course C ON E.cid = C.cid;</code></pre>
+
+  <h2>Problem 8: GROUP BY with COUNT</h2>
+  <p><strong>Q:</strong> Find the number of students enrolled in each course.</p>
+  <pre><code>SELECT E.cid, C.cname, COUNT(E.sid) AS num_students
+FROM Enrolled E
+JOIN Course C ON E.cid = C.cid
+GROUP BY E.cid, C.cname;</code></pre>
+  <p><strong>Explanation:</strong> GROUP BY groups rows by cid. COUNT counts students per group.</p>
+
+  <h2>Problem 9: GROUP BY with HAVING</h2>
+  <p><strong>Q:</strong> Find courses with more than 5 students enrolled.</p>
+  <pre><code>SELECT E.cid, COUNT(*) AS num_students
+FROM Enrolled E
+GROUP BY E.cid
+HAVING COUNT(*) > 5;</code></pre>
+  <p><strong>Explanation:</strong> HAVING filters groups (like WHERE, but for aggregated results). WHERE filters rows before grouping; HAVING filters after.</p>
+
+  <h2>Problem 10: Aggregate Functions</h2>
+  <p><strong>Q:</strong> Find the average, minimum, and maximum salary in each department.</p>
+  <pre><code>SELECT D.dname, AVG(E.salary) AS avg_sal,
+       MIN(E.salary) AS min_sal, MAX(E.salary) AS max_sal
+FROM Employee E
+JOIN Department D ON E.dept_id = D.dept_id
+GROUP BY D.dname;</code></pre>
+
+  <h2>Problem 11: Subquery (IN)</h2>
+  <p><strong>Q:</strong> Find students who are enrolled in at least one course offered by the 'CS' department.</p>
+  <pre><code>SELECT sname
+FROM Student
+WHERE sid IN (
+    SELECT E.sid
+    FROM Enrolled E
+    JOIN Course C ON E.cid = C.cid
+    WHERE C.dept = 'CS'
+);</code></pre>
+
+  <h2>Problem 12: Subquery (NOT IN)</h2>
+  <p><strong>Q:</strong> Find students who are NOT enrolled in any course.</p>
+  <pre><code>SELECT sname
+FROM Student
+WHERE sid NOT IN (
+    SELECT sid FROM Enrolled
+);</code></pre>
+  <div class="important"><strong>Caution:</strong> NOT IN behaves unexpectedly with NULLs. If the subquery returns any NULL, NOT IN returns empty. Use NOT EXISTS for safety.</div>
+
+  <h2>Problem 13: Correlated Subquery</h2>
+  <p><strong>Q:</strong> Find students whose GPA is higher than the average GPA of all students.</p>
+  <pre><code>SELECT sname, gpa
+FROM Student S
+WHERE gpa > (SELECT AVG(gpa) FROM Student);</code></pre>
+  <p><strong>Q (correlated):</strong> Find students who have enrolled in more courses than student with sid = 1.</p>
+  <pre><code>SELECT S.sname
+FROM Student S
+WHERE (SELECT COUNT(*) FROM Enrolled E WHERE E.sid = S.sid) >
+      (SELECT COUNT(*) FROM Enrolled E WHERE E.sid = 1);</code></pre>
+  <p><strong>Explanation:</strong> A correlated subquery references the outer query (S.sid). It executes once for each row of the outer query.</p>
+
+  <h2>Problem 14: EXISTS</h2>
+  <p><strong>Q:</strong> Find students who are enrolled in at least one course.</p>
+  <pre><code>SELECT S.sname
+FROM Student S
+WHERE EXISTS (
+    SELECT 1 FROM Enrolled E WHERE E.sid = S.sid
+);</code></pre>
+  <p><strong>Explanation:</strong> EXISTS returns TRUE if the subquery returns at least one row. Often preferred over IN for performance.</p>
+
+  <h2>Problem 15: Nested Subquery with ALL</h2>
+  <p><strong>Q:</strong> Find the student with the highest GPA.</p>
+  <pre><code>SELECT sname, gpa
+FROM Student
+WHERE gpa >= ALL (SELECT gpa FROM Student);</code></pre>
+
+  <h2>Problem 16: Self-Join</h2>
+  <p><strong>Q:</strong> Find pairs of students with the same GPA.</p>
+  <pre><code>SELECT S1.sname AS student1, S2.sname AS student2, S1.gpa
+FROM Student S1
+JOIN Student S2 ON S1.gpa = S2.gpa AND S1.sid < S2.sid;</code></pre>
+  <p><strong>Explanation:</strong> The condition <code>S1.sid &lt; S2.sid</code> avoids duplicate pairs and self-pairing.</p>
+
+  <h2>Problem 17: Division (Students enrolled in ALL CS courses)</h2>
+  <p><strong>Q:</strong> Find students enrolled in every course offered by the CS department.</p>
+  <pre><code>SELECT S.sname
+FROM Student S
+WHERE NOT EXISTS (
+    SELECT C.cid
+    FROM Course C
+    WHERE C.dept = 'CS'
+    AND NOT EXISTS (
+        SELECT 1 FROM Enrolled E
+        WHERE E.sid = S.sid AND E.cid = C.cid
+    )
+);</code></pre>
+  <p><strong>Explanation:</strong> This is relational division. Read as: "Find students S such that there is no CS course that S is not enrolled in."</p>
+
+  <h2>Problem 18: SUM and GROUP BY</h2>
+  <p><strong>Q:</strong> Find total credits each student is enrolled for.</p>
+  <pre><code>SELECT S.sname, SUM(C.credits) AS total_credits
+FROM Student S
+JOIN Enrolled E ON S.sid = E.sid
+JOIN Course C ON E.cid = C.cid
+GROUP BY S.sid, S.sname;</code></pre>
+
+  <h2>Common GATE SQL Patterns</h2>
+  <table>
+    <tr><th>Pattern</th><th>SQL Construct</th></tr>
+    <tr><td>Find tuples satisfying a condition</td><td>SELECT ... WHERE ...</td></tr>
+    <tr><td>Find tuples in one table but not another</td><td>NOT IN, NOT EXISTS, EXCEPT</td></tr>
+    <tr><td>Find tuples satisfying ALL conditions</td><td>Double NOT EXISTS (division)</td></tr>
+    <tr><td>Count/sum per group</td><td>GROUP BY + aggregate</td></tr>
+    <tr><td>Filter groups</td><td>HAVING</td></tr>
+    <tr><td>Find max/min tuple</td><td>WHERE val >= ALL (...) or ORDER BY ... LIMIT 1</td></tr>
+    <tr><td>Compare with average</td><td>Subquery: WHERE col > (SELECT AVG(...))</td></tr>
+  </table>
+
+  <div class="note"><strong>GATE Tip:</strong> GATE frequently tests: (1) difference between WHERE and HAVING, (2) correlated vs non-correlated subqueries, (3) division queries, (4) behavior of NULL in aggregates and NOT IN.</div>
+
+</article>
+</body>
+</html>

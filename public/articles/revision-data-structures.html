@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Revision: Data Structures — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Quick Revision: Data Structures</h1>
+  <p class="article-section-tag">📝 Quick Revision</p>
+
+  <h2>1. Time Complexity Table — All Operations</h2>
+  <table>
+    <tr><th>Data Structure</th><th>Access</th><th>Search</th><th>Insert</th><th>Delete</th><th>Space</th></tr>
+    <tr><td>Array</td><td>O(1)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>Sorted Array</td><td>O(1)</td><td>O(log n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>Linked List</td><td>O(n)</td><td>O(n)</td><td>O(1)*</td><td>O(1)*</td><td>O(n)</td></tr>
+    <tr><td>Stack</td><td>O(n)</td><td>O(n)</td><td>O(1)</td><td>O(1)</td><td>O(n)</td></tr>
+    <tr><td>Queue</td><td>O(n)</td><td>O(n)</td><td>O(1)</td><td>O(1)</td><td>O(n)</td></tr>
+    <tr><td>BST (avg)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>BST (worst)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>AVL Tree</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Red-Black Tree</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Min/Max Heap</td><td>O(1)**</td><td>O(n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Hash Table (avg)</td><td>-</td><td>O(1)</td><td>O(1)</td><td>O(1)</td><td>O(n)</td></tr>
+    <tr><td>Hash Table (worst)</td><td>-</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>B-Tree</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Trie</td><td>-</td><td>O(L)</td><td>O(L)</td><td>O(L)</td><td>O(AL*n)</td></tr>
+  </table>
+  <p>* With pointer to position. ** Min or max only (root element).</p>
+
+  <h2>2. Tree Traversals</h2>
+  <table>
+    <tr><th>Traversal</th><th>Order</th><th>Use Case</th></tr>
+    <tr><td>Inorder</td><td>Left, Root, Right</td><td>BST gives sorted order</td></tr>
+    <tr><td>Preorder</td><td>Root, Left, Right</td><td>Copying/serializing a tree</td></tr>
+    <tr><td>Postorder</td><td>Left, Right, Root</td><td>Deleting a tree, postfix expression</td></tr>
+    <tr><td>Level order</td><td>BFS (level by level)</td><td>Print tree level-by-level</td></tr>
+  </table>
+
+  <h3>Key Tree Facts</h3>
+  <ul>
+    <li>Binary tree with n nodes has n+1 NULL pointers.</li>
+    <li>Max nodes at level i = 2^i (root = level 0).</li>
+    <li>Max nodes in tree of height h = 2^(h+1) - 1.</li>
+    <li>Min height for n nodes = floor(log2(n)).</li>
+    <li>Number of binary trees with n nodes = Catalan(n) = C(2n,n)/(n+1).</li>
+    <li>Inorder + Preorder (or Postorder) uniquely determine a binary tree.</li>
+  </ul>
+
+  <h2>3. Heap Properties</h2>
+  <ul>
+    <li><strong>Max Heap:</strong> parent &ge; children. <strong>Min Heap:</strong> parent &le; children.</li>
+    <li>A heap is a complete binary tree stored as an array.</li>
+    <li>Parent of i: floor((i-1)/2). Left child: 2i+1. Right child: 2i+2 (0-indexed).</li>
+    <li>Build heap: O(n). Insert: O(log n). Extract min/max: O(log n).</li>
+    <li>Heap sort: O(n log n), in-place, not stable.</li>
+  </ul>
+  <div class="note"><strong>Remember:</strong> A heap is NOT a sorted array. Only the root is guaranteed min (or max). Siblings have no ordering relationship.</div>
+
+  <h2>4. Graph Representations</h2>
+  <table>
+    <tr><th>Aspect</th><th>Adjacency Matrix</th><th>Adjacency List</th></tr>
+    <tr><td>Space</td><td>O(V^2)</td><td>O(V + E)</td></tr>
+    <tr><td>Check edge (u,v)</td><td>O(1)</td><td>O(degree(u))</td></tr>
+    <tr><td>List all neighbors of u</td><td>O(V)</td><td>O(degree(u))</td></tr>
+    <tr><td>Add edge</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Good for</td><td>Dense graphs (E close to V^2)</td><td>Sparse graphs (E much less than V^2)</td></tr>
+    <tr><td>BFS/DFS time</td><td>O(V^2)</td><td>O(V + E)</td></tr>
+  </table>
+
+  <h2>5. Hashing</h2>
+  <ul>
+    <li><strong>Division method:</strong> h(k) = k mod m. Choose m as prime not close to power of 2.</li>
+    <li><strong>Multiplication method:</strong> h(k) = floor(m * (k*A mod 1)). A is irrational constant.</li>
+    <li><strong>Collision resolution:</strong> Chaining (linked lists) or Open Addressing (linear/quadratic probing, double hashing).</li>
+    <li><strong>Load factor &alpha;:</strong> n/m (items/table size). For chaining: avg search = 1 + &alpha;. For open addressing: 1/(1-&alpha;).</li>
+    <li>Rehash when &alpha; exceeds threshold (typically 0.7-0.75).</li>
+  </ul>
+
+  <h2>6. Stack and Queue Applications</h2>
+  <table>
+    <tr><th>Application</th><th>Data Structure Used</th></tr>
+    <tr><td>Function call management</td><td>Stack (call stack)</td></tr>
+    <tr><td>Expression evaluation (postfix)</td><td>Stack</td></tr>
+    <tr><td>Infix to postfix conversion</td><td>Stack</td></tr>
+    <tr><td>Balanced parentheses check</td><td>Stack</td></tr>
+    <tr><td>DFS</td><td>Stack</td></tr>
+    <tr><td>BFS</td><td>Queue</td></tr>
+    <tr><td>CPU scheduling (FCFS)</td><td>Queue</td></tr>
+    <tr><td>Priority scheduling</td><td>Priority Queue (Heap)</td></tr>
+  </table>
+
+  <div class="important"><strong>Most Tested:</strong> BST operations, heap build/extract, tree traversal output from given tree, hash table probe sequences, and graph BFS/DFS traversal orders.</div>
+
+</article>
+</body>
+</html>

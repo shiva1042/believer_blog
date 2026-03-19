@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NLP Fundamentals — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>NLP Fundamentals</h1>
+  <p class="article-section-tag">🤖 Artificial Intelligence</p>
+
+  <h2>1. NLP Pipeline</h2>
+  <div class="mermaid">
+graph LR
+    A["Raw Text"] --> B["Tokenization"]
+    B --> C["Stop Word Removal"]
+    C --> D["Stemming /<br>Lemmatization"]
+    D --> E["Feature Extraction<br>BoW / TF-IDF"]
+    E --> F["Model Training<br>Classification / NER"]
+    F --> G["Prediction /<br>Output"]
+
+    style A fill:#1565c0,color:#fff
+    style G fill:#2e7d32,color:#fff
+  </div>
+
+  <h2>2. Text Preprocessing</h2>
+
+  <h3>2.1 Tokenization</h3>
+  <p>Tokenization splits text into individual units (tokens). Tokens can be words, subwords, or characters.</p>
+  <pre>
+Input:  "The cat sat on the mat."
+Output: ["The", "cat", "sat", "on", "the", "mat", "."]
+
+Sentence tokenization:
+Input:  "Hello world. How are you?"
+Output: ["Hello world.", "How are you?"]
+  </pre>
+
+  <h3>2.2 Stop Word Removal</h3>
+  <p>Common words (the, is, at, which, on) that carry little meaning are removed to reduce noise.</p>
+  <pre>
+Before: ["The", "cat", "sat", "on", "the", "mat"]
+After:  ["cat", "sat", "mat"]
+  </pre>
+
+  <h3>2.3 Stemming</h3>
+  <p>Reduces words to their root form using rule-based heuristics (may produce non-words).</p>
+  <pre>
+Porter Stemmer examples:
+  "running"    -> "run"
+  "flies"      -> "fli"      (not a real word!)
+  "organization" -> "organ"  (incorrect root)
+  "studies"    -> "studi"
+  </pre>
+
+  <h3>2.4 Lemmatization</h3>
+  <p>Reduces words to their dictionary form (lemma) using vocabulary and morphological analysis.</p>
+  <pre>
+Lemmatization examples:
+  "running"    -> "run"
+  "flies"      -> "fly"       (correct!)
+  "better"     -> "good"
+  "studies"    -> "study"
+  </pre>
+
+  <table>
+    <tr><th>Aspect</th><th>Stemming</th><th>Lemmatization</th></tr>
+    <tr><td>Approach</td><td>Rule-based (chop suffixes)</td><td>Dictionary + morphology</td></tr>
+    <tr><td>Speed</td><td>Fast</td><td>Slower</td></tr>
+    <tr><td>Output</td><td>May not be real words</td><td>Always real words</td></tr>
+    <tr><td>Accuracy</td><td>Lower</td><td>Higher</td></tr>
+    <tr><td>Example tool</td><td>Porter, Snowball</td><td>WordNet Lemmatizer</td></tr>
+  </table>
+
+  <h2>3. Bag of Words (BoW)</h2>
+  <p>BoW represents text as a vector of word counts, ignoring order and grammar.</p>
+  <pre>
+Documents:
+  D1: "the cat sat"
+  D2: "the cat played"
+  D3: "the dog sat"
+
+Vocabulary: [cat, dog, played, sat, the]
+
+BoW vectors:
+  D1: [1, 0, 0, 1, 1]
+  D2: [1, 0, 1, 0, 1]
+  D3: [0, 1, 0, 1, 1]
+  </pre>
+
+  <div class="warning"><strong>Limitations:</strong> BoW loses word order, creates sparse high-dimensional vectors, and treats all words equally regardless of importance.</div>
+
+  <h2>4. TF-IDF (Term Frequency - Inverse Document Frequency)</h2>
+  <p>TF-IDF weighs words by their importance: frequent in a document but rare across the corpus.</p>
+  <pre>
+TF(t, d) = (count of t in d) / (total terms in d)
+
+IDF(t) = log(N / df(t))
+  where N = total documents, df(t) = documents containing t
+
+TF-IDF(t, d) = TF(t, d) * IDF(t)
+  </pre>
+
+  <h3>4.1 TF-IDF Example</h3>
+  <pre>
+Corpus: 3 documents, N=3
+Word "cat": appears in D1, D2 (df=2)
+  IDF("cat") = log(3/2) = 0.176
+
+In D1: "the cat sat on the cat" (6 words)
+  TF("cat", D1) = 2/6 = 0.333
+  TF-IDF("cat", D1) = 0.333 * 0.176 = 0.059
+
+Word "dog": appears only in D3 (df=1)
+  IDF("dog") = log(3/1) = 0.477  (higher = more distinctive!)
+  </pre>
+
+  <h2>5. Word Embeddings</h2>
+
+  <h3>5.1 Word2Vec</h3>
+  <p>Word2Vec learns dense vector representations (embeddings) that capture semantic relationships.</p>
+
+  <div class="mermaid">
+graph TD
+    subgraph CBOW
+        C1["Context: the"] --> P1["Predict: cat"]
+        C2["Context: sat"] --> P1
+    end
+
+    subgraph Skip-gram
+        W["Word: cat"] --> P2["Predict: the"]
+        W --> P3["Predict: sat"]
+    end
+
+    style P1 fill:#2e7d32,color:#fff
+    style P2 fill:#1565c0,color:#fff
+    style P3 fill:#1565c0,color:#fff
+  </div>
+
+  <table>
+    <tr><th>Aspect</th><th>CBOW</th><th>Skip-gram</th></tr>
+    <tr><td>Input</td><td>Context words</td><td>Target word</td></tr>
+    <tr><td>Output</td><td>Target word</td><td>Context words</td></tr>
+    <tr><td>Speed</td><td>Faster (averages context)</td><td>Slower</td></tr>
+    <tr><td>Rare words</td><td>Worse</td><td>Better</td></tr>
+    <tr><td>Data size</td><td>Better for large data</td><td>Better for small data</td></tr>
+  </table>
+
+  <pre>
+Famous analogy property:
+  vector("king") - vector("man") + vector("woman") ≈ vector("queen")
+
+This shows embeddings capture semantic relationships!
+  </pre>
+
+  <h3>5.2 GloVe (Global Vectors)</h3>
+  <p>GloVe combines count-based (co-occurrence matrix) and prediction-based methods. It factorizes the word co-occurrence matrix.</p>
+  <pre>
+Objective: minimize
+  J = SUM_{i,j} f(X_ij) * (w_i^T * w_j + b_i + b_j - log(X_ij))^2
+
+where X_ij = co-occurrence count of words i and j
+f(x) = weighting function that caps very frequent pairs
+  </pre>
+
+  <h2>6. Language Models</h2>
+
+  <h3>6.1 N-gram Language Model</h3>
+  <p>An n-gram model estimates the probability of a word given the previous (n-1) words.</p>
+  <pre>
+Unigram:  P(w_i)
+Bigram:   P(w_i | w_{i-1})
+Trigram:  P(w_i | w_{i-2}, w_{i-1})
+
+Bigram probability estimation:
+  P(w_i | w_{i-1}) = count(w_{i-1}, w_i) / count(w_{i-1})
+
+Example: "I want to eat Chinese food"
+P(food|Chinese) = count("Chinese food") / count("Chinese")
+  </pre>
+
+  <h3>6.2 Perplexity</h3>
+  <pre>
+Perplexity(W) = P(w1, w2, ..., wN)^(-1/N)
+             = 2^H(W)
+
+Lower perplexity = better model.
+A model with perplexity 50 is as uncertain as choosing
+  uniformly among 50 words at each step.
+  </pre>
+
+  <h3>6.3 Smoothing Techniques</h3>
+  <table>
+    <tr><th>Technique</th><th>Idea</th></tr>
+    <tr><td>Laplace (Add-1)</td><td>Add 1 to all counts: P = (c+1)/(N+V)</td></tr>
+    <tr><td>Add-k</td><td>Add k (0&lt;k&lt;1) instead of 1</td></tr>
+    <tr><td>Good-Turing</td><td>Re-estimate counts using count of counts</td></tr>
+    <tr><td>Kneser-Ney</td><td>Use continuation probability for backoff</td></tr>
+  </table>
+
+  <h3>6.4 Transformer Basics</h3>
+  <p>The Transformer architecture uses self-attention instead of recurrence, enabling parallel processing.</p>
+  <pre>
+Self-Attention:
+  Attention(Q, K, V) = softmax(Q * K^T / sqrt(d_k)) * V
+
+  Q = query matrix
+  K = key matrix
+  V = value matrix
+  d_k = dimension of keys (scaling factor)
+  </pre>
+
+  <div class="mermaid">
+graph TD
+    A["Input Embeddings"] --> B["+ Positional Encoding"]
+    B --> C["Multi-Head Self-Attention"]
+    C --> D["Add & Norm"]
+    D --> E["Feed Forward Network"]
+    E --> F["Add & Norm"]
+    F --> G["Output"]
+
+    style C fill:#e65100,color:#fff
+    style E fill:#1565c0,color:#fff
+  </div>
+
+  <h2>7. Named Entity Recognition (NER)</h2>
+  <p>NER identifies and classifies named entities in text into predefined categories.</p>
+  <pre>
+Input: "Barack Obama was born in Hawaii on August 4, 1961."
+Output:
+  Barack Obama  -> PERSON
+  Hawaii        -> LOCATION
+  August 4, 1961 -> DATE
+  </pre>
+
+  <table>
+    <tr><th>Entity Type</th><th>Examples</th></tr>
+    <tr><td>PERSON</td><td>Albert Einstein, Marie Curie</td></tr>
+    <tr><td>ORGANIZATION</td><td>Google, MIT, WHO</td></tr>
+    <tr><td>LOCATION</td><td>Paris, Mount Everest</td></tr>
+    <tr><td>DATE/TIME</td><td>January 2024, 3:00 PM</td></tr>
+    <tr><td>MONEY</td><td>$500, 50 euros</td></tr>
+  </table>
+
+  <h2>8. Sentiment Analysis</h2>
+  <p>Sentiment analysis determines the emotional tone of text (positive, negative, neutral).</p>
+  <pre>
+Approaches:
+1. Lexicon-based: Use sentiment dictionaries (AFINN, SentiWordNet)
+2. ML-based: Train classifiers on labeled data (Naive Bayes, SVM, LSTM)
+3. Transformer-based: Fine-tune BERT/GPT on sentiment datasets
+
+Example:
+  "This movie was absolutely wonderful!" -> Positive (0.95)
+  "Terrible service, never going back."  -> Negative (0.92)
+  "The package arrived on Tuesday."      -> Neutral  (0.87)
+  </pre>
+
+  <h2>9. NLP Evaluation Metrics</h2>
+  <table>
+    <tr><th>Task</th><th>Metric</th><th>Description</th></tr>
+    <tr><td>Classification</td><td>Accuracy, F1</td><td>Standard classification metrics</td></tr>
+    <tr><td>NER</td><td>Entity-level F1</td><td>Exact entity match required</td></tr>
+    <tr><td>Machine Translation</td><td>BLEU</td><td>N-gram overlap with reference</td></tr>
+    <tr><td>Summarization</td><td>ROUGE</td><td>Recall of n-grams from reference</td></tr>
+    <tr><td>Language Model</td><td>Perplexity</td><td>Lower is better</td></tr>
+  </table>
+
+  <div class="note"><strong>GATE Tip:</strong> Focus on TF-IDF calculations, n-gram probability computations, and understanding the difference between stemming and lemmatization. These are the most commonly tested NLP topics.</div>
+
+</article>
+</body>
+</html>

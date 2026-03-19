@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Machine Learning Basics — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Machine Learning Basics</h1>
+  <p class="article-section-tag">🤖 Artificial Intelligence</p>
+
+  <h2>1. ML Taxonomy</h2>
+  <div class="mermaid">
+graph TD
+    ML["Machine Learning"] --> SL["Supervised Learning"]
+    ML --> UL["Unsupervised Learning"]
+    ML --> RL["Reinforcement Learning"]
+    ML --> SSL["Semi-supervised"]
+
+    SL --> CL["Classification"]
+    SL --> RG["Regression"]
+    CL --> LR2["Logistic Regression"]
+    CL --> DT["Decision Trees"]
+    CL --> SVM2["SVM"]
+    CL --> KNN["k-NN"]
+    RG --> LR1["Linear Regression"]
+    RG --> PR["Polynomial Regression"]
+
+    UL --> CLU["Clustering"]
+    UL --> DR["Dimensionality Reduction"]
+    CLU --> KM["K-Means"]
+    CLU --> HC["Hierarchical"]
+    DR --> PCA2["PCA"]
+
+    RL --> QB["Q-Learning"]
+    RL --> PG["Policy Gradient"]
+
+    style ML fill:#1565c0,color:#fff
+    style SL fill:#2e7d32,color:#fff
+    style UL fill:#e65100,color:#fff
+    style RL fill:#6a1b9a,color:#fff
+  </div>
+
+  <h2>2. Supervised vs Unsupervised vs Reinforcement Learning</h2>
+  <table>
+    <tr><th>Aspect</th><th>Supervised</th><th>Unsupervised</th><th>Reinforcement</th></tr>
+    <tr><td>Training data</td><td>Labeled (x, y) pairs</td><td>Unlabeled x only</td><td>Reward signals</td></tr>
+    <tr><td>Goal</td><td>Learn mapping x &rarr; y</td><td>Find hidden structure</td><td>Maximize cumulative reward</td></tr>
+    <tr><td>Feedback</td><td>Direct (correct answer)</td><td>None</td><td>Delayed reward</td></tr>
+    <tr><td>Examples</td><td>Classification, Regression</td><td>Clustering, PCA</td><td>Game playing, Robotics</td></tr>
+    <tr><td>Evaluation</td><td>Accuracy, MSE</td><td>Silhouette score</td><td>Total reward</td></tr>
+  </table>
+
+  <h2>3. Linear Regression</h2>
+  <h3>3.1 Model</h3>
+  <p>Linear regression models the relationship between input features and a continuous output:</p>
+  <pre>
+Hypothesis: h(x) = w0 + w1*x1 + w2*x2 + ... + wn*xn
+Vector form: h(x) = w^T * x
+
+where w = weight vector, x = feature vector
+  </pre>
+
+  <h3>3.2 Cost Function (Mean Squared Error)</h3>
+  <pre>
+J(w) = (1/2m) * SUM[i=1 to m] (h(x_i) - y_i)^2
+
+where m = number of training examples
+  </pre>
+
+  <h3>3.3 Gradient Descent</h3>
+  <p>Gradient descent iteratively updates weights to minimize the cost function:</p>
+  <pre>
+Repeat until convergence:
+    w_j := w_j - alpha * (dJ/dw_j)
+    w_j := w_j - alpha * (1/m) * SUM[i=1 to m] (h(x_i) - y_i) * x_i_j
+
+where alpha = learning rate (step size)
+  </pre>
+
+  <div class="warning"><strong>Learning Rate:</strong> Too large &rarr; overshoots, may diverge. Too small &rarr; very slow convergence. Typical starting values: 0.01, 0.001.</div>
+
+  <h3>3.4 Normal Equation (Closed-form Solution)</h3>
+  <pre>
+w = (X^T * X)^(-1) * X^T * y
+
+No iteration needed, but O(n^3) for matrix inversion.
+Prefer gradient descent when n (features) is large.
+  </pre>
+
+  <h2>4. Logistic Regression</h2>
+  <h3>4.1 Sigmoid Function</h3>
+  <pre>
+sigma(z) = 1 / (1 + e^(-z))
+
+Properties:
+  - Output range: (0, 1) -> interpreted as probability
+  - sigma(0) = 0.5
+  - sigma'(z) = sigma(z) * (1 - sigma(z))
+  </pre>
+
+  <h3>4.2 Decision Boundary</h3>
+  <p>The model predicts class 1 if h(x) = sigma(w<sup>T</sup>x) &ge; 0.5, i.e., when w<sup>T</sup>x &ge; 0.</p>
+  <pre>
+Linear decision boundary: w0 + w1*x1 + w2*x2 = 0
+
+Example: if w = [-3, 1, 1], boundary is x1 + x2 = 3
+  Predict 1 if x1 + x2 >= 3
+  Predict 0 if x1 + x2 < 3
+  </pre>
+
+  <h3>4.3 Cost Function (Cross-Entropy Loss)</h3>
+  <pre>
+J(w) = -(1/m) * SUM[ y_i * log(h(x_i)) + (1-y_i) * log(1-h(x_i)) ]
+
+This is convex, so gradient descent finds the global minimum.
+  </pre>
+
+  <h2>5. Decision Trees</h2>
+  <h3>5.1 Entropy</h3>
+  <pre>
+H(S) = -SUM[i=1 to c] p_i * log2(p_i)
+
+where p_i = proportion of class i in set S
+c = number of classes
+
+Example: S has 9 positive, 5 negative (total 14)
+H(S) = -(9/14)*log2(9/14) - (5/14)*log2(5/14)
+     = -(0.643)(−0.637) - (0.357)(−1.486)
+     = 0.410 + 0.531 = 0.940 bits
+  </pre>
+
+  <h3>5.2 Information Gain</h3>
+  <pre>
+IG(S, A) = H(S) - SUM[v in Values(A)] (|S_v|/|S|) * H(S_v)
+
+Choose attribute A with highest information gain to split on.
+  </pre>
+
+  <h3>5.3 Gini Index</h3>
+  <pre>
+Gini(S) = 1 - SUM[i=1 to c] p_i^2
+
+Example: S has 9 positive, 5 negative
+Gini = 1 - (9/14)^2 - (5/14)^2
+     = 1 - 0.413 - 0.128 = 0.459
+  </pre>
+
+  <table>
+    <tr><th>Splitting Criterion</th><th>Used By</th><th>Range</th></tr>
+    <tr><td>Information Gain (Entropy)</td><td>ID3, C4.5</td><td>[0, log2(c)]</td></tr>
+    <tr><td>Gini Index</td><td>CART</td><td>[0, 1 - 1/c]</td></tr>
+    <tr><td>Gain Ratio</td><td>C4.5</td><td>Normalized IG</td></tr>
+  </table>
+
+  <h2>6. Support Vector Machines (SVM)</h2>
+  <h3>6.1 Linear SVM</h3>
+  <p>SVM finds the hyperplane that maximizes the <strong>margin</strong> between two classes.</p>
+  <pre>
+Decision boundary: w^T * x + b = 0
+Margin = 2 / ||w||
+
+Optimization: Minimize (1/2)||w||^2
+Subject to: y_i(w^T * x_i + b) >= 1  for all i
+
+Support vectors are data points ON the margin boundaries.
+  </pre>
+
+  <h3>6.2 Kernel Trick</h3>
+  <p>When data is not linearly separable, map to a higher-dimensional space using a kernel function:</p>
+  <table>
+    <tr><th>Kernel</th><th>K(x, x')</th><th>Use Case</th></tr>
+    <tr><td>Linear</td><td>x<sup>T</sup>x'</td><td>Linearly separable data</td></tr>
+    <tr><td>Polynomial</td><td>(x<sup>T</sup>x' + c)<sup>d</sup></td><td>Feature interactions</td></tr>
+    <tr><td>RBF (Gaussian)</td><td>exp(-||x-x'||<sup>2</sup> / 2&sigma;<sup>2</sup>)</td><td>General nonlinear</td></tr>
+    <tr><td>Sigmoid</td><td>tanh(&alpha; x<sup>T</sup>x' + c)</td><td>Neural network-like</td></tr>
+  </table>
+
+  <h2>7. Overfitting, Underfitting & Bias-Variance Tradeoff</h2>
+
+  <div class="mermaid">
+graph LR
+    A["High Bias<br>Underfitting"] -->|"Increase model complexity"| B["Good Fit<br>Balanced"]
+    B -->|"Increase model complexity"| C["High Variance<br>Overfitting"]
+
+    style A fill:#e53935,color:#fff
+    style B fill:#43a047,color:#fff
+    style C fill:#e53935,color:#fff
+  </div>
+
+  <table>
+    <tr><th>Aspect</th><th>Underfitting (High Bias)</th><th>Overfitting (High Variance)</th></tr>
+    <tr><td>Training error</td><td>High</td><td>Low</td></tr>
+    <tr><td>Test error</td><td>High</td><td>High</td></tr>
+    <tr><td>Model complexity</td><td>Too simple</td><td>Too complex</td></tr>
+    <tr><td>Fix</td><td>More features, complex model</td><td>Regularization, more data, simpler model</td></tr>
+  </table>
+
+  <h3>7.1 Bias-Variance Decomposition</h3>
+  <pre>
+Expected Error = Bias^2 + Variance + Irreducible Noise
+
+Bias = E[h(x)] - f(x)     (systematic error)
+Variance = E[(h(x) - E[h(x)])^2]  (sensitivity to training data)
+  </pre>
+
+  <h3>7.2 Regularization</h3>
+  <pre>
+L2 Regularization (Ridge):
+  J(w) = (1/2m) * SUM(h(x_i) - y_i)^2 + lambda * SUM(w_j^2)
+
+L1 Regularization (Lasso):
+  J(w) = (1/2m) * SUM(h(x_i) - y_i)^2 + lambda * SUM(|w_j|)
+
+L1 promotes sparsity (feature selection).
+L2 shrinks all weights uniformly.
+  </pre>
+
+  <h2>8. Cross-Validation</h2>
+  <p><strong>k-Fold Cross-Validation:</strong> Split data into k folds, train on k-1 folds, test on the remaining one. Repeat k times and average the scores.</p>
+  <div class="note"><strong>GATE Tip:</strong> Leave-one-out CV is k-fold where k = n (number of samples). It has high variance but low bias.</div>
+
+  <h2>9. Key Formulas for GATE</h2>
+  <table>
+    <tr><th>Concept</th><th>Formula</th></tr>
+    <tr><td>MSE</td><td>(1/m) &Sigma;(y&#770; - y)<sup>2</sup></td></tr>
+    <tr><td>Sigmoid</td><td>1 / (1 + e<sup>-z</sup>)</td></tr>
+    <tr><td>Entropy</td><td>-&Sigma; p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>)</td></tr>
+    <tr><td>Gini</td><td>1 - &Sigma; p<sub>i</sub><sup>2</sup></td></tr>
+    <tr><td>SVM Margin</td><td>2 / ||w||</td></tr>
+    <tr><td>Gradient Descent</td><td>w := w - &alpha; &nabla;J(w)</td></tr>
+    <tr><td>Total Error</td><td>Bias<sup>2</sup> + Variance + Noise</td></tr>
+  </table>
+
+</article>
+</body>
+</html>

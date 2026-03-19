@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sequential Circuits — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Sequential Circuits</h1>
+  <p class="article-section-tag">🔲 Section 2: Digital Logic</p>
+
+  <h2>1. Introduction</h2>
+  <p>Sequential circuits differ from combinational circuits because their output depends on both the current inputs and the current state (memory). They contain feedback paths and storage elements (latches or flip-flops). Sequential circuits can be classified as <strong>synchronous</strong> (state changes occur on clock edges) or <strong>asynchronous</strong> (state changes occur whenever inputs change).</p>
+
+  <h2>2. Latches</h2>
+
+  <h3>2.1 SR Latch (NOR-based)</h3>
+  <table>
+    <tr><th>S</th><th>R</th><th>Q (next)</th><th>Q' (next)</th><th>State</th></tr>
+    <tr><td>0</td><td>0</td><td>Q</td><td>Q'</td><td>No change (Hold)</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>Reset</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>Set</td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>Invalid / Forbidden</td></tr>
+  </table>
+
+  <div class="important">
+    <p>The S=1, R=1 condition is forbidden because it forces both outputs to 0, violating the constraint that Q and Q' should be complements.</p>
+  </div>
+
+  <h3>2.2 D Latch (Gated)</h3>
+  <p>The D latch eliminates the invalid state by using a single data input D. When Enable is high, Q follows D. When Enable is low, Q holds its previous value.</p>
+  <table>
+    <tr><th>Enable</th><th>D</th><th>Q (next)</th></tr>
+    <tr><td>0</td><td>X</td><td>Q (no change)</td></tr>
+    <tr><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>1</td><td>1</td><td>1</td></tr>
+  </table>
+
+  <h2>3. Flip-Flops</h2>
+  <p>Flip-flops are edge-triggered (positive or negative edge of clock). They change state only at the active clock edge, unlike latches which are level-sensitive.</p>
+
+  <h3>3.1 SR Flip-Flop</h3>
+  <table>
+    <tr><th>S</th><th>R</th><th>Q(t+1)</th><th>Action</th></tr>
+    <tr><td>0</td><td>0</td><td>Q(t)</td><td>No change</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>Reset</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>Set</td></tr>
+    <tr><td>1</td><td>1</td><td>Undefined</td><td>Invalid</td></tr>
+  </table>
+  <p><strong>Characteristic equation:</strong> Q(t+1) = S + R'Q(t), with constraint SR = 0</p>
+
+  <h3>3.2 D Flip-Flop</h3>
+  <table>
+    <tr><th>D</th><th>Q(t+1)</th><th>Action</th></tr>
+    <tr><td>0</td><td>0</td><td>Reset</td></tr>
+    <tr><td>1</td><td>1</td><td>Set</td></tr>
+  </table>
+  <p><strong>Characteristic equation:</strong> Q(t+1) = D</p>
+
+  <h3>3.3 JK Flip-Flop</h3>
+  <table>
+    <tr><th>J</th><th>K</th><th>Q(t+1)</th><th>Action</th></tr>
+    <tr><td>0</td><td>0</td><td>Q(t)</td><td>No change</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>Reset</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>Set</td></tr>
+    <tr><td>1</td><td>1</td><td>Q'(t)</td><td>Toggle</td></tr>
+  </table>
+  <p><strong>Characteristic equation:</strong> Q(t+1) = JQ'(t) + K'Q(t)</p>
+
+  <h3>3.4 T Flip-Flop</h3>
+  <table>
+    <tr><th>T</th><th>Q(t+1)</th><th>Action</th></tr>
+    <tr><td>0</td><td>Q(t)</td><td>No change</td></tr>
+    <tr><td>1</td><td>Q'(t)</td><td>Toggle</td></tr>
+  </table>
+  <p><strong>Characteristic equation:</strong> Q(t+1) = T XOR Q(t)</p>
+
+  <h3>3.5 Excitation Tables</h3>
+  <table>
+    <tr><th>Q(t)</th><th>Q(t+1)</th><th>S R</th><th>D</th><th>J K</th><th>T</th></tr>
+    <tr><td>0</td><td>0</td><td>0 X</td><td>0</td><td>0 X</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>1 0</td><td>1</td><td>1 X</td><td>1</td></tr>
+    <tr><td>1</td><td>0</td><td>0 1</td><td>0</td><td>X 1</td><td>1</td></tr>
+    <tr><td>1</td><td>1</td><td>X 0</td><td>1</td><td>X 0</td><td>0</td></tr>
+  </table>
+
+  <h2>4. Counters</h2>
+
+  <h3>4.1 Asynchronous (Ripple) Counter</h3>
+  <p>In a ripple counter, each flip-flop is triggered by the output of the previous flip-flop. The clock is applied only to the first flip-flop.</p>
+
+  <div class="mermaid">
+stateDiagram-v2
+    [*] --> S000 : Reset
+    S000 --> S001 : CLK
+    S001 --> S010 : CLK
+    S010 --> S011 : CLK
+    S011 --> S100 : CLK
+    S100 --> S101 : CLK
+    S101 --> S110 : CLK
+    S110 --> S111 : CLK
+    S111 --> S000 : CLK
+  </div>
+
+  <div class="note">
+    <p><strong>Propagation Delay:</strong> For an n-bit ripple counter, the maximum delay is n &times; t<sub>pd</sub> (flip-flop propagation delay). This limits the maximum operating frequency.</p>
+  </div>
+
+  <h3>4.2 Synchronous Counter</h3>
+  <p>All flip-flops receive the clock simultaneously. State changes are synchronized, eliminating cumulative delay. Faster but requires more complex logic.</p>
+
+  <h3>4.3 Up/Down Counter</h3>
+  <p>A control signal determines whether the counter increments or decrements on each clock edge.</p>
+
+  <h3>4.4 Modulo-N Counter</h3>
+  <p>A mod-N counter counts from 0 to N-1 and then resets. It requires <code>ceil(log2(N))</code> flip-flops.</p>
+
+  <table>
+    <tr><th>Counter Type</th><th>Mod Value</th><th>Flip-Flops</th><th>States</th></tr>
+    <tr><td>Mod-8</td><td>8</td><td>3</td><td>0-7</td></tr>
+    <tr><td>Mod-10 (BCD)</td><td>10</td><td>4</td><td>0-9</td></tr>
+    <tr><td>Mod-6</td><td>6</td><td>3</td><td>0-5</td></tr>
+    <tr><td>Mod-12</td><td>12</td><td>4</td><td>0-11</td></tr>
+  </table>
+
+  <h2>5. Registers</h2>
+
+  <h3>5.1 Shift Registers</h3>
+  <p>A shift register stores n bits and shifts them by one position on each clock pulse.</p>
+
+  <table>
+    <tr><th>Type</th><th>Input</th><th>Output</th><th>Application</th></tr>
+    <tr><td>SISO (Serial In, Serial Out)</td><td>Serial</td><td>Serial</td><td>Delay line</td></tr>
+    <tr><td>SIPO (Serial In, Parallel Out)</td><td>Serial</td><td>Parallel</td><td>Serial-to-parallel conversion</td></tr>
+    <tr><td>PISO (Parallel In, Serial Out)</td><td>Parallel</td><td>Serial</td><td>Parallel-to-serial conversion</td></tr>
+    <tr><td>PIPO (Parallel In, Parallel Out)</td><td>Parallel</td><td>Parallel</td><td>Temporary storage</td></tr>
+  </table>
+
+  <h3>5.2 Universal Shift Register</h3>
+  <p>A universal shift register supports all four modes (SISO, SIPO, PISO, PIPO) and can shift left, shift right, or load data in parallel. Two mode select lines control the operation.</p>
+
+  <h3>5.3 Ring Counter and Johnson Counter</h3>
+  <p><strong>Ring Counter:</strong> A shift register with feedback from the last flip-flop output to the first flip-flop input. An n-bit ring counter has n states (mod-n).</p>
+  <p><strong>Johnson Counter (Twisted Ring):</strong> The complemented output of the last flip-flop feeds back to the first. An n-bit Johnson counter has 2n states (mod-2n).</p>
+
+  <h2>6. State Diagrams and State Tables</h2>
+
+  <h3>6.1 State Table Example: Sequence Detector (detects "101")</h3>
+  <table>
+    <tr><th>Present State</th><th>Input=0</th><th>Input=1</th><th>Output (Input=0)</th><th>Output (Input=1)</th></tr>
+    <tr><td>S0</td><td>S0</td><td>S1</td><td>0</td><td>0</td></tr>
+    <tr><td>S1</td><td>S2</td><td>S1</td><td>0</td><td>0</td></tr>
+    <tr><td>S2</td><td>S0</td><td>S1</td><td>0</td><td>1</td></tr>
+  </table>
+
+  <h3>6.2 State Diagram for "101" Sequence Detector (Mealy Machine)</h3>
+  <div class="mermaid">
+stateDiagram-v2
+    [*] --> S0
+    S0 --> S0 : 0/0
+    S0 --> S1 : 1/0
+    S1 --> S2 : 0/0
+    S1 --> S1 : 1/0
+    S2 --> S0 : 0/0
+    S2 --> S1 : 1/1
+  </div>
+
+  <h3>6.3 Mealy vs Moore Machines</h3>
+  <table>
+    <tr><th>Property</th><th>Mealy Machine</th><th>Moore Machine</th></tr>
+    <tr><td>Output depends on</td><td>Current state + Current input</td><td>Current state only</td></tr>
+    <tr><td>Output changes</td><td>Asynchronously with input</td><td>Synchronously with clock</td></tr>
+    <tr><td>Number of states</td><td>Generally fewer</td><td>Generally more</td></tr>
+    <tr><td>Output notation</td><td>On transitions (edges)</td><td>Inside states (nodes)</td></tr>
+  </table>
+
+  <h2>7. Flip-Flop State Diagram</h2>
+  <p>State diagram for a JK flip-flop showing all transitions:</p>
+
+  <div class="mermaid">
+stateDiagram-v2
+    [*] --> Q0
+    Q0 --> Q0 : JK=00 or JK=01
+    Q0 --> Q1 : JK=10 or JK=11
+    Q1 --> Q1 : JK=00 or JK=10
+    Q1 --> Q0 : JK=01 or JK=11
+  </div>
+
+  <h2>8. Design Procedure for Synchronous Sequential Circuits</h2>
+  <ol>
+    <li>Obtain the state diagram from the problem specification.</li>
+    <li>Derive the state table.</li>
+    <li>Perform state minimization (if needed).</li>
+    <li>Assign binary codes to states (state assignment).</li>
+    <li>Choose flip-flop type and derive excitation equations using excitation tables.</li>
+    <li>Draw the circuit.</li>
+  </ol>
+
+  <h2>9. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Know all four flip-flop characteristic and excitation tables by heart.</li>
+      <li>For counting problems: n flip-flops can have at most 2<sup>n</sup> states.</li>
+      <li>Minimum number of flip-flops for mod-N counter: ceil(log<sub>2</sub>N).</li>
+      <li>Frequency of MSB in a mod-2<sup>n</sup> counter: f<sub>clk</sub> / 2<sup>n</sup>.</li>
+      <li>Race condition can occur in SR latches when both inputs are 1.</li>
+      <li>Edge-triggered flip-flops are immune to glitches except at the clock edge.</li>
+      <li>Master-slave flip-flops sample on one edge and output on the opposite edge.</li>
+    </ul>
+  </div>
+
+  <h2>10. Summary</h2>
+  <table>
+    <tr><th>Component</th><th>Trigger</th><th>Key Feature</th></tr>
+    <tr><td>SR Latch</td><td>Level</td><td>Invalid state when S=R=1</td></tr>
+    <tr><td>D Latch</td><td>Level</td><td>Transparent when enabled</td></tr>
+    <tr><td>SR Flip-Flop</td><td>Edge</td><td>Invalid state when S=R=1</td></tr>
+    <tr><td>D Flip-Flop</td><td>Edge</td><td>Q follows D at clock edge</td></tr>
+    <tr><td>JK Flip-Flop</td><td>Edge</td><td>Toggle when J=K=1</td></tr>
+    <tr><td>T Flip-Flop</td><td>Edge</td><td>Toggle when T=1</td></tr>
+  </table>
+
+</article>
+</body>
+</html>

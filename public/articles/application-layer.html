@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Layer Protocols | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Application Layer Protocols</h1>
+  <p class="article-section-tag">&#127760; Section 10: Computer Networks</p>
+
+  <!-- ===================== DNS ===================== -->
+  <h2>1. Domain Name System (DNS)</h2>
+  <p>DNS is a hierarchical, distributed naming system that translates human-readable domain names (e.g., <code>www.example.com</code>) into IP addresses. It uses <strong>UDP port 53</strong> (TCP for zone transfers and large responses).</p>
+
+  <h3>1.1 DNS Hierarchy</h3>
+  <table>
+    <tr><th>Level</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>Root</strong></td><td>13 root server clusters worldwide (named a.root-servers.net through m.root-servers.net)</td><td>. (dot)</td></tr>
+    <tr><td><strong>Top-Level Domain (TLD)</strong></td><td>Generic (.com, .org, .net) and country-code (.in, .uk, .jp) TLDs</td><td>.com, .edu</td></tr>
+    <tr><td><strong>Authoritative</strong></td><td>Organization's own DNS servers that hold actual records</td><td>ns1.example.com</td></tr>
+    <tr><td><strong>Local (Recursive Resolver)</strong></td><td>ISP or organization DNS that caches and resolves queries for clients</td><td>8.8.8.8 (Google DNS)</td></tr>
+  </table>
+
+  <h3>1.2 DNS Resolution</h3>
+  <div class="mermaid">
+    sequenceDiagram
+      participant C as Client
+      participant L as Local DNS Resolver
+      participant R as Root Server
+      participant T as TLD Server (.com)
+      participant A as Authoritative Server
+      C->>L: Query: www.example.com
+      Note over L: Check cache first
+      L->>R: Query: www.example.com
+      R->>L: Referral to .com TLD server
+      L->>T: Query: www.example.com
+      T->>L: Referral to example.com authoritative server
+      L->>A: Query: www.example.com
+      A->>L: Answer: 93.184.216.34
+      L->>C: Answer: 93.184.216.34
+      Note over L: Cache the result (with TTL)
+  </div>
+
+  <table>
+    <tr><th>Resolution Type</th><th>Description</th></tr>
+    <tr><td><strong>Recursive</strong></td><td>The resolver takes full responsibility to return the final answer (does all the work). Client to local DNS is typically recursive.</td></tr>
+    <tr><td><strong>Iterative</strong></td><td>The server returns the best answer it has (often a referral). Local DNS to root/TLD/authoritative is typically iterative.</td></tr>
+  </table>
+
+  <h3>1.3 DNS Record Types</h3>
+  <table>
+    <tr><th>Record Type</th><th>Purpose</th><th>Example</th></tr>
+    <tr><td><strong>A</strong></td><td>Maps domain name to IPv4 address</td><td>example.com &rarr; 93.184.216.34</td></tr>
+    <tr><td><strong>AAAA</strong></td><td>Maps domain name to IPv6 address</td><td>example.com &rarr; 2606:2800:220:1:...</td></tr>
+    <tr><td><strong>MX</strong></td><td>Mail exchange server for the domain</td><td>example.com &rarr; mail.example.com (priority 10)</td></tr>
+    <tr><td><strong>CNAME</strong></td><td>Canonical name (alias for another domain)</td><td>www.example.com &rarr; example.com</td></tr>
+    <tr><td><strong>NS</strong></td><td>Authoritative name server for the domain</td><td>example.com &rarr; ns1.example.com</td></tr>
+    <tr><td><strong>PTR</strong></td><td>Reverse DNS lookup (IP to domain)</td><td>34.216.184.93.in-addr.arpa &rarr; example.com</td></tr>
+    <tr><td><strong>SOA</strong></td><td>Start of Authority (primary NS, admin email, serial number, timers)</td><td>Zone metadata</td></tr>
+    <tr><td><strong>TXT</strong></td><td>Arbitrary text (SPF, DKIM, verification)</td><td>v=spf1 include:_spf.google.com</td></tr>
+  </table>
+
+  <!-- ===================== HTTP ===================== -->
+  <h2>2. HTTP (Hypertext Transfer Protocol)</h2>
+  <p>HTTP is a stateless, request-response protocol for transferring web resources. It runs on <strong>TCP port 80</strong> (HTTPS on port 443).</p>
+
+  <h3>2.1 HTTP Methods</h3>
+  <table>
+    <tr><th>Method</th><th>Description</th><th>Idempotent?</th><th>Safe?</th></tr>
+    <tr><td><strong>GET</strong></td><td>Retrieve a resource</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td><strong>POST</strong></td><td>Submit data to be processed (create)</td><td>No</td><td>No</td></tr>
+    <tr><td><strong>PUT</strong></td><td>Replace/update an entire resource</td><td>Yes</td><td>No</td></tr>
+    <tr><td><strong>DELETE</strong></td><td>Remove a resource</td><td>Yes</td><td>No</td></tr>
+    <tr><td><strong>HEAD</strong></td><td>Same as GET but returns only headers</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td><strong>PATCH</strong></td><td>Partially update a resource</td><td>No</td><td>No</td></tr>
+    <tr><td><strong>OPTIONS</strong></td><td>Describe communication options for a resource</td><td>Yes</td><td>Yes</td></tr>
+  </table>
+
+  <h3>2.2 HTTP Status Codes</h3>
+  <table>
+    <tr><th>Range</th><th>Category</th><th>Examples</th></tr>
+    <tr><td>1xx</td><td>Informational</td><td>100 Continue</td></tr>
+    <tr><td>2xx</td><td>Success</td><td>200 OK, 201 Created, 204 No Content</td></tr>
+    <tr><td>3xx</td><td>Redirection</td><td>301 Moved Permanently, 302 Found, 304 Not Modified</td></tr>
+    <tr><td>4xx</td><td>Client Error</td><td>400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found</td></tr>
+    <tr><td>5xx</td><td>Server Error</td><td>500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable</td></tr>
+  </table>
+
+  <h3>2.3 Persistent vs Non-Persistent HTTP</h3>
+  <table>
+    <tr><th>Feature</th><th>Non-Persistent (HTTP/1.0)</th><th>Persistent (HTTP/1.1)</th></tr>
+    <tr><td>Connection</td><td>New TCP connection per request</td><td>Multiple requests on one connection</td></tr>
+    <tr><td>RTTs per object</td><td>2 RTT + transmission time (1 for TCP setup, 1 for request/response)</td><td>1 RTT per object (connection reused)</td></tr>
+    <tr><td>Overhead</td><td>High (TCP handshake for each object)</td><td>Low (amortized setup cost)</td></tr>
+    <tr><td>Pipelining</td><td>Not possible</td><td>Possible (send multiple requests without waiting for responses)</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Total time for non-persistent HTTP:</strong> To download a page with 1 base HTML and N referenced objects:<br/>
+    Total = (N + 1) &times; (2 RTT + file transmission time)<br/>
+    With parallel connections (e.g., 6 connections): Total = (1 + ceil(N/6)) &times; 2 RTT approximately.
+  </div>
+
+  <!-- ===================== HTTPS/TLS ===================== -->
+  <h2>3. HTTPS and TLS</h2>
+  <p><strong>HTTPS</strong> is HTTP over TLS (Transport Layer Security). TLS provides encryption, authentication, and integrity for HTTP communication.</p>
+
+  <table>
+    <tr><th>TLS Feature</th><th>Description</th></tr>
+    <tr><td>Encryption</td><td>Symmetric encryption (AES) for data; key exchanged using asymmetric crypto (RSA/ECDHE)</td></tr>
+    <tr><td>Authentication</td><td>Server certificate verified using Certificate Authorities (CA) chain of trust</td></tr>
+    <tr><td>Integrity</td><td>HMAC (Hash-based Message Authentication Code) ensures data is not tampered</td></tr>
+    <tr><td>TLS Handshake</td><td>ClientHello &rarr; ServerHello + Certificate &rarr; Key Exchange &rarr; Finished. Adds 1-2 RTTs before data transfer.</td></tr>
+  </table>
+
+  <!-- ===================== FTP ===================== -->
+  <h2>4. FTP (File Transfer Protocol)</h2>
+  <p>FTP is used for transferring files between a client and server. It uses <strong>two TCP connections</strong>: a control connection (port 21) and a data connection (port 20 or dynamic).</p>
+
+  <table>
+    <tr><th>Feature</th><th>Active Mode</th><th>Passive Mode</th></tr>
+    <tr><td>Data Connection Initiated By</td><td>Server (from port 20 to client)</td><td>Client (to server's specified port)</td></tr>
+    <tr><td>Firewall Friendly?</td><td>No (server initiates connection to client)</td><td>Yes (client initiates both connections)</td></tr>
+    <tr><td>Client Action</td><td>Sends PORT command with its IP and port</td><td>Sends PASV command; server responds with port</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>FTP is stateful</strong> (unlike HTTP). The control connection persists across multiple file transfers. FTP transmits credentials in plaintext; SFTP (SSH-based) or FTPS (FTP over TLS) should be used for security.
+  </div>
+
+  <!-- ===================== SMTP ===================== -->
+  <h2>5. SMTP and Email Architecture</h2>
+
+  <h3>5.1 SMTP (Simple Mail Transfer Protocol)</h3>
+  <p>SMTP is used for sending email. It runs on <strong>TCP port 25</strong> (or 587 for submission). SMTP is a push protocol; it transfers mail from sender's MTA to receiver's MTA.</p>
+
+  <h3>5.2 Email Delivery Flow</h3>
+  <div class="mermaid">
+    sequenceDiagram
+      participant S as Sender MUA
+      participant SM as Sender MTA (SMTP)
+      participant RM as Receiver MTA (SMTP)
+      participant R as Receiver MUA
+      S->>SM: Compose and send email (SMTP/Submission)
+      SM->>SM: DNS MX lookup for recipient domain
+      SM->>RM: Transfer email via SMTP
+      RM->>RM: Store in recipient mailbox
+      R->>RM: Retrieve email (POP3 or IMAP)
+      RM->>R: Deliver email to client
+  </div>
+
+  <h3>5.3 Email Architecture Components</h3>
+  <table>
+    <tr><th>Component</th><th>Description</th><th>Protocol</th></tr>
+    <tr><td><strong>MUA (Mail User Agent)</strong></td><td>Email client (Outlook, Thunderbird, Gmail web interface)</td><td>SMTP (send), POP3/IMAP (receive)</td></tr>
+    <tr><td><strong>MTA (Mail Transfer Agent)</strong></td><td>Email server that routes and transfers mail</td><td>SMTP</td></tr>
+    <tr><td><strong>MDA (Mail Delivery Agent)</strong></td><td>Delivers mail to the recipient's mailbox on the server</td><td>Local delivery</td></tr>
+  </table>
+
+  <h3>5.4 POP3 vs IMAP</h3>
+  <table>
+    <tr><th>Feature</th><th>POP3 (Port 110)</th><th>IMAP (Port 143)</th></tr>
+    <tr><td>Model</td><td>Download and delete (or keep)</td><td>Server-side management</td></tr>
+    <tr><td>Mail Storage</td><td>Primarily on client</td><td>On server</td></tr>
+    <tr><td>Multiple Devices</td><td>Problematic (mail on one device)</td><td>Seamless (synced across devices)</td></tr>
+    <tr><td>Folder Management</td><td>Limited</td><td>Full server-side folders</td></tr>
+    <tr><td>Partial Fetch</td><td>No (downloads entire message)</td><td>Yes (can fetch headers, parts)</td></tr>
+    <tr><td>Offline Access</td><td>Good (downloaded locally)</td><td>Requires cache/sync</td></tr>
+    <tr><td>Bandwidth</td><td>Lower (one-time download)</td><td>Higher (continuous sync)</td></tr>
+    <tr><td>Secure Versions</td><td>POP3S (port 995)</td><td>IMAPS (port 993)</td></tr>
+  </table>
+
+  <h3>5.5 SMTP Commands and Flow</h3>
+  <pre><code>Client: HELO sender.example.com
+Server: 250 Hello sender.example.com
+Client: MAIL FROM:&lt;alice@sender.example.com&gt;
+Server: 250 OK
+Client: RCPT TO:&lt;bob@receiver.example.com&gt;
+Server: 250 OK
+Client: DATA
+Server: 354 Start mail input
+Client: Subject: Hello
+Client: This is the email body.
+Client: .
+Server: 250 OK: Message queued
+Client: QUIT
+Server: 221 Bye</code></pre>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>6. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>DNS uses UDP port 53 (TCP for zone transfers). Resolution is typically recursive from client to local DNS, iterative from local DNS to root/TLD/authoritative.</li>
+      <li>DNS caching at each level reduces query load. TTL (Time To Live) controls cache duration.</li>
+      <li>HTTP is stateless. Non-persistent HTTP needs 2 RTT per object; persistent HTTP reuses the TCP connection.</li>
+      <li>HTTP/1.1 default is persistent connections with pipelining support.</li>
+      <li>HTTPS = HTTP + TLS. TLS handshake adds 1-2 RTTs of latency.</li>
+      <li>FTP uses 2 connections: control (port 21, persistent) and data (port 20 or dynamic, per-transfer). Passive mode is firewall-friendly.</li>
+      <li>SMTP is a push protocol (port 25); POP3 (port 110) and IMAP (port 143) are pull protocols for mail retrieval.</li>
+      <li>IMAP keeps mail on server (better for multiple devices); POP3 downloads to client.</li>
+      <li>MX record in DNS determines which mail server handles email for a domain.</li>
+      <li>Key ports: HTTP=80, HTTPS=443, FTP=21/20, SSH=22, DNS=53, SMTP=25, POP3=110, IMAP=143, DHCP=67/68.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

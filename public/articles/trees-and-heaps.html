@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trees and Heaps — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Trees and Heaps</h1>
+  <p class="article-section-tag">💻 Section 4: Programming and Data Structures</p>
+
+  <h2>1. Binary Tree Basics</h2>
+  <p>A binary tree is a hierarchical data structure where each node has at most two children: left and right.</p>
+
+  <h3>1.1 Key Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Formula</th></tr>
+    <tr><td>Max nodes at level l</td><td>2<sup>l</sup> (root at level 0)</td></tr>
+    <tr><td>Max nodes in tree of height h</td><td>2<sup>h+1</sup> - 1</td></tr>
+    <tr><td>Min height for n nodes</td><td>floor(log<sub>2</sub> n)</td></tr>
+    <tr><td>Number of leaf nodes</td><td>n<sub>0</sub> = n<sub>2</sub> + 1 (where n<sub>2</sub> = nodes with 2 children)</td></tr>
+    <tr><td>Number of NULL pointers</td><td>n + 1 (for n nodes)</td></tr>
+  </table>
+
+  <h3>1.2 Types of Binary Trees</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th></tr>
+    <tr><td>Full (Strict)</td><td>Every node has 0 or 2 children</td></tr>
+    <tr><td>Complete</td><td>All levels filled except possibly the last, which is filled left to right</td></tr>
+    <tr><td>Perfect</td><td>All internal nodes have 2 children and all leaves are at the same level</td></tr>
+    <tr><td>Balanced</td><td>Height difference between left and right subtrees is at most 1 for every node</td></tr>
+    <tr><td>Degenerate (Skewed)</td><td>Every node has at most 1 child (essentially a linked list)</td></tr>
+  </table>
+
+  <h2>2. Binary Tree Traversals</h2>
+
+  <h3>2.1 Example Tree</h3>
+  <div class="mermaid">
+flowchart TD
+    A["50"] --> B["30"]
+    A --> C["70"]
+    B --> D["20"]
+    B --> E["40"]
+    C --> F["60"]
+    C --> G["80"]
+  </div>
+
+  <h3>2.2 Traversal Orders</h3>
+  <table>
+    <tr><th>Traversal</th><th>Order</th><th>Result (above tree)</th></tr>
+    <tr><td>Inorder (LNR)</td><td>Left, Node, Right</td><td>20, 30, 40, 50, 60, 70, 80</td></tr>
+    <tr><td>Preorder (NLR)</td><td>Node, Left, Right</td><td>50, 30, 20, 40, 70, 60, 80</td></tr>
+    <tr><td>Postorder (LRN)</td><td>Left, Right, Node</td><td>20, 40, 30, 60, 80, 70, 50</td></tr>
+    <tr><td>Level-order (BFS)</td><td>Level by level, left to right</td><td>50, 30, 70, 20, 40, 60, 80</td></tr>
+  </table>
+
+  <h3>2.3 Traversal Implementations</h3>
+  <pre><code>// Inorder traversal (recursive)
+void inorder(struct Node *root) {
+    if (root == NULL) return;
+    inorder(root-&gt;left);
+    printf("%d ", root-&gt;data);
+    inorder(root-&gt;right);
+}
+
+// Preorder traversal (recursive)
+void preorder(struct Node *root) {
+    if (root == NULL) return;
+    printf("%d ", root-&gt;data);
+    preorder(root-&gt;left);
+    preorder(root-&gt;right);
+}
+
+// Level-order traversal (iterative, using queue)
+void levelOrder(struct Node *root) {
+    Queue q;
+    enqueue(&amp;q, root);
+    while (!isEmpty(&amp;q)) {
+        struct Node *curr = dequeue(&amp;q);
+        printf("%d ", curr-&gt;data);
+        if (curr-&gt;left) enqueue(&amp;q, curr-&gt;left);
+        if (curr-&gt;right) enqueue(&amp;q, curr-&gt;right);
+    }
+}</code></pre>
+
+  <div class="note">
+    <p><strong>Reconstruction:</strong> A unique binary tree can be constructed from Inorder + Preorder, or Inorder + Postorder. Preorder + Postorder alone is NOT sufficient (unless the tree is full).</p>
+  </div>
+
+  <h2>3. Binary Search Tree (BST)</h2>
+  <p>A BST is a binary tree where for every node: all keys in the left subtree are less, and all keys in the right subtree are greater.</p>
+
+  <h3>3.1 Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Average</th><th>Worst (skewed)</th></tr>
+    <tr><td>Search</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Insert</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Delete</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Find Min/Max</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Inorder traversal</td><td colspan="2">O(n) — gives sorted order</td></tr>
+  </table>
+
+  <h3>3.2 BST Deletion</h3>
+  <p>Three cases when deleting a node:</p>
+  <ol>
+    <li><strong>Leaf node:</strong> Simply remove it.</li>
+    <li><strong>One child:</strong> Replace node with its child.</li>
+    <li><strong>Two children:</strong> Replace with inorder successor (smallest in right subtree) or inorder predecessor (largest in left subtree), then delete that replacement node.</li>
+  </ol>
+
+  <h3>3.3 Number of Distinct BSTs</h3>
+  <p>The number of structurally unique BSTs with n keys = Catalan number C<sub>n</sub> = C(2n,n)/(n+1).</p>
+
+  <h2>4. AVL Trees</h2>
+  <p>An AVL tree is a self-balancing BST where the balance factor (height of left subtree - height of right subtree) of every node is -1, 0, or 1.</p>
+
+  <h3>4.1 Rotations</h3>
+  <table>
+    <tr><th>Imbalance</th><th>Rotation</th><th>Trigger</th></tr>
+    <tr><td>Left-Left (LL)</td><td>Single Right Rotation</td><td>Insert in left subtree of left child</td></tr>
+    <tr><td>Right-Right (RR)</td><td>Single Left Rotation</td><td>Insert in right subtree of right child</td></tr>
+    <tr><td>Left-Right (LR)</td><td>Left then Right Rotation</td><td>Insert in right subtree of left child</td></tr>
+    <tr><td>Right-Left (RL)</td><td>Right then Left Rotation</td><td>Insert in left subtree of right child</td></tr>
+  </table>
+
+  <h3>4.2 AVL Tree Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Height of AVL tree with n nodes</td><td>O(log n), specifically ~1.44 log<sub>2</sub>(n+2)</td></tr>
+    <tr><td>Min nodes for height h</td><td>N(h) = N(h-1) + N(h-2) + 1 (Fibonacci-like)</td></tr>
+    <tr><td>All operations</td><td>O(log n) guaranteed</td></tr>
+  </table>
+
+  <h2>5. Red-Black Trees</h2>
+  <p>A Red-Black tree is a self-balancing BST with colored nodes (red or black) that satisfy these properties:</p>
+  <ol>
+    <li>Every node is either red or black.</li>
+    <li>The root is black.</li>
+    <li>Every leaf (NIL) is black.</li>
+    <li>A red node cannot have a red child (no two consecutive reds).</li>
+    <li>Every path from a node to its descendant NIL nodes has the same number of black nodes (black-height).</li>
+  </ol>
+
+  <table>
+    <tr><th>Property</th><th>AVL Tree</th><th>Red-Black Tree</th></tr>
+    <tr><td>Balance</td><td>Strictly balanced (BF in {-1,0,1})</td><td>Approximately balanced</td></tr>
+    <tr><td>Height</td><td>~1.44 log n</td><td>~2 log n</td></tr>
+    <tr><td>Search</td><td>Slightly faster (shorter)</td><td>Slightly slower</td></tr>
+    <tr><td>Insert/Delete</td><td>More rotations</td><td>Fewer rotations (at most 2-3)</td></tr>
+    <tr><td>Use case</td><td>Read-heavy workloads</td><td>Write-heavy workloads</td></tr>
+  </table>
+
+  <h2>6. Binary Heaps</h2>
+  <p>A binary heap is a complete binary tree satisfying the heap property. It is efficiently stored as an array.</p>
+
+  <h3>6.1 Heap Properties</h3>
+  <table>
+    <tr><th>Type</th><th>Property</th></tr>
+    <tr><td>Min-Heap</td><td>Parent &le; Children (root is minimum)</td></tr>
+    <tr><td>Max-Heap</td><td>Parent &ge; Children (root is maximum)</td></tr>
+  </table>
+
+  <h3>6.2 Array Representation (0-indexed)</h3>
+  <table>
+    <tr><th>Relationship</th><th>Formula</th></tr>
+    <tr><td>Parent of node i</td><td>(i - 1) / 2</td></tr>
+    <tr><td>Left child of node i</td><td>2i + 1</td></tr>
+    <tr><td>Right child of node i</td><td>2i + 2</td></tr>
+  </table>
+
+  <h3>6.3 Example Max-Heap</h3>
+  <div class="mermaid">
+flowchart TD
+    A["90"] --> B["80"]
+    A --> C["70"]
+    B --> D["50"]
+    B --> E["60"]
+    C --> F["65"]
+    C --> G["30"]
+  </div>
+  <p>Array: [90, 80, 70, 50, 60, 65, 30]</p>
+
+  <h3>6.4 Heap Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Time Complexity</th><th>Description</th></tr>
+    <tr><td>Insert</td><td>O(log n)</td><td>Add at end, bubble up (sift up)</td></tr>
+    <tr><td>Extract Min/Max</td><td>O(log n)</td><td>Remove root, replace with last, sift down</td></tr>
+    <tr><td>Peek (Get Min/Max)</td><td>O(1)</td><td>Return root element</td></tr>
+    <tr><td>Build Heap</td><td>O(n)</td><td>Bottom-up heapify</td></tr>
+    <tr><td>Decrease/Increase Key</td><td>O(log n)</td><td>Update key and sift up/down</td></tr>
+    <tr><td>Delete arbitrary</td><td>O(log n)</td><td>Replace with last, sift up or down</td></tr>
+  </table>
+
+  <h3>6.5 Heapify (Sift Down)</h3>
+  <pre><code>void maxHeapify(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+    if (left &lt; n &amp;&amp; arr[left] &gt; arr[largest])
+        largest = left;
+    if (right &lt; n &amp;&amp; arr[right] &gt; arr[largest])
+        largest = right;
+    if (largest != i) {
+        swap(&amp;arr[i], &amp;arr[largest]);
+        maxHeapify(arr, n, largest);
+    }
+}
+
+// Build heap in O(n) - start from last non-leaf
+void buildMaxHeap(int arr[], int n) {
+    for (int i = n / 2 - 1; i &gt;= 0; i--)
+        maxHeapify(arr, n, i);
+}</code></pre>
+
+  <div class="note">
+    <p><strong>Why Build Heap is O(n):</strong> Most nodes are near the leaves and need very few sift-down steps. The sum converges to O(n), not O(n log n). This is a common GATE question.</p>
+  </div>
+
+  <h3>6.6 Heap Sort</h3>
+  <pre><code>void heapSort(int arr[], int n) {
+    buildMaxHeap(arr, n);
+    for (int i = n - 1; i &gt; 0; i--) {
+        swap(&amp;arr[0], &amp;arr[i]);  // move max to end
+        maxHeapify(arr, i, 0);    // restore heap on reduced array
+    }
+}
+// Time: O(n log n), Space: O(1), Not stable</code></pre>
+
+  <h2>7. Summary of Tree-Based Data Structures</h2>
+  <table>
+    <tr><th>Structure</th><th>Search</th><th>Insert</th><th>Delete</th><th>Space</th></tr>
+    <tr><td>BST (avg)</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>BST (worst)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>AVL Tree</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Red-Black Tree</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+    <tr><td>Binary Heap</td><td>O(n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td></tr>
+  </table>
+
+  <h2>8. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Inorder traversal of BST gives sorted output.</li>
+      <li>Number of structurally distinct BSTs/binary trees with n nodes = Catalan number.</li>
+      <li>Build heap is O(n), NOT O(n log n). This is frequently tested.</li>
+      <li>Heap sort: O(n log n) always, in-place, but NOT stable.</li>
+      <li>AVL: max 2 rotations for insert, O(log n) rotations for delete.</li>
+      <li>Red-Black: at most 2 rotations for insert, at most 3 for delete.</li>
+      <li>Min nodes in AVL tree of height h: N(h) = N(h-1) + N(h-2) + 1, with N(0)=1, N(1)=2.</li>
+      <li>A heap is NOT a BST. Left child can be greater than right child in a max-heap.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Trees and Heaps Quiz",
+      "questions": [
+        {
+          "question": "A binary tree has 20 nodes with degree 2. How many leaf nodes does it have?",
+          "options": ["19", "20", "21", "22"],
+          "answer": 2,
+          "explanation": "In any binary tree, the number of leaf nodes (n0) = number of nodes with degree 2 (n2) + 1. So n0 = 20 + 1 = 21."
+        },
+        {
+          "question": "What is the minimum number of nodes in an AVL tree of height 4?",
+          "options": ["7", "12", "10", "15"],
+          "answer": 1,
+          "explanation": "Min nodes in AVL of height h: N(h) = N(h-1) + N(h-2) + 1 with N(0)=1, N(1)=2. N(2)=4, N(3)=7, N(4)=12."
+        },
+        {
+          "question": "A max-heap is stored as an array: [90, 80, 70, 50, 60, 65, 30]. After extracting the maximum element, which of the following could be the resulting array?",
+          "options": ["[80, 60, 70, 50, 30, 65]", "[80, 65, 70, 50, 60, 30]", "[80, 60, 70, 50, 65, 30]", "[70, 80, 65, 50, 60, 30]"],
+          "answer": 0,
+          "explanation": "After removing 90, place last element (30) at root: [30, 80, 70, 50, 60, 65]. Sift down: 30 swaps with 80 -> [80, 30, 70, 50, 60, 65]. 30 swaps with 60 -> [80, 60, 70, 50, 30, 65]."
+        },
+        {
+          "question": "Given preorder: ABDECFG and inorder: DBEAFCG of a binary tree. What is the postorder traversal?",
+          "options": ["DEBFGCA", "DEBGFCA", "DEBCFGA", "DEAFCGB"],
+          "answer": 1,
+          "explanation": "From preorder, A is root. Inorder splits: left subtree has DBE, right has FCG. B is root of left (preorder), D is B's left child, E is B's right. C is root of right, F is C's left, G is C's right. Postorder: D E B F G C A = DEBGFCA."
+        },
+        {
+          "question": "What is the time complexity of building a heap from an unsorted array of n elements using the bottom-up heapify method?",
+          "options": ["O(n log n)", "O(n)", "O(n^2)", "O(log n)"],
+          "answer": 1,
+          "explanation": "Bottom-up heap construction is O(n). Most nodes are near the leaves and require few sift-down steps. The sum is bounded by n * sum(k/2^k) for k=1 to log n, which converges to O(n). This is a frequently tested GATE concept."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

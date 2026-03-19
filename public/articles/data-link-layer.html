@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Link Layer | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Data Link Layer</h1>
+  <p class="article-section-tag">&#127760; Section 10: Computer Networks</p>
+
+  <!-- ===================== FRAMING ===================== -->
+  <h2>1. Framing</h2>
+  <p>The data link layer packages raw bits from the physical layer into <strong>frames</strong>. Framing defines the boundaries of each frame.</p>
+
+  <table>
+    <tr><th>Method</th><th>Description</th><th>Issue</th></tr>
+    <tr><td><strong>Character Count</strong></td><td>A field in the header specifies the number of characters in the frame</td><td>If count is corrupted, synchronization is lost permanently</td></tr>
+    <tr><td><strong>Byte Stuffing (Character Stuffing)</strong></td><td>Special flag byte marks start/end of frame. If flag appears in data, insert an escape byte before it</td><td>Overhead for frequent flag/escape patterns; tied to 8-bit characters</td></tr>
+    <tr><td><strong>Bit Stuffing</strong></td><td>Flag pattern: <code>01111110</code>. After every five consecutive 1s in data, insert a 0</td><td>Overhead proportional to data pattern; works at any bit boundary</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Bit Stuffing Example:</strong><br/>
+    Original data: <code>01111111 10</code><br/>
+    After stuffing: <code>011111<b>0</b>11 10</code> (a 0 is inserted after the fifth consecutive 1)<br/>
+    Receiver removes the 0 after every five consecutive 1s.
+  </div>
+
+  <!-- ===================== ERROR DETECTION ===================== -->
+  <h2>2. Error Detection</h2>
+
+  <h3>2.1 Parity Check</h3>
+  <table>
+    <tr><th>Type</th><th>Description</th><th>Detection Capability</th></tr>
+    <tr><td><strong>Single-bit Parity</strong></td><td>Add one parity bit to make total number of 1s even (even parity) or odd (odd parity)</td><td>Detects odd number of bit errors; misses even number</td></tr>
+    <tr><td><strong>Two-dimensional Parity</strong></td><td>Arrange data in a matrix; compute parity for each row and column</td><td>Detects all 1, 2, and 3-bit errors; most 4-bit errors</td></tr>
+  </table>
+
+  <h3>2.2 Checksum</h3>
+  <p>Data is divided into fixed-length words. All words are summed (with carry wraparound). The one's complement of the sum is the checksum. The receiver adds all words including the checksum; if result is all 1s, no error is detected.</p>
+  <div class="note">
+    <strong>Internet Checksum</strong> (used by IP, TCP, UDP) uses 16-bit one's complement arithmetic.
+  </div>
+
+  <h3>2.3 Cyclic Redundancy Check (CRC)</h3>
+  <p>CRC is the most powerful error detection code used at the data link layer. It treats the bit string as a polynomial and divides it by a generator polynomial.</p>
+
+  <div class="example">
+    <strong>CRC Calculation Steps:</strong>
+    <ol>
+      <li>Given data D and generator polynomial G of degree r</li>
+      <li>Append r zero bits to D: D &times; 2<sup>r</sup></li>
+      <li>Divide (D &times; 2<sup>r</sup>) by G using XOR (modulo-2) division</li>
+      <li>The remainder R (r bits) is the CRC</li>
+      <li>Transmitted frame = D followed by R</li>
+      <li>Receiver divides received frame by G; if remainder is 0, no error</li>
+    </ol>
+  </div>
+
+  <table>
+    <tr><th>CRC Standard</th><th>Generator Polynomial</th><th>Detects</th></tr>
+    <tr><td>CRC-8</td><td>x<sup>8</sup> + x<sup>2</sup> + x + 1</td><td>All 1, 2-bit errors</td></tr>
+    <tr><td>CRC-16</td><td>x<sup>16</sup> + x<sup>15</sup> + x<sup>2</sup> + 1</td><td>All 1, 2-bit and odd-bit errors</td></tr>
+    <tr><td>CRC-32</td><td>Used in Ethernet, ZIP</td><td>All burst errors of length &le; 32</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>CRC Detection Capabilities:</strong>
+    <ul>
+      <li>All single-bit errors (if G has more than one term)</li>
+      <li>All double-bit errors (if G has a factor with 3 terms)</li>
+      <li>All odd number of bit errors (if G has factor (x+1))</li>
+      <li>All burst errors of length &le; r (degree of G)</li>
+    </ul>
+  </div>
+
+  <!-- ===================== ERROR CORRECTION ===================== -->
+  <h2>3. Error Correction: Hamming Code</h2>
+  <p>Hamming code can detect and correct single-bit errors. For <em>m</em> data bits, <em>r</em> redundancy bits are needed where 2<sup>r</sup> &ge; m + r + 1.</p>
+
+  <table>
+    <tr><th>Data Bits (m)</th><th>Redundancy Bits (r)</th><th>Total Bits (m + r)</th></tr>
+    <tr><td>4</td><td>3</td><td>7</td></tr>
+    <tr><td>8</td><td>4</td><td>12</td></tr>
+    <tr><td>16</td><td>5</td><td>21</td></tr>
+    <tr><td>32</td><td>6</td><td>38</td></tr>
+  </table>
+
+  <p>Parity bits are placed at positions that are powers of 2 (1, 2, 4, 8, ...). Each parity bit covers specific positions based on the binary representation of position numbers. The error position is found by XORing all parity check results (syndrome).</p>
+
+  <div class="note">
+    <strong>Hamming Distance:</strong> The minimum number of bit positions in which two codewords differ. For d-bit error detection, minimum Hamming distance = d + 1. For d-bit error correction, minimum Hamming distance = 2d + 1.
+  </div>
+
+  <!-- ===================== MEDIUM ACCESS CONTROL ===================== -->
+  <h2>4. Medium Access Control (MAC) Protocols</h2>
+
+  <h3>4.1 Random Access Protocols</h3>
+  <table>
+    <tr><th>Protocol</th><th>Description</th><th>Max Throughput</th></tr>
+    <tr><td><strong>Pure ALOHA</strong></td><td>Transmit whenever ready. If collision, wait random time and retransmit. Vulnerable period = 2T</td><td>1/(2e) &asymp; 18.4%</td></tr>
+    <tr><td><strong>Slotted ALOHA</strong></td><td>Time divided into slots. Transmit only at slot start. Vulnerable period = T</td><td>1/e &asymp; 36.8%</td></tr>
+    <tr><td><strong>CSMA (1-persistent)</strong></td><td>Listen before sending. If busy, wait; if idle, send immediately</td><td>Higher than ALOHA</td></tr>
+    <tr><td><strong>CSMA (non-persistent)</strong></td><td>If busy, wait random time then sense again</td><td>Better channel utilization</td></tr>
+    <tr><td><strong>CSMA (p-persistent)</strong></td><td>If idle, send with probability p; delay one slot with probability (1-p)</td><td>Tunable performance</td></tr>
+  </table>
+
+  <h3>4.2 CSMA/CD (Collision Detection)</h3>
+  <p>Used in Ethernet. Stations detect collisions while transmitting and abort immediately, saving time.</p>
+
+  <div class="mermaid">
+    flowchart TD
+      A["Frame ready to send"] --> B{"Channel idle?"}
+      B -->|"No"| C["Wait (backoff)"]
+      C --> B
+      B -->|"Yes"| D["Begin transmission"]
+      D --> E{"Collision detected?"}
+      E -->|"No"| F["Transmission complete\nSuccess!"]
+      E -->|"Yes"| G["Send jam signal\n(48 bits)"]
+      G --> H["Increment attempt counter"]
+      H --> I{"Max attempts\nreached?"}
+      I -->|"No"| J["Binary Exponential Backoff\nWait random(0..2^k - 1) slots"]
+      J --> B
+      I -->|"Yes"| K["Report failure\nAbort"]
+  </div>
+
+  <div class="note">
+    <strong>Minimum Frame Size for CSMA/CD:</strong><br/>
+    The sender must be able to detect a collision before finishing transmission. The frame must take at least 2 &times; propagation delay to transmit.<br/>
+    <strong>Min frame size = 2 &times; propagation delay &times; bandwidth</strong><br/>
+    For Ethernet (10 Mbps, max 2500m, propagation speed 2 &times; 10<sup>8</sup> m/s): Min frame = 2 &times; (2500 / 2&times;10<sup>8</sup>) &times; 10<sup>7</sup> = 250 bits. Actual Ethernet minimum = 512 bits (64 bytes).
+  </div>
+
+  <h3>4.3 CSMA/CA (Collision Avoidance)</h3>
+  <p>Used in wireless networks (IEEE 802.11) where collision detection is difficult due to the hidden terminal problem. Uses RTS/CTS handshake and NAV (Network Allocation Vector) to reserve the channel.</p>
+
+  <!-- ===================== ETHERNET ===================== -->
+  <h2>5. Ethernet (IEEE 802.3)</h2>
+
+  <h3>5.1 MAC Addressing</h3>
+  <p>A <strong>MAC address</strong> is a 48-bit (6-byte) hardware address uniquely assigned to each network interface card. Written as six hex pairs: <code>AA:BB:CC:DD:EE:FF</code>.</p>
+  <table>
+    <tr><th>Address Type</th><th>Description</th></tr>
+    <tr><td>Unicast</td><td>First bit = 0. Identifies a single interface.</td></tr>
+    <tr><td>Broadcast</td><td>All 1s: <code>FF:FF:FF:FF:FF:FF</code>. Sent to all stations on LAN.</td></tr>
+    <tr><td>Multicast</td><td>First bit = 1 (but not broadcast). Sent to a group of stations.</td></tr>
+  </table>
+
+  <h3>5.2 Ethernet Frame Format</h3>
+  <table>
+    <tr><th>Field</th><th>Size</th><th>Purpose</th></tr>
+    <tr><td>Preamble</td><td>7 bytes</td><td>Synchronization pattern (10101010...)</td></tr>
+    <tr><td>SFD (Start Frame Delimiter)</td><td>1 byte</td><td>10101011 - marks start of frame</td></tr>
+    <tr><td>Destination MAC</td><td>6 bytes</td><td>Destination hardware address</td></tr>
+    <tr><td>Source MAC</td><td>6 bytes</td><td>Source hardware address</td></tr>
+    <tr><td>Type/Length</td><td>2 bytes</td><td>Protocol type (e.g., 0x0800 for IPv4) or payload length</td></tr>
+    <tr><td>Payload</td><td>46-1500 bytes</td><td>Data from network layer (padded if less than 46 bytes)</td></tr>
+    <tr><td>FCS (CRC-32)</td><td>4 bytes</td><td>Frame Check Sequence for error detection</td></tr>
+  </table>
+
+  <!-- ===================== BRIDGING ===================== -->
+  <h2>6. Ethernet Bridging and Spanning Tree</h2>
+
+  <h3>6.1 Bridges and Switches</h3>
+  <p>A <strong>bridge</strong> (or Layer 2 switch) connects LAN segments and forwards frames based on MAC addresses. It maintains a <strong>forwarding table</strong> (MAC address &rarr; port mapping), learned through backward learning (observing source addresses of incoming frames).</p>
+
+  <h3>6.2 Spanning Tree Protocol (STP)</h3>
+  <p>When bridges create loops in the network topology, broadcast storms can occur. The <strong>Spanning Tree Protocol (IEEE 802.1D)</strong> prevents loops by creating a loop-free logical topology.</p>
+  <ol>
+    <li>Elect a <strong>root bridge</strong> (lowest bridge ID)</li>
+    <li>Each non-root bridge selects a <strong>root port</strong> (port with shortest path to root)</li>
+    <li>Each LAN segment selects a <strong>designated port</strong> (bridge port with shortest path to root for that segment)</li>
+    <li>All other ports are <strong>blocked</strong></li>
+  </ol>
+
+  <h3>6.3 Efficiency Formulas</h3>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>Throughput of Pure ALOHA</td><td>S = G &times; e<sup>&minus;2G</sup>, max at G=0.5: S<sub>max</sub> = 1/(2e)</td></tr>
+    <tr><td>Throughput of Slotted ALOHA</td><td>S = G &times; e<sup>&minus;G</sup>, max at G=1: S<sub>max</sub> = 1/e</td></tr>
+    <tr><td>Ethernet Efficiency</td><td>&eta; = 1 / (1 + 5 &times; t<sub>prop</sub> / t<sub>trans</sub>), approximately</td></tr>
+    <tr><td>CSMA/CD Efficiency</td><td>&eta; = 1 / (1 + 6.44a), where a = t<sub>prop</sub> / t<sub>trans</sub></td></tr>
+  </table>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>7. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>CRC can detect all single-bit, double-bit, odd-bit errors, and all burst errors of length &le; r.</li>
+      <li>Hamming code: number of redundancy bits r satisfies 2<sup>r</sup> &ge; m + r + 1.</li>
+      <li>Pure ALOHA max throughput = 18.4%; Slotted ALOHA = 36.8%. Slotted ALOHA is exactly 2x Pure ALOHA.</li>
+      <li>CSMA/CD minimum frame size = 2 &times; propagation_delay &times; bandwidth.</li>
+      <li>Ethernet minimum frame size = 64 bytes (512 bits); maximum = 1518 bytes.</li>
+      <li>Binary Exponential Backoff: after k<sup>th</sup> collision, choose random wait from [0, 2<sup>k</sup> &minus; 1] slots (k &le; 10).</li>
+      <li>Bridges learn MAC addresses via backward learning. STP prevents loops.</li>
+      <li>CSMA/CD is for wired (Ethernet); CSMA/CA is for wireless (Wi-Fi).</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

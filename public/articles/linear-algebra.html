@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linear Algebra | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+    .mermaid { text-align: center; margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Linear Algebra</h1>
+  <p class="article-section-tag">Section 1: Engineering Mathematics</p>
+
+  <h2>1. Matrices: Types and Operations</h2>
+
+  <h3>1.1 Types of Matrices</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th><th>Example Size</th></tr>
+    <tr><td>Square</td><td>m = n (rows = columns)</td><td>n &times; n</td></tr>
+    <tr><td>Diagonal</td><td>a<sub>ij</sub> = 0 for i &ne; j</td><td>n &times; n</td></tr>
+    <tr><td>Scalar</td><td>Diagonal with all diagonal entries equal</td><td>n &times; n</td></tr>
+    <tr><td>Identity (I)</td><td>Scalar with diagonal entries = 1</td><td>n &times; n</td></tr>
+    <tr><td>Zero</td><td>All entries are 0</td><td>m &times; n</td></tr>
+    <tr><td>Upper Triangular</td><td>a<sub>ij</sub> = 0 for i > j</td><td>n &times; n</td></tr>
+    <tr><td>Lower Triangular</td><td>a<sub>ij</sub> = 0 for i < j</td><td>n &times; n</td></tr>
+    <tr><td>Symmetric</td><td>A<sup>T</sup> = A</td><td>n &times; n</td></tr>
+    <tr><td>Skew-symmetric</td><td>A<sup>T</sup> = -A</td><td>n &times; n</td></tr>
+    <tr><td>Orthogonal</td><td>A<sup>T</sup>A = AA<sup>T</sup> = I</td><td>n &times; n</td></tr>
+    <tr><td>Idempotent</td><td>A<sup>2</sup> = A</td><td>n &times; n</td></tr>
+    <tr><td>Nilpotent</td><td>A<sup>k</sup> = 0 for some k</td><td>n &times; n</td></tr>
+    <tr><td>Involutory</td><td>A<sup>2</sup> = I</td><td>n &times; n</td></tr>
+  </table>
+
+  <h3>1.2 Matrix Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Condition</th><th>Result Size</th></tr>
+    <tr><td>A + B</td><td>Same dimensions</td><td>Same as A</td></tr>
+    <tr><td>kA (scalar multiplication)</td><td>Any</td><td>Same as A</td></tr>
+    <tr><td>AB</td><td>Columns of A = Rows of B</td><td>Rows(A) &times; Cols(B)</td></tr>
+    <tr><td>A<sup>T</sup> (transpose)</td><td>Any</td><td>Cols(A) &times; Rows(A)</td></tr>
+  </table>
+
+  <h3>1.3 Matrix Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Formula</th></tr>
+    <tr><td>Transpose of product</td><td>(AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></td></tr>
+    <tr><td>Inverse of product</td><td>(AB)<sup>-1</sup> = B<sup>-1</sup>A<sup>-1</sup></td></tr>
+    <tr><td>Transpose of inverse</td><td>(A<sup>T</sup>)<sup>-1</sup> = (A<sup>-1</sup>)<sup>T</sup></td></tr>
+    <tr><td>Any matrix decomposition</td><td>A = (A + A<sup>T</sup>)/2 + (A - A<sup>T</sup>)/2 (symmetric + skew-symmetric)</td></tr>
+  </table>
+
+  <h2>2. Determinants</h2>
+
+  <h3>2.1 Properties of Determinants</h3>
+  <table>
+    <tr><th>Property</th><th>Statement</th></tr>
+    <tr><td>Transpose</td><td>det(A<sup>T</sup>) = det(A)</td></tr>
+    <tr><td>Scalar multiplication</td><td>det(kA) = k<sup>n</sup> det(A) for n &times; n matrix</td></tr>
+    <tr><td>Product</td><td>det(AB) = det(A) &middot; det(B)</td></tr>
+    <tr><td>Inverse</td><td>det(A<sup>-1</sup>) = 1/det(A)</td></tr>
+    <tr><td>Triangular matrix</td><td>det = product of diagonal entries</td></tr>
+    <tr><td>Row swap</td><td>Changes sign of determinant</td></tr>
+    <tr><td>Row multiplication by k</td><td>Multiplies determinant by k</td></tr>
+    <tr><td>Row addition</td><td>Does not change determinant</td></tr>
+    <tr><td>Singular matrix</td><td>det(A) = 0</td></tr>
+    <tr><td>Orthogonal matrix</td><td>det(A) = &plusmn;1</td></tr>
+  </table>
+
+  <h3>2.2 Cofactor Expansion</h3>
+  <div class="formula">
+    det(A) = &sum;<sub>j=1</sub><sup>n</sup> a<sub>ij</sub> C<sub>ij</sub> (expansion along row i)<br>
+    where C<sub>ij</sub> = (-1)<sup>i+j</sup> M<sub>ij</sub> and M<sub>ij</sub> is the minor (determinant of submatrix)
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> For A = [[2, 1, 3], [0, -1, 2], [1, 4, -1]]<br>
+    Expanding along first row:<br>
+    det(A) = 2[(-1)(-1) - (2)(4)] - 1[(0)(-1) - (2)(1)] + 3[(0)(4) - (-1)(1)]<br>
+    = 2[1 - 8] - 1[0 - 2] + 3[0 + 1]<br>
+    = 2(-7) - 1(-2) + 3(1) = -14 + 2 + 3 = <strong>-9</strong>
+  </div>
+
+  <h2>3. Rank of a Matrix</h2>
+  <div class="formula">
+    Rank(A) = number of non-zero rows in row echelon form<br>
+    = number of linearly independent rows = number of linearly independent columns
+  </div>
+
+  <h3>3.1 Rank Properties</h3>
+  <ul>
+    <li>rank(A) &le; min(m, n) for m &times; n matrix</li>
+    <li>rank(A) = rank(A<sup>T</sup>)</li>
+    <li>rank(AB) &le; min(rank(A), rank(B))</li>
+    <li>rank(A + B) &le; rank(A) + rank(B)</li>
+    <li>Nullity(A) = n - rank(A) (Rank-Nullity Theorem)</li>
+    <li>A is invertible iff rank(A) = n (for n &times; n matrix)</li>
+  </ul>
+
+  <h2>4. System of Linear Equations (Ax = b)</h2>
+
+  <h3>4.1 Consistency (Rouche-Capelli Theorem)</h3>
+  <table>
+    <tr><th>Condition</th><th>Result</th></tr>
+    <tr><td>rank(A) &ne; rank([A|b])</td><td>No solution (inconsistent)</td></tr>
+    <tr><td>rank(A) = rank([A|b]) = n</td><td>Unique solution</td></tr>
+    <tr><td>rank(A) = rank([A|b]) < n</td><td>Infinitely many solutions</td></tr>
+  </table>
+  <p>For a homogeneous system Ax = 0: always consistent (x = 0 is always a solution). Has non-trivial solutions iff rank(A) < n.</p>
+
+  <h3>4.2 Gaussian Elimination</h3>
+  <p>Transform [A|b] to row echelon form using elementary row operations: (1) swap rows, (2) multiply row by nonzero scalar, (3) add multiple of one row to another. Then back-substitute.</p>
+
+  <div class="example">
+    <strong>Example:</strong> Solve the system: x + y + z = 6, 2x + 3y + z = 14, x + 2y + 3z = 14<br>
+    Augmented matrix: [[1,1,1,6], [2,3,1,14], [1,2,3,14]]<br>
+    R2 &larr; R2 - 2R1: [[1,1,1,6], [0,1,-1,2], [1,2,3,14]]<br>
+    R3 &larr; R3 - R1: [[1,1,1,6], [0,1,-1,2], [0,1,2,8]]<br>
+    R3 &larr; R3 - R2: [[1,1,1,6], [0,1,-1,2], [0,0,3,6]]<br>
+    Back-substitution: z = 2, y = 2 + z = 4, x = 6 - y - z = 0<br>
+    <strong>Solution: (x, y, z) = (0, 4, 2)</strong>
+  </div>
+
+  <h3>4.3 Cramer's Rule</h3>
+  <div class="formula">
+    For Ax = b where det(A) &ne; 0:<br>
+    x<sub>i</sub> = det(A<sub>i</sub>) / det(A)<br>
+    where A<sub>i</sub> is the matrix A with column i replaced by b.
+  </div>
+
+  <h2>5. Eigenvalues and Eigenvectors</h2>
+  <p>For a square matrix A, scalar &lambda; is an <strong>eigenvalue</strong> and non-zero vector v is an <strong>eigenvector</strong> if:</p>
+  <div class="formula">
+    Av = &lambda;v &nbsp;&nbsp; equivalently &nbsp;&nbsp; (A - &lambda;I)v = 0
+  </div>
+
+  <h3>5.1 Finding Eigenvalues</h3>
+  <p>Solve the <strong>characteristic equation</strong>: det(A - &lambda;I) = 0</p>
+
+  <div class="example">
+    <strong>Example:</strong> A = [[4, 1], [2, 3]]<br>
+    det(A - &lambda;I) = (4 - &lambda;)(3 - &lambda;) - 2 = &lambda;<sup>2</sup> - 7&lambda; + 10 = (&lambda; - 5)(&lambda; - 2) = 0<br>
+    Eigenvalues: &lambda;<sub>1</sub> = 5, &lambda;<sub>2</sub> = 2<br><br>
+    For &lambda; = 5: (A - 5I)v = 0 &rArr; [[-1,1],[2,-2]]v = 0 &rArr; v = t[1,1]<sup>T</sup><br>
+    For &lambda; = 2: (A - 2I)v = 0 &rArr; [[2,1],[2,1]]v = 0 &rArr; v = t[-1,2]<sup>T</sup>
+  </div>
+
+  <h3>5.2 Properties of Eigenvalues</h3>
+  <table>
+    <tr><th>Property</th><th>Statement</th></tr>
+    <tr><td>Sum of eigenvalues</td><td>= trace(A) = &sum; a<sub>ii</sub></td></tr>
+    <tr><td>Product of eigenvalues</td><td>= det(A)</td></tr>
+    <tr><td>Eigenvalues of A<sup>k</sup></td><td>&lambda;<sup>k</sup></td></tr>
+    <tr><td>Eigenvalues of A<sup>-1</sup></td><td>1/&lambda;</td></tr>
+    <tr><td>Eigenvalues of A + kI</td><td>&lambda; + k</td></tr>
+    <tr><td>Eigenvalues of kA</td><td>k&lambda;</td></tr>
+    <tr><td>Eigenvalues of A<sup>T</sup></td><td>Same as A</td></tr>
+    <tr><td>Symmetric matrix</td><td>All eigenvalues are real</td></tr>
+    <tr><td>Skew-symmetric matrix</td><td>Eigenvalues are 0 or purely imaginary</td></tr>
+    <tr><td>Orthogonal matrix</td><td>|&lambda;| = 1</td></tr>
+    <tr><td>Idempotent matrix</td><td>Eigenvalues are 0 or 1</td></tr>
+    <tr><td>Nilpotent matrix</td><td>All eigenvalues are 0</td></tr>
+  </table>
+
+  <h3>5.3 Cayley-Hamilton Theorem</h3>
+  <p>Every square matrix satisfies its own characteristic equation. If the characteristic polynomial is p(&lambda;) = &lambda;<sup>2</sup> - 7&lambda; + 10, then p(A) = A<sup>2</sup> - 7A + 10I = 0.</p>
+  <p>This is useful for computing A<sup>-1</sup> and higher powers of A.</p>
+
+  <h2>6. LU Decomposition</h2>
+  <p><strong>LU decomposition</strong> factors a matrix A into a product of a lower triangular matrix L and an upper triangular matrix U: A = LU.</p>
+
+  <div class="example">
+    <strong>Example:</strong> Decompose A = [[2, 1, 1], [4, 3, 3], [8, 7, 9]]<br><br>
+    Perform Gaussian elimination tracking multipliers:<br>
+    R2 &larr; R2 - 2R1 (multiplier = 2): U = [[2,1,1], [0,1,1], [8,7,9]]<br>
+    R3 &larr; R3 - 4R1 (multiplier = 4): U = [[2,1,1], [0,1,1], [0,3,5]]<br>
+    R3 &larr; R3 - 3R2 (multiplier = 3): U = [[2,1,1], [0,1,1], [0,0,2]]<br><br>
+    L = [[1,0,0], [2,1,0], [4,3,1]], U = [[2,1,1], [0,1,1], [0,0,2]]<br><br>
+    <strong>To solve Ax = b:</strong> First solve Ly = b (forward substitution), then Ux = y (back substitution).
+  </div>
+
+  <h2>7. Diagonalization</h2>
+  <div class="formula">
+    A is diagonalizable iff A has n linearly independent eigenvectors.<br>
+    A = PDP<sup>-1</sup> where D = diag(&lambda;<sub>1</sub>, ..., &lambda;<sub>n</sub>) and P = [v<sub>1</sub> | v<sub>2</sub> | ... | v<sub>n</sub>]<br>
+    A<sup>k</sup> = PD<sup>k</sup>P<sup>-1</sup>
+  </div>
+
+  <h3>7.1 Sufficient Conditions for Diagonalizability</h3>
+  <ul>
+    <li>A has n distinct eigenvalues (always diagonalizable)</li>
+    <li>A is symmetric (always diagonalizable, with orthogonal P)</li>
+    <li>For each eigenvalue: geometric multiplicity = algebraic multiplicity</li>
+  </ul>
+
+  <h2>8. Mermaid Diagram: Linear Algebra Decision Flow</h2>
+  <div class="mermaid">
+graph TD
+    A["Given matrix A (n x n)"] --> B["Compute det(A)"]
+    B --> C{"det(A) = 0?"}
+    C -- "Yes" --> D["Singular: no inverse<br/>rank < n<br/>lambda=0 is eigenvalue"]
+    C -- "No" --> E["Non-singular: inverse exists<br/>rank = n<br/>unique solution to Ax=b"]
+    E --> F["Find eigenvalues:<br/>det(A - lambda I) = 0"]
+    F --> G{"n distinct eigenvalues?"}
+    G -- "Yes" --> H["Diagonalizable:<br/>A = PDP^-1"]
+    G -- "No" --> I["Check geometric vs<br/>algebraic multiplicity"]
+    I --> J{"Equal for all?"}
+    J -- "Yes" --> H
+    J -- "No" --> K["Not diagonalizable"]
+  </div>
+
+  <h2>9. Key GATE Takeaways</h2>
+  <ul>
+    <li>Know matrix types and their properties (symmetric, orthogonal, idempotent, etc.).</li>
+    <li>det(kA) = k<sup>n</sup>det(A) is a commonly tested trap.</li>
+    <li>Rank-nullity theorem: rank(A) + nullity(A) = number of columns.</li>
+    <li>For Ax = b: check rank(A) vs rank([A|b]) for consistency.</li>
+    <li>Sum of eigenvalues = trace, product = determinant.</li>
+    <li>Cayley-Hamilton theorem for computing inverse and matrix powers.</li>
+    <li>Eigenvalue properties for special matrices (symmetric, orthogonal, etc.) save computation time.</li>
+  </ul>
+
+</article>
+</body>
+</html>

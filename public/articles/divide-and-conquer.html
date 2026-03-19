@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Divide and Conquer — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Divide and Conquer</h1>
+  <p class="article-section-tag">⚡ Section 5: Algorithms</p>
+
+  <h2>1. The Divide and Conquer Paradigm</h2>
+  <p>Divide and Conquer (D&C) is an algorithmic paradigm that works in three steps:</p>
+  <ol>
+    <li><strong>Divide:</strong> Break the problem into smaller subproblems of the same type.</li>
+    <li><strong>Conquer:</strong> Solve each subproblem recursively. If the subproblem is small enough, solve it directly (base case).</li>
+    <li><strong>Combine:</strong> Merge the solutions of subproblems to form the solution to the original problem.</li>
+  </ol>
+
+  <div class="note">
+    <strong>Key Property:</strong> D&C works when subproblems are independent (non-overlapping). If subproblems overlap, use Dynamic Programming instead.
+  </div>
+
+  <h2>2. Recursion Tree for D&C Analysis</h2>
+  <p>The recursion tree for <code>T(n) = 2T(n/2) + cn</code> (merge sort):</p>
+
+  <div class="mermaid">
+graph TD
+    A["T(n) = cn"] --> B["T(n/2) = cn/2"]
+    A --> C["T(n/2) = cn/2"]
+    B --> D["T(n/4) = cn/4"]
+    B --> E["T(n/4) = cn/4"]
+    C --> F["T(n/4) = cn/4"]
+    C --> G["T(n/4) = cn/4"]
+    D --> H["..."]
+    E --> I["..."]
+    F --> J["..."]
+    G --> K["..."]
+    H --> L["T(1)"]
+    I --> M["T(1)"]
+    J --> N["T(1)"]
+    K --> O["T(1)"]
+    style A fill:#ff9800,color:#fff
+    style L fill:#4caf50,color:#fff
+    style M fill:#4caf50,color:#fff
+    style N fill:#4caf50,color:#fff
+    style O fill:#4caf50,color:#fff
+  </div>
+
+  <p>At each level, the total work is cn. There are log2(n) levels. Total work = cn * log2(n) = O(n log n).</p>
+
+  <h2>3. Merge Sort</h2>
+
+  <h3>Algorithm</h3>
+  <pre>
+MergeSort(A, low, high):
+  if low &lt; high:
+    mid = (low + high) / 2
+    MergeSort(A, low, mid)       // Divide: left half
+    MergeSort(A, mid+1, high)    // Divide: right half
+    Merge(A, low, mid, high)     // Combine: merge sorted halves
+  </pre>
+
+  <h3>Analysis</h3>
+  <table>
+    <tr><th>Aspect</th><th>Details</th></tr>
+    <tr><td>Recurrence</td><td>T(n) = 2T(n/2) + O(n)</td></tr>
+    <tr><td>Time (all cases)</td><td>O(n log n)</td></tr>
+    <tr><td>Space</td><td>O(n) auxiliary</td></tr>
+    <tr><td>Stable</td><td>Yes</td></tr>
+    <tr><td>In-place</td><td>No</td></tr>
+    <tr><td>Master Theorem</td><td>a=2, b=2, f(n)=n, c_crit=1. Case 2: Theta(n log n)</td></tr>
+  </table>
+
+  <h2>4. Quick Sort</h2>
+
+  <h3>Algorithm</h3>
+  <pre>
+QuickSort(A, low, high):
+  if low &lt; high:
+    pivot_index = Partition(A, low, high)  // Divide
+    QuickSort(A, low, pivot_index - 1)     // Conquer: left
+    QuickSort(A, pivot_index + 1, high)    // Conquer: right
+
+Partition(A, low, high):
+  pivot = A[high]
+  i = low - 1
+  for j = low to high - 1:
+    if A[j] &le; pivot:
+      i = i + 1
+      swap A[i] and A[j]
+  swap A[i+1] and A[high]
+  return i + 1
+  </pre>
+
+  <h3>Analysis</h3>
+  <table>
+    <tr><th>Case</th><th>Partition Split</th><th>Recurrence</th><th>Complexity</th></tr>
+    <tr><td>Best</td><td>Equal halves</td><td>T(n) = 2T(n/2) + O(n)</td><td>O(n log n)</td></tr>
+    <tr><td>Average</td><td>Proportional split</td><td>T(n) = T(n/9) + T(9n/10) + O(n)</td><td>O(n log n)</td></tr>
+    <tr><td>Worst</td><td>One empty, one n-1</td><td>T(n) = T(n-1) + O(n)</td><td>O(n2)</td></tr>
+  </table>
+
+  <div class="warning">
+    <strong>Worst case occurs when:</strong> The array is already sorted (or reverse sorted) and we always pick the first or last element as pivot. Randomized pivot selection makes worst case unlikely.
+  </div>
+
+  <h3>Quick Sort vs. Merge Sort</h3>
+  <table>
+    <tr><th>Feature</th><th>Quick Sort</th><th>Merge Sort</th></tr>
+    <tr><td>Worst-case time</td><td>O(n2)</td><td>O(n log n)</td></tr>
+    <tr><td>Average-case time</td><td>O(n log n)</td><td>O(n log n)</td></tr>
+    <tr><td>In-place</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Stable</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Cache performance</td><td>Excellent</td><td>Good</td></tr>
+    <tr><td>Practical speed</td><td>Faster (smaller constants)</td><td>Slower</td></tr>
+  </table>
+
+  <h2>5. Binary Search as D&C</h2>
+  <p>Binary search follows the D&C paradigm with a single subproblem:</p>
+  <ul>
+    <li><strong>Divide:</strong> Compare target with middle element.</li>
+    <li><strong>Conquer:</strong> Recurse on the left or right half (only one subproblem).</li>
+    <li><strong>Combine:</strong> No combination needed — the answer comes directly from the subproblem.</li>
+  </ul>
+  <p><strong>Recurrence:</strong> T(n) = T(n/2) + O(1) = O(log n). Also called "decrease and conquer" since only one subproblem is generated.</p>
+
+  <h2>6. Strassen's Matrix Multiplication</h2>
+  <p>Standard matrix multiplication of two n x n matrices requires O(n3) time. Strassen's algorithm reduces this by reducing the number of recursive multiplications.</p>
+
+  <h3>Approach</h3>
+  <p>For two 2x2 matrices:</p>
+  <ul>
+    <li><strong>Standard:</strong> 8 multiplications, 4 additions.</li>
+    <li><strong>Strassen:</strong> 7 multiplications, 18 additions/subtractions.</li>
+  </ul>
+
+  <p>Strassen computes 7 products (M1 through M7) of specific linear combinations of submatrices, then combines them to get the result.</p>
+
+  <h3>Complexity Analysis</h3>
+  <pre>
+Standard:   T(n) = 8T(n/2) + O(n2)  =>  O(n3)      [a=8, b=2, c_crit=3]
+Strassen:   T(n) = 7T(n/2) + O(n2)  =>  O(n^2.81)  [a=7, b=2, c_crit=log2(7)=2.81]
+  </pre>
+
+  <table>
+    <tr><th>Algorithm</th><th>Multiplications</th><th>Complexity</th></tr>
+    <tr><td>Standard</td><td>n3</td><td>O(n3)</td></tr>
+    <tr><td>Strassen</td><td>n^2.81</td><td>O(n^2.81)</td></tr>
+    <tr><td>Coppersmith-Winograd</td><td>—</td><td>O(n^2.376)</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> Strassen's is mainly theoretical. It is impractical for small matrices due to large constants. The key exam point: reducing 8 multiplications to 7 yields O(n^(log2 7)) = O(n^2.81).
+  </div>
+
+  <h2>7. Closest Pair of Points</h2>
+  <p>Given n points in a 2D plane, find the pair with minimum distance.</p>
+
+  <h3>D&C Algorithm</h3>
+  <ol>
+    <li><strong>Divide:</strong> Sort points by x-coordinate. Split into two halves by a vertical line through the median.</li>
+    <li><strong>Conquer:</strong> Recursively find the closest pair in each half. Let d = min(d_left, d_right).</li>
+    <li><strong>Combine:</strong> Check pairs that span the dividing line (strip of width 2d). For each point in the strip, compare with at most 7 subsequent points (sorted by y-coordinate).</li>
+  </ol>
+
+  <h3>Complexity</h3>
+  <pre>
+Recurrence: T(n) = 2T(n/2) + O(n log n)   [if sorting strip each time]
+            T(n) = 2T(n/2) + O(n)          [with pre-sorting optimization]
+
+With optimization: T(n) = O(n log n)
+  </pre>
+
+  <div class="warning">
+    <strong>Critical insight:</strong> The strip can contain at most O(n) points, but each point needs to be compared with only O(1) (at most 7) other points. This keeps the combine step at O(n).
+  </div>
+
+  <h2>8. Master Theorem Applications Summary</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Recurrence</th><th>a</th><th>b</th><th>Case</th><th>Result</th></tr>
+    <tr><td>Binary Search</td><td>T(n) = T(n/2) + O(1)</td><td>1</td><td>2</td><td>2</td><td>O(log n)</td></tr>
+    <tr><td>Merge Sort</td><td>T(n) = 2T(n/2) + O(n)</td><td>2</td><td>2</td><td>2</td><td>O(n log n)</td></tr>
+    <tr><td>Karatsuba Multiply</td><td>T(n) = 3T(n/2) + O(n)</td><td>3</td><td>2</td><td>1</td><td>O(n^1.585)</td></tr>
+    <tr><td>Strassen</td><td>T(n) = 7T(n/2) + O(n2)</td><td>7</td><td>2</td><td>1</td><td>O(n^2.81)</td></tr>
+    <tr><td>Max Subarray (D&C)</td><td>T(n) = 2T(n/2) + O(n)</td><td>2</td><td>2</td><td>2</td><td>O(n log n)</td></tr>
+    <tr><td>Closest Pair</td><td>T(n) = 2T(n/2) + O(n)</td><td>2</td><td>2</td><td>2</td><td>O(n log n)</td></tr>
+  </table>
+
+  <h2>9. Other D&C Algorithms</h2>
+
+  <h3>9.1 Karatsuba Multiplication</h3>
+  <p>Multiplies two n-digit numbers using 3 multiplications of n/2-digit numbers instead of 4.</p>
+  <p>T(n) = 3T(n/2) + O(n) = O(n^(log2 3)) = O(n^1.585), better than O(n2) schoolbook multiplication.</p>
+
+  <h3>9.2 Maximum Subarray Problem</h3>
+  <p>Find the contiguous subarray with the maximum sum. D&C approach: the max subarray is either entirely in the left half, entirely in the right half, or crossing the midpoint.</p>
+  <p>T(n) = 2T(n/2) + O(n) = O(n log n). Note: Kadane's algorithm solves this in O(n) using DP.</p>
+
+  <h3>9.3 Selection Problem (Quickselect)</h3>
+  <p>Find the k-th smallest element. Uses partition like quicksort but only recurses into one half.</p>
+  <p><strong>Average:</strong> O(n). <strong>Worst:</strong> O(n2). Median-of-medians guarantees O(n) worst case.</p>
+
+  <h2>10. Key GATE Takeaways</h2>
+  <ul>
+    <li>D&C subproblems must be independent. Overlapping subproblems signal DP.</li>
+    <li>Master theorem is the primary tool for analyzing D&C recurrences.</li>
+    <li>Merge sort: always O(n log n), stable, not in-place. Quick sort: O(n log n) average, O(n2) worst, in-place, not stable.</li>
+    <li>Strassen's reduces matrix multiplication from O(n3) to O(n^2.81) by using 7 recursive multiplications.</li>
+    <li>Closest pair: O(n log n) with strip optimization (compare each point with at most 7 neighbors).</li>
+    <li>Recursion tree method is useful when the Master Theorem does not apply.</li>
+  </ul>
+</article>
+</body>
+</html>

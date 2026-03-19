@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propositional and First Order Logic | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+    .mermaid { text-align: center; margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Propositional and First Order Logic</h1>
+  <p class="article-section-tag">Section 1: Engineering Mathematics</p>
+
+  <h2>1. Propositions and Truth Values</h2>
+  <p>A <strong>proposition</strong> is a declarative statement that is either <strong>true (T)</strong> or <strong>false (F)</strong>, but not both. Propositions are the fundamental building blocks of propositional logic.</p>
+
+  <div class="example">
+    <strong>Examples of propositions:</strong>
+    <ul>
+      <li>"The earth revolves around the sun." &mdash; True</li>
+      <li>"2 + 3 = 6" &mdash; False</li>
+      <li>"Every prime number greater than 2 is odd." &mdash; True</li>
+    </ul>
+    <strong>Non-propositions:</strong>
+    <ul>
+      <li>"What time is it?" (question)</li>
+      <li>"Close the door." (command)</li>
+      <li>"x + 1 = 5" (contains a free variable)</li>
+    </ul>
+  </div>
+
+  <h2>2. Logical Connectives</h2>
+  <p>Logical connectives combine simple propositions into compound propositions. Let <code>p</code> and <code>q</code> be propositions:</p>
+
+  <table>
+    <tr><th>Connective</th><th>Symbol</th><th>Name</th><th>Read As</th></tr>
+    <tr><td>Negation</td><td>&not;p</td><td>NOT</td><td>"not p"</td></tr>
+    <tr><td>Conjunction</td><td>p &and; q</td><td>AND</td><td>"p and q"</td></tr>
+    <tr><td>Disjunction</td><td>p &or; q</td><td>OR</td><td>"p or q"</td></tr>
+    <tr><td>Implication</td><td>p &rarr; q</td><td>IMPLIES</td><td>"if p then q"</td></tr>
+    <tr><td>Biconditional</td><td>p &harr; q</td><td>IFF</td><td>"p if and only if q"</td></tr>
+    <tr><td>Exclusive OR</td><td>p &oplus; q</td><td>XOR</td><td>"p or q but not both"</td></tr>
+  </table>
+
+  <h2>3. Truth Tables</h2>
+  <p>Truth tables enumerate all possible truth value combinations for propositions and their compounds.</p>
+
+  <h3>3.1 Complete Truth Table for All Connectives</h3>
+  <table>
+    <tr><th>p</th><th>q</th><th>&not;p</th><th>p &and; q</th><th>p &or; q</th><th>p &rarr; q</th><th>p &harr; q</th><th>p &oplus; q</th></tr>
+    <tr><td>T</td><td>T</td><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td><td>F</td></tr>
+    <tr><td>T</td><td>F</td><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td><td>T</td></tr>
+    <tr><td>F</td><td>T</td><td>T</td><td>F</td><td>T</td><td>T</td><td>F</td><td>T</td></tr>
+    <tr><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td><td>T</td><td>T</td><td>F</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Key insight for Implication (p &rarr; q):</strong> The only case where an implication is false is when the hypothesis p is true but the conclusion q is false. "A false premise implies anything" &mdash; this is called <em>vacuous truth</em>.
+  </div>
+
+  <h2>4. Logical Equivalences</h2>
+  <p>Two propositions are <strong>logically equivalent</strong> (denoted &equiv;) if they have identical truth values in every row of their truth tables.</p>
+
+  <h3>4.1 Important Equivalences</h3>
+  <table>
+    <tr><th>Name</th><th>Equivalence</th></tr>
+    <tr><td>De Morgan's Law 1</td><td>&not;(p &and; q) &equiv; &not;p &or; &not;q</td></tr>
+    <tr><td>De Morgan's Law 2</td><td>&not;(p &or; q) &equiv; &not;p &and; &not;q</td></tr>
+    <tr><td>Contrapositive</td><td>(p &rarr; q) &equiv; (&not;q &rarr; &not;p)</td></tr>
+    <tr><td>Implication Elimination</td><td>(p &rarr; q) &equiv; (&not;p &or; q)</td></tr>
+    <tr><td>Biconditional</td><td>(p &harr; q) &equiv; (p &rarr; q) &and; (q &rarr; p)</td></tr>
+    <tr><td>Double Negation</td><td>&not;(&not;p) &equiv; p</td></tr>
+    <tr><td>Idempotent (AND)</td><td>p &and; p &equiv; p</td></tr>
+    <tr><td>Idempotent (OR)</td><td>p &or; p &equiv; p</td></tr>
+    <tr><td>Absorption 1</td><td>p &and; (p &or; q) &equiv; p</td></tr>
+    <tr><td>Absorption 2</td><td>p &or; (p &and; q) &equiv; p</td></tr>
+    <tr><td>Distributive (AND over OR)</td><td>p &and; (q &or; r) &equiv; (p &and; q) &or; (p &and; r)</td></tr>
+    <tr><td>Distributive (OR over AND)</td><td>p &or; (q &and; r) &equiv; (p &or; q) &and; (p &or; r)</td></tr>
+  </table>
+
+  <h3>4.2 Tautology, Contradiction, Contingency</h3>
+  <ul>
+    <li><strong>Tautology:</strong> A proposition that is always true. Example: p &or; &not;p</li>
+    <li><strong>Contradiction:</strong> A proposition that is always false. Example: p &and; &not;p</li>
+    <li><strong>Contingency:</strong> A proposition that is neither a tautology nor a contradiction.</li>
+  </ul>
+
+  <h2>5. Logical Connective Relationships</h2>
+  <div class="mermaid">
+graph TD
+    A["All Connectives"] --> B["NOT (unary)"]
+    A --> C["Binary Connectives"]
+    C --> D["AND (conjunction)"]
+    C --> E["OR (disjunction)"]
+    C --> F["IMPLIES (conditional)"]
+    C --> G["IFF (biconditional)"]
+    C --> H["XOR (exclusive or)"]
+    D -- "De Morgan's" --> E
+    F -- "Contrapositive" --> F
+    F -- "Equivalent to" --> I["NOT p OR q"]
+    G -- "Equivalent to" --> J["(p IMPLIES q) AND (q IMPLIES p)"]
+    H -- "Equivalent to" --> K["(p OR q) AND NOT(p AND q)"]
+    B -- "Functionally Complete with" --> D
+    B -- "Functionally Complete with" --> E
+  </div>
+
+  <h2>6. First Order Logic (Predicate Logic)</h2>
+  <p>First order logic extends propositional logic with <strong>predicates</strong>, <strong>variables</strong>, and <strong>quantifiers</strong>, enabling us to reason about objects and their properties.</p>
+
+  <h3>6.1 Predicates</h3>
+  <p>A <strong>predicate</strong> is a function that maps objects to truth values. It becomes a proposition when its variables are bound.</p>
+  <div class="example">
+    <strong>Examples:</strong>
+    <ul>
+      <li><code>P(x)</code>: "x is a prime number" &mdash; P(5) is True, P(4) is False</li>
+      <li><code>G(x, y)</code>: "x is greater than y" &mdash; G(7, 3) is True</li>
+      <li><code>E(x)</code>: "x is even" &mdash; E(2) is True, E(3) is False</li>
+    </ul>
+  </div>
+
+  <h3>6.2 Quantifiers</h3>
+  <table>
+    <tr><th>Quantifier</th><th>Symbol</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td>Universal</td><td>&forall;x</td><td>For all x</td><td>&forall;x P(x): "Every x satisfies P"</td></tr>
+    <tr><td>Existential</td><td>&exist;x</td><td>There exists an x</td><td>&exist;x P(x): "Some x satisfies P"</td></tr>
+  </table>
+
+  <h3>6.3 Negation of Quantifiers</h3>
+  <div class="formula">
+    &not;(&forall;x P(x)) &equiv; &exist;x &not;P(x)<br>
+    &not;(&exist;x P(x)) &equiv; &forall;x &not;P(x)
+  </div>
+  <p>In words: "Not all x satisfy P" means "there exists an x that does not satisfy P," and "there does not exist an x satisfying P" means "for all x, P is false."</p>
+
+  <h3>6.4 Nested Quantifiers</h3>
+  <p>Multiple quantifiers can be nested. The order of quantifiers matters when mixing &forall; and &exist;.</p>
+
+  <table>
+    <tr><th>Statement</th><th>Meaning</th><th>Example (Domain: Integers)</th></tr>
+    <tr><td>&forall;x &forall;y P(x,y)</td><td>For every x and every y, P holds</td><td>&forall;x &forall;y (x+y = y+x) &mdash; True</td></tr>
+    <tr><td>&exist;x &exist;y P(x,y)</td><td>There exist some x and y such that P holds</td><td>&exist;x &exist;y (x+y = 0) &mdash; True</td></tr>
+    <tr><td>&forall;x &exist;y P(x,y)</td><td>For every x, there exists some y such that P holds</td><td>&forall;x &exist;y (x+y = 0) &mdash; True (y = -x)</td></tr>
+    <tr><td>&exist;x &forall;y P(x,y)</td><td>There exists an x such that for all y, P holds</td><td>&exist;x &forall;y (x+y = 0) &mdash; False</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>GATE-style Example:</strong><br>
+    Let the domain be real numbers. Consider: &forall;x &exist;y (y > x).<br>
+    <strong>Translation:</strong> For every real number x, there exists a real number y greater than x.<br>
+    <strong>Truth value:</strong> True &mdash; for any x, we can choose y = x + 1.<br><br>
+    <strong>Negation:</strong> &exist;x &forall;y (y &le; x) &mdash; "There exists a real number x such that all real numbers y are at most x." This is False (no largest real number exists).
+  </div>
+
+  <h3>6.5 Prenex Normal Form</h3>
+  <p>A formula is in <strong>prenex normal form</strong> if it is written as a string of quantifiers (the <em>prefix</em>) followed by a quantifier-free formula (the <em>matrix</em>).</p>
+  <div class="formula">
+    Q<sub>1</sub>x<sub>1</sub> Q<sub>2</sub>x<sub>2</sub> ... Q<sub>n</sub>x<sub>n</sub> M(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>)
+  </div>
+  <p>where each Q<sub>i</sub> is either &forall; or &exist;, and M is the matrix containing no quantifiers.</p>
+
+  <h2>7. Arguments and Inference Rules</h2>
+  <table>
+    <tr><th>Rule</th><th>Form</th><th>Description</th></tr>
+    <tr><td>Modus Ponens</td><td>p, p &rarr; q &vdash; q</td><td>If p is true and p implies q, then q is true</td></tr>
+    <tr><td>Modus Tollens</td><td>&not;q, p &rarr; q &vdash; &not;p</td><td>If q is false and p implies q, then p is false</td></tr>
+    <tr><td>Hypothetical Syllogism</td><td>p &rarr; q, q &rarr; r &vdash; p &rarr; r</td><td>Chain of implications</td></tr>
+    <tr><td>Disjunctive Syllogism</td><td>p &or; q, &not;p &vdash; q</td><td>Eliminate one disjunct</td></tr>
+    <tr><td>Resolution</td><td>p &or; q, &not;p &or; r &vdash; q &or; r</td><td>Key rule used in automated theorem proving</td></tr>
+  </table>
+
+  <h2>8. Summary of Key Concepts for GATE</h2>
+  <ul>
+    <li>Master truth tables for all connectives, especially implication.</li>
+    <li>Know De Morgan's laws and contrapositive &mdash; these appear frequently.</li>
+    <li>Understand that &forall;x &exist;y P(x,y) and &exist;y &forall;x P(x,y) are different.</li>
+    <li>Practice negating quantified statements.</li>
+    <li>Be comfortable converting between implication and its equivalent forms.</li>
+    <li>Know inference rules, especially Modus Ponens and Resolution.</li>
+  </ul>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Propositional and First Order Logic Quiz",
+      "questions": [
+        {
+          "question": "Consider the proposition (p -> q) -> (q -> p). This formula is:",
+          "options": ["A tautology", "A contradiction", "A contingency", "Logically equivalent to p <-> q"],
+          "answer": 2,
+          "explanation": "When p=T, q=F: (T->F)->(F->T) = F->T = T. When p=F, q=T: (F->T)->(T->F) = T->F = F. Since it is true for some assignments and false for others, it is a contingency."
+        },
+        {
+          "question": "How many distinct Boolean functions of n propositional variables are possible?",
+          "options": ["2^n", "2^(2^n)", "n^2", "n!"],
+          "answer": 1,
+          "explanation": "With n variables there are 2^n rows in the truth table. Each function assigns T or F to each row, giving 2^(2^n) possible functions. For n=2, this is 2^4 = 16 distinct functions."
+        },
+        {
+          "question": "Let the domain be the set of positive integers. Which of the following is TRUE?",
+          "options": ["exists x forall y (x < y)", "forall x exists y (y < x)", "exists x forall y (y <= x)", "forall x exists y (x < y)"],
+          "answer": 3,
+          "explanation": "For every positive integer x, there exists y = x + 1 such that x < y. Option A is false (no smallest positive integer minus one). Option B is false for x = 1. Option C is false as there is no largest positive integer."
+        },
+        {
+          "question": "The negation of the statement 'Every student has passed at least one subject' is:",
+          "options": ["No student has passed any subject", "There exists a student who has failed every subject", "Every student has failed at least one subject", "There exists a subject that no student has passed"],
+          "answer": 1,
+          "explanation": "The original is: forall x exists y Passed(x,y). Its negation is: exists x forall y NOT Passed(x,y), meaning 'there exists a student who has not passed any subject' i.e., has failed every subject."
+        },
+        {
+          "question": "Which of the following is NOT a valid inference rule?",
+          "options": ["p, p -> q |- q (Modus Ponens)", "~q, p -> q |- ~p (Modus Tollens)", "p -> q, q -> r |- p -> r (Hypothetical Syllogism)", "p, p -> q |- ~q (Denying the Antecedent)"],
+          "answer": 3,
+          "explanation": "Denying the antecedent is a formal fallacy. From p and p -> q we can conclude q (Modus Ponens), not ~q. The other three are all valid inference rules in propositional logic."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

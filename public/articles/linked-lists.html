@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linked Lists — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Linked Lists</h1>
+  <p class="article-section-tag">💻 Section 4: Programming and Data Structures</p>
+
+  <h2>1. Introduction</h2>
+  <p>A linked list is a linear data structure where elements (nodes) are stored in non-contiguous memory locations. Each node contains data and one or more pointers to other nodes. Unlike arrays, linked lists allow efficient insertion and deletion without shifting elements.</p>
+
+  <h2>2. Singly Linked List</h2>
+
+  <h3>2.1 Structure</h3>
+  <div class="mermaid">
+flowchart LR
+    HEAD["HEAD"] --> N1["10 | next"]
+    N1 --> N2["20 | next"]
+    N2 --> N3["30 | next"]
+    N3 --> N4["40 | NULL"]
+  </div>
+
+  <pre><code>struct Node {
+    int data;
+    struct Node *next;
+};
+
+// Create a new node
+struct Node* createNode(int data) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node-&gt;data = data;
+    node-&gt;next = NULL;
+    return node;
+}</code></pre>
+
+  <h3>2.2 Insertion Operations</h3>
+
+  <h4>Insert at Beginning — O(1)</h4>
+  <pre><code>void insertAtHead(struct Node **head, int data) {
+    struct Node *newNode = createNode(data);
+    newNode-&gt;next = *head;
+    *head = newNode;
+}</code></pre>
+
+  <h4>Insert at End — O(n)</h4>
+  <pre><code>void insertAtTail(struct Node **head, int data) {
+    struct Node *newNode = createNode(data);
+    if (*head == NULL) { *head = newNode; return; }
+    struct Node *temp = *head;
+    while (temp-&gt;next != NULL)
+        temp = temp-&gt;next;
+    temp-&gt;next = newNode;
+}</code></pre>
+
+  <h4>Insert After a Given Node — O(1) if node is known</h4>
+  <pre><code>void insertAfter(struct Node *prevNode, int data) {
+    if (prevNode == NULL) return;
+    struct Node *newNode = createNode(data);
+    newNode-&gt;next = prevNode-&gt;next;
+    prevNode-&gt;next = newNode;
+}</code></pre>
+
+  <h3>2.3 Deletion Operations</h3>
+
+  <h4>Delete by Value — O(n)</h4>
+  <pre><code>void deleteNode(struct Node **head, int key) {
+    struct Node *temp = *head, *prev = NULL;
+    if (temp != NULL &amp;&amp; temp-&gt;data == key) {
+        *head = temp-&gt;next;
+        free(temp);
+        return;
+    }
+    while (temp != NULL &amp;&amp; temp-&gt;data != key) {
+        prev = temp;
+        temp = temp-&gt;next;
+    }
+    if (temp == NULL) return;
+    prev-&gt;next = temp-&gt;next;
+    free(temp);
+}</code></pre>
+
+  <h3>2.4 Reversal of Singly Linked List — O(n)</h3>
+  <pre><code>struct Node* reverse(struct Node *head) {
+    struct Node *prev = NULL, *curr = head, *next = NULL;
+    while (curr != NULL) {
+        next = curr-&gt;next;   // save next
+        curr-&gt;next = prev;   // reverse link
+        prev = curr;          // advance prev
+        curr = next;          // advance curr
+    }
+    return prev;  // new head
+}</code></pre>
+
+  <div class="mermaid">
+flowchart LR
+    subgraph Before["Before Reversal"]
+        H1["HEAD -> 10"] --> B1["20"] --> C1["30"] --> D1["40 -> NULL"]
+    end
+    subgraph After["After Reversal"]
+        H2["HEAD -> 40"] --> B2["30"] --> C2["20"] --> D2["10 -> NULL"]
+    end
+  </div>
+
+  <h3>2.5 Recursive Reversal</h3>
+  <pre><code>struct Node* reverseRecursive(struct Node *head) {
+    if (head == NULL || head-&gt;next == NULL)
+        return head;
+    struct Node *rest = reverseRecursive(head-&gt;next);
+    head-&gt;next-&gt;next = head;
+    head-&gt;next = NULL;
+    return rest;
+}</code></pre>
+
+  <h2>3. Doubly Linked List</h2>
+
+  <h3>3.1 Structure</h3>
+  <div class="mermaid">
+flowchart LR
+    N["NULL"] --> N1["prev | 10 | next"]
+    N1 --> N2["prev | 20 | next"]
+    N2 --> N3["prev | 30 | next"]
+    N3 --> NE["NULL"]
+    N2 --> N1
+    N3 --> N2
+  </div>
+
+  <pre><code>struct DNode {
+    int data;
+    struct DNode *prev;
+    struct DNode *next;
+};</code></pre>
+
+  <h3>3.2 Advantages Over Singly Linked List</h3>
+  <table>
+    <tr><th>Feature</th><th>Singly Linked</th><th>Doubly Linked</th></tr>
+    <tr><td>Traversal</td><td>Forward only</td><td>Both directions</td></tr>
+    <tr><td>Delete given node pointer</td><td>O(n) — need predecessor</td><td>O(1) — has prev pointer</td></tr>
+    <tr><td>Insert before given node</td><td>O(n)</td><td>O(1)</td></tr>
+    <tr><td>Memory per node</td><td>1 pointer</td><td>2 pointers</td></tr>
+  </table>
+
+  <h3>3.3 Insertion in Doubly Linked List</h3>
+  <pre><code>void insertAfterDLL(struct DNode *prevNode, int data) {
+    struct DNode *newNode = createDNode(data);
+    newNode-&gt;next = prevNode-&gt;next;
+    newNode-&gt;prev = prevNode;
+    if (prevNode-&gt;next != NULL)
+        prevNode-&gt;next-&gt;prev = newNode;
+    prevNode-&gt;next = newNode;
+}</code></pre>
+
+  <h2>4. Circular Linked List</h2>
+
+  <h3>4.1 Singly Circular Linked List</h3>
+  <p>The last node points back to the first node instead of NULL.</p>
+  <div class="mermaid">
+flowchart LR
+    N1["10"] --> N2["20"]
+    N2 --> N3["30"]
+    N3 --> N4["40"]
+    N4 --> N1
+  </div>
+
+  <h3>4.2 Doubly Circular Linked List</h3>
+  <p>Last node's next points to first; first node's prev points to last.</p>
+
+  <h3>4.3 Applications of Circular Lists</h3>
+  <ul>
+    <li>Round-robin scheduling in operating systems</li>
+    <li>Circular buffers</li>
+    <li>Implementation of queues (single pointer to tail gives O(1) access to both ends)</li>
+    <li>Josephus problem</li>
+  </ul>
+
+  <h2>5. Skip List</h2>
+  <p>A skip list is a probabilistic data structure that uses multiple levels of linked lists to achieve O(log n) average search time.</p>
+
+  <div class="mermaid">
+flowchart LR
+    subgraph Level3["Level 3"]
+        L3H["HEAD"] --> L3A["30"] --> L3T["TAIL"]
+    end
+    subgraph Level2["Level 2"]
+        L2H["HEAD"] --> L2A["10"] --> L2B["30"] --> L2C["50"] --> L2T["TAIL"]
+    end
+    subgraph Level1["Level 1"]
+        L1H["HEAD"] --> L1A["10"] --> L1B["20"] --> L1C["30"] --> L1D["40"] --> L1E["50"] --> L1T["TAIL"]
+    end
+  </div>
+
+  <table>
+    <tr><th>Operation</th><th>Average Time</th><th>Worst Time</th><th>Space</th></tr>
+    <tr><td>Search</td><td>O(log n)</td><td>O(n)</td><td>O(n log n)</td></tr>
+    <tr><td>Insert</td><td>O(log n)</td><td>O(n)</td><td>—</td></tr>
+    <tr><td>Delete</td><td>O(log n)</td><td>O(n)</td><td>—</td></tr>
+  </table>
+
+  <div class="note">
+    <p><strong>Skip List vs BST:</strong> Skip lists provide similar average performance to balanced BSTs but are simpler to implement, especially for concurrent data structures. The level of each node is determined randomly (typically with probability 1/2).</p>
+  </div>
+
+  <h2>6. Common Linked List Problems</h2>
+
+  <h3>6.1 Detect Cycle (Floyd's Algorithm)</h3>
+  <pre><code>bool hasCycle(struct Node *head) {
+    struct Node *slow = head, *fast = head;
+    while (fast != NULL &amp;&amp; fast-&gt;next != NULL) {
+        slow = slow-&gt;next;
+        fast = fast-&gt;next-&gt;next;
+        if (slow == fast) return true;
+    }
+    return false;
+}</code></pre>
+
+  <h3>6.2 Find Middle Element</h3>
+  <pre><code>struct Node* findMiddle(struct Node *head) {
+    struct Node *slow = head, *fast = head;
+    while (fast != NULL &amp;&amp; fast-&gt;next != NULL) {
+        slow = slow-&gt;next;
+        fast = fast-&gt;next-&gt;next;
+    }
+    return slow;  // slow is at middle
+}</code></pre>
+
+  <h3>6.3 Merge Two Sorted Lists</h3>
+  <pre><code>struct Node* mergeSorted(struct Node *a, struct Node *b) {
+    if (!a) return b;
+    if (!b) return a;
+    if (a-&gt;data &lt;= b-&gt;data) {
+        a-&gt;next = mergeSorted(a-&gt;next, b);
+        return a;
+    } else {
+        b-&gt;next = mergeSorted(a, b-&gt;next);
+        return b;
+    }
+}</code></pre>
+
+  <h2>7. Time Complexity Comparison</h2>
+  <table>
+    <tr><th>Operation</th><th>Array</th><th>Singly Linked</th><th>Doubly Linked</th><th>Circular Singly</th></tr>
+    <tr><td>Access by index</td><td>O(1)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>Search</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr>
+    <tr><td>Insert at head</td><td>O(n)</td><td>O(1)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Insert at tail</td><td>O(1)*</td><td>O(n)</td><td>O(1)**</td><td>O(1)***</td></tr>
+    <tr><td>Delete at head</td><td>O(n)</td><td>O(1)</td><td>O(1)</td><td>O(1)</td></tr>
+    <tr><td>Delete given node</td><td>O(n)</td><td>O(n)</td><td>O(1)</td><td>O(n)</td></tr>
+    <tr><td>Memory per element</td><td>data only</td><td>data + 1 ptr</td><td>data + 2 ptr</td><td>data + 1 ptr</td></tr>
+  </table>
+  <p>* If space available. ** With tail pointer. *** With tail pointer (for circular).</p>
+
+  <h2>8. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Reversal of linked list is a very frequently tested topic. Know both iterative and recursive approaches.</li>
+      <li>Floyd's cycle detection: slow pointer moves 1 step, fast moves 2 steps. They meet inside the cycle if one exists.</li>
+      <li>To find the start of a cycle: after detection, reset one pointer to head and move both one step at a time; they meet at the cycle start.</li>
+      <li>For pointer manipulation questions, draw diagrams to trace each step.</li>
+      <li>Deleting a node given only a pointer to it (not head): copy data from next node to current, delete next node. Does not work for the last node.</li>
+      <li>Circular linked list with a tail pointer gives O(1) for both insert at head and insert at tail.</li>
+    </ul>
+  </div>
+
+  <h2>9. Practice Problems</h2>
+  <ol>
+    <li>Write a function to check if a singly linked list is a palindrome in O(n) time and O(1) space.</li>
+    <li>Given a linked list, remove every k-th node.</li>
+    <li>Find the intersection point of two singly linked lists.</li>
+    <li>Flatten a multilevel doubly linked list.</li>
+  </ol>
+
+</article>
+</body>
+</html>

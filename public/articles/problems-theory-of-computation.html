@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theory of Computation Problem Solving - GATE Practice</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-family:monospace}
+</style>
+</head>
+<body>
+<article>
+<h1>Theory of Computation Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>12 GATE-level problems on DFA construction, NFA to DFA conversion, pumping lemma, CFG design, PDA construction, and decidability with complete solutions and state diagrams.</p>
+
+<h2>Problem 1: DFA Construction</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Construct a DFA over &Sigma; = {0, 1} that accepts all strings where the number of 0s is divisible by 3.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Track (count of 0s) mod 3. Three states: q0 (0 mod 3), q1 (1 mod 3), q2 (2 mod 3). Accept state: q0. Input 1 does not change state.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> q0
+    q0 --> q1: 0
+    q0 --> q0: 1
+    q1 --> q2: 0
+    q1 --> q1: 1
+    q2 --> q0: 0
+    q2 --> q2: 1
+</div>
+<table>
+<tr><th>State</th><th>Input 0</th><th>Input 1</th></tr>
+<tr><td>q0 (accept)</td><td>q1</td><td>q0</td></tr>
+<tr><td>q1</td><td>q2</td><td>q1</td></tr>
+<tr><td>q2</td><td>q0</td><td>q2</td></tr>
+</table>
+<strong>Start: q0. Accept: {q0}.</strong><br>
+Test: "010" has 2 zeros &rarr; q0&rarr;q1&rarr;q1&rarr;q2. Reject. Correct.<br>
+Test: "000" has 3 zeros &rarr; q0&rarr;q1&rarr;q2&rarr;q0. Accept. Correct.<br>
+Test: &epsilon; has 0 zeros (divisible by 3) &rarr; q0. Accept. Correct.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> For "divisible by k" problems, use k states representing remainders 0 to k-1. This gives the minimum DFA. For GATE, the minimum number of states for "n<sub>a</sub> mod p = r and n<sub>b</sub> mod q = s" is p &times; q (product construction).
+</div>
+
+<h2>Problem 2: DFA &mdash; Minimum States</h2>
+<div class="problem-box">
+<strong>Problem:</strong> What is the minimum number of states in a DFA that accepts binary strings representing numbers divisible by 5? (Leading zeros allowed, &Sigma; = {0,1}, interpret string as binary number.)
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Track the value mod 5 as bits are read left to right. Reading a new bit: new_state = (2 * old_state + bit) mod 5.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+States: q0 (mod 0), q1 (mod 1), q2 (mod 2), q3 (mod 3), q4 (mod 4).<br>
+Accept: q0. Start: q0 (empty string represents 0, divisible by 5).<br>
+<table>
+<tr><th>State (rem)</th><th>Input 0 (2r mod 5)</th><th>Input 1 ((2r+1) mod 5)</th></tr>
+<tr><td>q0 (0)</td><td>q0</td><td>q1</td></tr>
+<tr><td>q1 (1)</td><td>q2</td><td>q3</td></tr>
+<tr><td>q2 (2)</td><td>q4</td><td>q0</td></tr>
+<tr><td>q3 (3)</td><td>q1</td><td>q2</td></tr>
+<tr><td>q4 (4)</td><td>q3</td><td>q4</td></tr>
+</table>
+<strong>Minimum states = 5.</strong><br>
+Test: "1010" (=10, divisible by 5): q0&rarr;q1&rarr;q2&rarr;q0&rarr;q0. Accept. Correct.<br>
+Test: "110" (=6): q0&rarr;q1&rarr;q3&rarr;q1. Reject. Correct.
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> For "binary number mod n," the minimum DFA has exactly n states (for n that is not a power of 2, all states are distinguishable). This is a classic GATE question. Transition: &delta;(q_r, b) = q_{(2r+b) mod n}.
+</div>
+
+<h2>Problem 3: NFA to DFA Conversion (Subset Construction)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Convert the following NFA to DFA. NFA states: {q0, q1, q2}. Start: q0. Accept: {q2}. Transitions:<br>
+&delta;(q0, a) = {q0, q1}, &delta;(q0, b) = {q0}, &delta;(q1, b) = {q2}, &delta;(q2, a) = {q2}, &delta;(q2, b) = {q2}.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Subset construction: each DFA state is a set of NFA states. Start from {q0} and explore all reachable subsets.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>DFA State</th><th>NFA States</th><th>On 'a'</th><th>On 'b'</th><th>Accept?</th></tr>
+<tr><td>A</td><td>{q0}</td><td>{q0,q1} = B</td><td>{q0} = A</td><td>No</td></tr>
+<tr><td>B</td><td>{q0,q1}</td><td>{q0,q1} = B</td><td>{q0,q2} = C</td><td>No</td></tr>
+<tr><td>C</td><td>{q0,q2}</td><td>{q0,q1,q2} = D</td><td>{q0,q2} = C</td><td>Yes</td></tr>
+<tr><td>D</td><td>{q0,q1,q2}</td><td>{q0,q1,q2} = D</td><td>{q0,q2} = C</td><td>Yes</td></tr>
+</table>
+<strong>DFA: 4 states {A, B, C, D}. Start: A. Accept: {C, D}.</strong><br>
+The language is: strings over {a,b} containing "ab" as a substring (reaching q2 means we've seen "ab").
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> A
+    A --> B: a
+    A --> A: b
+    B --> B: a
+    B --> C: b
+    C --> D: a
+    C --> C: b
+    D --> D: a
+    D --> C: b
+</div>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Subset construction can produce up to 2<sup>n</sup> states from an n-state NFA. Not all subsets may be reachable. DFA state is accepting if it contains any NFA accept state. This is the standard algorithm for NFA&rarr;DFA and appears frequently in GATE.
+</div>
+
+<h2>Problem 4: Regular Expression to DFA</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Convert the regex (a|b)*abb to a minimal DFA.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> This is the classic "strings ending in abb" problem. Build DFA directly by tracking progress matching the suffix "abb."
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+States track how much of "abb" we've matched so far:<br>
+- q0: no match progress (start)<br>
+- q1: matched "a"<br>
+- q2: matched "ab"<br>
+- q3: matched "abb" (accept)<br>
+<table>
+<tr><th>State</th><th>Meaning</th><th>On 'a'</th><th>On 'b'</th></tr>
+<tr><td>q0</td><td>Start/no progress</td><td>q1</td><td>q0</td></tr>
+<tr><td>q1</td><td>Seen "a"</td><td>q1</td><td>q2</td></tr>
+<tr><td>q2</td><td>Seen "ab"</td><td>q1</td><td>q3</td></tr>
+<tr><td>q3</td><td>Seen "abb" (accept)</td><td>q1</td><td>q0</td></tr>
+</table>
+<div class="mermaid">
+stateDiagram-v2
+    [*] --> q0
+    q0 --> q1: a
+    q0 --> q0: b
+    q1 --> q1: a
+    q1 --> q2: b
+    q2 --> q1: a
+    q2 --> q3: b
+    q3 --> q1: a
+    q3 --> q0: b
+</div>
+<strong>4 states, and this is minimal</strong> (all states are distinguishable).
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> For "strings ending in pattern P," the DFA has |P|+1 states. The failure transitions follow the same logic as the KMP failure function. This construction directly gives the minimal DFA.
+</div>
+
+<h2>Problem 5: Pumping Lemma (Regular Languages)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Prove that L = {a<sup>n</sup>b<sup>n</sup> | n &ge; 0} is not regular using the pumping lemma.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Assume L is regular. Let p be the pumping length. Choose a string s in L with |s| &ge; p. Show that for all decompositions s = xyz, pumping fails.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Proof by contradiction:</strong><br>
+1. Assume L is regular. Let p be the pumping length.<br>
+2. Choose s = a<sup>p</sup>b<sup>p</sup>. s &in; L and |s| = 2p &ge; p.<br>
+3. By pumping lemma, s = xyz where |xy| &le; p, |y| &ge; 1, and xy<sup>i</sup>z &in; L for all i &ge; 0.<br>
+4. Since |xy| &le; p and s starts with p a's, y consists entirely of a's. Let y = a<sup>k</sup> where 1 &le; k &le; p.<br>
+5. Pump up: xy<sup>2</sup>z = a<sup>p+k</sup>b<sup>p</sup>. Since k &ge; 1, p+k > p, so #a's &ne; #b's.<br>
+Therefore xy<sup>2</sup>z &notin; L. <strong>Contradiction!</strong><br><br>
+6. Pump down: xy<sup>0</sup>z = xz = a<sup>p-k</sup>b<sup>p</sup>. Again, p-k < p, so #a's &ne; #b's. xz &notin; L.<br><br>
+<strong>Therefore L is not regular.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> In pumping lemma proofs: (1) YOU choose the string s, (2) the adversary chooses the decomposition xyz (but constrained by |xy| &le; p, |y| &ge; 1), (3) YOU choose i to show pumping fails. Choose s cleverly so that y must land in a critical region.
+</div>
+
+<h2>Problem 6: Pumping Lemma (Context-Free Languages)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Prove that L = {a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> | n &ge; 0} is not context-free.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use the CFL pumping lemma: for s &in; L with |s| &ge; p, s = uvxyz where |vy| &ge; 1, |vxy| &le; p, and uv<sup>i</sup>xy<sup>i</sup>z &in; L for all i &ge; 0.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+1. Assume L is context-free. Let p be the pumping length.<br>
+2. Choose s = a<sup>p</sup>b<sup>p</sup>c<sup>p</sup>. |s| = 3p &ge; p.<br>
+3. s = uvxyz with |vxy| &le; p and |vy| &ge; 1.<br>
+4. Since |vxy| &le; p, vxy can span at most two consecutive types of characters:<br>
+&nbsp;&nbsp;- Case 1: vxy is within a's only. Pumping changes #a's but not #b's or #c's.<br>
+&nbsp;&nbsp;- Case 2: vxy spans a's and b's. Pumping changes #a's and/or #b's but not #c's.<br>
+&nbsp;&nbsp;- Case 3: vxy is within b's only. Pumping changes #b's but not #a's or #c's.<br>
+&nbsp;&nbsp;- Case 4: vxy spans b's and c's. Pumping changes #b's and/or #c's but not #a's.<br>
+&nbsp;&nbsp;- Case 5: vxy is within c's only. Pumping changes #c's but not #a's or #b's.<br><br>
+5. In ALL cases, pumping (say i=2) creates a string where the counts of a, b, c are unequal.<br>
+uv<sup>2</sup>xy<sup>2</sup>z &notin; L in every case.<br><br>
+<strong>Contradiction. L is not context-free.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> The CFL pumping lemma has two substrings v and y that are pumped together. The constraint |vxy| &le; p means they are "close together" in the string. For three-way equality like a<sup>n</sup>b<sup>n</sup>c<sup>n</sup>, pumping can affect at most two of the three counts, breaking equality.
+</div>
+
+<h2>Problem 7: CFG Design</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Design a CFG for L = {w &in; {a,b}* | w has equal number of a's and b's}.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use a single variable S. Each derivation must produce equal a's and b's. Key insight: any string with equal a's and b's can be decomposed.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Grammar:</strong><br>
+S &rarr; aSbS | bSaS | &epsilon;<br><br>
+<strong>Verification:</strong><br>
+- "ab": S &rArr; aSbS &rArr; aS b S &rArr; a&epsilon;b&epsilon; = ab. Correct.<br>
+- "ba": S &rArr; bSaS &rArr; b&epsilon;a&epsilon; = ba. Correct.<br>
+- "aabb": S &rArr; aSbS &rArr; aaSbSbS &rArr; aa&epsilon;b&epsilon;b&epsilon; = aabb. Correct.<br>
+- "abba": S &rArr; aSbS &rArr; a&epsilon;bS &rArr; a&epsilon;bbSaS &rArr; abb&epsilon;a&epsilon; = abba. Correct.<br><br>
+<strong>Why it works:</strong> Every non-empty balanced string must start with either 'a' or 'b'. If it starts with 'a', there exists a matching 'b' that splits the string into parts, each with equal a's and b's. The grammar captures this recursive structure.<br><br>
+<strong>Alternative simpler grammar:</strong><br>
+S &rarr; SS | aSb | bSa | &epsilon;<br>
+This is also correct but is ambiguous.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> CFG design tips: (1) Equal counts of two symbols: pair them recursively. (2) n<sub>a</sub> > n<sub>b</sub>: generate extra a's at each step. (3) Palindromes: S &rarr; aSa | bSb | a | b | &epsilon;. (4) Test your grammar with small strings. GATE frequently asks for CFGs.
+</div>
+
+<h2>Problem 8: PDA Construction</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Construct a PDA for L = {a<sup>n</sup>b<sup>n</sup> | n &ge; 1} (acceptance by empty stack).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Push a marker for each 'a'. On seeing 'b', start popping. Accept when stack is empty and input is consumed.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+States: q0 (start, reading a's), q1 (reading b's), q_accept.<br>
+Stack alphabet: {Z<sub>0</sub>, A} (Z<sub>0</sub> is initial stack symbol).<br><br>
+<strong>Transitions:</strong><br>
+<table>
+<tr><th>State</th><th>Input</th><th>Stack Top</th><th>Next State</th><th>Stack Push</th></tr>
+<tr><td>q0</td><td>a</td><td>Z<sub>0</sub></td><td>q0</td><td>AZ<sub>0</sub></td></tr>
+<tr><td>q0</td><td>a</td><td>A</td><td>q0</td><td>AA</td></tr>
+<tr><td>q0</td><td>b</td><td>A</td><td>q1</td><td>&epsilon;</td></tr>
+<tr><td>q1</td><td>b</td><td>A</td><td>q1</td><td>&epsilon;</td></tr>
+<tr><td>q1</td><td>&epsilon;</td><td>Z<sub>0</sub></td><td>q_accept</td><td>&epsilon;</td></tr>
+</table>
+<strong>Trace for "aabb":</strong><br>
+(q0, aabb, Z<sub>0</sub>) &rArr; (q0, abb, AZ<sub>0</sub>) &rArr; (q0, bb, AAZ<sub>0</sub>) &rArr; (q1, b, AZ<sub>0</sub>) &rArr; (q1, &epsilon;, Z<sub>0</sub>) &rArr; (q_accept, &epsilon;, &epsilon;). <strong>Accept!</strong><br><br>
+<strong>Trace for "aab":</strong><br>
+(q0, aab, Z<sub>0</sub>) &rArr; (q0, ab, AZ<sub>0</sub>) &rArr; (q0, b, AAZ<sub>0</sub>) &rArr; (q1, &epsilon;, AZ<sub>0</sub>). Stack not empty. <strong>Reject.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> PDA acceptance modes: empty stack vs. final state. They are equivalent in power. For GATE, use whichever is more natural. For a<sup>n</sup>b<sup>n</sup>, empty stack is cleaner. Deterministic PDAs (DPDA) are strictly less powerful than nondeterministic PDAs.
+</div>
+
+<h2>Problem 9: Closure Properties</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Determine whether the following are true or false: (a) Regular languages are closed under complementation. (b) CFLs are closed under intersection. (c) CFLs are closed under intersection with regular languages. (d) Recursive languages are closed under complementation.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Apply known closure property results for each language class.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) Regular closed under complement: TRUE.</strong><br>
+Proof: For DFA M accepting L, swap accept and non-accept states to get DFA for L<sup>c</sup>.<br><br>
+<strong>(b) CFLs closed under intersection: FALSE.</strong><br>
+Counterexample: L1 = {a<sup>n</sup>b<sup>n</sup>c<sup>m</sup>} and L2 = {a<sup>m</sup>b<sup>n</sup>c<sup>n</sup>} are both CFLs.<br>
+L1 &cap; L2 = {a<sup>n</sup>b<sup>n</sup>c<sup>n</sup>} which is NOT a CFL.<br><br>
+<strong>(c) CFL &cap; Regular = CFL: TRUE.</strong><br>
+Proof: Cross-product construction of PDA and DFA. The stack handles the CFL part, the finite control handles the regular part.<br><br>
+<strong>(d) Recursive languages closed under complement: TRUE.</strong><br>
+Proof: If TM M decides L (halts on all inputs), modify M to swap accept/reject. The new TM decides L<sup>c</sup>.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Closure properties summary:
+<table>
+<tr><th>Operation</th><th>Regular</th><th>CFL</th><th>Recursive</th><th>RE</th></tr>
+<tr><td>Union</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Intersection</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Complement</td><td>Yes</td><td>No</td><td>Yes</td><td>No</td></tr>
+<tr><td>Concatenation</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Kleene Star</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+</table>
+</div>
+
+<h2>Problem 10: Decidability</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Classify each problem as decidable, RE (but not decidable), or not RE:<br>
+(a) Is DFA M's language empty?<br>
+(b) Does TM M accept input w?<br>
+(c) Is TM M's language equal to &Sigma;*?<br>
+(d) Is CFG G ambiguous?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Apply known decidability results for DFA, TM, and CFG problems.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) E<sub>DFA</sub> = {&lt;M&gt; | M is a DFA and L(M) = &empty;}: DECIDABLE.</strong><br>
+Algorithm: Check if any accept state is reachable from start state using BFS/DFS. Finite graph search terminates.<br><br>
+<strong>(b) A<sub>TM</sub> = {&lt;M, w&gt; | TM M accepts w}: RE but NOT decidable.</strong><br>
+This is the Halting Problem variant. A TM can simulate M on w; if M accepts, accept. But if M loops, we loop forever. So it's RE. Not decidable by Rice's theorem (or direct diagonalization).<br><br>
+<strong>(c) ALL<sub>TM</sub> = {&lt;M&gt; | L(M) = &Sigma;*}: NOT RE (co-RE, and complement is not RE either).</strong><br>
+Its complement (does M reject some string?) is RE. Since ALL<sub>TM</sub> is not RE and its complement is RE, ALL<sub>TM</sub> is co-RE but not RE.<br><br>
+<strong>(d) Ambiguity of CFG: NOT DECIDABLE (and not even RE).</strong><br>
+There is no algorithm that, given a CFG G, can determine whether G is ambiguous. This is undecidable.
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> DFA/NFA/regex problems are almost always decidable (finite structures). TM problems are usually undecidable (by Rice's theorem: any non-trivial property of TM languages is undecidable). CFG: emptiness and membership are decidable; ambiguity and universality are undecidable.
+</div>
+
+<h2>Problem 11: Myhill-Nerode Theorem</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Use the Myhill-Nerode theorem to find the minimum number of states for a DFA accepting L = {w &in; {a,b}* | w ends with "ab"}.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Find equivalence classes of the Myhill-Nerode relation. Each class corresponds to one state in the minimal DFA.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Two strings x and y are equivalent iff for all z, xz &in; L &hArr; yz &in; L.<br><br>
+Consider what matters about a prefix x for determining if xz ends in "ab":<br>
+Only the last 0, 1, or 2 characters of x matter (specifically, the suffix progress toward "ab").<br><br>
+<strong>Equivalence classes:</strong><br>
+1. <strong>[&epsilon;]:</strong> strings not ending in 'a' and not ending in "ab" (i.e., ending in 'b' or empty). For these, suffix "ab" is needed.<br>
+2. <strong>[a]:</strong> strings ending in 'a' (but not "ab"). For these, suffix "b" completes "ab".<br>
+3. <strong>[ab]:</strong> strings ending in "ab". For these, suffix &epsilon; is already in L.<br><br>
+Distinguish: [&epsilon;] needs z = "ab" to be in L. [a] needs z = "b". [ab] needs z = &epsilon;.<br>
+- [&epsilon;] vs [a]: z = "b". &epsilon;b = "b" &notin; L. "a"b = "ab" &in; L. Distinguishable.<br>
+- [a] vs [ab]: z = &epsilon;. a &notin; L. "ab" &in; L. Distinguishable.<br>
+- [&epsilon;] vs [ab]: z = &epsilon;. &epsilon; &notin; L. "ab" &in; L. Distinguishable.<br><br>
+<strong>Three equivalence classes, so minimum DFA has 3 states.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Myhill-Nerode gives the exact minimum number of states. The number of equivalence classes = number of states in minimum DFA. A language is regular iff the Myhill-Nerode relation has finitely many classes. This is an alternative to DFA minimization.
+</div>
+
+<h2>Problem 12: Rice's Theorem Application</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Using Rice's theorem, determine which of the following are decidable:<br>
+(a) {&lt;M&gt; | L(M) is finite}<br>
+(b) {&lt;M&gt; | L(M) = L(M)} (always true)<br>
+(c) {&lt;M&gt; | L(M) contains "hello"}<br>
+(d) {&lt;M&gt; | M has exactly 5 states}
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Rice's theorem: any non-trivial property of the language recognized by a TM is undecidable. "Non-trivial" means some TMs have the property and some don't. Properties of the TM itself (not its language) are outside Rice's scope.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) {&lt;M&gt; | L(M) is finite}:</strong><br>
+This is a property of L(M), the language. It's non-trivial (some TMs have finite languages, some don't).<br>
+By Rice's theorem: <strong>UNDECIDABLE.</strong><br><br>
+<strong>(b) {&lt;M&gt; | L(M) = L(M)}:</strong><br>
+L(M) = L(M) is always true for any M. This is a TRIVIAL property (all TMs satisfy it).<br>
+Rice's theorem doesn't apply to trivial properties. The set of all TM descriptions is decidable (it's everything).<br>
+<strong>DECIDABLE</strong> (trivially, always accept).<br><br>
+<strong>(c) {&lt;M&gt; | L(M) contains "hello"}:</strong><br>
+Property of L(M): "contains string hello." Non-trivial (some TMs accept "hello," some don't).<br>
+By Rice's theorem: <strong>UNDECIDABLE.</strong><br><br>
+<strong>(d) {&lt;M&gt; | M has exactly 5 states}:</strong><br>
+This is a property of the TM description/structure, NOT of its language. Two different TMs can recognize the same language with different numbers of states.<br>
+Rice's theorem doesn't apply. We can simply count states in the TM description.<br>
+<strong>DECIDABLE.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Rice's theorem applies ONLY to properties of L(M), not to properties of M itself. A property is trivial if either all RE languages have it or no RE language has it. Structural properties of TMs (number of states, transitions) are decidable. Language properties (finite, regular, empty, contains string) are almost always undecidable.
+</div>
+
+</article>
+</body>
+</html>

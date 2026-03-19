@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instruction Pipelining — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Instruction Pipelining</h1>
+  <p class="article-section-tag">🖥️ Section 3: Computer Organization</p>
+
+  <h2>1. Introduction</h2>
+  <p>Pipelining is a technique where multiple instructions are overlapped in execution. Like an assembly line in a factory, different stages of different instructions execute simultaneously. Pipelining increases <strong>throughput</strong> (instructions completed per unit time) without reducing the <strong>latency</strong> of individual instructions.</p>
+
+  <h2>2. Pipeline Stages</h2>
+  <p>A classic 5-stage RISC pipeline:</p>
+
+  <table>
+    <tr><th>Stage</th><th>Abbreviation</th><th>Action</th></tr>
+    <tr><td>Instruction Fetch</td><td>IF</td><td>Fetch instruction from memory using PC</td></tr>
+    <tr><td>Instruction Decode</td><td>ID</td><td>Decode instruction, read registers</td></tr>
+    <tr><td>Execute</td><td>EX</td><td>ALU operation or address computation</td></tr>
+    <tr><td>Memory Access</td><td>MEM</td><td>Read/write data memory (for loads/stores)</td></tr>
+    <tr><td>Write Back</td><td>WB</td><td>Write result to register file</td></tr>
+  </table>
+
+  <h3>2.1 Pipeline Timing Diagram</h3>
+  <div class="mermaid">
+gantt
+    title 5-Stage Pipeline Execution (4 Instructions)
+    dateFormat X
+    axisFormat %s
+    section Instr 1
+    IF  :i1if, 0, 1
+    ID  :i1id, 1, 2
+    EX  :i1ex, 2, 3
+    MEM :i1mem, 3, 4
+    WB  :i1wb, 4, 5
+    section Instr 2
+    IF  :i2if, 1, 2
+    ID  :i2id, 2, 3
+    EX  :i2ex, 3, 4
+    MEM :i2mem, 4, 5
+    WB  :i2wb, 5, 6
+    section Instr 3
+    IF  :i3if, 2, 3
+    ID  :i3id, 3, 4
+    EX  :i3ex, 4, 5
+    MEM :i3mem, 5, 6
+    WB  :i3wb, 6, 7
+    section Instr 4
+    IF  :i4if, 3, 4
+    ID  :i4id, 4, 5
+    EX  :i4ex, 5, 6
+    MEM :i4mem, 6, 7
+    WB  :i4wb, 7, 8
+  </div>
+
+  <h2>3. Performance Formulas</h2>
+
+  <h3>3.1 Execution Time</h3>
+  <table>
+    <tr><th>Metric</th><th>Without Pipeline</th><th>With Pipeline</th></tr>
+    <tr><td>Time for n instructions, k stages</td><td>n &times; k &times; t</td><td>(k + n - 1) &times; t</td></tr>
+    <tr><td>Clock period (t)</td><td>Sum of all stage delays</td><td>max(stage delays) + latch delay</td></tr>
+    <tr><td>CPI (ideal)</td><td>k</td><td>1</td></tr>
+  </table>
+
+  <h3>3.2 Speedup</h3>
+  <p><strong>Speedup = Time without pipeline / Time with pipeline</strong></p>
+  <p><code>S = (n &times; k &times; t) / ((k + n - 1) &times; t) = (n &times; k) / (k + n - 1)</code></p>
+  <p>As n approaches infinity: <code>S &rarr; k</code> (maximum speedup equals number of stages).</p>
+
+  <h3>3.3 Throughput</h3>
+  <p><code>Throughput = n / ((k + n - 1) &times; t)</code></p>
+  <p>As n approaches infinity: <code>Throughput &rarr; 1/t</code> (one instruction per clock cycle).</p>
+
+  <div class="note">
+    <p><strong>Example:</strong> A 5-stage pipeline, each stage takes 2 ns. Execute 100 instructions.<br/>
+    Without pipeline: 100 &times; 5 &times; 2 = 1000 ns<br/>
+    With pipeline: (5 + 100 - 1) &times; 2 = 208 ns<br/>
+    Speedup = 1000/208 = 4.81x (approaching the ideal 5x)</p>
+  </div>
+
+  <h3>3.4 Effective CPI with Stalls</h3>
+  <p><code>Effective CPI = Ideal CPI + Stall cycles per instruction</code></p>
+  <p><code>Effective CPI = 1 + (stall frequency &times; stall cycles)</code></p>
+
+  <h2>4. Pipeline Hazards</h2>
+  <p>Hazards are situations that prevent the next instruction from executing in its designated clock cycle. There are three types:</p>
+
+  <h3>4.1 Structural Hazards</h3>
+  <p>Occur when hardware resources are insufficient to support all concurrent instructions. Example: a single memory port shared by IF and MEM stages.</p>
+  <table>
+    <tr><th>Cause</th><th>Solution</th></tr>
+    <tr><td>Single memory for instruction and data</td><td>Separate instruction and data caches (Harvard architecture)</td></tr>
+    <tr><td>Single-port register file</td><td>Multi-port register file or read/write in different half-cycles</td></tr>
+    <tr><td>Shared functional unit</td><td>Duplicate the functional unit</td></tr>
+  </table>
+
+  <h3>4.2 Data Hazards</h3>
+  <p>Occur when an instruction depends on the result of a previous instruction still in the pipeline.</p>
+
+  <h4>Types of Data Dependencies</h4>
+  <table>
+    <tr><th>Type</th><th>Abbreviation</th><th>Example</th><th>Description</th></tr>
+    <tr><td>Read After Write</td><td>RAW</td><td>ADD R1,R2,R3; SUB R4,R1,R5</td><td>True dependency: SUB needs R1 written by ADD</td></tr>
+    <tr><td>Write After Read</td><td>WAR</td><td>ADD R1,R2,R3; SUB R2,R4,R5</td><td>Anti-dependency: SUB writes R2 before ADD reads it</td></tr>
+    <tr><td>Write After Write</td><td>WAW</td><td>ADD R1,R2,R3; SUB R1,R4,R5</td><td>Output dependency: both write R1</td></tr>
+  </table>
+
+  <div class="important">
+    <p><strong>In a standard 5-stage in-order pipeline, only RAW hazards cause stalls.</strong> WAR and WAW hazards can occur in out-of-order or longer pipelines.</p>
+  </div>
+
+  <h4>RAW Hazard Example</h4>
+  <div class="mermaid">
+flowchart LR
+    subgraph Cycle1["Cycle 1"]
+        I1_IF["I1: IF"]
+    end
+    subgraph Cycle2["Cycle 2"]
+        I1_ID["I1: ID"]
+        I2_IF["I2: IF"]
+    end
+    subgraph Cycle3["Cycle 3"]
+        I1_EX["I1: EX"]
+        I2_ID["I2: ID -- NEEDS R1!"]
+    end
+    subgraph Cycle4["Cycle 4"]
+        I1_MEM["I1: MEM"]
+    end
+    subgraph Cycle5["Cycle 5"]
+        I1_WB["I1: WB -- writes R1"]
+    end
+  </div>
+  <p>I1: ADD R1, R2, R3 writes R1 in WB (cycle 5). I2: SUB R4, R1, R5 needs R1 in ID (cycle 3). This causes a 2-cycle stall without forwarding.</p>
+
+  <h3>4.3 Control Hazards</h3>
+  <p>Occur with branch instructions because the next instruction address is not known until the branch condition is evaluated.</p>
+  <table>
+    <tr><th>Problem</th><th>Penalty</th></tr>
+    <tr><td>Unconditional branch</td><td>1-2 cycles (until target computed)</td></tr>
+    <tr><td>Conditional branch</td><td>1-3 cycles (until condition resolved)</td></tr>
+  </table>
+
+  <h2>5. Hazard Solutions</h2>
+
+  <h3>5.1 Data Forwarding (Bypassing)</h3>
+  <p>The ALU result is forwarded directly from the EX/MEM or MEM/WB pipeline register to the ALU input, bypassing the register file write.</p>
+
+  <div class="mermaid">
+flowchart TD
+    subgraph Without_Forwarding["Without Forwarding: 2 Stall Cycles"]
+        A1["I1: IF ID EX MEM WB"]
+        A2["I2: IF ID -- -- EX MEM WB"]
+    end
+    subgraph With_Forwarding["With Forwarding: 0 Stall Cycles"]
+        B1["I1: IF ID EX MEM WB"]
+        B2["I2: IF ID EX MEM WB"]
+        B1 -. "Forward from EX/MEM" .-> B2
+    end
+  </div>
+
+  <div class="note">
+    <p><strong>Load-Use Hazard:</strong> Even with forwarding, a LOAD followed by a dependent instruction requires one stall cycle because the data is available after MEM, not after EX.</p>
+    <p>LOAD R1, 0(R2) followed by ADD R3, R1, R4 requires 1 stall (bubble).</p>
+  </div>
+
+  <h3>5.2 Stalling (Pipeline Bubbles)</h3>
+  <p>Insert NOP (no-operation) cycles into the pipeline to delay the dependent instruction. The hardware "freezes" the pipeline stages before the hazard and inserts bubbles.</p>
+
+  <h3>5.3 Branch Prediction</h3>
+  <table>
+    <tr><th>Technique</th><th>Description</th><th>Accuracy</th></tr>
+    <tr><td>Always Not Taken</td><td>Predict branch will not be taken; continue sequential fetch</td><td>~30-40%</td></tr>
+    <tr><td>Always Taken</td><td>Predict branch will be taken; fetch from target</td><td>~60-70%</td></tr>
+    <tr><td>1-bit Predictor</td><td>Remember last outcome; predict same</td><td>~80-85%</td></tr>
+    <tr><td>2-bit Predictor</td><td>Saturating counter: must mispredict twice to change</td><td>~90-95%</td></tr>
+    <tr><td>Branch Target Buffer</td><td>Cache of branch target addresses</td><td>Reduces target computation delay</td></tr>
+  </table>
+
+  <h3>5.4 Delayed Branching</h3>
+  <p>The compiler fills the branch delay slot(s) with useful instructions that execute regardless of the branch outcome.</p>
+
+  <h3>5.5 Other Techniques</h3>
+  <table>
+    <tr><th>Technique</th><th>Addresses</th><th>Mechanism</th></tr>
+    <tr><td>Register Renaming</td><td>WAR, WAW</td><td>Map logical registers to physical registers</td></tr>
+    <tr><td>Out-of-Order Execution</td><td>All hazards</td><td>Execute instructions as operands become available</td></tr>
+    <tr><td>Scoreboarding</td><td>Data hazards</td><td>Track register status for dynamic scheduling</td></tr>
+    <tr><td>Tomasulo's Algorithm</td><td>Data hazards</td><td>Reservation stations + register renaming</td></tr>
+  </table>
+
+  <h2>6. Pipeline Performance with Stalls</h2>
+  <p><strong>Example:</strong> 5-stage pipeline, 20% of instructions are loads, 50% of loads are followed by a dependent instruction (1 stall cycle with forwarding), 15% of instructions are branches with 2-cycle penalty and 80% prediction accuracy.</p>
+
+  <p>Stalls per instruction = (0.20 &times; 0.50 &times; 1) + (0.15 &times; 0.20 &times; 2) = 0.10 + 0.06 = 0.16</p>
+  <p>Effective CPI = 1 + 0.16 = 1.16</p>
+  <p>Speedup over non-pipelined = 5 / 1.16 = 4.31x</p>
+
+  <h2>7. Pipeline Depth Trade-offs</h2>
+  <table>
+    <tr><th>More Stages (Deeper Pipeline)</th><th>Fewer Stages (Shallower Pipeline)</th></tr>
+    <tr><td>Higher clock frequency</td><td>Lower clock frequency</td></tr>
+    <tr><td>More hazard penalties</td><td>Fewer hazard penalties</td></tr>
+    <tr><td>More pipeline registers (overhead)</td><td>Less overhead</td></tr>
+    <tr><td>Higher branch misprediction cost</td><td>Lower branch misprediction cost</td></tr>
+  </table>
+
+  <h2>8. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Master the speedup formula: S = nk / (k + n - 1). As n &rarr; infinity, S &rarr; k.</li>
+      <li>RAW is the most important hazard in a standard 5-stage pipeline.</li>
+      <li>With forwarding: LOAD-use hazard still needs 1 stall. All other RAW hazards are resolved.</li>
+      <li>Without forwarding: up to 2 stalls for ALU-dependent and up to 2 stalls for load-dependent instructions.</li>
+      <li>Branch penalty = cycles wasted when branch is mispredicted.</li>
+      <li>Effective CPI = 1 + sum of (frequency &times; penalty) for each hazard type.</li>
+      <li>Pipeline clock period = max(stage delay) + register overhead.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Instruction Pipelining Quiz",
+      "questions": [
+        {
+          "question": "A 6-stage pipeline has stage delays of 5, 6, 11, 8, 7, 10 ns respectively, with a latch delay of 1 ns. What is the clock period of the pipeline?",
+          "options": ["11 ns", "12 ns", "47 ns", "48 ns"],
+          "answer": 1,
+          "explanation": "The clock period = max(stage delays) + latch delay = 11 + 1 = 12 ns. In a pipeline, the clock must accommodate the slowest stage plus register overhead."
+        },
+        {
+          "question": "In a 5-stage pipeline executing 100 instructions, what is the speedup compared to non-pipelined execution (assuming no hazards)?",
+          "options": ["5.0", "4.81", "4.50", "100"],
+          "answer": 1,
+          "explanation": "Speedup = (n * k) / (k + n - 1) = (100 * 5) / (5 + 100 - 1) = 500 / 104 = 4.81. As n approaches infinity, speedup approaches k = 5."
+        },
+        {
+          "question": "Consider: I1: LOAD R1, 0(R2) followed by I2: ADD R3, R1, R4 in a 5-stage pipeline with data forwarding. How many stall cycles are needed?",
+          "options": ["0", "1", "2", "3"],
+          "answer": 1,
+          "explanation": "This is a load-use hazard. Even with forwarding, the LOAD result is only available after the MEM stage. The ADD needs R1 in EX, but it cannot be forwarded until after MEM. So 1 stall (bubble) is needed."
+        },
+        {
+          "question": "In a 5-stage pipeline, 20% of instructions are branches with a 2-cycle penalty. Branch prediction accuracy is 75%. What is the effective CPI?",
+          "options": ["1.10", "1.40", "1.50", "1.02"],
+          "answer": 0,
+          "explanation": "Stalls from branches = 0.20 * (1 - 0.75) * 2 = 0.20 * 0.25 * 2 = 0.10. Effective CPI = 1 + 0.10 = 1.10. Only mispredicted branches incur the penalty."
+        },
+        {
+          "question": "Which type of data hazard can cause a stall in a standard 5-stage in-order pipeline?",
+          "options": ["WAR (Write After Read)", "WAW (Write After Write)", "RAW (Read After Write)", "All of the above"],
+          "answer": 2,
+          "explanation": "In a standard 5-stage in-order pipeline, only RAW (true dependency) hazards cause stalls. WAR and WAW hazards do not occur because the pipeline reads registers in ID (stage 2) and writes in WB (stage 5), maintaining the correct ordering."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

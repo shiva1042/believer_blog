@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-CFjPhJqf.js";import{n as t}from"./jsx-runtime-QQLjLlGf.js";var n=e(t(),1);function r(e){(0,n.useEffect)(()=>{let t=document.title;return document.title=e?`${e} | Believer Blog`:`Believer Blog — GATE CS Knowledge Base`,()=>{document.title=t}},[e])}export{r as t};

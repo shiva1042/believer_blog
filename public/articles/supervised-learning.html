@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supervised Learning Algorithms | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Supervised Learning Algorithms</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. Linear Regression</h2>
+  <p>Linear regression models the relationship between a dependent variable y and one or more independent variables x using a linear function.</p>
+
+  <div class="formula">
+    Simple Linear Regression: y = w&middot;x + b<br>
+    Multiple Linear Regression: y = w<sub>1</sub>x<sub>1</sub> + w<sub>2</sub>x<sub>2</sub> + ... + w<sub>n</sub>x<sub>n</sub> + b<br>
+    In vector form: y = W<sup>T</sup>X + b
+  </div>
+
+  <p>The model is trained by minimizing the <strong>Mean Squared Error (MSE)</strong> loss function:</p>
+  <div class="formula">
+    MSE = (1/n) &sum; (y<sub>i</sub> - y&#770;<sub>i</sub>)&sup2; for i = 1 to n
+  </div>
+
+  <p>The optimal weights can be found using the <strong>Normal Equation</strong> (closed-form solution):</p>
+  <div class="formula">
+    W = (X<sup>T</sup>X)<sup>-1</sup> X<sup>T</sup>y
+  </div>
+
+  <p>Alternatively, <strong>Gradient Descent</strong> iteratively updates weights:</p>
+  <div class="formula">
+    w := w - &alpha; &middot; &part;MSE/&part;w<br>
+    where &alpha; is the learning rate
+  </div>
+
+  <h2>2. Logistic Regression</h2>
+  <p>Despite its name, logistic regression is a <strong>classification</strong> algorithm. It models the probability that an instance belongs to the positive class using the <strong>sigmoid function</strong>.</p>
+
+  <div class="formula">
+    &sigma;(z) = 1 / (1 + e<sup>-z</sup>)  where z = W<sup>T</sup>X + b<br>
+    P(y=1|x) = &sigma;(W<sup>T</sup>X + b)<br>
+    Decision: y = 1 if P(y=1|x) &ge; 0.5, else y = 0
+  </div>
+
+  <p>The loss function is <strong>Binary Cross-Entropy</strong> (Log Loss):</p>
+  <div class="formula">
+    L = -(1/n) &sum; [y<sub>i</sub> log(y&#770;<sub>i</sub>) + (1 - y<sub>i</sub>) log(1 - y&#770;<sub>i</sub>)]
+  </div>
+
+  <p>Properties of the sigmoid function: output is always in (0, 1), monotonically increasing, &sigma;(0) = 0.5, &sigma;'(z) = &sigma;(z)(1 - &sigma;(z)).</p>
+
+  <h2>3. Decision Trees</h2>
+  <p>Decision trees classify instances by sorting them from the root to a leaf node, which holds the classification. Each internal node tests an attribute, each branch corresponds to an attribute value, and each leaf assigns a class.</p>
+
+  <h3>3.1 Information Gain and Entropy (ID3 Algorithm)</h3>
+  <div class="formula">
+    Entropy: H(S) = -&sum; p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>)  for each class i<br><br>
+    Information Gain: IG(S, A) = H(S) - &sum; (|S<sub>v</sub>|/|S|) &middot; H(S<sub>v</sub>)  for each value v of attribute A
+  </div>
+  <p>ID3 selects the attribute with the <strong>highest information gain</strong> at each node. Entropy = 0 when all examples belong to one class (pure). Entropy = 1 (for binary classification) when examples are evenly split.</p>
+
+  <div class="example">
+    <strong>Example:</strong> Dataset S with 9 positive and 5 negative examples.<br>
+    H(S) = -(9/14)log<sub>2</sub>(9/14) - (5/14)log<sub>2</sub>(5/14) = 0.940 bits<br>
+    If attribute A splits S into S<sub>1</sub> (3+, 2-) and S<sub>2</sub> (6+, 3-):<br>
+    H(S<sub>1</sub>) = -(3/5)log<sub>2</sub>(3/5) - (2/5)log<sub>2</sub>(2/5) = 0.971<br>
+    H(S<sub>2</sub>) = -(6/9)log<sub>2</sub>(6/9) - (3/9)log<sub>2</sub>(3/9) = 0.918<br>
+    IG(S, A) = 0.940 - (5/14)(0.971) - (9/14)(0.918) = 0.940 - 0.347 - 0.590 = 0.003
+  </div>
+
+  <h3>3.2 C4.5 Algorithm</h3>
+  <p>Improvement over ID3. Uses <strong>Gain Ratio</strong> to avoid bias toward multi-valued attributes:</p>
+  <div class="formula">
+    SplitInfo(S, A) = -&sum; (|S<sub>v</sub>|/|S|) log<sub>2</sub>(|S<sub>v</sub>|/|S|)<br>
+    GainRatio(S, A) = IG(S, A) / SplitInfo(S, A)
+  </div>
+  <p>C4.5 also handles continuous attributes, missing values, and performs post-pruning.</p>
+
+  <h3>3.3 CART (Classification and Regression Trees)</h3>
+  <p>Uses the <strong>Gini Index</strong> for classification:</p>
+  <div class="formula">
+    Gini(S) = 1 - &sum; p<sub>i</sub>&sup2;  for each class i<br><br>
+    Gini = 0 when all examples are of one class (pure)<br>
+    Gini = 0.5 for binary classification with equal split
+  </div>
+  <p>CART always creates <strong>binary splits</strong>. For regression, CART uses variance reduction as the splitting criterion.</p>
+
+  <h3>3.4 Comparison of Splitting Criteria</h3>
+  <table>
+    <tr><th>Algorithm</th><th>Criterion</th><th>Split Type</th><th>Key Feature</th></tr>
+    <tr><td>ID3</td><td>Information Gain (Entropy)</td><td>Multi-way</td><td>Biased toward multi-valued attributes</td></tr>
+    <tr><td>C4.5</td><td>Gain Ratio</td><td>Multi-way</td><td>Corrects ID3's bias, handles continuous values</td></tr>
+    <tr><td>CART</td><td>Gini Index</td><td>Binary</td><td>Supports both classification and regression</td></tr>
+  </table>
+
+  <h2>4. Support Vector Machines (SVM)</h2>
+  <p>SVM finds the <strong>optimal hyperplane</strong> that separates classes with the <strong>maximum margin</strong>.</p>
+
+  <h3>4.1 Linear SVM</h3>
+  <div class="formula">
+    Decision boundary: W<sup>T</sup>X + b = 0<br>
+    Margin = 2 / ||W||<br>
+    Objective: Minimize ||W||&sup2; / 2  subject to y<sub>i</sub>(W<sup>T</sup>x<sub>i</sub> + b) &ge; 1 for all i
+  </div>
+  <p><strong>Support vectors</strong> are the data points closest to the decision boundary. They lie on the margin and determine the hyperplane. Only support vectors matter for the decision boundary; removing other points does not change the classifier.</p>
+
+  <h3>4.2 Soft Margin SVM</h3>
+  <p>Allows some misclassification using slack variables &xi;<sub>i</sub> for non-linearly separable data:</p>
+  <div class="formula">
+    Minimize: ||W||&sup2;/2 + C &sum; &xi;<sub>i</sub><br>
+    subject to: y<sub>i</sub>(W<sup>T</sup>x<sub>i</sub> + b) &ge; 1 - &xi;<sub>i</sub>, &xi;<sub>i</sub> &ge; 0
+  </div>
+  <p>The parameter <strong>C</strong> controls the tradeoff: large C = less misclassification (harder margin), small C = wider margin (more misclassification allowed).</p>
+
+  <h3>4.3 Kernel Trick</h3>
+  <p>Maps data to a higher-dimensional space where it becomes linearly separable, without explicitly computing the mapping. Common kernels:</p>
+  <table>
+    <tr><th>Kernel</th><th>Formula K(x, x')</th><th>Use Case</th></tr>
+    <tr><td>Linear</td><td>x<sup>T</sup>x'</td><td>Linearly separable data</td></tr>
+    <tr><td>Polynomial</td><td>(x<sup>T</sup>x' + c)<sup>d</sup></td><td>Non-linear boundaries, moderate complexity</td></tr>
+    <tr><td>RBF (Gaussian)</td><td>exp(-&gamma;||x - x'||&sup2;)</td><td>Complex non-linear boundaries, most popular</td></tr>
+    <tr><td>Sigmoid</td><td>tanh(&alpha;x<sup>T</sup>x' + c)</td><td>Neural network-like behavior</td></tr>
+  </table>
+
+  <h2>5. K-Nearest Neighbors (KNN)</h2>
+  <p>KNN is a <strong>lazy learning</strong> (instance-based) algorithm that stores all training data and classifies new instances based on the majority class of their K nearest neighbors.</p>
+
+  <div class="formula">
+    Euclidean distance: d(x, y) = &radic;(&sum;(x<sub>i</sub> - y<sub>i</sub>)&sup2;)<br>
+    Manhattan distance: d(x, y) = &sum;|x<sub>i</sub> - y<sub>i</sub>|<br>
+    Minkowski distance: d(x, y) = (&sum;|x<sub>i</sub> - y<sub>i</sub>|<sup>p</sup>)<sup>1/p</sup>
+  </div>
+
+  <ul>
+    <li><strong>K is odd</strong> for binary classification to avoid ties</li>
+    <li><strong>Small K:</strong> complex boundary, high variance, low bias (overfitting)</li>
+    <li><strong>Large K:</strong> smoother boundary, low variance, high bias (underfitting)</li>
+    <li>Sensitive to feature scaling &mdash; normalization is essential</li>
+    <li>Computationally expensive at prediction time: O(nd) per query (n samples, d dimensions)</li>
+  </ul>
+
+  <h2>6. Naive Bayes Classifier</h2>
+  <p>Based on <strong>Bayes' Theorem</strong> with the "naive" assumption that all features are <strong>conditionally independent</strong> given the class label.</p>
+
+  <div class="formula">
+    Bayes' Theorem: P(C|X) = P(X|C) &middot; P(C) / P(X)<br><br>
+    Naive assumption: P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>|C) = &prod; P(x<sub>i</sub>|C)<br><br>
+    Classification: C* = argmax<sub>C</sub> P(C) &prod; P(x<sub>i</sub>|C)
+  </div>
+
+  <p>Variants: <strong>Gaussian NB</strong> (continuous features, assumed normal), <strong>Multinomial NB</strong> (text classification, word counts), <strong>Bernoulli NB</strong> (binary features).</p>
+
+  <div class="example">
+    <strong>Example:</strong> Spam classification with features: "free" and "money".<br>
+    P(Spam) = 0.4, P(Not Spam) = 0.6<br>
+    P("free"|Spam) = 0.8, P("free"|Not Spam) = 0.1<br>
+    P("money"|Spam) = 0.7, P("money"|Not Spam) = 0.05<br>
+    For email with both "free" and "money":<br>
+    P(Spam|X) &prop; 0.4 &times; 0.8 &times; 0.7 = 0.224<br>
+    P(Not Spam|X) &prop; 0.6 &times; 0.1 &times; 0.05 = 0.003<br>
+    Since 0.224 >> 0.003, classify as Spam.
+  </div>
+
+  <h2>7. Algorithm Comparison</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Type</th><th>Strengths</th><th>Weaknesses</th></tr>
+    <tr><td>Linear Regression</td><td>Regression</td><td>Simple, interpretable, fast</td><td>Only linear relationships</td></tr>
+    <tr><td>Logistic Regression</td><td>Classification</td><td>Probabilistic output, interpretable</td><td>Linear decision boundary</td></tr>
+    <tr><td>Decision Trees</td><td>Both</td><td>Interpretable, handles mixed features</td><td>Prone to overfitting</td></tr>
+    <tr><td>SVM</td><td>Classification</td><td>Effective in high dimensions, kernel trick</td><td>Slow for large datasets, less interpretable</td></tr>
+    <tr><td>KNN</td><td>Both</td><td>Simple, no training phase</td><td>Slow prediction, curse of dimensionality</td></tr>
+    <tr><td>Naive Bayes</td><td>Classification</td><td>Fast, works well with small data</td><td>Independence assumption rarely holds</td></tr>
+  </table>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "Supervised Learning Algorithms - GATE Quiz",
+    "questions": [
+      {
+        "question": "In a decision tree using the ID3 algorithm, what happens when the entropy of a node is 0?",
+        "options": ["The node is split further using Gini index", "All examples at that node belong to the same class (pure node)", "The node has maximum impurity", "The algorithm restarts from the root"],
+        "answer": 1,
+        "explanation": "Entropy = 0 means all examples at that node belong to the same class. This is a pure node and becomes a leaf node. No further splitting is needed. Entropy is maximized (=1 for binary) when examples are evenly distributed across classes."
+      },
+      {
+        "question": "The kernel trick in SVM allows:",
+        "options": ["Reducing the number of support vectors", "Computing dot products in a higher-dimensional space without explicitly transforming data", "Increasing the training speed by reducing dimensions", "Converting a regression problem to classification"],
+        "answer": 1,
+        "explanation": "The kernel trick computes the dot product of data points in a high-dimensional feature space without explicitly computing the transformation. This allows SVM to find non-linear decision boundaries while remaining computationally efficient."
+      },
+      {
+        "question": "In KNN classification, if K is set to a very large value (close to n), the model will:",
+        "options": ["Overfit the training data", "Always predict the majority class", "Have high variance", "Have zero bias"],
+        "answer": 1,
+        "explanation": "With very large K (approaching n), every query point considers almost all training samples. The prediction converges to the majority class in the dataset, resulting in high bias and underfitting."
+      },
+      {
+        "question": "The Naive Bayes classifier is called 'naive' because:",
+        "options": ["It uses a simplified version of Bayes' theorem", "It assumes all features are conditionally independent given the class", "It ignores prior probabilities", "It only works with binary features"],
+        "answer": 1,
+        "explanation": "The 'naive' assumption is that all features are conditionally independent given the class label: P(x1, x2, ..., xn | C) = ∏ P(xi | C). This assumption rarely holds in practice but the classifier often works well despite this."
+      },
+      {
+        "question": "In SVM, which data points determine the position of the decision boundary?",
+        "options": ["All training data points", "Only the misclassified points", "Only the support vectors (points on the margin)", "Only the centroid of each class"],
+        "answer": 2,
+        "explanation": "The decision boundary in SVM is determined only by the support vectors — the data points that lie closest to the boundary (on the margin). Removing or moving other data points does not change the decision boundary."
+      },
+      {
+        "question": "The Gain Ratio used in C4.5 addresses which problem of ID3's Information Gain?",
+        "options": ["Inability to handle continuous attributes", "Bias toward attributes with many distinct values", "Inability to handle missing values", "High computational complexity"],
+        "answer": 1,
+        "explanation": "Information Gain is biased toward attributes with many values (e.g., an ID attribute with unique values for each example would have maximum IG). Gain Ratio normalizes IG by SplitInfo, which penalizes attributes with many values, correcting this bias."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

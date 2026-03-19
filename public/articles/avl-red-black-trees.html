@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AVL Trees &amp; Red-Black Trees — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>AVL Trees &amp; Red-Black Trees</h1>
+  <p class="article-section-tag">💻 Data Structures</p>
+
+  <h2>1. AVL Trees</h2>
+  <p>An AVL tree is a self-balancing Binary Search Tree where the <strong>balance factor</strong> of every node is -1, 0, or +1.</p>
+  <p><strong>Balance Factor (BF)</strong> = Height(Left Subtree) - Height(Right Subtree)</p>
+
+  <h3>1.1 AVL Tree Properties</h3>
+  <ul>
+    <li>All BST properties hold (left &lt; root &lt; right for each node).</li>
+    <li>For every node, |BF| &le; 1.</li>
+    <li>Height of AVL tree with n nodes: O(log n). More precisely, h &lt; 1.44 * log2(n+2).</li>
+    <li>Minimum nodes for height h: N(h) = N(h-1) + N(h-2) + 1, with N(0)=1, N(1)=2. (Fibonacci-like)</li>
+  </ul>
+
+  <table>
+    <tr><th>Height h</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+    <tr><td>Min nodes N(h)</td><td>1</td><td>2</td><td>4</td><td>7</td><td>12</td><td>20</td><td>33</td></tr>
+  </table>
+
+  <h3>1.2 Rotations</h3>
+  <p>When an insertion or deletion causes the balance factor of any node to become +2 or -2, we perform rotations to restore balance.</p>
+
+  <h3>LL Rotation (Left-Left Case)</h3>
+  <p>Imbalance at node A with BF = +2, and left child B has BF = +1. Perform <strong>Right Rotation</strong> at A.</p>
+  <div class="mermaid">
+graph TD
+    subgraph Before
+    A1[A bf=+2] --> B1[B bf=+1]
+    A1 --> AR[Ar]
+    B1 --> BL[Bl height h]
+    B1 --> BR[Br height h-1]
+    end
+  </div>
+  <div class="mermaid">
+graph TD
+    subgraph After Right Rotation
+    B2[B bf=0] --> BL2[Bl]
+    B2 --> A2[A bf=0]
+    A2 --> BR2[Br]
+    A2 --> AR2[Ar]
+    end
+  </div>
+
+  <h3>RR Rotation (Right-Right Case)</h3>
+  <p>Imbalance at node A with BF = -2, and right child B has BF = -1. Perform <strong>Left Rotation</strong> at A.</p>
+  <p>This is the mirror of LL rotation.</p>
+
+  <h3>LR Rotation (Left-Right Case)</h3>
+  <p>Imbalance at A with BF = +2, but left child B has BF = -1. Requires a <strong>double rotation</strong>: Left Rotate B, then Right Rotate A.</p>
+  <div class="mermaid">
+graph TD
+    subgraph Before LR
+    A3[A bf=+2] --> B3[B bf=-1]
+    A3 --> AR3[Ar]
+    B3 --> BL3[Bl]
+    B3 --> C3[C]
+    C3 --> CL3[Cl]
+    C3 --> CR3[Cr]
+    end
+  </div>
+  <p>Step 1: Left rotate at B. Step 2: Right rotate at A. Result: C becomes the new root of this subtree.</p>
+
+  <h3>RL Rotation (Right-Left Case)</h3>
+  <p>Mirror of LR. Imbalance at A with BF = -2, right child B has BF = +1. Right Rotate B, then Left Rotate A.</p>
+
+  <h3>1.3 Rotation Summary</h3>
+  <table>
+    <tr><th>Case</th><th>BF of Node</th><th>BF of Child</th><th>Rotation</th></tr>
+    <tr><td>LL</td><td>+2</td><td>+1</td><td>Right rotation at node</td></tr>
+    <tr><td>RR</td><td>-2</td><td>-1</td><td>Left rotation at node</td></tr>
+    <tr><td>LR</td><td>+2</td><td>-1</td><td>Left rotate child, then right rotate node</td></tr>
+    <tr><td>RL</td><td>-2</td><td>+1</td><td>Right rotate child, then left rotate node</td></tr>
+  </table>
+
+  <h3>1.4 AVL Insertion Example</h3>
+  <p><strong>Insert sequence:</strong> 10, 20, 30, 15, 25</p>
+  <pre><code>Insert 10:  Tree = [10]
+Insert 20:  Tree = 10 -> right: 20.  Balanced.
+Insert 30:  10(bf=-2) -> 20 -> 30.  RR case at 10.
+  Left rotate at 10: root becomes 20, left=10, right=30.
+Insert 15:  20 -> 10(right=15), 30.  All balanced.
+Insert 25:  20 -> 10(right=15), 30(left=25).
+  30 has bf=+1, 20 has bf=0. Balanced.</code></pre>
+
+  <h3>1.5 AVL Deletion</h3>
+  <ol>
+    <li>Perform standard BST deletion.</li>
+    <li>Walk up from the deleted node to the root, checking balance factors.</li>
+    <li>If any node becomes unbalanced (BF = +2 or -2), perform the appropriate rotation.</li>
+    <li>Unlike insertion, deletion may require multiple rotations (up to O(log n)).</li>
+  </ol>
+
+  <h2>2. Red-Black Trees</h2>
+  <p>A Red-Black tree is a self-balancing BST where each node has a color (red or black) and the tree satisfies specific properties.</p>
+
+  <h3>2.1 Red-Black Tree Properties</h3>
+  <ol>
+    <li>Every node is either <strong>Red</strong> or <strong>Black</strong>.</li>
+    <li>The <strong>root is always Black</strong>.</li>
+    <li>Every <strong>NULL leaf (NIL)</strong> is Black.</li>
+    <li><strong>No two consecutive Red nodes</strong> (a Red node cannot have a Red parent or Red child).</li>
+    <li>Every path from a node to its descendant NIL leaves has the <strong>same number of Black nodes</strong> (Black-height).</li>
+  </ol>
+
+  <h3>2.2 Height Bounds</h3>
+  <ul>
+    <li>Black-height of root = bh. Then tree has at least <code>2^bh - 1</code> internal nodes.</li>
+    <li>Height h &le; 2 * log2(n + 1). So worst case is roughly 2 * log(n), compared to 1.44 * log(n) for AVL.</li>
+  </ul>
+
+  <h3>2.3 Red-Black Insertion</h3>
+  <p>New nodes are always inserted as <strong>Red</strong>. Then fix violations:</p>
+
+  <table>
+    <tr><th>Case</th><th>Condition</th><th>Action</th></tr>
+    <tr><td>Case 1</td><td>Uncle is Red</td><td>Recolor parent and uncle to Black, grandparent to Red. Recurse on grandparent.</td></tr>
+    <tr><td>Case 2</td><td>Uncle is Black, node is inner child (LR or RL)</td><td>Rotate node to make it outer child (converts to Case 3).</td></tr>
+    <tr><td>Case 3</td><td>Uncle is Black, node is outer child (LL or RR)</td><td>Rotate grandparent, swap colors of parent and grandparent.</td></tr>
+  </table>
+
+  <div class="mermaid">
+flowchart TD
+    A[Insert new Red node] --> B{Parent is Black?}
+    B -- Yes --> C[Done - no violation]
+    B -- No --> D{Uncle is Red?}
+    D -- Yes --> E[Recolor: parent and uncle Black, grandparent Red]
+    E --> F[Recurse on grandparent]
+    D -- No --> G{Inner child?}
+    G -- Yes --> H[Rotate to make outer child]
+    H --> I[Rotate grandparent + recolor]
+    G -- No --> I
+    I --> J[Done]
+  </div>
+
+  <h3>2.4 Red-Black Insertion Example</h3>
+  <p><strong>Insert sequence:</strong> 10, 20, 30</p>
+  <pre><code>Insert 10: Root, color Black.  Tree: 10(B)
+Insert 20: Red child of 10.   Tree: 10(B) -> right: 20(R).  OK.
+Insert 30: 20(R) -> right: 30(R).  Violation: consecutive reds.
+  Uncle of 30 (left child of 10) is NIL (Black).
+  30 is outer child (RR case) -> Case 3.
+  Left rotate at 10, swap colors: 20 becomes Black, 10 becomes Red.
+  Tree: 20(B) -> left: 10(R), right: 30(R)</code></pre>
+
+  <h3>2.5 Red-Black Deletion</h3>
+  <p>Deletion is more complex. The key idea: if a Black node is removed, the Black-height property is violated. Fix by:</p>
+  <ul>
+    <li>If the sibling is Red: rotate and recolor to convert to a Black sibling case.</li>
+    <li>If sibling is Black with two Black children: recolor sibling Red, propagate up.</li>
+    <li>If sibling is Black with at least one Red child: rotate and recolor to fix.</li>
+  </ul>
+
+  <h2>3. Comparison: AVL vs Red-Black vs BST</h2>
+  <table>
+    <tr><th>Property</th><th>BST (unbalanced)</th><th>AVL Tree</th><th>Red-Black Tree</th></tr>
+    <tr><td>Search (worst)</td><td>O(n)</td><td>O(log n)</td><td>O(log n)</td></tr>
+    <tr><td>Insert (worst)</td><td>O(n)</td><td>O(log n)</td><td>O(log n)</td></tr>
+    <tr><td>Delete (worst)</td><td>O(n)</td><td>O(log n)</td><td>O(log n)</td></tr>
+    <tr><td>Max height (n nodes)</td><td>n - 1</td><td>~1.44 log n</td><td>~2 log n</td></tr>
+    <tr><td>Rotations on insert</td><td>0</td><td>At most 2</td><td>At most 2</td></tr>
+    <tr><td>Rotations on delete</td><td>0</td><td>Up to O(log n)</td><td>At most 3</td></tr>
+    <tr><td>Balance strictness</td><td>None</td><td>Strict (|BF| &le; 1)</td><td>Relaxed (color rules)</td></tr>
+    <tr><td>Search speed</td><td>Depends</td><td>Faster (shorter height)</td><td>Slightly slower</td></tr>
+    <tr><td>Insert/Delete speed</td><td>Depends</td><td>Slower (more rotations possible)</td><td>Faster (fewer rotations)</td></tr>
+    <tr><td>Use case</td><td>Simple, small data</td><td>Search-heavy workloads</td><td>Insert/delete-heavy (e.g., Linux kernel, Java TreeMap)</td></tr>
+  </table>
+
+  <div class="note"><strong>GATE Tip:</strong> Questions often ask for minimum/maximum number of nodes for a given height in AVL trees, or ask you to identify if a tree satisfies Red-Black properties. Practice both types.</div>
+
+  <h2>4. Key Formulas to Remember</h2>
+  <table>
+    <tr><th>Formula</th><th>Value</th></tr>
+    <tr><td>Max nodes in AVL of height h</td><td>2^(h+1) - 1 (same as complete binary tree)</td></tr>
+    <tr><td>Min nodes in AVL of height h</td><td>N(h) = N(h-1) + N(h-2) + 1</td></tr>
+    <tr><td>Max height of AVL with n nodes</td><td>~1.44 * log2(n)</td></tr>
+    <tr><td>Max height of RB tree with n nodes</td><td>2 * log2(n + 1)</td></tr>
+    <tr><td>Black-height of RB tree</td><td>&ge; h/2 (h = total height)</td></tr>
+  </table>
+
+  <div class="important"><strong>Common GATE Question Types:</strong> (1) Insert sequence into AVL, show final tree. (2) Which of these is a valid Red-Black tree? (3) What is the minimum number of nodes in an AVL tree of height 5? (Answer: 20)</div>
+
+</article>
+</body>
+</html>

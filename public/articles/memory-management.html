@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Management and Virtual Memory | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Memory Management and Virtual Memory</h1>
+  <p class="article-section-tag">&#9881;&#65039; Section 8: Operating System</p>
+
+  <!-- ===================== CONTIGUOUS ALLOCATION ===================== -->
+  <h2>1. Contiguous Memory Allocation</h2>
+  <p>In contiguous allocation, each process occupies a single contiguous block of memory.</p>
+
+  <h3>1.1 Fixed Partitioning</h3>
+  <p>Memory is divided into fixed-size partitions at boot time. Each partition holds exactly one process.</p>
+  <table>
+    <tr><th>Aspect</th><th>Detail</th></tr>
+    <tr><td>Internal Fragmentation</td><td>Yes &mdash; process smaller than partition wastes space within the partition</td></tr>
+    <tr><td>External Fragmentation</td><td>No (partitions are fixed)</td></tr>
+    <tr><td>Degree of Multiprogramming</td><td>Limited by number of partitions</td></tr>
+  </table>
+
+  <h3>1.2 Variable Partitioning</h3>
+  <p>Partitions are created dynamically to fit each process exactly. No internal fragmentation but external fragmentation accumulates over time.</p>
+
+  <h3>1.3 Placement Strategies</h3>
+  <table>
+    <tr><th>Strategy</th><th>Description</th><th>Speed</th><th>Fragmentation</th></tr>
+    <tr><td><strong>First Fit</strong></td><td>Allocate the first hole that is big enough</td><td>Fast</td><td>Moderate</td></tr>
+    <tr><td><strong>Best Fit</strong></td><td>Allocate the smallest hole that is big enough</td><td>Slow (search all)</td><td>Leaves tiny unusable holes</td></tr>
+    <tr><td><strong>Worst Fit</strong></td><td>Allocate the largest hole</td><td>Slow</td><td>Leaves large remainder (may be useful)</td></tr>
+    <tr><td><strong>Next Fit</strong></td><td>Like First Fit but starts from last allocation point</td><td>Fast</td><td>Similar to First Fit</td></tr>
+  </table>
+  <p><strong>Compaction</strong> can reduce external fragmentation by moving processes to create a single large free block, but it is expensive and requires relocation capability.</p>
+
+  <!-- ===================== PAGING ===================== -->
+  <h2>2. Paging</h2>
+  <p>Paging eliminates external fragmentation by dividing physical memory into fixed-size <strong>frames</strong> and logical memory into same-size <strong>pages</strong>. A <strong>page table</strong> maps pages to frames.</p>
+
+  <h3>2.1 Address Translation</h3>
+  <div class="mermaid">
+    flowchart LR
+      LA["Logical Address\n(page number | offset)"] --> PT["Page Table"]
+      PT --> PA["Physical Address\n(frame number | offset)"]
+      LA -->|"page number p"| PT
+      PT -->|"frame number f"| PA
+      subgraph Translation
+        direction TB
+        A["p = logical_addr / page_size"]
+        B["d = logical_addr % page_size"]
+        C["physical_addr = f * page_size + d"]
+      end
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> Logical address space = 16 bytes, page size = 4 bytes, physical memory = 32 bytes.
+    <ul>
+      <li>Number of pages = 16 / 4 = 4 (need 2 bits for page number)</li>
+      <li>Number of frames = 32 / 4 = 8 (need 3 bits for frame number)</li>
+      <li>Offset = log<sub>2</sub>(4) = 2 bits</li>
+      <li>Logical address size = 2 + 2 = 4 bits; Physical address size = 3 + 2 = 5 bits</li>
+    </ul>
+    <p>If page table: {0&rarr;5, 1&rarr;6, 2&rarr;1, 3&rarr;2}, then logical address 6 (page 1, offset 2) maps to physical address 6*4+2... no: frame 6, offset 2 = 6&times;4 + 2 = 26.</p>
+  </div>
+
+  <h3>2.2 Page Table Structure</h3>
+  <table>
+    <tr><th>Field</th><th>Purpose</th></tr>
+    <tr><td>Frame Number</td><td>Physical frame the page maps to</td></tr>
+    <tr><td>Valid/Invalid Bit</td><td>Whether the page is in physical memory</td></tr>
+    <tr><td>Protection Bits</td><td>Read, write, execute permissions</td></tr>
+    <tr><td>Reference Bit</td><td>Set when page is accessed (used by replacement algorithms)</td></tr>
+    <tr><td>Dirty (Modified) Bit</td><td>Set when page is written to (determines if write-back needed)</td></tr>
+  </table>
+
+  <h3>2.3 Translation Lookaside Buffer (TLB)</h3>
+  <p>The TLB is a fast associative cache for page table entries. It dramatically reduces address translation time.</p>
+  <table>
+    <tr><th>Scenario</th><th>Memory Accesses</th></tr>
+    <tr><td>TLB Hit</td><td>1 (direct frame lookup from TLB + actual memory access)</td></tr>
+    <tr><td>TLB Miss (single-level page table)</td><td>2 (page table access + actual memory access)</td></tr>
+    <tr><td>TLB Miss (two-level page table)</td><td>3 (outer + inner page table + actual access)</td></tr>
+  </table>
+  <p><strong>Effective Access Time (EAT):</strong> EAT = h &times; (t + m) + (1 &minus; h) &times; (t + n &times; m + m), where h = TLB hit ratio, t = TLB access time, m = memory access time, n = page table levels.</p>
+
+  <h3>2.4 Multi-Level Page Tables</h3>
+  <p>For large address spaces, a single page table is too large. Solution: break the page table into multiple levels (hierarchical paging). A 32-bit address with 4KB pages and 4-byte entries needs a two-level table. A 64-bit system may need 4+ levels.</p>
+
+  <!-- ===================== SEGMENTATION ===================== -->
+  <h2>3. Segmentation</h2>
+  <p>Segmentation divides the logical address space into variable-length segments based on logical units (code, stack, data, heap). A logical address is a pair: (segment number, offset).</p>
+  <table>
+    <tr><th>Feature</th><th>Paging</th><th>Segmentation</th></tr>
+    <tr><td>Unit Size</td><td>Fixed (page)</td><td>Variable (segment)</td></tr>
+    <tr><td>User Visible?</td><td>No (transparent)</td><td>Yes (logical view)</td></tr>
+    <tr><td>Internal Fragmentation</td><td>Yes (last page)</td><td>No</td></tr>
+    <tr><td>External Fragmentation</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Address</td><td>(page, offset)</td><td>(segment, offset)</td></tr>
+  </table>
+
+  <!-- ===================== VIRTUAL MEMORY ===================== -->
+  <h2>4. Virtual Memory</h2>
+  <p>Virtual memory allows a process's logical address space to be larger than physical memory. Only needed pages are loaded into memory; the rest reside on disk.</p>
+
+  <h3>4.1 Demand Paging</h3>
+  <p>Pages are loaded into memory only when referenced (lazy loading). If the referenced page is not in memory, a <strong>page fault</strong> occurs.</p>
+
+  <h3>4.2 Page Fault Handling Flow</h3>
+  <div class="mermaid">
+    flowchart TD
+      A["CPU generates\nlogical address"] --> B{"Page in\nmemory?"}
+      B -->|"Yes (valid bit=1)"| C["Access frame\nin memory"]
+      B -->|"No (valid bit=0)"| D["Page Fault\n(trap to OS)"]
+      D --> E{"Free frame\navailable?"}
+      E -->|"Yes"| F["Load page from\ndisk to frame"]
+      E -->|"No"| G["Run page\nreplacement algorithm"]
+      G --> H["Write victim page\nto disk (if dirty)"]
+      H --> F
+      F --> I["Update page table\n(set valid bit)"]
+      I --> J["Restart\ninstruction"]
+  </div>
+
+  <p><strong>Effective Access Time with Page Faults:</strong> EAT = (1 &minus; p) &times; ma + p &times; page_fault_time, where p = page fault rate, ma = memory access time. Page fault time includes disk I/O (typically 8-10 ms).</p>
+
+  <!-- ===================== PAGE REPLACEMENT ===================== -->
+  <h2>5. Page Replacement Algorithms</h2>
+
+  <table>
+    <tr><th>Algorithm</th><th>Description</th><th>Optimal?</th><th>Implementable?</th></tr>
+    <tr><td><strong>FIFO</strong></td><td>Replace the oldest page (first loaded)</td><td>No</td><td>Yes, simple</td></tr>
+    <tr><td><strong>Optimal (OPT)</strong></td><td>Replace page not used for longest time in future</td><td>Yes</td><td>No (requires future knowledge)</td></tr>
+    <tr><td><strong>LRU</strong></td><td>Replace the least recently used page</td><td>Near-optimal</td><td>Yes, but expensive (counter/stack)</td></tr>
+    <tr><td><strong>Clock (Second Chance)</strong></td><td>FIFO with reference bit; skip pages with bit=1 (reset to 0)</td><td>No</td><td>Yes, practical approximation of LRU</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Example:</strong> Reference string: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1. Frames = 3.
+    <table>
+      <tr><th>Algorithm</th><th>Page Faults</th></tr>
+      <tr><td>FIFO</td><td>15</td></tr>
+      <tr><td>Optimal</td><td>9</td></tr>
+      <tr><td>LRU</td><td>12</td></tr>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>Belady's Anomaly:</strong> With FIFO, increasing the number of frames can sometimes <em>increase</em> page faults. This does NOT occur with LRU or Optimal (they are stack algorithms).
+  </div>
+
+  <h3>5.1 Clock Algorithm Detail</h3>
+  <p>Pages are arranged in a circular buffer with a clock hand pointer. On a page fault:</p>
+  <ol>
+    <li>Check the page at the clock hand.</li>
+    <li>If reference bit = 0, replace this page.</li>
+    <li>If reference bit = 1, set it to 0, advance the hand, and repeat.</li>
+  </ol>
+
+  <!-- ===================== THRASHING ===================== -->
+  <h2>6. Thrashing</h2>
+  <p><strong>Thrashing</strong> occurs when a process spends more time paging (swapping pages in and out) than executing. This happens when the process does not have enough frames to hold its working set of pages.</p>
+
+  <table>
+    <tr><th>Concept</th><th>Description</th></tr>
+    <tr><td><strong>Working Set</strong></td><td>The set of pages a process is actively using within a time window &Delta;</td></tr>
+    <tr><td><strong>Working Set Model</strong></td><td>Allocate enough frames to cover the working set; if total demand exceeds available frames, suspend a process</td></tr>
+    <tr><td><strong>Page Fault Frequency (PFF)</strong></td><td>If page fault rate is too high, allocate more frames; if too low, reduce frames. Establishes upper and lower bounds.</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Thrashing indicator:</strong> CPU utilization drops sharply while disk activity spikes. The degree of multiprogramming is too high relative to available memory.
+  </div>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>7. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>Number of pages = logical address space / page size. Number of frames = physical memory / frame size.</li>
+      <li>Page table size = number of pages &times; page table entry size.</li>
+      <li>In a two-level page table, the page number is split into two parts for the outer and inner tables.</li>
+      <li>TLB hit ratio is critical: EAT = h(t+m) + (1-h)(t+2m) for single-level page table.</li>
+      <li>Optimal page replacement gives the minimum page faults (theoretical lower bound).</li>
+      <li>Belady's anomaly applies to FIFO but NOT to LRU or Optimal (stack algorithms).</li>
+      <li>Internal fragmentation occurs in paging (last page); external fragmentation occurs in segmentation and variable partitioning.</li>
+      <li>Thrashing is solved by the working set model or page fault frequency approach.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Memory Management Quiz",
+      "questions": [
+        {
+          "question": "A system has a 32-bit virtual address space with 4 KB page size. Each page table entry is 4 bytes. What is the size of the page table for a single process?",
+          "options": ["4 MB", "2 MB", "8 MB", "1 MB"],
+          "answer": 0,
+          "explanation": "Number of pages = 2^32 / 2^12 = 2^20 pages. Page table size = 2^20 * 4 bytes = 4 * 2^20 = 4 MB. This is why multi-level page tables are needed for large address spaces."
+        },
+        {
+          "question": "Given a reference string 1,2,3,4,1,2,5,1,2,3,4,5 with 3 frames using FIFO, how many page faults occur?",
+          "options": ["9", "10", "8", "7"],
+          "answer": 0,
+          "explanation": "FIFO with 3 frames: 1(F), 2(F), 3(F), 4(F,evict 1), 1(F,evict 2), 2(F,evict 3), 5(F,evict 4), 1(H), 2(H), 3(F,evict 5), 4(F,evict 1), 5(F... wait, let me trace: [1],[1,2],[1,2,3],[2,3,4]F,[3,4,1]F,[4,1,2]F,[1,2,5]F,[1,2,5]H,[1,2,5]H,[2,5,3]F,[5,3,4]F,[3,4,5]F. Total faults = 4+3+2 = 9."
+        },
+        {
+          "question": "A TLB has a hit ratio of 90%. Memory access time is 100 ns and TLB access time is 10 ns. With a single-level page table, what is the effective memory access time?",
+          "options": ["120 ns", "130 ns", "110 ns", "140 ns"],
+          "answer": 0,
+          "explanation": "EAT = hit_ratio * (TLB_time + mem_access) + (1-hit_ratio) * (TLB_time + page_table_access + mem_access) = 0.9*(10+100) + 0.1*(10+100+100) = 0.9*110 + 0.1*210 = 99 + 21 = 120 ns."
+        },
+        {
+          "question": "Which page replacement algorithm can suffer from Belady's anomaly?",
+          "options": ["LRU", "Optimal", "FIFO", "LRU and FIFO both"],
+          "answer": 2,
+          "explanation": "Belady's anomaly (more frames can lead to more page faults) can occur with FIFO. LRU and Optimal are stack algorithms and are immune to Belady's anomaly. The classic example uses the reference string 1,2,3,4,1,2,5,1,2,3,4,5."
+        },
+        {
+          "question": "In a system using demand paging, the page fault rate is 0.001. Memory access time is 200 ns and page fault service time is 8 ms. What is the effective access time?",
+          "options": ["8.2 microseconds", "8200.2 ns", "8199.8 ns", "200.008 ns"],
+          "answer": 0,
+          "explanation": "EAT = (1-p)*ma + p*page_fault_time = (1-0.001)*200 + 0.001*8,000,000 = 0.999*200 + 8000 = 199.8 + 8000 = 8199.8 ns = approximately 8.2 microseconds. Even a tiny page fault rate drastically increases EAT."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

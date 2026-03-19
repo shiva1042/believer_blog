@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Revision: Engineering Mathematics — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Quick Revision: Engineering Mathematics</h1>
+  <p class="article-section-tag">📝 Quick Revision</p>
+
+  <h2>1. Propositional Logic</h2>
+  <ul>
+    <li>Tautology: always true. Contradiction: always false. Contingency: neither.</li>
+    <li>p &rarr; q &equiv; &not;p &or; q &equiv; &not;q &rarr; &not;p (contrapositive)</li>
+    <li>De Morgan: &not;(p &and; q) = &not;p &or; &not;q; &not;(p &or; q) = &not;p &and; &not;q</li>
+    <li>Modus Ponens: p, p&rarr;q, therefore q</li>
+    <li>Modus Tollens: &not;q, p&rarr;q, therefore &not;p</li>
+  </ul>
+  <div class="note"><strong>Remember:</strong> p &rarr; q is FALSE only when p is TRUE and q is FALSE.</div>
+
+  <h2>2. Sets, Relations, Functions</h2>
+  <ul>
+    <li>|P(A)| = 2^|A|. Number of relations on A = 2^(|A|^2).</li>
+    <li>Reflexive: (a,a) for all a. Symmetric: (a,b) implies (b,a). Transitive: (a,b) and (b,c) implies (a,c).</li>
+    <li>Equivalence relation = reflexive + symmetric + transitive. Partitions the set.</li>
+    <li>Partial order = reflexive + antisymmetric + transitive.</li>
+    <li>Total functions from A to B: |B|^|A|. Injections: P(|B|, |A|). Surjections: use inclusion-exclusion.</li>
+  </ul>
+  <table>
+    <tr><th>Function Type</th><th>Count (|A|=m, |B|=n)</th></tr>
+    <tr><td>Total functions</td><td>n^m</td></tr>
+    <tr><td>Injective (one-to-one)</td><td>P(n,m) = n!/(n-m)!, requires m &le; n</td></tr>
+    <tr><td>Surjective (onto)</td><td>&Sigma;(-1)^k C(n,k)(n-k)^m, requires m &ge; n</td></tr>
+    <tr><td>Bijective</td><td>n! (requires m = n)</td></tr>
+  </table>
+
+  <h2>3. Combinatorics</h2>
+  <table>
+    <tr><th>Formula</th><th>Expression</th></tr>
+    <tr><td>P(n,r)</td><td>n!/(n-r)!</td></tr>
+    <tr><td>C(n,r)</td><td>n!/[r!(n-r)!]</td></tr>
+    <tr><td>Stars and Bars</td><td>C(n+r-1, r) non-negative solutions to x1+...+xn = r</td></tr>
+    <tr><td>Derangements D(n)</td><td>n![1 - 1/1! + 1/2! - ... + (-1)^n/n!]</td></tr>
+    <tr><td>Catalan C_n</td><td>C(2n,n)/(n+1)</td></tr>
+    <tr><td>Inclusion-Exclusion</td><td>|A&cup;B&cup;C| = |A|+|B|+|C| - |A&cap;B| - |B&cap;C| - |A&cap;C| + |A&cap;B&cap;C|</td></tr>
+  </table>
+
+  <h2>4. Graph Theory</h2>
+  <ul>
+    <li>Handshaking: &Sigma;deg(v) = 2|E|</li>
+    <li>Tree: connected + |E| = |V| - 1</li>
+    <li>Euler circuit: connected + all even degrees. Euler path: exactly 2 odd-degree vertices.</li>
+    <li>Planar: E &le; 3V - 6. Bipartite planar: E &le; 2V - 4. Euler: V - E + F = 2.</li>
+    <li>Chromatic number: K_n needs n colors. Bipartite (no odd cycle) needs 2.</li>
+    <li>Spanning trees of K_n: n^(n-2)</li>
+  </ul>
+
+  <h2>5. Linear Algebra</h2>
+  <table>
+    <tr><th>Concept</th><th>Key Formula</th></tr>
+    <tr><td>det(AB)</td><td>det(A) * det(B)</td></tr>
+    <tr><td>det(kA) for n x n</td><td>k^n * det(A)</td></tr>
+    <tr><td>Rank-Nullity</td><td>Rank(A) + Nullity(A) = n (columns)</td></tr>
+    <tr><td>Eigenvalue of A^k</td><td>&lambda;^k</td></tr>
+    <tr><td>Eigenvalue of A^(-1)</td><td>1/&lambda;</td></tr>
+    <tr><td>trace(A)</td><td>&Sigma; eigenvalues = &Sigma; a_ii</td></tr>
+    <tr><td>det(A)</td><td>Product of eigenvalues</td></tr>
+    <tr><td>Consistent system Ax=b</td><td>rank(A) = rank(A|b)</td></tr>
+  </table>
+  <div class="note"><strong>Remember:</strong> Singular matrix &hArr; det = 0 &hArr; not invertible &hArr; 0 is an eigenvalue.</div>
+
+  <h2>6. Calculus</h2>
+  <ul>
+    <li>Rolle's theorem: f(a) = f(b), f continuous on [a,b], differentiable on (a,b) &rArr; exists c where f'(c) = 0.</li>
+    <li>Mean Value Theorem: f'(c) = [f(b)-f(a)]/(b-a).</li>
+    <li>Maxima/minima: f'(x)=0, f''(x)&gt;0 is minimum, f''(x)&lt;0 is maximum.</li>
+    <li>Integration: area under curve. Fundamental theorem: integral of f'(x) = f(b) - f(a).</li>
+  </ul>
+
+  <h2>7. Probability &amp; Statistics</h2>
+  <table>
+    <tr><th>Distribution</th><th>Mean</th><th>Variance</th></tr>
+    <tr><td>Binomial(n,p)</td><td>np</td><td>np(1-p)</td></tr>
+    <tr><td>Poisson(&lambda;)</td><td>&lambda;</td><td>&lambda;</td></tr>
+    <tr><td>Geometric(p)</td><td>1/p</td><td>(1-p)/p^2</td></tr>
+    <tr><td>Uniform(a,b)</td><td>(a+b)/2</td><td>(b-a)^2/12</td></tr>
+    <tr><td>Exponential(&lambda;)</td><td>1/&lambda;</td><td>1/&lambda;^2</td></tr>
+    <tr><td>Normal(&mu;,&sigma;^2)</td><td>&mu;</td><td>&sigma;^2</td></tr>
+  </table>
+  <ul>
+    <li>Bayes: P(A|B) = P(B|A)*P(A) / P(B)</li>
+    <li>Var(X) = E[X^2] - (E[X])^2</li>
+    <li>Independent: P(A&cap;B) = P(A)*P(B). Mutually exclusive: P(A&cap;B) = 0.</li>
+  </ul>
+
+  <h2>8. Number Theory</h2>
+  <ul>
+    <li>GCD via Euclidean: GCD(a,b) = GCD(b, a mod b). GCD * LCM = a * b.</li>
+    <li>&phi;(n) = n * &prod;(1 - 1/p) for each prime factor p of n.</li>
+    <li>Euler's theorem: a^&phi;(n) &equiv; 1 (mod n) when GCD(a,n) = 1.</li>
+    <li>Fermat's little: a^(p-1) &equiv; 1 (mod p) for prime p, GCD(a,p) = 1.</li>
+    <li>CRT: system of congruences with coprime moduli has unique solution mod product.</li>
+  </ul>
+
+  <div class="important"><strong>High-Yield Areas:</strong> Probability (Bayes, distributions), Graph Theory (Euler's formula, trees), and Relations (equivalence, partial orders) appear almost every year.</div>
+
+</article>
+</body>
+</html>

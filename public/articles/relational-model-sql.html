@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relational Model and SQL | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Relational Model and SQL</h1>
+  <p class="article-section-tag">&#128451;&#65039; Section 9: Databases</p>
+
+  <!-- ===================== RELATIONAL ALGEBRA ===================== -->
+  <h2>1. Relational Algebra</h2>
+  <p>Relational algebra is a procedural query language that operates on relations (tables) and produces relations as output. It forms the theoretical foundation of SQL.</p>
+
+  <h3>1.1 Fundamental Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Symbol</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>Select</strong></td><td>&sigma;</td><td>Selects rows satisfying a predicate</td><td>&sigma;<sub>age&gt;20</sub>(Student)</td></tr>
+    <tr><td><strong>Project</strong></td><td>&pi;</td><td>Selects specific columns (removes duplicates)</td><td>&pi;<sub>name, dept</sub>(Student)</td></tr>
+    <tr><td><strong>Union</strong></td><td>&cup;</td><td>All tuples in R or S (must be union-compatible)</td><td>R &cup; S</td></tr>
+    <tr><td><strong>Set Difference</strong></td><td>&minus;</td><td>Tuples in R but not in S</td><td>R &minus; S</td></tr>
+    <tr><td><strong>Cartesian Product</strong></td><td>&times;</td><td>Combines every tuple of R with every tuple of S</td><td>R &times; S</td></tr>
+    <tr><td><strong>Rename</strong></td><td>&rho;</td><td>Renames a relation or its attributes</td><td>&rho;<sub>T(A,B)</sub>(R)</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Union Compatibility:</strong> For &cup;, &cap;, and &minus;, both relations must have the same number of attributes and corresponding attributes must have compatible domains.
+  </div>
+
+  <h3>1.2 Derived Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Symbol</th><th>Definition</th><th>Description</th></tr>
+    <tr><td><strong>Intersection</strong></td><td>&cap;</td><td>R &minus; (R &minus; S)</td><td>Tuples in both R and S</td></tr>
+    <tr><td><strong>Natural Join</strong></td><td>&#10781;</td><td>&pi;(common attributes)(&sigma;<sub>R.A=S.A</sub>(R &times; S))</td><td>Join on all common attribute names; remove duplicate columns</td></tr>
+    <tr><td><strong>Theta Join</strong></td><td>&#10781;<sub>&theta;</sub></td><td>&sigma;<sub>&theta;</sub>(R &times; S)</td><td>Join on any condition &theta;</td></tr>
+    <tr><td><strong>Equi Join</strong></td><td>&#10781;<sub>=</sub></td><td>&sigma;<sub>R.A=S.B</sub>(R &times; S)</td><td>Join on equality condition; keeps both columns</td></tr>
+    <tr><td><strong>Left Outer Join</strong></td><td>&#10197;</td><td>R &#10197; S</td><td>All tuples from R; unmatched S attributes filled with NULL</td></tr>
+    <tr><td><strong>Right Outer Join</strong></td><td>&#10198;</td><td>R &#10198; S</td><td>All tuples from S; unmatched R attributes filled with NULL</td></tr>
+    <tr><td><strong>Full Outer Join</strong></td><td>&#10197;&#10198;</td><td>R &#10197;&#10198; S</td><td>All tuples from both R and S with NULLs for non-matches</td></tr>
+    <tr><td><strong>Division</strong></td><td>&divide;</td><td>R &divide; S</td><td>Tuples in R associated with every tuple in S</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Division Example:</strong> "Find students enrolled in ALL courses."<br/>
+    If Enrollment(StudentID, CourseID) and Course(CourseID), then Enrollment &divide; Course gives students enrolled in every course.
+  </div>
+
+  <h3>1.3 Cardinality and Degree Rules</h3>
+  <table>
+    <tr><th>Operation</th><th>Max Tuples (Cardinality)</th><th>Degree (Columns)</th></tr>
+    <tr><td>&sigma;(R)</td><td>|R|</td><td>degree(R)</td></tr>
+    <tr><td>&pi;(R)</td><td>|R|</td><td>number of projected attributes</td></tr>
+    <tr><td>R &cup; S</td><td>|R| + |S|</td><td>degree(R) = degree(S)</td></tr>
+    <tr><td>R &cap; S</td><td>min(|R|, |S|)</td><td>degree(R)</td></tr>
+    <tr><td>R &minus; S</td><td>|R|</td><td>degree(R)</td></tr>
+    <tr><td>R &times; S</td><td>|R| &times; |S|</td><td>degree(R) + degree(S)</td></tr>
+    <tr><td>R &#10781; S (natural)</td><td>|R| &times; |S|</td><td>degree(R) + degree(S) &minus; common attributes</td></tr>
+  </table>
+
+  <!-- ===================== TUPLE RELATIONAL CALCULUS ===================== -->
+  <h2>2. Tuple Relational Calculus (TRC)</h2>
+  <p>TRC is a non-procedural (declarative) query language. Queries are of the form: <code>{ t | P(t) }</code> meaning "the set of all tuples t such that predicate P(t) is true."</p>
+
+  <div class="example">
+    <strong>Example:</strong> Find all students with age &gt; 20:<br/>
+    <code>{ t | Student(t) &and; t.age &gt; 20 }</code>
+    <br/><br/>
+    <strong>Example:</strong> Find names of students in the CS department:<br/>
+    <code>{ t.name | Student(t) &and; t.dept = 'CS' }</code>
+  </div>
+
+  <div class="note">
+    <strong>Expressive Power:</strong> Relational algebra, safe tuple relational calculus, and safe domain relational calculus are all equivalent in expressive power (Codd's theorem).
+  </div>
+
+  <!-- ===================== SQL ===================== -->
+  <h2>3. SQL Overview</h2>
+  <p>SQL (Structured Query Language) is based on relational algebra and tuple relational calculus. It is divided into sublanguages:</p>
+
+  <table>
+    <tr><th>Sublanguage</th><th>Commands</th><th>Purpose</th></tr>
+    <tr><td><strong>DDL</strong> (Data Definition)</td><td>CREATE, ALTER, DROP, TRUNCATE</td><td>Define/modify schema and structure</td></tr>
+    <tr><td><strong>DML</strong> (Data Manipulation)</td><td>SELECT, INSERT, UPDATE, DELETE</td><td>Query and modify data</td></tr>
+    <tr><td><strong>DCL</strong> (Data Control)</td><td>GRANT, REVOKE</td><td>Control access and permissions</td></tr>
+    <tr><td><strong>TCL</strong> (Transaction Control)</td><td>COMMIT, ROLLBACK, SAVEPOINT</td><td>Manage transactions</td></tr>
+  </table>
+
+  <!-- ===================== SQL QUERIES ===================== -->
+  <h2>4. SQL Queries in Detail</h2>
+
+  <h3>4.1 Basic SELECT</h3>
+  <pre><code>SELECT column1, column2
+FROM table_name
+WHERE condition
+ORDER BY column1 ASC|DESC;</code></pre>
+
+  <h3>4.2 JOIN Operations</h3>
+  <table>
+    <tr><th>SQL Join</th><th>Relational Algebra Equivalent</th><th>Description</th></tr>
+    <tr><td><code>INNER JOIN</code></td><td>Theta/Equi Join</td><td>Returns matching rows from both tables</td></tr>
+    <tr><td><code>NATURAL JOIN</code></td><td>Natural Join (&#10781;)</td><td>Joins on all common column names automatically</td></tr>
+    <tr><td><code>LEFT OUTER JOIN</code></td><td>Left Outer Join (&#10197;)</td><td>All rows from left; NULLs for unmatched right</td></tr>
+    <tr><td><code>RIGHT OUTER JOIN</code></td><td>Right Outer Join (&#10198;)</td><td>All rows from right; NULLs for unmatched left</td></tr>
+    <tr><td><code>FULL OUTER JOIN</code></td><td>Full Outer Join</td><td>All rows from both; NULLs for non-matches</td></tr>
+    <tr><td><code>CROSS JOIN</code></td><td>Cartesian Product (&times;)</td><td>Every row of left combined with every row of right</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Join Example:</strong>
+    <pre><code>-- Find student names and their enrolled course titles
+SELECT S.Name, C.Title
+FROM Student S
+INNER JOIN Enrollment E ON S.StudentID = E.StudentID
+INNER JOIN Course C ON E.CourseID = C.CourseID
+WHERE C.Credits >= 3;</code></pre>
+  </div>
+
+  <h3>4.3 Aggregate Functions and GROUP BY</h3>
+  <pre><code>SELECT dept, COUNT(*) AS num_students, AVG(gpa) AS avg_gpa
+FROM Student
+GROUP BY dept
+HAVING COUNT(*) > 10
+ORDER BY avg_gpa DESC;</code></pre>
+
+  <table>
+    <tr><th>Function</th><th>Description</th><th>Ignores NULL?</th></tr>
+    <tr><td><code>COUNT(*)</code></td><td>Count all rows (including NULLs)</td><td>No</td></tr>
+    <tr><td><code>COUNT(col)</code></td><td>Count non-NULL values in column</td><td>Yes</td></tr>
+    <tr><td><code>SUM(col)</code></td><td>Sum of non-NULL values</td><td>Yes</td></tr>
+    <tr><td><code>AVG(col)</code></td><td>Average of non-NULL values</td><td>Yes</td></tr>
+    <tr><td><code>MAX(col)</code></td><td>Maximum value</td><td>Yes</td></tr>
+    <tr><td><code>MIN(col)</code></td><td>Minimum value</td><td>Yes</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Execution Order:</strong> FROM &rarr; WHERE &rarr; GROUP BY &rarr; HAVING &rarr; SELECT &rarr; ORDER BY. The WHERE clause filters rows before grouping; HAVING filters groups after aggregation.
+  </div>
+
+  <h3>4.4 Subqueries</h3>
+  <pre><code>-- Correlated subquery: students with GPA above their department average
+SELECT S.Name, S.GPA
+FROM Student S
+WHERE S.GPA > (
+    SELECT AVG(S2.GPA)
+    FROM Student S2
+    WHERE S2.Dept = S.Dept
+);
+
+-- EXISTS subquery: departments that have at least one student
+SELECT D.DeptName
+FROM Department D
+WHERE EXISTS (
+    SELECT 1 FROM Student S WHERE S.Dept = D.DeptID
+);
+
+-- IN subquery: students enrolled in 'Database Systems'
+SELECT Name FROM Student
+WHERE StudentID IN (
+    SELECT StudentID FROM Enrollment
+    WHERE CourseID = (SELECT CourseID FROM Course WHERE Title = 'Database Systems')
+);</code></pre>
+
+  <h3>4.5 Set Operations in SQL</h3>
+  <table>
+    <tr><th>SQL Operator</th><th>RA Equivalent</th><th>Duplicates?</th></tr>
+    <tr><td><code>UNION</code></td><td>&cup;</td><td>Removed</td></tr>
+    <tr><td><code>UNION ALL</code></td><td>&mdash;</td><td>Kept</td></tr>
+    <tr><td><code>INTERSECT</code></td><td>&cap;</td><td>Removed</td></tr>
+    <tr><td><code>EXCEPT</code> (or <code>MINUS</code>)</td><td>&minus;</td><td>Removed</td></tr>
+  </table>
+
+  <!-- ===================== VIEWS ===================== -->
+  <h2>5. Views and Assertions</h2>
+
+  <h3>5.1 Views</h3>
+  <p>A <strong>view</strong> is a virtual table defined by a query. It does not store data physically but is computed each time it is referenced.</p>
+  <pre><code>CREATE VIEW CS_Students AS
+SELECT StudentID, Name, GPA
+FROM Student
+WHERE Dept = 'CS';
+
+-- Query the view like a table
+SELECT * FROM CS_Students WHERE GPA > 3.5;</code></pre>
+
+  <table>
+    <tr><th>View Property</th><th>Description</th></tr>
+    <tr><td>Updatable view</td><td>Must be defined on a single table, no aggregates, no GROUP BY, no DISTINCT, includes primary key</td></tr>
+    <tr><td>Materialized view</td><td>Physically stores the result; must be refreshed when base tables change</td></tr>
+  </table>
+
+  <h3>5.2 Assertions</h3>
+  <p>An assertion is a declarative constraint on the database that must always be true. The DBMS checks the assertion whenever relevant data is modified.</p>
+  <pre><code>CREATE ASSERTION salary_check
+CHECK (NOT EXISTS (
+    SELECT * FROM Employee WHERE Salary < 0
+));</code></pre>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>6. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>The five fundamental RA operations: &sigma;, &pi;, &cup;, &minus;, &times;. All others can be derived.</li>
+      <li>Natural join automatically matches on common attribute names and removes duplicate columns.</li>
+      <li>Division (R &divide; S) finds tuples in R associated with ALL tuples in S.</li>
+      <li>&sigma; and &pi; are unary; all others are binary operations.</li>
+      <li>Project (&pi;) eliminates duplicates; SQL SELECT does not (use DISTINCT).</li>
+      <li>NULL comparisons: any comparison with NULL yields UNKNOWN. Use IS NULL / IS NOT NULL.</li>
+      <li>COUNT(*) counts all rows; COUNT(column) counts non-NULL values.</li>
+      <li>WHERE filters before grouping; HAVING filters after grouping.</li>
+      <li>A correlated subquery is re-evaluated for each row of the outer query.</li>
+      <li>Maximum tuples in R &#10781; S (natural join) = |R| &times; |S|; minimum = 0.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Normalization and Integrity Constraints | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Normalization and Integrity Constraints</h1>
+  <p class="article-section-tag">&#128451;&#65039; Section 9: Databases</p>
+
+  <!-- ===================== INTEGRITY CONSTRAINTS ===================== -->
+  <h2>1. Integrity Constraints</h2>
+  <p>Integrity constraints are rules that ensure the accuracy and consistency of data in a relational database.</p>
+
+  <table>
+    <tr><th>Constraint</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>Domain Constraint</strong></td><td>Restricts attribute values to a defined domain (data type, range)</td><td>Age must be a positive integer</td></tr>
+    <tr><td><strong>Key Constraint</strong></td><td>A relation must have a key; no two tuples can have the same key value</td><td>StudentID is unique</td></tr>
+    <tr><td><strong>Entity Integrity</strong></td><td>Primary key attributes cannot be NULL</td><td>StudentID cannot be NULL</td></tr>
+    <tr><td><strong>Referential Integrity</strong></td><td>A foreign key value must either match a primary key value in the referenced table or be NULL</td><td>Enrollment.StudentID must exist in Student.StudentID</td></tr>
+    <tr><td><strong>NOT NULL</strong></td><td>Attribute must have a value</td><td>Name NOT NULL</td></tr>
+    <tr><td><strong>CHECK</strong></td><td>Attribute values must satisfy a Boolean condition</td><td>CHECK (GPA BETWEEN 0 AND 4)</td></tr>
+    <tr><td><strong>UNIQUE</strong></td><td>Attribute values must be unique (allows one NULL)</td><td>Email UNIQUE</td></tr>
+  </table>
+
+  <h3>1.1 Referential Integrity Actions</h3>
+  <p>When a referenced tuple is deleted or updated, the following actions can be specified:</p>
+  <table>
+    <tr><th>Action</th><th>Description</th></tr>
+    <tr><td><code>CASCADE</code></td><td>Delete/update all referencing tuples</td></tr>
+    <tr><td><code>SET NULL</code></td><td>Set foreign key to NULL</td></tr>
+    <tr><td><code>SET DEFAULT</code></td><td>Set foreign key to a default value</td></tr>
+    <tr><td><code>RESTRICT / NO ACTION</code></td><td>Reject the deletion/update</td></tr>
+  </table>
+
+  <!-- ===================== FUNCTIONAL DEPENDENCIES ===================== -->
+  <h2>2. Functional Dependencies</h2>
+  <p>A <strong>functional dependency</strong> (FD) X &rarr; Y means that for any two tuples, if they agree on X, they must agree on Y. X is called the <strong>determinant</strong> and Y is the <strong>dependent</strong>.</p>
+
+  <div class="example">
+    <strong>Example:</strong> In Student(StudentID, Name, Dept, DeptHead):
+    <ul>
+      <li>StudentID &rarr; Name, Dept (student determines name and department)</li>
+      <li>Dept &rarr; DeptHead (department determines department head)</li>
+      <li>StudentID &rarr; DeptHead (transitively, student determines department head)</li>
+    </ul>
+  </div>
+
+  <h3>2.1 Types of Functional Dependencies</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th><th>Example</th></tr>
+    <tr><td><strong>Trivial FD</strong></td><td>X &rarr; Y where Y &sube; X</td><td>{A, B} &rarr; A</td></tr>
+    <tr><td><strong>Non-trivial FD</strong></td><td>X &rarr; Y where Y &nsub; X</td><td>StudentID &rarr; Name</td></tr>
+    <tr><td><strong>Full FD</strong></td><td>X &rarr; Y and no proper subset of X determines Y</td><td>{StudentID, CourseID} &rarr; Grade</td></tr>
+    <tr><td><strong>Partial FD</strong></td><td>X &rarr; Y and some proper subset of X determines Y</td><td>{StudentID, CourseID} &rarr; Name (StudentID alone determines Name)</td></tr>
+    <tr><td><strong>Transitive FD</strong></td><td>X &rarr; Z via X &rarr; Y and Y &rarr; Z, where Y is not a superkey</td><td>StudentID &rarr; Dept &rarr; DeptHead</td></tr>
+  </table>
+
+  <h3>2.2 Armstrong's Axioms</h3>
+  <p>Armstrong's axioms are sound and complete inference rules for functional dependencies:</p>
+  <table>
+    <tr><th>Axiom</th><th>Rule</th><th>Description</th></tr>
+    <tr><td><strong>Reflexivity</strong></td><td>If Y &sube; X, then X &rarr; Y</td><td>A set of attributes determines any subset of itself</td></tr>
+    <tr><td><strong>Augmentation</strong></td><td>If X &rarr; Y, then XZ &rarr; YZ</td><td>Adding the same attributes to both sides preserves the FD</td></tr>
+    <tr><td><strong>Transitivity</strong></td><td>If X &rarr; Y and Y &rarr; Z, then X &rarr; Z</td><td>FDs can be chained</td></tr>
+  </table>
+  <p><strong>Derived rules:</strong></p>
+  <table>
+    <tr><th>Rule</th><th>Statement</th></tr>
+    <tr><td>Union</td><td>If X &rarr; Y and X &rarr; Z, then X &rarr; YZ</td></tr>
+    <tr><td>Decomposition</td><td>If X &rarr; YZ, then X &rarr; Y and X &rarr; Z</td></tr>
+    <tr><td>Pseudotransitivity</td><td>If X &rarr; Y and WY &rarr; Z, then WX &rarr; Z</td></tr>
+  </table>
+
+  <h3>2.3 Closure and Candidate Keys</h3>
+  <p>The <strong>attribute closure</strong> X<sup>+</sup> is the set of all attributes functionally determined by X. If X<sup>+</sup> contains all attributes of the relation, X is a superkey. A <strong>candidate key</strong> is a minimal superkey.</p>
+
+  <div class="example">
+    <strong>Example:</strong> R(A, B, C, D), FDs: A &rarr; B, B &rarr; C, A &rarr; D.
+    <ul>
+      <li>A<sup>+</sup> = {A, B, C, D} &mdash; A is a superkey</li>
+      <li>No proper subset of {A} determines everything, so A is a candidate key</li>
+    </ul>
+  </div>
+
+  <!-- ===================== NORMAL FORMS ===================== -->
+  <h2>3. Normal Forms</h2>
+
+  <h3>3.1 Normalization Process Flowchart</h3>
+  <div class="mermaid">
+    flowchart TD
+      A["Unnormalized Relation"] --> B{"All attributes\natomic?"}
+      B -->|"No"| B1["Remove multivalued\nand composite attributes"]
+      B1 --> C["1NF"]
+      B -->|"Yes"| C["1NF"]
+      C --> D{"Any partial\ndependencies?"}
+      D -->|"Yes"| D1["Remove partial\ndependencies"]
+      D1 --> E["2NF"]
+      D -->|"No"| E["2NF"]
+      E --> F{"Any transitive\ndependencies?"}
+      F -->|"Yes"| F1["Remove transitive\ndependencies"]
+      F1 --> G["3NF"]
+      F -->|"No"| G["3NF"]
+      G --> H{"Every determinant\na superkey?"}
+      H -->|"No"| H1["Decompose so every\ndeterminant is a superkey"]
+      H1 --> I["BCNF"]
+      H -->|"Yes"| I["BCNF"]
+  </div>
+
+  <h3>3.2 First Normal Form (1NF)</h3>
+  <p>A relation is in 1NF if all attributes contain only <strong>atomic (indivisible) values</strong>. No repeating groups or multivalued attributes.</p>
+
+  <div class="example">
+    <strong>Not in 1NF:</strong> Student(ID, Name, PhoneNumbers) where PhoneNumbers can hold multiple values.
+    <br/><strong>In 1NF:</strong> Create a separate row for each phone number, or a separate table StudentPhone(ID, Phone).
+  </div>
+
+  <h3>3.3 Second Normal Form (2NF)</h3>
+  <p>A relation is in 2NF if it is in 1NF and every non-prime attribute is <strong>fully functionally dependent</strong> on the entire candidate key (no partial dependencies).</p>
+
+  <div class="example">
+    <strong>Not in 2NF:</strong> Enrollment(<u>StudentID, CourseID</u>, Grade, StudentName)<br/>
+    StudentID &rarr; StudentName is a partial dependency (StudentName depends only on part of the key).<br/>
+    <strong>Fix:</strong> Decompose into Student(StudentID, StudentName) and Enrollment(StudentID, CourseID, Grade).
+  </div>
+
+  <div class="note">
+    <strong>Note:</strong> If a relation has a single-attribute candidate key, it is automatically in 2NF (no partial dependency is possible).
+  </div>
+
+  <h3>3.4 Third Normal Form (3NF)</h3>
+  <p>A relation is in 3NF if it is in 2NF and no non-prime attribute is <strong>transitively dependent</strong> on the candidate key.</p>
+  <p>Formally: For every FD X &rarr; A, at least one of the following holds:</p>
+  <ul>
+    <li>X &rarr; A is trivial (A &isin; X)</li>
+    <li>X is a superkey</li>
+    <li>A is a prime attribute (part of some candidate key)</li>
+  </ul>
+
+  <div class="example">
+    <strong>Not in 3NF:</strong> Student(<u>StudentID</u>, Name, Dept, DeptHead)<br/>
+    StudentID &rarr; Dept &rarr; DeptHead is a transitive dependency.<br/>
+    <strong>Fix:</strong> Student(StudentID, Name, Dept) and Department(Dept, DeptHead).
+  </div>
+
+  <h3>3.5 Boyce-Codd Normal Form (BCNF)</h3>
+  <p>A relation is in BCNF if for every non-trivial FD X &rarr; Y, X is a superkey. BCNF is stricter than 3NF (the third condition about prime attributes is removed).</p>
+
+  <table>
+    <tr><th>Normal Form</th><th>Condition</th></tr>
+    <tr><td>1NF</td><td>Atomic values only</td></tr>
+    <tr><td>2NF</td><td>1NF + no partial dependencies</td></tr>
+    <tr><td>3NF</td><td>2NF + no transitive dependencies (or every determinant is a superkey, or dependent is prime)</td></tr>
+    <tr><td>BCNF</td><td>For every X &rarr; Y, X is a superkey (strictly stronger than 3NF)</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>3NF vs BCNF:</strong> Every BCNF relation is in 3NF, but not vice versa. The difference arises when a non-trivial FD has a determinant that is not a superkey but the dependent is a prime attribute. 3NF allows this; BCNF does not.
+  </div>
+
+  <!-- ===================== DECOMPOSITION ===================== -->
+  <h2>4. Decomposition Properties</h2>
+
+  <h3>4.1 Lossless Join Decomposition</h3>
+  <p>A decomposition of R into R1 and R2 is <strong>lossless</strong> (non-additive) if joining R1 and R2 produces exactly R (no spurious tuples). The condition is:</p>
+  <ul>
+    <li>R1 &cap; R2 &rarr; R1, or</li>
+    <li>R1 &cap; R2 &rarr; R2</li>
+  </ul>
+  <p>That is, the common attributes must be a superkey of at least one of the decomposed relations.</p>
+
+  <h3>4.2 Dependency Preservation</h3>
+  <p>A decomposition is <strong>dependency-preserving</strong> if the union of FDs that can be checked in individual decomposed relations is equivalent to the original set of FDs. This means no FD requires a join to verify.</p>
+
+  <h3>4.3 Key Differences</h3>
+  <table>
+    <tr><th>Property</th><th>3NF Decomposition</th><th>BCNF Decomposition</th></tr>
+    <tr><td>Lossless Join</td><td>Always achievable</td><td>Always achievable</td></tr>
+    <tr><td>Dependency Preservation</td><td>Always achievable</td><td>Not always achievable</td></tr>
+    <tr><td>Redundancy</td><td>Some redundancy may remain</td><td>No redundancy from FDs</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> It is always possible to decompose into 3NF with both lossless join and dependency preservation. For BCNF, lossless join is always possible but dependency preservation may be sacrificed.
+  </div>
+
+  <h3>4.4 Synthesis Algorithm for 3NF</h3>
+  <ol>
+    <li>Find a minimal cover (canonical cover) of the FDs.</li>
+    <li>For each FD X &rarr; A in the minimal cover, create a relation R(X, A).</li>
+    <li>If no relation contains a candidate key, add a relation containing a candidate key.</li>
+    <li>Remove redundant relations (those whose attributes are a subset of another).</li>
+  </ol>
+
+  <h3>4.5 Decomposition Algorithm for BCNF</h3>
+  <ol>
+    <li>Find a non-trivial FD X &rarr; Y that violates BCNF (X is not a superkey).</li>
+    <li>Decompose R into R1(X, Y) and R2(R &minus; Y).</li>
+    <li>Repeat until all relations are in BCNF.</li>
+  </ol>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>5. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>Entity integrity: PK cannot be NULL. Referential integrity: FK must reference existing PK or be NULL.</li>
+      <li>Armstrong's axioms (reflexivity, augmentation, transitivity) are sound and complete.</li>
+      <li>To find candidate keys: compute closure of every possible attribute combination. Attributes that appear only on the left side of FDs must be in every candidate key.</li>
+      <li>A relation with all prime attributes is always in 3NF.</li>
+      <li>If a relation has a single-attribute key, it is automatically in 2NF.</li>
+      <li>Every 2-attribute relation is in BCNF.</li>
+      <li>BCNF eliminates all redundancy due to FDs; 3NF may retain some.</li>
+      <li>Lossless join test: R1 &cap; R2 must be a key of R1 or R2.</li>
+      <li>Number of candidate keys can be exponential in the number of attributes (worst case).</li>
+      <li>Minimal cover: no extraneous attributes on the left, no redundant FDs, right side is a single attribute.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Normalization Quiz",
+      "questions": [
+        {
+          "question": "Consider R(A, B, C, D) with FDs: AB -> C, C -> D, D -> A. What are the candidate keys?",
+          "options": ["{AB}", "{AB, BC, BD}", "{AB, BC}", "{ABC}"],
+          "answer": 1,
+          "explanation": "B is in no FD right side, so B must be in every candidate key. AB+ = {A,B,C,D} so AB is a key. BC+: C->D, D->A, so BC+ = {B,C,D,A}, BC is a key. BD+: D->A, AB->C, so BD+ = {B,D,A,C}, BD is a key. All are minimal. Candidate keys: {AB, BC, BD}."
+        },
+        {
+          "question": "A relation R(A,B,C) has FDs: A -> B and B -> C. The relation is in which highest normal form?",
+          "options": ["1NF", "2NF", "3NF", "BCNF"],
+          "answer": 1,
+          "explanation": "Candidate key is A. A->B (A is a superkey, fine). B->C is a transitive dependency (A->B->C, B is not a superkey). This violates 3NF (since C is not a prime attribute and B is not a superkey). It is in 2NF because there are no partial dependencies (single attribute key). Highest is 2NF."
+        },
+        {
+          "question": "Which of the following decompositions is lossless? R(A,B,C) with FD: A -> B. Decomposition into R1(A,B) and R2(A,C).",
+          "options": ["Always lossless", "Lossless only if B -> C", "Never lossless", "Lossless only if C -> A"],
+          "answer": 0,
+          "explanation": "R1 intersection R2 = {A}. A -> B means A -> R1(A,B), so A is a superkey of R1. By the lossless join test, if the common attribute is a key of at least one decomposed relation, the join is lossless. Since A is a key of R1, this decomposition is always lossless."
+        },
+        {
+          "question": "A relation R(A,B,C,D) with FDs {A->B, BC->D, A->C} is in which normal form?",
+          "options": ["1NF only", "2NF but not 3NF", "3NF but not BCNF", "BCNF"],
+          "answer": 3,
+          "explanation": "A+ = {A,B,C,D} (A->B, A->C, then BC->D). So A is the only candidate key. Check all FDs: A->B (A is superkey), BC->D (BC+={B,C,D,?}: is BC a superkey? BC does not determine A, so BC is not a superkey). Wait: BC->D, but can we get A from BC? No FD gives A from B,C,D. So BC is not a superkey, and BC->D violates BCNF. Hmm, but the question: A->C gives us C from A. The candidate key is A. BC->D: BC is not a superkey (can't derive A). So this violates BCNF. It IS in 3NF since D is not a prime attribute, and BC is not a superkey, so it violates 3NF too. Wait: 3NF allows if D is prime. D is not prime (only A is candidate key). So BC->D violates 3NF. Hmm but: A->B and A->C are fine. Is it 2NF? Key is single attribute A, so no partial dependencies possible. It's in 2NF but not 3NF."
+        },
+        {
+          "question": "Every relation with only two attributes is guaranteed to be in:",
+          "options": ["1NF", "2NF", "3NF", "BCNF"],
+          "answer": 3,
+          "explanation": "A relation with only two attributes (say A and B) can have at most these FDs: A->B, B->A, both, or none. In every case, the determinant of any non-trivial FD is a superkey. Therefore, every two-attribute relation is in BCNF."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

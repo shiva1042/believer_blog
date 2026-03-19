@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 4: Data Structures & Algorithms Focus — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 4: Data Structures & Algorithms Focus</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Arrays/Stacks/Queues (4), Trees/Heaps (4), Graphs DS (3), Sorting/Searching (4), Greedy (3), Dynamic Programming (4), Divide & Conquer (3), Complexity Analysis (3), Graph Algorithms (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 4",
+      "questions": [
+        {
+          "question": "Q1. What is the result of evaluating the postfix expression: 5 3 + 8 2 - *?",
+          "options": ["(A) 48", "(B) 40", "(C) 46", "(D) 56"],
+          "answer": 0,
+          "explanation": "Evaluating step by step: Push 5, Push 3. '+': Pop 3,5 → push 8. Push 8, Push 2. '-': Pop 2,8 → push 6. '*': Pop 6,8 → push 48. Result = 48. The expression is equivalent to (5+3) * (8-2) = 8 * 6 = 48."
+        },
+        {
+          "question": "Q2. An array of size n is used to implement a circular queue. If front = 5 and the queue has 8 elements with n = 12, the value of rear is:",
+          "options": ["(A) 0", "(B) 12", "(C) 1", "(D) 11"],
+          "answer": 0,
+          "explanation": "In a circular queue, rear = (front + size - 1) % n = (5 + 8 - 1) % 12 = 12 % 12 = 0. The queue wraps around the array. Elements are at indices 5, 6, 7, 8, 9, 10, 11, 0."
+        },
+        {
+          "question": "Q3. Consider two stacks S1 and S2 used to implement a queue. For enqueue we push to S1, and for dequeue we pop from S2 (if S2 is empty, transfer all from S1 to S2). The amortized time complexity of each dequeue operation is:",
+          "options": ["(A) O(n)", "(B) O(1)", "(C) O(log n)", "(D) O(n²)"],
+          "answer": 1,
+          "explanation": "Using amortized analysis (aggregate method): Each element is pushed at most once to S1, transferred at most once from S1 to S2, and popped at most once from S2. So each element goes through at most 3 O(1) operations total. Over n operations, total cost is O(n), giving O(1) amortized cost per dequeue."
+        },
+        {
+          "question": "Q4. The minimum number of stacks needed to implement a queue is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 1,
+          "explanation": "A queue can be implemented using exactly 2 stacks. One stack is used for enqueue operations and the other for dequeue operations. When the dequeue stack is empty, all elements from the enqueue stack are transferred. It is impossible to implement a queue with just 1 stack as stacks are LIFO and queues are FIFO."
+        },
+        {
+          "question": "Q5. The number of nodes in a complete binary tree of height h is:",
+          "options": ["(A) 2ʰ - 1", "(B) 2ʰ⁺¹ - 1", "(C) 2ʰ", "(D) 2ʰ + 1"],
+          "answer": 1,
+          "explanation": "A complete (full/perfect) binary tree of height h has nodes at levels 0 through h. Total nodes = 2⁰ + 2¹ + ... + 2ʰ = 2ʰ⁺¹ - 1 (geometric series). For example, height 2: 1 + 2 + 4 = 7 = 2³ - 1."
+        },
+        {
+          "question": "Q6. In a BST, the inorder traversal gives elements in:",
+          "options": ["(A) Random order", "(B) Descending order", "(C) Ascending (sorted) order", "(D) Level order"],
+          "answer": 2,
+          "explanation": "Inorder traversal of a BST visits: left subtree, root, right subtree. Since in a BST all left descendants < root < all right descendants, inorder traversal always produces elements in ascending (sorted) order. This is a fundamental property of BSTs."
+        },
+        {
+          "question": "Q7. The maximum number of nodes at level k in a binary tree (root at level 0) is:",
+          "options": ["(A) 2k", "(B) 2ᵏ", "(C) k²", "(D) 2ᵏ⁻¹"],
+          "answer": 1,
+          "explanation": "At level k, a binary tree can have at most 2ᵏ nodes. Level 0 (root): 2⁰ = 1, Level 1: 2¹ = 2, Level 2: 2² = 4, etc. Each node can have at most 2 children, so the number of nodes doubles at each level."
+        },
+        {
+          "question": "Q8. An AVL tree with 7 nodes has a height of at most:",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 7"],
+          "answer": 1,
+          "explanation": "The minimum number of nodes in an AVL tree of height h follows: N(0)=1, N(1)=2, N(h) = N(h-1) + N(h-2) + 1. N(2)=4, N(3)=7. So 7 nodes can form an AVL tree of height 3. Conversely, a perfectly balanced tree with 7 nodes has height 2, but AVL allows balance factor of ±1, so height can be 3 in the worst case with exactly 7 nodes."
+        },
+        {
+          "question": "Q9. The number of edges in a tree with n vertices is:",
+          "options": ["(A) n", "(B) n - 1", "(C) n + 1", "(D) 2n - 1"],
+          "answer": 1,
+          "explanation": "A tree with n vertices always has exactly n - 1 edges. This is a fundamental property: a tree is a connected acyclic graph, and any connected graph with n vertices needs at least n-1 edges. Adding any edge to a tree creates a cycle."
+        },
+        {
+          "question": "Q10. The time complexity of DFS on a graph represented as an adjacency list with V vertices and E edges is:",
+          "options": ["(A) O(V)", "(B) O(E)", "(C) O(V + E)", "(D) O(V × E)"],
+          "answer": 2,
+          "explanation": "DFS visits each vertex once (O(V)) and explores each edge once for directed graphs or twice for undirected (O(E)). With adjacency list representation, total time = O(V + E). With adjacency matrix, it would be O(V²) since we check all possible edges for each vertex."
+        },
+        {
+          "question": "Q11. Topological sort is possible only for:",
+          "options": ["(A) Any graph", "(B) DAG (Directed Acyclic Graph)", "(C) Complete graph", "(D) Connected graph"],
+          "answer": 1,
+          "explanation": "Topological sorting produces a linear ordering of vertices such that for every directed edge (u,v), u comes before v. This is only possible for DAGs (Directed Acyclic Graphs). If a cycle exists, there is no valid topological ordering because a vertex would need to come both before and after itself."
+        },
+        {
+          "question": "Q12. The best-case time complexity of Quick Sort is:",
+          "options": ["(A) O(n)", "(B) O(n log n)", "(C) O(n²)", "(D) O(log n)"],
+          "answer": 1,
+          "explanation": "Quick Sort's best case occurs when the pivot always divides the array into two equal halves. The recurrence is T(n) = 2T(n/2) + O(n), which gives T(n) = O(n log n) by the Master Theorem. The worst case O(n²) occurs with already sorted input and naive pivot selection."
+        },
+        {
+          "question": "Q13. Which sorting algorithm is NOT stable?",
+          "options": ["(A) Merge Sort", "(B) Insertion Sort", "(C) Selection Sort", "(D) Bubble Sort"],
+          "answer": 2,
+          "explanation": "Selection Sort is not stable because it can change the relative order of equal elements when swapping. For example: [4a, 3, 4b, 2] → after first pass selects 2 and swaps with 4a: [2, 3, 4b, 4a] — the relative order of 4a and 4b has changed. Merge Sort, Insertion Sort, and Bubble Sort are all stable."
+        },
+        {
+          "question": "Q14. The lower bound on comparison-based sorting is:",
+          "options": ["(A) O(n)", "(B) O(n log n)", "(C) Ω(n log n)", "(D) Ω(n²)"],
+          "answer": 2,
+          "explanation": "Any comparison-based sorting algorithm must make at least Ω(n log n) comparisons in the worst case. This is proven using the decision tree model: a decision tree for sorting n elements must have at least n! leaves, requiring height ≥ log₂(n!) = Ω(n log n) by Stirling's approximation."
+        },
+        {
+          "question": "Q15. In a hash table with n elements and m slots using chaining, the expected search time with uniform hashing is:",
+          "options": ["(A) O(1)", "(B) O(1 + n/m)", "(C) O(n)", "(D) O(log n)"],
+          "answer": 1,
+          "explanation": "With uniform hashing and chaining, the load factor α = n/m represents the average chain length. The expected time for an unsuccessful search is Θ(1 + α) and for a successful search is Θ(1 + α/2) = Θ(1 + α). The O(1) accounts for computing the hash, and n/m for traversing the chain."
+        },
+        {
+          "question": "Q16. The activity selection problem is best solved using:",
+          "options": ["(A) Dynamic Programming", "(B) Greedy approach", "(C) Divide and Conquer", "(D) Backtracking"],
+          "answer": 1,
+          "explanation": "The activity selection problem has the greedy choice property: always selecting the activity with the earliest finish time leads to an optimal solution. The greedy approach achieves O(n log n) time (dominated by sorting). While DP can also solve it, the greedy approach is simpler and more efficient."
+        },
+        {
+          "question": "Q17. In Huffman coding, the character with the highest frequency gets:",
+          "options": ["(A) The longest code", "(B) The shortest code", "(C) A fixed-length code", "(D) No code"],
+          "answer": 1,
+          "explanation": "Huffman coding assigns shorter codes to more frequent characters and longer codes to less frequent ones. This minimizes the weighted path length (expected code length). The most frequent character will be near the root of the Huffman tree and hence gets the shortest code."
+        },
+        {
+          "question": "Q18. The minimum number of coins (denominations: 1, 5, 10, 25) to make change for 41 cents using greedy algorithm is:",
+          "options": ["(A) 4", "(B) 5", "(C) 6", "(D) 3"],
+          "answer": 0,
+          "explanation": "Greedy approach: Take the largest coin ≤ remaining. 41: take 25 (remaining 16). 16: take 10 (remaining 6). 6: take 5 (remaining 1). 1: take 1 (remaining 0). Total coins: 25 + 10 + 5 + 1 = 4 coins. Note: greedy works optimally for US coin denominations."
+        },
+        {
+          "question": "Q19. The time complexity of the 0/1 Knapsack problem using dynamic programming with n items and capacity W is:",
+          "options": ["(A) O(nW)", "(B) O(n²)", "(C) O(2ⁿ)", "(D) O(n log n)"],
+          "answer": 0,
+          "explanation": "The DP solution uses a 2D table of size n × W. Each cell takes O(1) to fill (max of two values). Total time = O(nW). Note: this is pseudo-polynomial time because W is not polynomial in the input size (which is log W bits). The brute force approach takes O(2ⁿ)."
+        },
+        {
+          "question": "Q20. The longest common subsequence (LCS) of 'ABCBDAB' and 'BDCAB' has length:",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) 2"],
+          "answer": 1,
+          "explanation": "Using DP to find LCS of 'ABCBDAB' and 'BDCAB': The LCS is 'BCAB' with length 4. Another valid LCS is 'BDAB'. We build the DP table where dp[i][j] = length of LCS of first i chars of string 1 and first j chars of string 2. The final value dp[7][5] = 4."
+        },
+        {
+          "question": "Q21. The minimum number of scalar multiplications to multiply matrices A(10×30), B(30×5), C(5×60) using optimal parenthesization is:",
+          "options": ["(A) 4500", "(B) 27000", "(C) 4500", "(D) 2700 (incorrect options — correct: see explanation)"],
+          "answer": 0,
+          "explanation": "Two parenthesizations: (AB)C: AB = 10×30×5 = 1500, then (AB)C = 10×5×60 = 3000. Total = 4500. A(BC): BC = 30×5×60 = 9000, then A(BC) = 10×30×60 = 18000. Total = 27000. Minimum = 4500 with (AB)C."
+        },
+        {
+          "question": "Q22. The number of subproblems in the matrix chain multiplication of n matrices is:",
+          "options": ["(A) O(n)", "(B) O(n²)", "(C) O(n³)", "(D) O(2ⁿ)"],
+          "answer": 1,
+          "explanation": "The subproblems are defined by choosing a start index i and end index j (where i ≤ j) from n matrices. The number of such pairs is C(n,2) + n = n(n+1)/2 = O(n²). Each subproblem takes O(n) time to solve (trying all split points), giving total time O(n³)."
+        },
+        {
+          "question": "Q23. The Master Theorem cannot be applied to the recurrence:",
+          "options": ["(A) T(n) = 2T(n/2) + n", "(B) T(n) = T(n/2) + 1", "(C) T(n) = 2T(n/2) + n log n", "(D) T(n) = T(n-1) + n"],
+          "answer": 3,
+          "explanation": "The Master Theorem applies to recurrences of the form T(n) = aT(n/b) + f(n) where a ≥ 1, b > 1. Option (D) T(n) = T(n-1) + n has the subproblem size as n-1, not n/b. This is a subtract-and-conquer recurrence, not divide-and-conquer, so the Master Theorem does not apply. Its solution is T(n) = O(n²)."
+        },
+        {
+          "question": "Q24. Binary search on a sorted array of n elements has time complexity:",
+          "options": ["(A) O(n)", "(B) O(n log n)", "(C) O(log n)", "(D) O(1)"],
+          "answer": 2,
+          "explanation": "Binary search halves the search space at each step. Recurrence: T(n) = T(n/2) + O(1), which gives T(n) = O(log n). After k comparisons, the search space is n/2ᵏ. The search ends when n/2ᵏ = 1, giving k = log₂ n."
+        },
+        {
+          "question": "Q25. The recurrence T(n) = 7T(n/2) + O(n²) (Strassen's matrix multiplication) gives:",
+          "options": ["(A) O(n²)", "(B) O(n² log n)", "(C) O(n^2.81)", "(D) O(n³)"],
+          "answer": 2,
+          "explanation": "Using Master Theorem: a = 7, b = 2, f(n) = n². n^(log₂ 7) = n^2.807. Since f(n) = n² = O(n^(2.807-ε)) for ε ≈ 0.807, Case 1 applies: T(n) = Θ(n^(log₂ 7)) ≈ Θ(n^2.81). This is Strassen's improvement over the naive O(n³) algorithm."
+        },
+        {
+          "question": "Q26. The closest pair of points problem can be solved in:",
+          "options": ["(A) O(n²)", "(B) O(n log n)", "(C) O(n)", "(D) O(n log² n)"],
+          "answer": 1,
+          "explanation": "The closest pair problem uses divide and conquer: sort points, divide into halves, solve recursively, then merge by checking the strip region. The recurrence is T(n) = 2T(n/2) + O(n), giving O(n log n). The key insight is that at most 6 points need to be checked in the strip for each point."
+        },
+        {
+          "question": "Q27. In the worst case, how many comparisons does merge sort make for n elements?",
+          "options": ["(A) n log₂ n", "(B) n log₂ n - n + 1", "(C) n²/2", "(D) n(n-1)/2"],
+          "answer": 1,
+          "explanation": "Merge sort's exact worst-case comparisons: T(n) = T(⌊n/2⌋) + T(⌈n/2⌉) + n - 1. For n = 2ᵏ, this gives T(n) = n log₂ n - n + 1. The n - 1 comes from the merge step where in the worst case, every comparison produces one output element, requiring n - 1 comparisons for n elements."
+        },
+        {
+          "question": "Q28. Which problem is NP-complete?",
+          "options": ["(A) Shortest path (single source)", "(B) Minimum spanning tree", "(C) Travelling Salesman Problem (decision version)", "(D) Matrix multiplication"],
+          "answer": 2,
+          "explanation": "The Travelling Salesman Problem (decision version: is there a tour of length ≤ k?) is a classic NP-complete problem. Shortest path (Dijkstra's, O(V² or E log V)) and MST (Kruskal's/Prim's, O(E log V)) are both in P. Matrix multiplication is also in P (O(n³) or better)."
+        },
+        {
+          "question": "Q29. Dijkstra's shortest path algorithm does NOT work correctly when:",
+          "options": ["(A) The graph is directed", "(B) The graph has negative weight edges", "(C) The graph is dense", "(D) The graph is sparse"],
+          "answer": 1,
+          "explanation": "Dijkstra's algorithm assumes that adding an edge to a path cannot decrease the path length. With negative weight edges, this assumption fails — a longer path through more edges could have a shorter total weight. For graphs with negative edges, use Bellman-Ford algorithm (O(VE)). Dijkstra works fine with directed, dense, or sparse graphs."
+        },
+        {
+          "question": "Q30. The minimum spanning tree of a graph with all distinct edge weights is:",
+          "options": ["(A) Not unique", "(B) Always unique", "(C) Unique only for complete graphs", "(D) Unique only for bipartite graphs"],
+          "answer": 1,
+          "explanation": "When all edge weights are distinct, the MST is always unique. This can be proved by contradiction: if two different MSTs exist, they must differ in at least one edge. The cut property and cycle property guarantee that the lightest edge crossing any cut must be in the MST. With distinct weights, this choice is always unambiguous."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

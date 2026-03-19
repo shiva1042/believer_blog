@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I/O Interface — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>I/O Interface</h1>
+  <p class="article-section-tag">🖥️ Section 3: Computer Organization</p>
+
+  <h2>1. Introduction</h2>
+  <p>I/O (Input/Output) interfaces connect the CPU and memory system with external devices such as keyboards, disks, displays, and network adapters. The primary challenge is managing the speed mismatch between the fast CPU and slow I/O devices.</p>
+
+  <h3>1.1 I/O Module Functions</h3>
+  <ul>
+    <li><strong>Control and timing:</strong> Coordinate data flow between CPU and devices</li>
+    <li><strong>CPU communication:</strong> Accept commands, report status, transfer data</li>
+    <li><strong>Device communication:</strong> Issue commands to device, exchange data</li>
+    <li><strong>Data buffering:</strong> Temporarily store data to handle speed differences</li>
+    <li><strong>Error detection:</strong> Report device errors to CPU</li>
+  </ul>
+
+  <h3>1.2 I/O Addressing</h3>
+  <table>
+    <tr><th>Method</th><th>Description</th><th>Pros</th><th>Cons</th></tr>
+    <tr><td>Memory-Mapped I/O</td><td>I/O devices share address space with memory</td><td>Same instructions for memory and I/O; flexible</td><td>Reduces memory address space</td></tr>
+    <tr><td>Isolated (Port) I/O</td><td>Separate address space with special I/O instructions (IN/OUT)</td><td>Full memory space preserved</td><td>Needs special instructions</td></tr>
+  </table>
+
+  <h2>2. I/O Techniques</h2>
+
+  <h3>2.1 Programmed I/O (Polling)</h3>
+  <p>The CPU continuously checks (polls) the status of the I/O device in a busy-wait loop. The CPU is fully occupied during the transfer.</p>
+
+  <div class="mermaid">
+flowchart TD
+    A["CPU issues I/O command"] --> B["CPU reads device status"]
+    B --> C{"Device ready?"}
+    C -- No --> B
+    C -- Yes --> D["CPU transfers data"]
+    D --> E{"More data?"}
+    E -- Yes --> A
+    E -- No --> F["I/O complete"]
+  </div>
+
+  <table>
+    <tr><th>Advantage</th><th>Disadvantage</th></tr>
+    <tr><td>Simple to implement</td><td>CPU wastes time polling (busy waiting)</td></tr>
+    <tr><td>No special hardware needed</td><td>Very inefficient for slow devices</td></tr>
+    <tr><td>Deterministic timing</td><td>CPU cannot do other work during transfer</td></tr>
+  </table>
+
+  <h3>2.2 Interrupt-Driven I/O</h3>
+  <p>The CPU issues an I/O command and continues executing other instructions. When the device is ready, it sends an interrupt signal to the CPU, which then handles the data transfer.</p>
+
+  <div class="mermaid">
+flowchart TD
+    A["CPU issues I/O command"] --> B["CPU continues other work"]
+    B --> C{"Interrupt received?"}
+    C -- No --> B
+    C -- Yes --> D["Save CPU state (push to stack)"]
+    D --> E["Execute ISR (transfer data)"]
+    E --> F["Restore CPU state"]
+    F --> G{"More data?"}
+    G -- Yes --> A
+    G -- No --> H["I/O complete"]
+  </div>
+
+  <table>
+    <tr><th>Advantage</th><th>Disadvantage</th></tr>
+    <tr><td>CPU is free between transfers</td><td>Overhead per interrupt (context save/restore)</td></tr>
+    <tr><td>Better CPU utilization than polling</td><td>CPU still involved in every data word transfer</td></tr>
+    <tr><td>Good for low-bandwidth devices</td><td>Not efficient for bulk data transfers</td></tr>
+  </table>
+
+  <h3>2.3 Direct Memory Access (DMA)</h3>
+  <p>A DMA controller transfers data directly between I/O devices and memory without CPU intervention. The CPU only initiates the transfer and is interrupted when complete.</p>
+
+  <div class="mermaid">
+flowchart TD
+    A["CPU sends to DMA: device address, memory address, byte count, direction"] --> B["DMA takes control of bus"]
+    B --> C["DMA transfers data between device and memory"]
+    C --> D["DMA decrements byte count"]
+    D --> E{"Count = 0?"}
+    E -- No --> C
+    E -- Yes --> F["DMA sends interrupt to CPU"]
+    F --> G["CPU resumes"]
+  </div>
+
+  <h3>2.4 Comparison of I/O Techniques</h3>
+  <table>
+    <tr><th>Feature</th><th>Programmed I/O</th><th>Interrupt-Driven</th><th>DMA</th></tr>
+    <tr><td>CPU involvement</td><td>Full (busy waiting)</td><td>Per word transfer</td><td>Only at start and end</td></tr>
+    <tr><td>Hardware complexity</td><td>Minimal</td><td>Interrupt controller</td><td>DMA controller</td></tr>
+    <tr><td>CPU utilization</td><td>Poor</td><td>Good</td><td>Excellent</td></tr>
+    <tr><td>Transfer rate</td><td>Low</td><td>Medium</td><td>High</td></tr>
+    <tr><td>Best for</td><td>Simple, fast devices</td><td>Low-bandwidth devices</td><td>Bulk data (disk, network)</td></tr>
+  </table>
+
+  <h2>3. Interrupts</h2>
+
+  <h3>3.1 Types of Interrupts</h3>
+  <table>
+    <tr><th>Type</th><th>Source</th><th>Examples</th></tr>
+    <tr><td>Hardware (External)</td><td>I/O devices, timers</td><td>Keyboard press, disk ready, timer tick</td></tr>
+    <tr><td>Software (Internal)</td><td>Instructions</td><td>INT instruction, system calls (traps)</td></tr>
+    <tr><td>Exception</td><td>Error conditions</td><td>Division by zero, page fault, overflow</td></tr>
+  </table>
+
+  <h3>3.2 Interrupt Priority</h3>
+  <p>When multiple devices request interrupts simultaneously, a priority scheme determines which is serviced first.</p>
+
+  <table>
+    <tr><th>Method</th><th>Description</th></tr>
+    <tr><td>Software Polling</td><td>CPU polls each device in priority order to find interrupt source</td></tr>
+    <tr><td>Daisy Chain</td><td>Hardware chain: devices connected in series; nearest gets highest priority</td></tr>
+    <tr><td>Vectored Interrupt</td><td>Device provides ISR address directly; fast but needs complex hardware</td></tr>
+    <tr><td>Priority Encoder</td><td>Parallel priority resolution using hardware encoder</td></tr>
+  </table>
+
+  <h3>3.3 Interrupt Handling Sequence</h3>
+  <div class="mermaid">
+flowchart TD
+    A["Device asserts interrupt line"] --> B["CPU finishes current instruction"]
+    B --> C["CPU checks for interrupt"]
+    C --> D["CPU acknowledges interrupt"]
+    D --> E["Save PC and status registers to stack"]
+    E --> F["Determine interrupt source and vector"]
+    F --> G["Load ISR address into PC"]
+    G --> H["Execute Interrupt Service Routine"]
+    H --> I["Restore PC and status from stack"]
+    I --> J["Resume interrupted program"]
+  </div>
+
+  <h3>3.4 Nested Interrupts</h3>
+  <p>A higher-priority interrupt can preempt a lower-priority ISR. This requires saving the state of the interrupted ISR. The interrupt mask register controls which interrupt levels can preempt.</p>
+
+  <div class="note">
+    <p><strong>Non-Maskable Interrupt (NMI):</strong> Cannot be disabled by software. Used for critical events like power failure, memory parity errors, or hardware watchdog timers.</p>
+  </div>
+
+  <h2>4. DMA in Detail</h2>
+
+  <h3>4.1 DMA Controller Registers</h3>
+  <table>
+    <tr><th>Register</th><th>Purpose</th></tr>
+    <tr><td>Memory Address Register</td><td>Starting address in memory for transfer</td></tr>
+    <tr><td>Word Count Register</td><td>Number of words to transfer</td></tr>
+    <tr><td>Control Register</td><td>Direction (read/write), mode, enable</td></tr>
+    <tr><td>Status Register</td><td>Transfer complete, error flags</td></tr>
+  </table>
+
+  <h3>4.2 DMA Transfer Modes</h3>
+  <table>
+    <tr><th>Mode</th><th>Description</th><th>Bus Usage</th><th>Use Case</th></tr>
+    <tr><td>Burst Mode</td><td>DMA holds bus until entire transfer completes</td><td>Blocks CPU completely during transfer</td><td>High-speed block transfers (disk read)</td></tr>
+    <tr><td>Cycle Stealing</td><td>DMA transfers one word at a time, then releases bus</td><td>Alternates with CPU</td><td>Slower devices needing periodic transfer</td></tr>
+    <tr><td>Transparent (Interleaved)</td><td>DMA uses bus only when CPU does not need it</td><td>No CPU slowdown</td><td>Ideal but needs complex timing</td></tr>
+  </table>
+
+  <h3>4.3 DMA Transfer Process</h3>
+  <div class="mermaid">
+flowchart LR
+    subgraph CPU_Side["CPU Side"]
+        A["CPU programs DMA controller"] --> B["CPU releases bus on DMA request"]
+        B --> C["CPU regains bus after DMA done"]
+    end
+    subgraph DMA_Side["DMA Controller"]
+        D["Request bus from CPU"] --> E["Transfer data word"]
+        E --> F["Decrement count"]
+        F --> G{"Count = 0?"}
+        G -- No --> E
+        G -- Yes --> H["Release bus, interrupt CPU"]
+    end
+    A --> D
+    H --> C
+  </div>
+
+  <h2>5. I/O Bandwidth Calculations</h2>
+
+  <h3>5.1 Polling Overhead</h3>
+  <p><strong>Example:</strong> A device transfers data at 1 MB/s, word size = 4 bytes, polling takes 400 clock cycles, CPU clock = 1 GHz.</p>
+  <p>Transfers per second = 1 MB / 4 B = 250,000</p>
+  <p>Polling cycles per second = 250,000 &times; 400 = 100,000,000 = 10<sup>8</sup></p>
+  <p>CPU utilization for I/O = 10<sup>8</sup> / 10<sup>9</sup> = <strong>10%</strong></p>
+
+  <h3>5.2 Interrupt Overhead</h3>
+  <p>Same device: interrupt handling takes 500 cycles.</p>
+  <p>Interrupt cycles per second = 250,000 &times; 500 = 1.25 &times; 10<sup>8</sup></p>
+  <p>CPU utilization = 12.5%</p>
+
+  <div class="note">
+    <p>Interrupts have higher per-transfer overhead than polling but are only invoked when the device is ready, freeing the CPU between transfers.</p>
+  </div>
+
+  <h3>5.3 DMA Overhead</h3>
+  <p>Same device: DMA transfers 4 KB blocks, DMA setup = 1000 cycles, interrupt at end = 500 cycles.</p>
+  <p>DMA transfers per second = 1 MB / 4 KB = 256</p>
+  <p>Total cycles = 256 &times; (1000 + 500) = 384,000</p>
+  <p>CPU utilization = 384,000 / 10<sup>9</sup> = <strong>0.038%</strong></p>
+
+  <h2>6. I/O Buses and Interfaces</h2>
+  <table>
+    <tr><th>Bus/Interface</th><th>Type</th><th>Bandwidth</th><th>Use</th></tr>
+    <tr><td>PCI Express</td><td>Serial</td><td>Up to 64 GB/s (PCIe 5.0 x16)</td><td>GPU, NVMe SSD</td></tr>
+    <tr><td>SATA</td><td>Serial</td><td>600 MB/s</td><td>Hard drives, SSDs</td></tr>
+    <tr><td>USB 3.2</td><td>Serial</td><td>Up to 20 Gbps</td><td>Peripherals</td></tr>
+    <tr><td>I2C</td><td>Serial</td><td>Up to 3.4 Mbps</td><td>Sensors, embedded</td></tr>
+    <tr><td>SPI</td><td>Serial</td><td>Up to ~50 Mbps</td><td>Flash memory, sensors</td></tr>
+  </table>
+
+  <h2>7. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Know how to calculate CPU utilization for each I/O technique.</li>
+      <li>DMA is the most efficient for bulk transfers; its overhead is per-block, not per-word.</li>
+      <li>In cycle-stealing DMA, the CPU is slowed but not blocked; in burst mode, it is blocked.</li>
+      <li>Vectored interrupts are faster than polled interrupts because the ISR address is provided directly.</li>
+      <li>Memory-mapped I/O uses regular LOAD/STORE; isolated I/O needs special IN/OUT instructions.</li>
+      <li>Interrupt latency = time from interrupt request to start of ISR execution.</li>
+      <li>For GATE numerical problems, track: device transfer rate, CPU clock rate, cycles per operation, and compute utilization as a fraction.</li>
+    </ul>
+  </div>
+
+  <h2>8. Practice Problems</h2>
+  <ol>
+    <li>A CPU running at 2 GHz handles an I/O device at 500 KB/s. Each interrupt takes 200 cycles and transfers 2 bytes. What fraction of CPU time is spent on I/O?</li>
+    <li>With DMA, the same device transfers 8 KB blocks. DMA setup costs 500 cycles and completion interrupt costs 300 cycles. What is the CPU utilization now?</li>
+    <li>Compare memory-mapped and isolated I/O in terms of address space and instruction set requirements.</li>
+  </ol>
+
+</article>
+</body>
+</html>

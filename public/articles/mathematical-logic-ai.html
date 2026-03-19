@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mathematical Logic for AI — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Mathematical Logic for AI</h1>
+  <p class="article-section-tag">🤖 Artificial Intelligence</p>
+
+  <h2>1. Propositional Logic Resolution</h2>
+
+  <h3>1.1 Converting to CNF (Conjunctive Normal Form)</h3>
+  <pre>
+Steps to convert any formula to CNF:
+1. Eliminate biconditional: A <-> B  =>  (A -> B) ^ (B -> A)
+2. Eliminate implication:   A -> B   =>  ~A v B
+3. Push negations inward (De Morgan's):
+   ~(A ^ B) => ~A v ~B
+   ~(A v B) => ~A ^ ~B
+   ~~A => A
+4. Distribute OR over AND:
+   A v (B ^ C)  =>  (A v B) ^ (A v C)
+
+Result: conjunction (AND) of clauses, each clause is a disjunction (OR) of literals.
+  </pre>
+
+  <h3>1.2 CNF Conversion Example</h3>
+  <pre>
+Convert: (P -> Q) -> R
+
+Step 1: P -> Q becomes ~P v Q
+  Formula: (~P v Q) -> R
+
+Step 2: Eliminate implication:
+  ~(~P v Q) v R
+
+Step 3: Push negation inward:
+  (P ^ ~Q) v R
+
+Step 4: Distribute OR over AND:
+  (P v R) ^ (~Q v R)
+
+CNF clauses: {P v R}, {~Q v R}
+  </pre>
+
+  <h3>1.3 Resolution Procedure</h3>
+  <pre>
+Resolution rule: From clause (A v B) and clause (~B v C),
+derive resolvent (A v C).
+
+To prove KB |= alpha:
+1. Add ~alpha to KB
+2. Convert all formulas to CNF
+3. Repeatedly apply resolution
+4. If empty clause {} is derived -> proof complete
+5. If no new clauses -> alpha not provable
+
+Example: KB = {P -> Q, Q -> R}, prove P -> R
+  KB clauses: {~P v Q}, {~Q v R}
+  Add ~(P -> R) = P ^ ~R
+  Clauses: {P}, {~R}
+
+  All clauses: {~P v Q}, {~Q v R}, {P}, {~R}
+  Resolve {P} and {~P v Q}: derive {Q}
+  Resolve {Q} and {~Q v R}: derive {R}
+  Resolve {R} and {~R}: derive {} (empty clause!)
+  Therefore P -> R is proved.
+  </pre>
+
+  <h3>1.4 Truth Tables for Common Connectives</h3>
+  <table>
+    <tr><th>P</th><th>Q</th><th>P ^ Q</th><th>P v Q</th><th>P -> Q</th><th>P <-> Q</th><th>P XOR Q</th></tr>
+    <tr><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td><td>F</td></tr>
+    <tr><td>T</td><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td><td>T</td></tr>
+    <tr><td>F</td><td>T</td><td>F</td><td>T</td><td>T</td><td>F</td><td>T</td></tr>
+    <tr><td>F</td><td>F</td><td>F</td><td>F</td><td>T</td><td>T</td><td>F</td></tr>
+  </table>
+  <div class="warning"><strong>GATE Trap:</strong> P -> Q is TRUE when P is FALSE (regardless of Q). This is the most common mistake. "False implies anything" is vacuously true.</div>
+
+  <h2>2. First-Order Logic</h2>
+
+  <h3>2.1 Unification</h3>
+  <p>Unification finds a substitution that makes two expressions identical.</p>
+  <pre>
+Unify(P(x, f(y)), P(a, f(g(z))))
+  x = a, y = g(z)
+  Substitution: {x/a, y/g(z)}
+
+Unify(P(x, x), P(a, b))
+  x = a, then x = b => a must equal b
+  If a != b: FAIL (no unifier)
+
+Unify(P(f(x)), P(x))
+  f(x) = x => occurs check fails (infinite recursion)
+  FAIL
+
+Most General Unifier (MGU): The least restrictive substitution.
+  </pre>
+
+  <h3>2.2 Unification Algorithm</h3>
+  <pre>
+function UNIFY(x, y, theta):
+    if theta = failure: return failure
+    if x = y: return theta
+    if x is a variable: return UNIFY-VAR(x, y, theta)
+    if y is a variable: return UNIFY-VAR(y, x, theta)
+    if x and y are compound:
+        return UNIFY(args(x), args(y), UNIFY(op(x), op(y), theta))
+    return failure
+
+function UNIFY-VAR(var, x, theta):
+    if {var/val} in theta: return UNIFY(val, x, theta)
+    if {x/val} in theta: return UNIFY(var, val, theta)
+    if var occurs in x: return failure (occurs check)
+    return theta + {var/x}
+  </pre>
+
+  <h3>2.3 Resolution in FOL</h3>
+  <pre>
+Steps:
+1. Convert to CNF (includes Skolemization)
+2. Standardize variables apart (rename to avoid conflicts)
+3. Find complementary literals that unify
+4. Apply resolution with unifier
+
+Converting to CNF for FOL:
+  a. Eliminate implications and biconditionals
+  b. Move negations inward
+  c. Standardize variables
+  d. Skolemize: Replace existential variables with Skolem functions
+     ∃x P(x) => P(A)  (Skolem constant)
+     ∀x ∃y P(x,y) => P(x, f(x))  (Skolem function)
+  e. Drop universal quantifiers
+  f. Distribute OR over AND
+
+Example:
+  "Everyone who loves all animals is loved by someone"
+  ∀x [∀y Animal(y) -> Loves(x,y)] -> [∃y Loves(y,x)]
+
+  After CNF conversion with Skolemization:
+  {~Loves(x, F(x)) v Loves(G(x), x)}
+  {Animal(F(x)) v Loves(G(x), x)}
+  </pre>
+
+  <h2>3. Prolog-like Inference</h2>
+  <pre>
+Prolog uses backward chaining with depth-first search.
+
+Knowledge Base:
+  parent(tom, bob).
+  parent(tom, liz).
+  parent(bob, ann).
+  parent(bob, pat).
+
+  grandparent(X, Y) :- parent(X, Z), parent(Z, Y).
+  sibling(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
+
+Query: ?- grandparent(tom, ann).
+  Trace:
+  1. Match grandparent(tom, ann) with rule head
+     X = tom, Y = ann
+  2. Need to prove: parent(tom, Z) and parent(Z, ann)
+  3. parent(tom, bob) succeeds: Z = bob
+  4. parent(bob, ann) succeeds
+  5. Answer: true
+
+Query: ?- grandparent(tom, Who).
+  Returns: Who = ann ; Who = pat
+  </pre>
+
+  <h3>3.1 Prolog Execution Model</h3>
+  <div class="mermaid">
+graph TD
+    Q["Query: grandparent(tom, X)"] --> R1["Match rule: grandparent(X,Y) :- parent(X,Z), parent(Z,Y)"]
+    R1 --> G1["Goal 1: parent(tom, Z)"]
+    G1 --> S1["Z = bob"]
+    G1 --> S2["Z = liz"]
+    S1 --> G2["Goal 2: parent(bob, Y)"]
+    G2 --> A1["Y = ann ✓"]
+    G2 --> A2["Y = pat ✓"]
+    S2 --> G3["Goal 2: parent(liz, Y)"]
+    G3 --> F["No facts match: FAIL"]
+
+    style A1 fill:#2e7d32,color:#fff
+    style A2 fill:#2e7d32,color:#fff
+    style F fill:#c62828,color:#fff
+  </div>
+
+  <h3>3.2 Cut and Negation</h3>
+  <pre>
+Cut (!): Prevents backtracking past the cut point.
+  max(X, Y, X) :- X >= Y, !.
+  max(X, Y, Y).
+
+Negation as failure (\+):
+  \+ Goal succeeds if Goal fails.
+
+  bachelor(X) :- male(X), \+ married(X).
+
+  This is NOT logical negation! It assumes closed-world:
+  anything not provable is false.
+  </pre>
+
+  <h2>4. Fuzzy Logic</h2>
+  <p>Fuzzy logic extends classical logic to handle partial truth values in the range [0, 1].</p>
+
+  <h3>4.1 Fuzzy Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Classical Logic</th><th>Fuzzy Logic</th></tr>
+    <tr><td>NOT A</td><td>~A</td><td>1 - &mu;(A)</td></tr>
+    <tr><td>A AND B</td><td>A ^ B</td><td>min(&mu;(A), &mu;(B))</td></tr>
+    <tr><td>A OR B</td><td>A v B</td><td>max(&mu;(A), &mu;(B))</td></tr>
+    <tr><td>A IMPLIES B</td><td>A -> B</td><td>min(1, 1 - &mu;(A) + &mu;(B))</td></tr>
+  </table>
+
+  <h3>4.2 Fuzzy Example</h3>
+  <pre>
+Temperature membership functions:
+  Cold: mu_cold(20°C) = 0.8,  mu_cold(30°C) = 0.2
+  Hot:  mu_hot(20°C) = 0.1,   mu_hot(30°C) = 0.7
+
+"Temperature is Cold AND NOT Hot" at 25°C:
+  mu_cold(25) = 0.5 (interpolated)
+  mu_hot(25)  = 0.4 (interpolated)
+  NOT Hot = 1 - 0.4 = 0.6
+  Cold AND NOT Hot = min(0.5, 0.6) = 0.5
+
+Fuzzy inference: If temperature is hot, then fan speed is high.
+  Apply rule with mu_hot = 0.4
+  Clip output membership to 0.4
+  Defuzzify (e.g., centroid method) to get crisp output.
+  </pre>
+
+  <h2>5. Temporal Logic Basics</h2>
+  <p>Temporal logic adds operators for reasoning about propositions over time.</p>
+
+  <h3>5.1 Linear Temporal Logic (LTL)</h3>
+  <table>
+    <tr><th>Operator</th><th>Symbol</th><th>Meaning</th></tr>
+    <tr><td>Next</td><td>X p / O p</td><td>p holds in the next state</td></tr>
+    <tr><td>Globally</td><td>G p / [] p</td><td>p holds in all future states</td></tr>
+    <tr><td>Eventually</td><td>F p / <> p</td><td>p holds in some future state</td></tr>
+    <tr><td>Until</td><td>p U q</td><td>p holds until q becomes true</td></tr>
+  </table>
+
+  <h3>5.2 LTL Examples</h3>
+  <pre>
+"The light is always eventually green":
+  G(F(green))
+
+"Once the alarm sounds, the system shuts down within the next state":
+  G(alarm -> X(shutdown))
+
+"The request is always eventually followed by a response":
+  G(request -> F(response))
+
+"Mutual exclusion: processes p1 and p2 are never both in critical section":
+  G(~(cs1 ^ cs2))
+
+"Starvation freedom: if a process requests, it eventually enters CS":
+  G(request_i -> F(cs_i))
+  </pre>
+
+  <h3>5.3 CTL (Computation Tree Logic)</h3>
+  <pre>
+CTL adds path quantifiers:
+  A = for All computation paths
+  E = there Exists a computation path
+
+Combined with temporal operators:
+  AG p:  On all paths, p always holds (invariant)
+  EF p:  There exists a path where p eventually holds (reachable)
+  AF p:  On all paths, p eventually holds (inevitable)
+  EG p:  There exists a path where p always holds
+
+Key difference from LTL:
+  LTL: implicit universal path quantification
+  CTL: explicit path quantifiers required
+  </pre>
+
+  <h2>6. Resolution Example Gallery</h2>
+
+  <h3>Example 1: Prove ~Q from {P, P -> Q -> R, ~R}</h3>
+  <pre>
+Convert to CNF:
+  {P}, {~P v ~Q v R}, {~R}
+
+Resolution steps:
+  Resolve {P} and {~P v ~Q v R}: {~Q v R}
+  Resolve {~Q v R} and {~R}: {~Q}
+
+Result: ~Q is derived. Proved!
+  </pre>
+
+  <h3>Example 2: Prove S from {P v Q, P -> R, Q -> S, R -> S}</h3>
+  <pre>
+CNF: {P v Q}, {~P v R}, {~Q v S}, {~R v S}
+Add ~S: {~S}
+
+Resolve {~R v S} and {~S}: {~R}
+Resolve {~P v R} and {~R}: {~P}
+Resolve {P v Q} and {~P}: {Q}
+Resolve {Q} and {~Q v S}: {S}
+Resolve {S} and {~S}: {} (empty clause!)
+
+S is proved.
+  </pre>
+
+  <div class="note"><strong>GATE Tip:</strong> In resolution problems, always negate what you want to prove, convert everything to CNF, and apply resolution. The order in which you resolve clauses can affect efficiency but not correctness.</div>
+
+</article>
+</body>
+</html>

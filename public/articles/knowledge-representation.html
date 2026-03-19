@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Representation and Reasoning | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Knowledge Representation and Reasoning</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. Propositional Logic Recap</h2>
+  <p>Propositional logic deals with propositions (statements that are true or false) and logical connectives. While powerful, it has significant limitations: it cannot express relationships between objects, quantify over variables, or represent partial information naturally.</p>
+
+  <table>
+    <tr><th>Connective</th><th>Symbol</th><th>Meaning</th></tr>
+    <tr><td>Negation</td><td>&not;p</td><td>NOT p</td></tr>
+    <tr><td>Conjunction</td><td>p &and; q</td><td>p AND q</td></tr>
+    <tr><td>Disjunction</td><td>p &or; q</td><td>p OR q</td></tr>
+    <tr><td>Implication</td><td>p &rarr; q</td><td>if p then q</td></tr>
+    <tr><td>Biconditional</td><td>p &harr; q</td><td>p if and only if q</td></tr>
+  </table>
+
+  <p><strong>Limitations of propositional logic:</strong> Cannot represent "All humans are mortal" or "There exists a prime number greater than 100" without enumerating all instances.</p>
+
+  <h2>2. First-Order Logic (FOL)</h2>
+  <p>First-order logic (also called predicate logic) extends propositional logic with <strong>variables</strong>, <strong>quantifiers</strong>, <strong>predicates</strong>, and <strong>functions</strong>, enabling us to express general statements about objects and their relationships.</p>
+
+  <h3>2.1 Components of FOL</h3>
+  <table>
+    <tr><th>Component</th><th>Description</th><th>Examples</th></tr>
+    <tr><td>Constants</td><td>Specific objects</td><td>John, 5, BlockA</td></tr>
+    <tr><td>Variables</td><td>Range over objects</td><td>x, y, z</td></tr>
+    <tr><td>Predicates</td><td>Relations/properties</td><td>Human(x), Loves(x, y), Greater(x, y)</td></tr>
+    <tr><td>Functions</td><td>Mappings to objects</td><td>Father(x), Plus(x, y)</td></tr>
+    <tr><td>Quantifiers</td><td>Scope over variables</td><td>&forall; (universal), &exist; (existential)</td></tr>
+    <tr><td>Connectives</td><td>Logical operators</td><td>&not;, &and;, &or;, &rarr;, &harr;</td></tr>
+  </table>
+
+  <h3>2.2 Quantifiers</h3>
+  <div class="formula">
+    Universal: &forall;x P(x) &mdash; "For all x, P(x) is true"<br>
+    Existential: &exist;x P(x) &mdash; "There exists an x such that P(x) is true"
+  </div>
+
+  <p><strong>Key equivalences:</strong></p>
+  <div class="formula">
+    &not;(&forall;x P(x)) &equiv; &exist;x &not;P(x)<br>
+    &not;(&exist;x P(x)) &equiv; &forall;x &not;P(x)<br>
+    &forall;x P(x) typically pairs with &rarr; : &forall;x (Human(x) &rarr; Mortal(x))<br>
+    &exist;x P(x) typically pairs with &and; : &exist;x (Student(x) &and; Smart(x))
+  </div>
+
+  <div class="example">
+    <strong>Example Translations:</strong>
+    <ul>
+      <li>"All dogs are animals" &rarr; <code>&forall;x (Dog(x) &rarr; Animal(x))</code></li>
+      <li>"Some students love AI" &rarr; <code>&exist;x (Student(x) &and; Loves(x, AI))</code></li>
+      <li>"Everyone who is a parent loves their children" &rarr; <code>&forall;x &forall;y (Parent(x, y) &rarr; Loves(x, y))</code></li>
+      <li>"No robot is human" &rarr; <code>&forall;x (Robot(x) &rarr; &not;Human(x))</code> or <code>&not;&exist;x (Robot(x) &and; Human(x))</code></li>
+    </ul>
+  </div>
+
+  <h2>3. Inference Rules</h2>
+
+  <h3>3.1 Modus Ponens</h3>
+  <div class="formula">
+    From: p &rarr; q and p<br>
+    Conclude: q
+  </div>
+  <p>Generalized Modus Ponens for FOL: if we have <code>p1 &and; p2 &and; ... &and; pn &rarr; q</code> and all premises p1', p2', ..., pn' that unify with p1, p2, ..., pn, we can conclude the substituted q.</p>
+
+  <h3>3.2 Modus Tollens</h3>
+  <div class="formula">
+    From: p &rarr; q and &not;q<br>
+    Conclude: &not;p
+  </div>
+
+  <h3>3.3 Resolution</h3>
+  <p>Resolution is a powerful and complete inference rule for clausal form (disjunctions of literals):</p>
+  <div class="formula">
+    From: (p &or; r) and (&not;p &or; q)<br>
+    Conclude: (r &or; q)  [resolvent]
+  </div>
+  <p>For FOL, resolution requires <strong>unification</strong> to match complementary literals. Resolution is <strong>refutation-complete</strong>: to prove a statement, negate it and show that resolution derives the empty clause (contradiction).</p>
+
+  <h2>4. Unification</h2>
+  <p>Unification finds a <strong>substitution</strong> that makes two expressions identical. The <strong>most general unifier (MGU)</strong> is the simplest such substitution.</p>
+
+  <div class="example">
+    <strong>Unification Examples:</strong>
+    <ul>
+      <li><code>Knows(John, x)</code> and <code>Knows(John, Jane)</code> &rarr; MGU: {x/Jane}</li>
+      <li><code>Knows(John, x)</code> and <code>Knows(y, Bill)</code> &rarr; MGU: {y/John, x/Bill}</li>
+      <li><code>Knows(John, x)</code> and <code>Knows(x, Bill)</code> &rarr; Fails (x cannot be both John and Bill)</li>
+      <li><code>Knows(John, x)</code> and <code>Knows(y, Mother(y))</code> &rarr; MGU: {y/John, x/Mother(John)}</li>
+    </ul>
+    <strong>Occur check:</strong> <code>x</code> and <code>f(x)</code> cannot unify (x would have to contain itself).
+  </div>
+
+  <h2>5. Forward and Backward Chaining</h2>
+
+  <h3>5.1 Forward Chaining</h3>
+  <p>Data-driven reasoning. Starts with known facts and applies inference rules to derive new facts until the goal is reached or no more rules apply.</p>
+  <ul>
+    <li>Applies all applicable rules in each iteration</li>
+    <li>Sound and complete for definite clause knowledge bases</li>
+    <li>May derive many irrelevant conclusions</li>
+    <li>Used in: production systems, business rule engines</li>
+  </ul>
+
+  <h3>5.2 Backward Chaining</h3>
+  <p>Goal-driven reasoning. Starts with the goal and works backward, finding rules whose conclusions match the goal and setting up their premises as new sub-goals.</p>
+  <ul>
+    <li>Only considers relevant rules</li>
+    <li>Much more focused than forward chaining</li>
+    <li>May suffer from infinite loops without cycle detection</li>
+    <li>Used in: Prolog, expert systems, diagnostic systems</li>
+  </ul>
+
+  <div class="example">
+    <strong>Example:</strong><br>
+    Knowledge base: (1) A &rarr; B, (2) B &and; C &rarr; D, (3) A is true, (4) C is true.<br>
+    <strong>Forward chaining:</strong> Start with {A, C}. Apply rule 1: derive B &rarr; {A, B, C}. Apply rule 2: derive D &rarr; {A, B, C, D}.<br>
+    <strong>Backward chaining for D:</strong> Goal = D. Rule 2 can derive D if B &and; C. Sub-goal B: Rule 1 can derive B if A. Sub-goal A: A is a known fact. Sub-goal C: C is a known fact. Therefore D is proved.
+  </div>
+
+  <h2>6. Semantic Networks</h2>
+  <p>A semantic network represents knowledge as a graph where <strong>nodes</strong> represent concepts/objects and <strong>edges</strong> represent relationships between them.</p>
+
+  <table>
+    <tr><th>Relationship</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td>IS-A</td><td>Class membership / subclass</td><td>Dog IS-A Animal</td></tr>
+    <tr><td>HAS-A</td><td>Part-whole / possession</td><td>Car HAS-A Engine</td></tr>
+    <tr><td>INSTANCE-OF</td><td>Individual is member of class</td><td>Rex INSTANCE-OF Dog</td></tr>
+  </table>
+
+  <p><strong>Property inheritance:</strong> Properties are inherited through IS-A links. If "Animal HAS property Breathes" and "Dog IS-A Animal", then Dog inherits the property Breathes. Exceptions can override inherited properties.</p>
+
+  <h2>7. Frames</h2>
+  <p>Frames are structured knowledge representation schemes. Each frame represents a class or instance and contains <strong>slots</strong> (attributes) with <strong>fillers</strong> (values).</p>
+
+  <div class="example">
+    <strong>Example Frame:</strong><br>
+    <code>
+    Frame: Dog<br>
+    &nbsp;&nbsp;IS-A: Animal<br>
+    &nbsp;&nbsp;Legs: 4<br>
+    &nbsp;&nbsp;Sound: Bark<br>
+    &nbsp;&nbsp;Has-Tail: True<br>
+    &nbsp;&nbsp;Diet: Omnivore<br><br>
+    Frame: Rex<br>
+    &nbsp;&nbsp;INSTANCE-OF: Dog<br>
+    &nbsp;&nbsp;Breed: Labrador<br>
+    &nbsp;&nbsp;Color: Golden<br>
+    &nbsp;&nbsp;Age: 5
+    </code>
+  </div>
+
+  <p>Frames support <strong>default values</strong> (can be overridden), <strong>inheritance</strong> through IS-A hierarchies, and <strong>procedural attachments</strong> (if-needed, if-added, if-removed demons).</p>
+
+  <h2>8. Comparison of Knowledge Representation Methods</h2>
+  <table>
+    <tr><th>Method</th><th>Strengths</th><th>Weaknesses</th></tr>
+    <tr><td>Propositional Logic</td><td>Simple, decidable, sound and complete inference</td><td>Cannot represent objects, relations, or quantification</td></tr>
+    <tr><td>First-Order Logic</td><td>Expressive, sound and complete inference (via resolution)</td><td>Semi-decidable, can be computationally expensive</td></tr>
+    <tr><td>Semantic Networks</td><td>Intuitive visual representation, inheritance</td><td>No formal semantics, ambiguous edge meanings</td></tr>
+    <tr><td>Frames</td><td>Structured, supports defaults and inheritance</td><td>Difficult exception handling, lacks formal inference</td></tr>
+  </table>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "Knowledge Representation and Reasoning - GATE Quiz",
+    "questions": [
+      {
+        "question": "Which of the following is the correct FOL representation of 'All students who study hard pass the exam'?",
+        "options": [
+          "∀x (Student(x) ∧ StudyHard(x) ∧ Pass(x))",
+          "∀x (Student(x) ∧ StudyHard(x) → Pass(x))",
+          "∃x (Student(x) → StudyHard(x) → Pass(x))",
+          "∀x (Student(x) → StudyHard(x) ∧ Pass(x))"
+        ],
+        "answer": 1,
+        "explanation": "The correct representation uses universal quantification with implication: for all x, if x is a student AND x studies hard, then x passes. Option A incorrectly asserts all three as conjuncts. Option D says all students study hard and pass."
+      },
+      {
+        "question": "What is the most general unifier (MGU) of P(x, f(y)) and P(a, f(g(z)))?",
+        "options": [
+          "{x/a, y/g(z)}",
+          "{x/a, y/z}",
+          "{x/a, f(y)/f(g(z))}",
+          "No unifier exists"
+        ],
+        "answer": 0,
+        "explanation": "To unify P(x, f(y)) and P(a, f(g(z))), we match x with a (giving x/a) and f(y) with f(g(z)), which requires y to match g(z) (giving y/g(z)). The MGU is {x/a, y/g(z)}."
+      },
+      {
+        "question": "Resolution refutation proves a statement by:",
+        "options": [
+          "Directly deriving the statement from the knowledge base",
+          "Negating the statement and deriving the empty clause (contradiction)",
+          "Converting the statement to CNF and checking satisfiability",
+          "Applying Modus Ponens repeatedly until the statement appears"
+        ],
+        "answer": 1,
+        "explanation": "Resolution refutation works by negating the statement to be proved, adding it to the knowledge base in clausal form, and applying resolution until the empty clause (a contradiction) is derived. This proves the original statement by contradiction."
+      },
+      {
+        "question": "Which reasoning strategy is goal-driven and works backward from the conclusion?",
+        "options": ["Forward chaining", "Backward chaining", "Resolution", "Unification"],
+        "answer": 1,
+        "explanation": "Backward chaining is goal-driven: it starts with the goal (conclusion) and works backward, finding rules whose conclusions match the goal and recursively trying to prove their premises. Forward chaining is data-driven, starting from known facts."
+      },
+      {
+        "question": "In a semantic network, the IS-A relationship represents:",
+        "options": [
+          "Part-whole relationship",
+          "Subclass or class membership relationship",
+          "Causal relationship",
+          "Temporal relationship"
+        ],
+        "answer": 1,
+        "explanation": "IS-A represents either a subclass relationship (e.g., Dog IS-A Animal) or class membership. It enables property inheritance: properties of the superclass are inherited by the subclass."
+      },
+      {
+        "question": "Which of the following is NOT a valid equivalence in First-Order Logic?",
+        "options": [
+          "¬(∀x P(x)) ≡ ∃x ¬P(x)",
+          "¬(∃x P(x)) ≡ ∀x ¬P(x)",
+          "∀x (P(x) ∧ Q(x)) ≡ (∀x P(x)) ∧ (∀x Q(x))",
+          "∃x (P(x) ∧ Q(x)) ≡ (∃x P(x)) ∧ (∃x Q(x))"
+        ],
+        "answer": 3,
+        "explanation": "Option D is invalid. ∃x (P(x) ∧ Q(x)) means there is a single x satisfying both P and Q. But (∃x P(x)) ∧ (∃x Q(x)) means some x satisfies P and some (possibly different) x satisfies Q. The left side implies the right, but not vice versa."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

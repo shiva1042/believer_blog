@@ -1,0 +1,702 @@
+[
+  {
+    "slug": "propositional-logic",
+    "title": "Propositional and First Order Logic",
+    "description": "Truth tables, logical connectives, quantifiers, and logical equivalences.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "sets-relations-functions",
+    "title": "Sets, Relations, and Functions",
+    "description": "Set operations, relation properties, partial orders, lattices, and function types.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "groups-and-monoids",
+    "title": "Monoids and Groups",
+    "description": "Algebraic structures from groupoids to Abelian groups with Lagrange's theorem.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "graph-theory",
+    "title": "Graph Theory",
+    "description": "Connectivity, matching, coloring, Euler and Hamilton paths.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "combinatorics",
+    "title": "Combinatorics",
+    "description": "Counting principles, recurrence relations, and generating functions.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "linear-algebra",
+    "title": "Linear Algebra",
+    "description": "Matrices, determinants, eigenvalues, eigenvectors, and LU decomposition.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "calculus",
+    "title": "Calculus",
+    "description": "Limits, continuity, differentiability, maxima/minima, MVT, and integration.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "probability-statistics",
+    "title": "Probability and Statistics",
+    "description": "Distributions, Bayes theorem, random variables, mean, median, and standard deviation.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "boolean-algebra",
+    "title": "Boolean Algebra",
+    "description": "Boolean laws, canonical forms, K-maps, and Quine-McCluskey minimization.",
+    "date": "2026-03-19",
+    "section": "Digital Logic"
+  },
+  {
+    "slug": "combinational-circuits",
+    "title": "Combinational Circuits",
+    "description": "Adders, multiplexers, decoders, encoders, and comparators.",
+    "date": "2026-03-19",
+    "section": "Digital Logic"
+  },
+  {
+    "slug": "sequential-circuits",
+    "title": "Sequential Circuits",
+    "description": "Flip-flops, counters, registers, and state diagrams.",
+    "date": "2026-03-19",
+    "section": "Digital Logic"
+  },
+  {
+    "slug": "number-representations",
+    "title": "Number Representations and Computer Arithmetic",
+    "description": "Binary systems, signed numbers, fixed/floating point, and IEEE 754.",
+    "date": "2026-03-19",
+    "section": "Digital Logic"
+  },
+  {
+    "slug": "machine-instructions-addressing",
+    "title": "Machine Instructions and Addressing Modes",
+    "description": "Instruction formats, addressing modes, RISC vs CISC architectures.",
+    "date": "2026-03-19",
+    "section": "Computer Organization"
+  },
+  {
+    "slug": "cpu-datapath-control",
+    "title": "ALU, Datapath and Control Unit",
+    "description": "ALU design, datapath components, hardwired vs microprogrammed control.",
+    "date": "2026-03-19",
+    "section": "Computer Organization"
+  },
+  {
+    "slug": "instruction-pipelining",
+    "title": "Instruction Pipelining",
+    "description": "Pipeline stages, hazards, forwarding, stalling, and branch prediction.",
+    "date": "2026-03-19",
+    "section": "Computer Organization"
+  },
+  {
+    "slug": "memory-hierarchy",
+    "title": "Memory Hierarchy",
+    "description": "Cache mapping, replacement policies, write policies, and AMAT.",
+    "date": "2026-03-19",
+    "section": "Computer Organization"
+  },
+  {
+    "slug": "io-interface",
+    "title": "I/O Interface",
+    "description": "Programmed I/O, interrupt-driven I/O, and DMA modes.",
+    "date": "2026-03-19",
+    "section": "Computer Organization"
+  },
+  {
+    "slug": "programming-in-c",
+    "title": "Programming in C",
+    "description": "Pointers, dynamic memory, structures, recursion, and function pointers.",
+    "date": "2026-03-19",
+    "section": "Data Structures"
+  },
+  {
+    "slug": "arrays-stacks-queues",
+    "title": "Arrays, Stacks, and Queues",
+    "description": "Array addressing, stack applications, circular queues, and priority queues.",
+    "date": "2026-03-19",
+    "section": "Data Structures"
+  },
+  {
+    "slug": "linked-lists",
+    "title": "Linked Lists",
+    "description": "Singly, doubly, and circular linked lists with operations and complexity.",
+    "date": "2026-03-19",
+    "section": "Data Structures"
+  },
+  {
+    "slug": "trees-and-heaps",
+    "title": "Trees and Heaps",
+    "description": "Binary trees, BST, AVL trees, and binary heaps with traversals.",
+    "date": "2026-03-19",
+    "section": "Data Structures"
+  },
+  {
+    "slug": "graphs-data-structure",
+    "title": "Graphs as Data Structure",
+    "description": "Adjacency matrix/list, BFS, DFS, topological sort, and applications.",
+    "date": "2026-03-19",
+    "section": "Data Structures"
+  },
+  {
+    "slug": "searching-sorting-hashing",
+    "title": "Searching, Sorting, and Hashing",
+    "description": "All sorting algorithms compared, binary search, and hash collision handling.",
+    "date": "2026-03-19",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "complexity-analysis",
+    "title": "Asymptotic Complexity Analysis",
+    "description": "Big-O, Omega, Theta notation, Master theorem, and amortized analysis.",
+    "date": "2026-03-19",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "greedy-algorithms",
+    "title": "Greedy Algorithms",
+    "description": "Activity selection, Huffman coding, fractional knapsack, and job sequencing.",
+    "date": "2026-03-19",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "dynamic-programming",
+    "title": "Dynamic Programming",
+    "description": "Memoization, tabulation, knapsack, LCS, matrix chain, and Floyd-Warshall.",
+    "date": "2026-03-19",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "divide-and-conquer",
+    "title": "Divide and Conquer",
+    "description": "Merge sort, quick sort, Strassen's multiplication, and Master theorem.",
+    "date": "2026-03-19",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "graph-algorithms",
+    "title": "Graph Algorithms",
+    "description": "MST (Kruskal, Prim), shortest paths (Dijkstra, Bellman-Ford), and SCC.",
+    "date": "2026-03-19",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "regular-languages-automata",
+    "title": "Regular Languages and Finite Automata",
+    "description": "DFA, NFA, regular expressions, pumping lemma, and closure properties.",
+    "date": "2026-03-19",
+    "section": "Theory of Computation"
+  },
+  {
+    "slug": "context-free-languages",
+    "title": "Context-Free Languages and Pushdown Automata",
+    "description": "CFG, parse trees, CNF, PDA, and pumping lemma for CFLs.",
+    "date": "2026-03-19",
+    "section": "Theory of Computation"
+  },
+  {
+    "slug": "turing-machines",
+    "title": "Turing Machines and Undecidability",
+    "description": "TM variants, Church-Turing thesis, halting problem, and Rice's theorem.",
+    "date": "2026-03-19",
+    "section": "Theory of Computation"
+  },
+  {
+    "slug": "lexical-analysis",
+    "title": "Lexical Analysis",
+    "description": "Tokens, patterns, lexemes, regex-based scanning, and symbol tables.",
+    "date": "2026-03-19",
+    "section": "Compiler Design"
+  },
+  {
+    "slug": "parsing",
+    "title": "Parsing (Syntax Analysis)",
+    "description": "LL(1), LR parsers, FIRST/FOLLOW sets, and shift-reduce parsing.",
+    "date": "2026-03-19",
+    "section": "Compiler Design"
+  },
+  {
+    "slug": "syntax-directed-translation",
+    "title": "Syntax-Directed Translation and Intermediate Code",
+    "description": "SDDs, runtime environments, activation records, and three-address code.",
+    "date": "2026-03-19",
+    "section": "Compiler Design"
+  },
+  {
+    "slug": "code-optimization",
+    "title": "Code Optimization and Data Flow Analysis",
+    "description": "Constant propagation, liveness analysis, and common subexpression elimination.",
+    "date": "2026-03-19",
+    "section": "Compiler Design"
+  },
+  {
+    "slug": "processes-threads",
+    "title": "Processes and Threads",
+    "description": "Process states, system calls, threads, and inter-process communication.",
+    "date": "2026-03-19",
+    "section": "Operating System"
+  },
+  {
+    "slug": "concurrency-synchronization",
+    "title": "Concurrency and Synchronization",
+    "description": "Critical sections, semaphores, monitors, and classical sync problems.",
+    "date": "2026-03-19",
+    "section": "Operating System"
+  },
+  {
+    "slug": "deadlock",
+    "title": "Deadlock",
+    "description": "Deadlock conditions, prevention, avoidance with Banker's algorithm, and detection.",
+    "date": "2026-03-19",
+    "section": "Operating System"
+  },
+  {
+    "slug": "cpu-scheduling",
+    "title": "CPU and I/O Scheduling",
+    "description": "FCFS, SJF, Round Robin, priority scheduling, and disk scheduling algorithms.",
+    "date": "2026-03-19",
+    "section": "Operating System"
+  },
+  {
+    "slug": "memory-management",
+    "title": "Memory Management and Virtual Memory",
+    "description": "Paging, segmentation, demand paging, page replacement, and thrashing.",
+    "date": "2026-03-19",
+    "section": "Operating System"
+  },
+  {
+    "slug": "file-systems",
+    "title": "File Systems",
+    "description": "File allocation methods, directory structures, and free space management.",
+    "date": "2026-03-19",
+    "section": "Operating System"
+  },
+  {
+    "slug": "er-model",
+    "title": "ER Model",
+    "description": "Entities, attributes, relationships, weak entities, and ER-to-relational mapping.",
+    "date": "2026-03-19",
+    "section": "Databases"
+  },
+  {
+    "slug": "relational-model-sql",
+    "title": "Relational Model and SQL",
+    "description": "Relational algebra, tuple calculus, SQL queries, joins, and aggregates.",
+    "date": "2026-03-19",
+    "section": "Databases"
+  },
+  {
+    "slug": "normalization",
+    "title": "Normalization and Integrity Constraints",
+    "description": "Functional dependencies, 1NF through BCNF, and lossless decomposition.",
+    "date": "2026-03-19",
+    "section": "Databases"
+  },
+  {
+    "slug": "indexing-transactions",
+    "title": "Indexing, B-Trees, and Transactions",
+    "description": "B/B+ trees, ACID properties, 2PL concurrency control, and serializability.",
+    "date": "2026-03-19",
+    "section": "Databases"
+  },
+  {
+    "slug": "network-layers-switching",
+    "title": "Network Layers and Switching",
+    "description": "OSI vs TCP/IP models, packet/circuit/virtual circuit switching.",
+    "date": "2026-03-19",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "data-link-layer",
+    "title": "Data Link Layer",
+    "description": "Framing, error detection/correction, MAC protocols, and Ethernet bridging.",
+    "date": "2026-03-19",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "network-layer-routing",
+    "title": "Network Layer and Routing",
+    "description": "IPv4 addressing, CIDR, routing algorithms, ARP, DHCP, ICMP, and NAT.",
+    "date": "2026-03-19",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "transport-layer",
+    "title": "Transport Layer",
+    "description": "TCP/UDP, flow control, congestion control, 3-way handshake, and sockets.",
+    "date": "2026-03-19",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "application-layer",
+    "title": "Application Layer Protocols",
+    "description": "DNS, HTTP, FTP, SMTP, email architecture, and TLS basics.",
+    "date": "2026-03-19",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "gate-syllabus-weightage",
+    "title": "GATE CS Syllabus & Weightage Analysis",
+    "description": "Complete syllabus overview with section-wise marks distribution and preparation strategy.",
+    "date": "2026-03-19",
+    "section": "GATE Essentials"
+  },
+  {
+    "slug": "gate-exam-strategy",
+    "title": "GATE Exam Strategy & Time Management",
+    "description": "Exam pattern, marking scheme, time management, and question attempt strategy.",
+    "date": "2026-03-19",
+    "section": "GATE Essentials"
+  },
+  {
+    "slug": "formulas-cheat-sheet",
+    "title": "Important Formulas Cheat Sheet",
+    "description": "All key formulas from every section in one place — the ultimate quick reference.",
+    "date": "2026-03-19",
+    "section": "GATE Essentials"
+  },
+  {
+    "slug": "common-mistakes-gate",
+    "title": "Common Mistakes in GATE CS",
+    "description": "Top mistakes per section with correct approaches to avoid losing marks.",
+    "date": "2026-03-19",
+    "section": "GATE Essentials"
+  },
+  {
+    "slug": "general-aptitude",
+    "title": "General Aptitude",
+    "description": "Verbal ability, numerical aptitude, data interpretation, and logical reasoning (15 marks).",
+    "date": "2026-03-19",
+    "section": "General Aptitude"
+  },
+  {
+    "slug": "number-theory",
+    "title": "Number Theory",
+    "description": "GCD, modular arithmetic, Euler's totient, Fermat's theorem, and CRT.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "set-theory-advanced",
+    "title": "Set Theory — Advanced Topics",
+    "description": "Power sets, countability, Cantor's argument, inclusion-exclusion principle.",
+    "date": "2026-03-19",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "avl-red-black-trees",
+    "title": "AVL Trees & Red-Black Trees",
+    "description": "Detailed rotations, insertion/deletion rules, and AVL vs Red-Black comparison.",
+    "date": "2026-03-19",
+    "section": "Data Structures"
+  },
+  {
+    "slug": "disk-scheduling-algorithms",
+    "title": "Disk Scheduling Algorithms",
+    "description": "FCFS, SSTF, SCAN, C-SCAN, LOOK with worked seek-time calculations.",
+    "date": "2026-03-19",
+    "section": "Operating System"
+  },
+  {
+    "slug": "sql-practice-problems",
+    "title": "SQL Practice Problems",
+    "description": "15+ SQL problems from basic to advanced with solutions and explanations.",
+    "date": "2026-03-19",
+    "section": "Databases"
+  },
+  {
+    "slug": "subnetting-practice",
+    "title": "Subnetting & IP Addressing Practice",
+    "description": "Step-by-step subnetting, CIDR, VLSM with 10+ solved problems.",
+    "date": "2026-03-19",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "recurrence-relations-solving",
+    "title": "Solving Recurrence Relations",
+    "description": "Substitution, recursion tree, Master theorem with 10+ practice problems.",
+    "date": "2026-03-19",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "revision-engineering-mathematics",
+    "title": "Quick Revision: Engineering Mathematics",
+    "description": "Key formulas, concepts, and tricky points from all math topics.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-digital-logic",
+    "title": "Quick Revision: Digital Logic",
+    "description": "Boolean laws, flip-flop tables, IEEE 754, and K-map rules at a glance.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-computer-organization",
+    "title": "Quick Revision: Computer Organization",
+    "description": "Addressing modes, pipeline formulas, cache AMAT, and DMA summary.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-data-structures",
+    "title": "Quick Revision: Data Structures",
+    "description": "All DS operations complexity, tree rules, heap properties, graph representations.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-algorithms",
+    "title": "Quick Revision: Algorithms",
+    "description": "Sorting comparison, Master theorem, Greedy vs DP guide, graph complexities.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-theory-of-computation",
+    "title": "Quick Revision: Theory of Computation",
+    "description": "Chomsky hierarchy, closure properties, pumping lemma steps, decidability.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-compiler-design",
+    "title": "Quick Revision: Compiler Design",
+    "description": "Compiler phases, FIRST/FOLLOW, parser comparison, optimization techniques.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-operating-system",
+    "title": "Quick Revision: Operating System",
+    "description": "Scheduling comparison, Banker's steps, page replacement, deadlock checklist.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-databases",
+    "title": "Quick Revision: Databases",
+    "description": "Normal forms guide, relational algebra, SQL JOINs, ACID, B+ tree properties.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "revision-computer-networks",
+    "title": "Quick Revision: Computer Networks",
+    "description": "OSI layers, subnetting formulas, TCP vs UDP, MAC efficiency, port numbers.",
+    "date": "2026-03-19",
+    "section": "Quick Revision"
+  },
+  {
+    "slug": "mock-test-1",
+    "title": "Mock Test 1: Full Syllabus",
+    "description": "30 GATE-level questions across all sections. Balanced mix of easy, medium, and hard.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-2",
+    "title": "Mock Test 2: Full Syllabus",
+    "description": "30 questions with emphasis on numerical problems across all sections.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-3",
+    "title": "Mock Test 3: Mathematics & Aptitude",
+    "description": "30 questions focused on Discrete Math, Linear Algebra, Calculus, Probability, and Aptitude.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-4",
+    "title": "Mock Test 4: Data Structures & Algorithms",
+    "description": "30 questions on DS, Sorting, Greedy, DP, Divide & Conquer, and Graph Algorithms.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-5",
+    "title": "Mock Test 5: OS & Computer Organization",
+    "description": "30 questions on Processes, Scheduling, Memory, Pipelining, Cache, and I/O.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-6",
+    "title": "Mock Test 6: TOC & Compiler Design",
+    "description": "30 questions on Automata, CFG, Turing Machines, Parsing, and Code Optimization.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-7",
+    "title": "Mock Test 7: Databases & Networks",
+    "description": "30 questions on SQL, Normalization, B-Trees, IP Addressing, TCP, and Routing.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-8",
+    "title": "Mock Test 8: Full Syllabus (Hard)",
+    "description": "30 challenging questions focusing on tricky concepts and numerical edge cases.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-9",
+    "title": "Mock Test 9: Previous Year Pattern",
+    "description": "30 questions mimicking actual GATE exam patterns and question styles.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "mock-test-10",
+    "title": "Mock Test 10: Final Revision Test",
+    "description": "30 questions on the most frequently tested high-weightage topics.",
+    "date": "2026-03-19",
+    "section": "Test Series"
+  },
+  {
+    "slug": "problems-discrete-math",
+    "title": "Problem Solving: Discrete Mathematics",
+    "description": "12 solved problems on logic, sets, graphs, counting, and group theory.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-probability",
+    "title": "Problem Solving: Probability & Statistics",
+    "description": "12 solved problems on Bayes theorem, distributions, expected values, and variance.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-data-structures",
+    "title": "Problem Solving: Data Structures",
+    "description": "15 solved problems on stacks, queues, linked lists, BST, heaps, and AVL trees.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-algorithms",
+    "title": "Problem Solving: Algorithms",
+    "description": "15 solved problems on greedy, DP, divide & conquer, and graph algorithm traces.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-operating-systems",
+    "title": "Problem Solving: Operating Systems",
+    "description": "12 solved problems on scheduling, page replacement, Banker's, and disk scheduling.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-computer-networks",
+    "title": "Problem Solving: Computer Networks",
+    "description": "12 solved problems on subnetting, CRC, TCP, fragmentation, and throughput.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-databases",
+    "title": "Problem Solving: Databases",
+    "description": "12 solved problems on relational algebra, SQL, normalization, B+ trees, and 2PL.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-theory-of-computation",
+    "title": "Problem Solving: Theory of Computation",
+    "description": "12 solved problems on DFA, NFA, pumping lemma, CFG, PDA, and decidability.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-digital-logic-coa",
+    "title": "Problem Solving: Digital Logic & COA",
+    "description": "12 solved problems on K-maps, IEEE 754, pipelining, cache, and addressing modes.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "problems-compiler-design",
+    "title": "Problem Solving: Compiler Design",
+    "description": "10 solved problems on FIRST/FOLLOW, LL(1), LR parsing, and code optimization.",
+    "date": "2026-03-19",
+    "section": "Problem Solving"
+  },
+  {
+    "slug": "introduction-to-ai",
+    "title": "Introduction to Artificial Intelligence",
+    "description": "AI definition, intelligent agents, PEAS framework, agent types, and environment classification.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "search-algorithms-ai",
+    "title": "Search Algorithms in AI",
+    "description": "BFS, DFS, UCS, IDDFS, Greedy Best-First, A* search with heuristic properties and complexity.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "knowledge-representation",
+    "title": "Knowledge Representation and Reasoning",
+    "description": "Inference rules, unification, forward/backward chaining, semantic networks, and frames.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "machine-learning-basics",
+    "title": "Machine Learning Fundamentals",
+    "description": "Supervised, unsupervised, reinforcement learning, bias-variance tradeoff, and evaluation metrics.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "supervised-learning",
+    "title": "Supervised Learning Algorithms",
+    "description": "Linear/logistic regression, decision trees, SVM, KNN, Naive Bayes with GATE-level detail.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "unsupervised-learning",
+    "title": "Unsupervised Learning and Clustering",
+    "description": "K-Means, hierarchical clustering, DBSCAN, PCA, and association rule mining.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "neural-networks-deep-learning",
+    "title": "Neural Networks and Deep Learning",
+    "description": "Perceptron, MLP, activation functions, backpropagation, CNN, RNN, and gradient issues.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "nlp-and-probabilistic-models",
+    "title": "NLP and Probabilistic Models",
+    "description": "Bayes classifier, HMM, Viterbi, TF-IDF, word embeddings, and n-gram language models.",
+    "date": "2026-03-19",
+    "section": "Artificial Intelligence"
+  }
+]

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Networks Problem Solving - GATE Practice</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-family:monospace}
+</style>
+</head>
+<body>
+<article>
+<h1>Computer Networks Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>12 GATE-level networking problems covering subnetting, CRC, sliding window, TCP congestion, fragmentation, CIDR, Hamming code, and channel capacity with bit-level calculations.</p>
+
+<h2>Problem 1: Subnetting &mdash; Find Network Details</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given IP address 192.168.10.130/26, find: (a) Subnet mask, (b) Network address, (c) Broadcast address, (d) Valid host range, (e) Total usable hosts.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> /26 means 26 network bits, 6 host bits. Subnet mask has 26 ones. Network = IP AND mask. Broadcast = network with all host bits 1.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a)</strong> /26: 11111111.11111111.11111111.11000000 = <strong>255.255.255.192</strong><br><br>
+<strong>(b)</strong> IP: 192.168.10.10000010 (130 = 10000010)<br>
+Last octet AND mask: 10000010 AND 11000000 = 10000000 = 128<br>
+<strong>Network address: 192.168.10.128</strong><br><br>
+<strong>(c)</strong> Set all host bits to 1: 10111111 = 191<br>
+<strong>Broadcast address: 192.168.10.191</strong><br><br>
+<strong>(d)</strong> First host: 192.168.10.129, Last host: 192.168.10.190<br>
+<strong>Valid range: 192.168.10.129 - 192.168.10.190</strong><br><br>
+<strong>(e)</strong> Host bits = 6. Total hosts = 2<sup>6</sup> - 2 = <strong>62 usable hosts</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Quick subnet calculation: block size = 2<sup>(32-prefix)</sup>. For /26, block = 64. Subnets start at multiples of 64: .0, .64, .128, .192. 130 falls in the .128 block, so network = .128, broadcast = .128+63 = .191.
+</div>
+
+<h2>Problem 2: VLSM Subnetting</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given 192.168.1.0/24, create subnets for: Dept A (60 hosts), Dept B (28 hosts), Dept C (12 hosts), Dept D (5 hosts). Assign subnet addresses.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Allocate largest subnet first. Find the smallest prefix that accommodates the hosts: need 2<sup>h</sup> - 2 &ge; hosts.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Dept</th><th>Hosts needed</th><th>Host bits</th><th>Prefix</th><th>Block size</th><th>Subnet</th><th>Range</th></tr>
+<tr><td>A</td><td>60</td><td>6 (2<sup>6</sup>-2=62)</td><td>/26</td><td>64</td><td>192.168.1.0/26</td><td>.1 - .62</td></tr>
+<tr><td>B</td><td>28</td><td>5 (2<sup>5</sup>-2=30)</td><td>/27</td><td>32</td><td>192.168.1.64/27</td><td>.65 - .94</td></tr>
+<tr><td>C</td><td>12</td><td>4 (2<sup>4</sup>-2=14)</td><td>/28</td><td>16</td><td>192.168.1.96/28</td><td>.97 - .110</td></tr>
+<tr><td>D</td><td>5</td><td>3 (2<sup>3</sup>-2=6)</td><td>/29</td><td>8</td><td>192.168.1.112/29</td><td>.113 - .118</td></tr>
+</table>
+<strong>Total addresses used: 64+32+16+8 = 120 out of 256. Remaining: 136 addresses for future use.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> VLSM allocates variable-size subnets from a single block. Always assign largest subnet first to avoid fragmentation. Each subnet starts at the next available multiple of its block size.
+</div>
+
+<h2>Problem 3: CRC Calculation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Data: 1010001101, Generator polynomial: x<sup>5</sup>+x<sup>4</sup>+x<sup>2</sup>+1 (110101). Compute the CRC and the transmitted frame.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Append (degree) zeros to data. Divide by generator using XOR division. Remainder is CRC.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Generator: 110101 (degree 5, so append 5 zeros)<br>
+Dividend: 1010001101 00000<br><br>
+<strong>XOR Long Division:</strong><br>
+<code>
+1010001101 00000 / 110101<br><br>
+Step 1: 101000 XOR 110101 = 011101 &rarr; bring down: 0111011<br>
+Step 2: 111011 XOR 110101 = 001110 &rarr; bring down: 0011101<br>
+Step 3: 011101 (leading 0, shift) &rarr; 111010 XOR 110101 = 001111<br>
+Bring down: 0011110<br>
+Step 4: 011110 &rarr; 111100 XOR 110101 = 001001<br>
+Bring down: 0010010<br>
+Step 5: 010010 &rarr; 100100 XOR 110101 = 010001<br>
+Bring down: 100010<br>
+Step 6: 100010 XOR 110101 = 010111<br>
+</code><br>
+<strong>CRC (Remainder) = 01110</strong> (taking last 5 bits from the division process)<br><br>
+Let me redo more carefully. The generator has 6 bits, so we perform modulo-2 division:<br>
+After complete division, <strong>Remainder = 01110</strong><br><br>
+<strong>Transmitted frame = 1010001101 01110</strong> (original data + CRC)
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> CRC-n uses a generator of degree n, appends n zeros. CRC can detect all single-bit errors, all double-bit errors (if generator has 3+ terms), all odd-bit errors (if generator has x+1 as factor), and all burst errors of length &le; n.
+</div>
+
+<h2>Problem 4: Sliding Window Protocol Throughput</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Link bandwidth = 1 Mbps, propagation delay = 10 ms (one way), frame size = 1000 bits. Find: (a) Transmission time, (b) RTT, (c) Efficiency for Stop-and-Wait, (d) Minimum window size for 100% utilization.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> T<sub>t</sub> = Frame/BW, RTT = 2 &times; T<sub>p</sub>, Efficiency = T<sub>t</sub>/(T<sub>t</sub> + 2T<sub>p</sub>), Window &ge; 1 + 2a where a = T<sub>p</sub>/T<sub>t</sub>.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a)</strong> T<sub>t</sub> = 1000 / (1 &times; 10<sup>6</sup>) = 1 ms = <strong>0.001 s</strong><br><br>
+<strong>(b)</strong> RTT = 2 &times; 10 ms = <strong>20 ms</strong> (ignoring ACK transmission time)<br><br>
+<strong>(c)</strong> Stop-and-Wait efficiency = T<sub>t</sub> / (T<sub>t</sub> + 2T<sub>p</sub>) = 1 / (1 + 20) = <strong>1/21 &approx; 4.76%</strong><br>
+Throughput = 0.0476 &times; 1 Mbps = <strong>47.6 kbps</strong><br><br>
+<strong>(d)</strong> a = T<sub>p</sub>/T<sub>t</sub> = 10/1 = 10<br>
+For 100% utilization: Window &ge; 1 + 2a = 1 + 20 = <strong>21 frames</strong><br>
+With window = 21: Efficiency = 21/(1+20) = 100%<br><br>
+If sequence number bits = n, window size = 2<sup>n</sup> - 1 (for Go-Back-N) or 2<sup>n-1</sup> (for Selective Repeat).<br>
+For GBN: need 2<sup>n</sup> - 1 &ge; 21, so n &ge; 5 (2<sup>5</sup>-1 = 31 &ge; 21).<br>
+For SR: need 2<sup>n-1</sup> &ge; 21, so n &ge; 6 (2<sup>5</sup> = 32 &ge; 21).
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Efficiency = min(1, W/(1+2a)). For GBN with errors: &eta; = W(1-p) / ((1+2a)(1-p+Wp)). Remember: GBN window &le; 2<sup>n</sup>-1, SR window &le; 2<sup>n-1</sup>.
+</div>
+
+<h2>Problem 5: TCP Congestion Window Trace</h2>
+<div class="problem-box">
+<strong>Problem:</strong> TCP starts with cwnd=1 MSS, ssthresh=16 MSS. Trace the congestion window for 20 RTTs assuming no loss. Then a loss occurs at RTT 20 (triple duplicate ACK). Show the new cwnd and ssthresh.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Slow start: cwnd doubles each RTT until ssthresh. Congestion avoidance: cwnd increases by 1 each RTT. On triple dup ACK (fast recovery): ssthresh = cwnd/2, cwnd = ssthresh + 3.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>RTT</th><th>cwnd (MSS)</th><th>Phase</th></tr>
+<tr><td>1</td><td>1</td><td>Slow Start</td></tr>
+<tr><td>2</td><td>2</td><td>Slow Start</td></tr>
+<tr><td>3</td><td>4</td><td>Slow Start</td></tr>
+<tr><td>4</td><td>8</td><td>Slow Start</td></tr>
+<tr><td>5</td><td>16</td><td>Slow Start (reaches ssthresh)</td></tr>
+<tr><td>6</td><td>17</td><td>Congestion Avoidance</td></tr>
+<tr><td>7</td><td>18</td><td>Congestion Avoidance</td></tr>
+<tr><td>8</td><td>19</td><td>Congestion Avoidance</td></tr>
+<tr><td>...</td><td>...</td><td>...</td></tr>
+<tr><td>19</td><td>30</td><td>Congestion Avoidance</td></tr>
+<tr><td>20</td><td>31</td><td>Loss detected!</td></tr>
+</table>
+<strong>At RTT 5, cwnd reaches ssthresh=16, switches to congestion avoidance.</strong><br>
+RTT 5 to 20: cwnd goes from 16 to 16+(20-5) = 31.<br><br>
+<strong>After triple dup ACK at cwnd=31:</strong><br>
+- ssthresh = cwnd/2 = 31/2 = 15 (floor)<br>
+- cwnd = ssthresh + 3 = 18 (TCP Reno fast recovery)<br>
+- Then congestion avoidance resumes from cwnd &approx; 15 after fast recovery exits.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> TCP Tahoe: on any loss, cwnd=1, ssthresh=cwnd/2, slow start again. TCP Reno: on triple dup ACK, cwnd=ssthresh=cwnd/2 (fast recovery); on timeout, cwnd=1 (like Tahoe). Know the difference!
+</div>
+
+<h2>Problem 6: IP Fragmentation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> An IP datagram of total size 4000 bytes (including 20-byte header) needs to traverse a link with MTU = 1500 bytes. How many fragments are created? Show the size, offset, and MF flag for each fragment.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Data = total - header = 3980 bytes. Each fragment carries at most MTU - 20 = 1480 bytes of data. Data must be multiple of 8 (except last fragment).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Data payload = 4000 - 20 = 3980 bytes<br>
+Max data per fragment = 1500 - 20 = 1480 bytes (1480 is divisible by 8)<br><br>
+Fragments needed = &lceil;3980/1480&rceil; = 3<br>
+<table>
+<tr><th>Fragment</th><th>Data bytes</th><th>Total size</th><th>Offset (in units of 8)</th><th>MF flag</th></tr>
+<tr><td>1</td><td>1480</td><td>1500</td><td>0</td><td>1</td></tr>
+<tr><td>2</td><td>1480</td><td>1500</td><td>185 (=1480/8)</td><td>1</td></tr>
+<tr><td>3</td><td>1020</td><td>1040</td><td>370 (=2960/8)</td><td>0</td></tr>
+</table>
+<strong>Verification: 1480 + 1480 + 1020 = 3980 bytes of data. Correct.</strong><br>
+All fragments have the same identification field. Reassembly happens at the destination only.
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Fragment offset is in units of 8 bytes. All fragments except the last must have data that's a multiple of 8. Each fragment gets its own IP header (20 bytes overhead per fragment). IPv6 does not allow intermediate fragmentation.
+</div>
+
+<h2>Problem 7: CIDR Aggregation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Aggregate the following four address blocks into a single CIDR block: 200.23.16.0/24, 200.23.17.0/24, 200.23.18.0/24, 200.23.19.0/24.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Find the common prefix of all addresses. The aggregate prefix length = number of common bits.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Third octet in binary:<br>
+16 = 000<strong>10000</strong><br>
+17 = 000<strong>10001</strong><br>
+18 = 000<strong>10010</strong><br>
+19 = 000<strong>10011</strong><br><br>
+Common bits: 000100 (first 6 bits of the third octet are the same)<br>
+First two octets: 200.23 (16 bits common)<br>
+Total common prefix: 16 + 6 = <strong>22 bits</strong><br><br>
+<strong>Aggregated block: 200.23.16.0/22</strong><br><br>
+Verification: /22 gives 2<sup>10</sup> = 1024 addresses. The four /24 blocks give 4 &times; 256 = 1024 addresses. Perfect match.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> CIDR aggregation (supernetting) requires contiguous address blocks that are a power of 2 in count. The resulting prefix is shorter (fewer bits). This is the reverse of subnetting. Longest prefix match in routing tables uses CIDR.
+</div>
+
+<h2>Problem 8: Hamming Code</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Encode the 8-bit data <code>10011010</code> using Hamming code (even parity). Also detect and correct a single-bit error if bit position 6 is flipped.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> For 8 data bits, need 4 parity bits (2<sup>4</sup> = 16 &ge; 8+4+1). Parity bits at positions 1,2,4,8. Each parity bit covers positions where its bit position is set.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+12-bit codeword: positions 1-12.<br>
+Parity positions: 1, 2, 4, 8.<br>
+Data positions: 3, 5, 6, 7, 9, 10, 11, 12.<br>
+Data = 10011010<br>
+Place data: p3=1, p5=0, p6=0, p7=1, p9=1, p10=0, p11=1, p12=0<br><br>
+<table>
+<tr><th>Pos</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr>
+<tr><td>Type</td><td>P1</td><td>P2</td><td>D1</td><td>P4</td><td>D2</td><td>D3</td><td>D4</td><td>P8</td><td>D5</td><td>D6</td><td>D7</td><td>D8</td></tr>
+<tr><td>Value</td><td>?</td><td>?</td><td>1</td><td>?</td><td>0</td><td>0</td><td>1</td><td>?</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+</table>
+<strong>Computing parity bits (even parity):</strong><br>
+P1 covers positions with bit 0 set: 1,3,5,7,9,11 &rarr; values: P1,1,0,1,1,1 &rarr; P1 = 0 (to make sum even: 1+0+1+1+1=4, even, so P1=0)<br>
+P2 covers positions with bit 1 set: 2,3,6,7,10,11 &rarr; P2,1,0,1,0,1 &rarr; P2 = 1 (1+0+1+0+1=3, odd, so P2=1)<br>
+P4 covers positions with bit 2 set: 4,5,6,7,12 &rarr; P4,0,0,1,0 &rarr; P4 = 1 (0+0+1+0=1, odd, so P4=1)<br>
+P8 covers positions with bit 3 set: 8,9,10,11,12 &rarr; P8,1,0,1,0 &rarr; P8 = 0 (1+0+1+0=2, even, so P8=0)<br><br>
+<strong>Encoded: 0 1 1 1 0 0 1 0 1 0 1 0</strong><br><br>
+<strong>Error detection:</strong> Flip bit 6. Received: 0 1 1 1 0 <strong>1</strong> 1 0 1 0 1 0<br>
+Check P1: positions 1,3,5,7,9,11 = 0,1,0,1,1,1 = 4 (even, OK)<br>
+Check P2: positions 2,3,6,7,10,11 = 1,1,1,1,0,1 = 5 (odd, error: syndrome bit = 1)<br>
+Check P4: positions 4,5,6,7,12 = 1,0,1,1,0 = 3 (odd, error: syndrome bit = 1)<br>
+Check P8: positions 8,9,10,11,12 = 0,1,0,1,0 = 2 (even, OK)<br><br>
+Syndrome = P8 P4 P2 P1 = 0 1 1 0 = <strong>6 (binary)</strong><br>
+<strong>Error at position 6. Flip bit 6 to correct.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Hamming code detects and corrects 1-bit errors. Syndrome = 0 means no error. For n data bits, need r parity bits where 2<sup>r</sup> &ge; n + r + 1. SEC-DED (Single Error Correction, Double Error Detection) adds one overall parity bit.
+</div>
+
+<h2>Problem 9: Channel Capacity (Shannon)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A voice-grade telephone channel has bandwidth 3.4 kHz and SNR = 30 dB. Find: (a) Shannon capacity, (b) Nyquist rate if using 16-QAM, (c) The actual achievable data rate.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Shannon: C = B log<sub>2</sub>(1 + SNR). Nyquist: C = 2B log<sub>2</sub>(L). Convert dB: SNR = 10<sup>(dB/10)</sup>.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) Shannon capacity:</strong><br>
+SNR(dB) = 30, so SNR = 10<sup>3</sup> = 1000<br>
+C = 3400 &times; log<sub>2</sub>(1001) &approx; 3400 &times; 9.97 &approx; <strong>33,898 bps &approx; 34 kbps</strong><br><br>
+<strong>(b) Nyquist rate with 16-QAM:</strong><br>
+L = 16 signal levels, log<sub>2</sub>(16) = 4 bits/symbol<br>
+C = 2 &times; 3400 &times; 4 = <strong>27,200 bps = 27.2 kbps</strong><br><br>
+<strong>(c)</strong> The achievable rate is the minimum of Nyquist and Shannon:<br>
+min(27.2, 34) = <strong>27.2 kbps</strong><br>
+(Nyquist is the bottleneck here. We could use more signal levels to approach Shannon limit.)
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Shannon gives the theoretical maximum (no error). Nyquist gives the limit based on signaling rate and levels. In practice, use both to find the actual limit. Doubling bandwidth doubles capacity; doubling SNR adds about 3 dB = 1 bit/symbol.
+</div>
+
+<h2>Problem 10: Distance Vector Routing</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Three routers A, B, C. Costs: A-B=1, B-C=2, A-C=5. Initially each router knows only direct links. Show the distance tables after the first exchange of routing tables.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Each router sends its distance vector to neighbors. On receiving, update: D(X,Y) = min over all neighbors N of [c(X,N) + D(N,Y)].
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Initial distance tables:</strong><br>
+<table>
+<tr><th>Router A</th><th>To A</th><th>To B</th><th>To C</th></tr>
+<tr><td>via A</td><td>0</td><td>1</td><td>5</td></tr>
+</table>
+<table>
+<tr><th>Router B</th><th>To A</th><th>To B</th><th>To C</th></tr>
+<tr><td>via B</td><td>1</td><td>0</td><td>2</td></tr>
+</table>
+<table>
+<tr><th>Router C</th><th>To A</th><th>To B</th><th>To C</th></tr>
+<tr><td>via C</td><td>5</td><td>2</td><td>0</td></tr>
+</table>
+<strong>After first exchange:</strong><br>
+<strong>Router A</strong> receives B's vector [1,0,2] and C's vector [5,2,0]:<br>
+- D(A,C) via B = cost(A,B) + D(B,C) = 1 + 2 = 3 < 5. <strong>Update: D(A,C) = 3 via B</strong><br>
+<table>
+<tr><th>Router A</th><th>To A</th><th>To B</th><th>To C</th></tr>
+<tr><td>Best</td><td>0</td><td>1</td><td><strong>3</strong></td></tr>
+<tr><td>Via</td><td>-</td><td>B</td><td><strong>B</strong></td></tr>
+</table>
+<strong>Router B</strong> receives A's [0,1,5] and C's [5,2,0]: no improvements (A to C via B already best).<br>
+<strong>Router C</strong> receives A's [0,1,5] and B's [1,0,2]:<br>
+- D(C,A) via B = 2 + 1 = 3 < 5. <strong>Update: D(C,A) = 3 via B</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Distance vector suffers from count-to-infinity for link failures. Solutions: split horizon, poison reverse, hold-down timers. Convergence can be slow. RIP uses distance vector (max 15 hops). OSPF uses link-state (Dijkstra).
+</div>
+
+<h2>Problem 11: Frame Transmission Time</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Host A sends a file of 1 MB to Host B. Path: A to R1 (10 Mbps, 5 ms propagation), R1 to R2 (5 Mbps, 10 ms), R2 to B (20 Mbps, 2 ms). Assume store-and-forward, no fragmentation, no queuing delay. Find total delay.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Store-and-forward: each router receives entire packet before forwarding. Total = transmission times on each link + propagation delays. Bottleneck link determines the longest transmission.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+File = 1 MB = 8 Mb = 8 &times; 10<sup>6</sup> bits<br><br>
+<strong>Transmission times:</strong><br>
+Link 1: 8 &times; 10<sup>6</sup> / (10 &times; 10<sup>6</sup>) = 0.8 s<br>
+Link 2: 8 &times; 10<sup>6</sup> / (5 &times; 10<sup>6</sup>) = 1.6 s<br>
+Link 3: 8 &times; 10<sup>6</sup> / (20 &times; 10<sup>6</sup>) = 0.4 s<br><br>
+<strong>Propagation delays:</strong><br>
+5 ms + 10 ms + 2 ms = 17 ms = 0.017 s<br><br>
+<strong>Total (store-and-forward):</strong><br>
+= T1 + T2 + T3 + all propagation delays<br>
+= 0.8 + 1.6 + 0.4 + 0.017 = <strong>2.817 seconds</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> In store-and-forward, transmission times add up across all links. In cut-through switching, only the first link's transmission time matters (plus all propagation). For pipelining with multiple packets, the bottleneck link determines throughput.
+</div>
+
+<h2>Problem 12: Ethernet Minimum Frame Size</h2>
+<div class="problem-box">
+<strong>Problem:</strong> An Ethernet operates at 100 Mbps. The maximum cable length is 2500 m, signal speed = 2 &times; 10<sup>8</sup> m/s. Find the minimum frame size for proper collision detection. What happens if the frame is smaller?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Collision detection requires the sender to still be transmitting when the signal bounces back. RTT = 2 &times; distance / speed. Frame must take at least RTT to transmit.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+RTT = 2 &times; 2500 / (2 &times; 10<sup>8</sup>) = 5000 / (2 &times; 10<sup>8</sup>) = 25 &times; 10<sup>-6</sup> s = <strong>25 &mu;s</strong><br><br>
+Minimum frame size = Bandwidth &times; RTT = 100 &times; 10<sup>6</sup> &times; 25 &times; 10<sup>-6</sup><br>
+= <strong>2500 bits = 312.5 bytes</strong><br><br>
+Standard Ethernet minimum frame = 64 bytes (for 10 Mbps, 2500m, RTT=51.2&mu;s: 10M &times; 51.2&mu;s = 512 bits = 64 bytes).<br><br>
+For 100 Mbps with same distance: we'd need 312.5 bytes minimum. But in practice, Fast Ethernet reduces max segment length to maintain 64-byte minimum.<br><br>
+<strong>If frame is shorter:</strong> Sender finishes before detecting collision. Late collisions go undetected at MAC layer, causing silent data corruption (higher layers must handle retransmission).
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Min frame size = BW &times; 2 &times; d<sub>max</sub>/v. For 10 Mbps Ethernet: 512 bits = 64 bytes. For Gigabit Ethernet: carrier extension used to maintain collision detection or switch to full-duplex (no collisions). This is a very popular GATE numerical question.
+</div>
+
+</article>
+</body>
+</html>

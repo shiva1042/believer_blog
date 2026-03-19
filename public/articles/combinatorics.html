@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Combinatorics | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+    .problem { background: #e3f2fd; padding: 12px 16px; border-left: 4px solid #1565c0; margin: 1em 0; }
+    .mermaid { text-align: center; margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Combinatorics</h1>
+  <p class="article-section-tag">Section 1: Engineering Mathematics</p>
+
+  <h2>1. Fundamental Counting Principles</h2>
+
+  <h3>1.1 Addition Principle (Rule of Sum)</h3>
+  <p>If task A can be done in m ways and task B can be done in n ways, and the two tasks cannot be done simultaneously, then A or B can be done in <strong>m + n</strong> ways.</p>
+
+  <h3>1.2 Multiplication Principle (Rule of Product)</h3>
+  <p>If task A can be done in m ways and for each way of doing A, task B can be done in n ways, then A followed by B can be done in <strong>m &times; n</strong> ways.</p>
+
+  <div class="example">
+    <strong>Example:</strong> A license plate has 2 letters followed by 3 digits.<br>
+    Number of plates = 26 &times; 26 &times; 10 &times; 10 &times; 10 = 676,000
+  </div>
+
+  <h3>1.3 Pigeonhole Principle</h3>
+  <p>If n items are placed into m containers and n > m, then at least one container holds more than one item.</p>
+
+  <div class="formula">
+    Generalized: If n items are placed into m containers, at least one container holds &lceil;n/m&rceil; items.
+  </div>
+
+  <div class="problem">
+    <strong>Problem:</strong> In a group of 367 people, prove that at least two share the same birthday.<br>
+    <strong>Solution:</strong> There are 366 possible birthdays (including Feb 29). By the pigeonhole principle, with 367 people and 366 pigeonholes, at least two people must share a birthday.
+  </div>
+
+  <h2>2. Permutations and Combinations</h2>
+
+  <h3>2.1 Permutations (Order Matters)</h3>
+  <table>
+    <tr><th>Type</th><th>Formula</th><th>Description</th></tr>
+    <tr><td>P(n, r)</td><td>n! / (n - r)!</td><td>r items from n distinct items, order matters</td></tr>
+    <tr><td>n!</td><td>n &times; (n-1) &times; ... &times; 1</td><td>All arrangements of n distinct items</td></tr>
+    <tr><td>With repetition</td><td>n<sup>r</sup></td><td>r selections from n items, repetition allowed</td></tr>
+    <tr><td>Circular permutation</td><td>(n - 1)!</td><td>Arrangements around a circle</td></tr>
+    <tr><td>Multiset permutation</td><td>n! / (n<sub>1</sub>! &middot; n<sub>2</sub>! &middot; ... &middot; n<sub>k</sub>!)</td><td>Permutations with repeated items</td></tr>
+  </table>
+
+  <h3>2.2 Combinations (Order Does Not Matter)</h3>
+  <table>
+    <tr><th>Type</th><th>Formula</th><th>Description</th></tr>
+    <tr><td>C(n, r)</td><td>n! / (r! &middot; (n - r)!)</td><td>r items from n distinct items</td></tr>
+    <tr><td>With repetition</td><td>C(n + r - 1, r)</td><td>r items from n types, repetition allowed (stars and bars)</td></tr>
+  </table>
+
+  <div class="formula">
+    Key identities:<br>
+    C(n, r) = C(n, n - r)<br>
+    C(n, r) = C(n - 1, r - 1) + C(n - 1, r) &nbsp; (Pascal's identity)<br>
+    &sum;<sub>r=0</sub><sup>n</sup> C(n, r) = 2<sup>n</sup><br>
+    &sum;<sub>r=0</sub><sup>n</sup> (-1)<sup>r</sup> C(n, r) = 0
+  </div>
+
+  <div class="problem">
+    <strong>Problem:</strong> How many ways can 10 identical balls be distributed into 4 distinct boxes?<br>
+    <strong>Solution:</strong> Stars and bars: C(10 + 4 - 1, 10) = C(13, 10) = C(13, 3) = 286.
+  </div>
+
+  <h2>3. Inclusion-Exclusion Principle</h2>
+  <div class="formula">
+    |A<sub>1</sub> &cup; A<sub>2</sub> &cup; ... &cup; A<sub>n</sub>| = &sum;|A<sub>i</sub>| - &sum;|A<sub>i</sub> &cap; A<sub>j</sub>| + &sum;|A<sub>i</sub> &cap; A<sub>j</sub> &cap; A<sub>k</sub>| - ... + (-1)<sup>n+1</sup>|A<sub>1</sub> &cap; ... &cap; A<sub>n</sub>|
+  </div>
+
+  <div class="problem">
+    <strong>Problem:</strong> How many integers from 1 to 100 are divisible by 2, 3, or 5?<br>
+    <strong>Solution:</strong><br>
+    |A<sub>2</sub>| = 50, |A<sub>3</sub>| = 33, |A<sub>5</sub>| = 20<br>
+    |A<sub>2</sub> &cap; A<sub>3</sub>| = 16, |A<sub>2</sub> &cap; A<sub>5</sub>| = 10, |A<sub>3</sub> &cap; A<sub>5</sub>| = 6<br>
+    |A<sub>2</sub> &cap; A<sub>3</sub> &cap; A<sub>5</sub>| = 3<br>
+    Answer = 50 + 33 + 20 - 16 - 10 - 6 + 3 = <strong>74</strong>
+  </div>
+
+  <h3>3.1 Derangements</h3>
+  <p>A <strong>derangement</strong> is a permutation where no element appears in its original position.</p>
+  <div class="formula">
+    D(n) = n! &sum;<sub>k=0</sub><sup>n</sup> (-1)<sup>k</sup> / k! = n! [1 - 1/1! + 1/2! - 1/3! + ... + (-1)<sup>n</sup>/n!]
+  </div>
+  <p>First few values: D(1) = 0, D(2) = 1, D(3) = 2, D(4) = 9, D(5) = 44.</p>
+
+  <h2>4. Recurrence Relations</h2>
+  <p>A <strong>recurrence relation</strong> defines a sequence where each term is expressed in terms of previous terms.</p>
+
+  <h3>4.1 Linear Homogeneous Recurrence with Constant Coefficients</h3>
+  <div class="formula">
+    a<sub>n</sub> = c<sub>1</sub>a<sub>n-1</sub> + c<sub>2</sub>a<sub>n-2</sub> + ... + c<sub>k</sub>a<sub>n-k</sub>
+  </div>
+
+  <h3>4.2 Solving via Characteristic Equation</h3>
+  <p>Replace a<sub>n</sub> with r<sup>n</sup> to get the <strong>characteristic equation</strong>:</p>
+  <div class="formula">
+    r<sup>k</sup> - c<sub>1</sub>r<sup>k-1</sup> - c<sub>2</sub>r<sup>k-2</sup> - ... - c<sub>k</sub> = 0
+  </div>
+
+  <table>
+    <tr><th>Roots</th><th>General Solution</th></tr>
+    <tr><td>k distinct roots r<sub>1</sub>, r<sub>2</sub>, ..., r<sub>k</sub></td><td>a<sub>n</sub> = A<sub>1</sub>r<sub>1</sub><sup>n</sup> + A<sub>2</sub>r<sub>2</sub><sup>n</sup> + ... + A<sub>k</sub>r<sub>k</sub><sup>n</sup></td></tr>
+    <tr><td>Repeated root r with multiplicity m</td><td>a<sub>n</sub> = (A<sub>0</sub> + A<sub>1</sub>n + ... + A<sub>m-1</sub>n<sup>m-1</sup>)r<sup>n</sup></td></tr>
+  </table>
+
+  <div class="problem">
+    <strong>Problem:</strong> Solve a<sub>n</sub> = 5a<sub>n-1</sub> - 6a<sub>n-2</sub> with a<sub>0</sub> = 1, a<sub>1</sub> = 4.<br>
+    <strong>Solution:</strong><br>
+    Characteristic equation: r<sup>2</sup> - 5r + 6 = 0 &rArr; (r - 2)(r - 3) = 0 &rArr; r = 2, 3<br>
+    General solution: a<sub>n</sub> = A &middot; 2<sup>n</sup> + B &middot; 3<sup>n</sup><br>
+    Using initial conditions: a<sub>0</sub> = A + B = 1, a<sub>1</sub> = 2A + 3B = 4<br>
+    Solving: A = -1, B = 2<br>
+    <strong>Answer: a<sub>n</sub> = -2<sup>n</sup> + 2 &middot; 3<sup>n</sup> = 2 &middot; 3<sup>n</sup> - 2<sup>n</sup></strong>
+  </div>
+
+  <h3>4.3 Non-Homogeneous Recurrence</h3>
+  <div class="formula">
+    a<sub>n</sub> = c<sub>1</sub>a<sub>n-1</sub> + c<sub>2</sub>a<sub>n-2</sub> + ... + f(n)
+  </div>
+  <p>Solution = Homogeneous solution + Particular solution. The particular solution depends on the form of f(n).</p>
+
+  <table>
+    <tr><th>f(n)</th><th>Particular Solution Form</th></tr>
+    <tr><td>Constant c</td><td>Try a<sub>n</sub> = K</td></tr>
+    <tr><td>Polynomial of degree d</td><td>Try polynomial of degree d</td></tr>
+    <tr><td>b<sup>n</sup></td><td>Try K &middot; b<sup>n</sup> (or Kn &middot; b<sup>n</sup> if b is a root)</td></tr>
+  </table>
+
+  <h2>5. Famous Recurrences</h2>
+  <table>
+    <tr><th>Sequence</th><th>Recurrence</th><th>Closed Form</th></tr>
+    <tr><td>Fibonacci</td><td>F(n) = F(n-1) + F(n-2), F(0)=0, F(1)=1</td><td>(phi<sup>n</sup> - psi<sup>n</sup>) / sqrt(5)</td></tr>
+    <tr><td>Tower of Hanoi</td><td>T(n) = 2T(n-1) + 1, T(1) = 1</td><td>2<sup>n</sup> - 1</td></tr>
+    <tr><td>Catalan numbers</td><td>C(n) = &sum; C(i)C(n-1-i)</td><td>C(2n, n) / (n+1)</td></tr>
+  </table>
+
+  <h2>6. Generating Functions</h2>
+  <p>A <strong>generating function</strong> encodes a sequence {a<sub>0</sub>, a<sub>1</sub>, a<sub>2</sub>, ...} as a formal power series.</p>
+
+  <h3>6.1 Ordinary Generating Function (OGF)</h3>
+  <div class="formula">
+    G(x) = &sum;<sub>n=0</sub><sup>&infin;</sup> a<sub>n</sub> x<sup>n</sup> = a<sub>0</sub> + a<sub>1</sub>x + a<sub>2</sub>x<sup>2</sup> + ...
+  </div>
+
+  <h3>6.2 Common Generating Functions</h3>
+  <table>
+    <tr><th>Sequence</th><th>OGF</th></tr>
+    <tr><td>{1, 1, 1, ...}</td><td>1 / (1 - x)</td></tr>
+    <tr><td>{1, a, a<sup>2</sup>, ...}</td><td>1 / (1 - ax)</td></tr>
+    <tr><td>{1, 2, 3, 4, ...}</td><td>1 / (1 - x)<sup>2</sup></td></tr>
+    <tr><td>{C(n,0), C(n,1), ..., C(n,n)}</td><td>(1 + x)<sup>n</sup></td></tr>
+    <tr><td>{1, 1, 1/2!, 1/3!, ...}</td><td>e<sup>x</sup> (EGF)</td></tr>
+  </table>
+
+  <h3>6.3 Exponential Generating Function (EGF)</h3>
+  <div class="formula">
+    E(x) = &sum;<sub>n=0</sub><sup>&infin;</sup> a<sub>n</sub> x<sup>n</sup> / n!
+  </div>
+  <p>EGFs are particularly useful when the sequence involves permutations or labeled objects.</p>
+
+  <div class="problem">
+    <strong>Problem:</strong> Find the generating function for the number of ways to select r items from n types with unlimited repetition.<br>
+    <strong>Solution:</strong> Each type contributes a factor of (1 + x + x<sup>2</sup> + ...) = 1/(1-x).<br>
+    For n types: G(x) = 1/(1-x)<sup>n</sup>.<br>
+    Coefficient of x<sup>r</sup> in 1/(1-x)<sup>n</sup> = C(n+r-1, r), confirming the stars and bars formula.
+  </div>
+
+  <h2>7. Counting with Mermaid Diagram</h2>
+  <div class="mermaid">
+graph TD
+    A["Counting Problem"] --> B{"Ordered?"}
+    B -- "Yes" --> C{"Repetition?"}
+    B -- "No" --> D{"Repetition?"}
+    C -- "Yes" --> E["n^r"]
+    C -- "No" --> F["P(n,r) = n!/(n-r)!"]
+    D -- "Yes" --> G["C(n+r-1, r)<br/>Stars and Bars"]
+    D -- "No" --> H["C(n,r) = n!/(r!(n-r)!)"]
+  </div>
+
+  <h2>8. Key GATE Takeaways</h2>
+  <ul>
+    <li>Master the counting decision tree: ordered vs unordered, with vs without repetition.</li>
+    <li>Pigeonhole principle problems appear frequently as short-answer questions.</li>
+    <li>Practice solving second-order linear recurrences using the characteristic equation.</li>
+    <li>Know the closed forms for Fibonacci, Catalan numbers, and Tower of Hanoi.</li>
+    <li>Inclusion-exclusion is essential for derangement and surjection counting.</li>
+    <li>Generating functions are powerful for solving recurrences and counting problems.</li>
+    <li>Stars and bars: distributing r identical objects into n distinct boxes = C(n+r-1, r).</li>
+  </ul>
+
+</article>
+</body>
+</html>

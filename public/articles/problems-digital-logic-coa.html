@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Logic & COA Problem Solving - GATE Practice</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-family:monospace}
+pre{background:#263238;color:#eee;padding:15px;border-radius:6px;overflow-x:auto}
+</style>
+</head>
+<body>
+<article>
+<h1>Digital Logic & Computer Organization Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>12 GATE-level problems covering Boolean simplification, K-maps, flip-flops, number systems, IEEE 754, pipelining, cache performance, and addressing modes with detailed solutions.</p>
+
+<h2>Problem 1: K-Map Simplification (4 Variables)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Simplify using K-map: F(A,B,C,D) = &sum;m(0, 1, 2, 5, 6, 7, 8, 9, 10, 14).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Plot 1s in 4-variable K-map, group into largest possible power-of-2 rectangles, extract simplified expression.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>K-Map (AB vs CD):</strong>
+<table>
+<tr><th>AB\CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+<tr><td>00</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>01</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>11</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>10</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+</table>
+<strong>Groups:</strong><br>
+1. Group 1: m(0,2,8,10) -- corners column, A'B'C'D' + A'B'CD' + AB'C'D' + AB'CD' = B'D' (4 cells: row 00&10, col 00&10)<br>
+2. Group 2: m(5,7) -- A'BCD + A'BC'D = A'BD (2 cells)<br>
+3. Group 3: m(2,6,10,14) -- column CD=10: A'B'CD' + A'BCD' + AB'CD' + ABCD' = CD' (4 cells, entire col 10)<br>
+4. Group 4: m(0,1) -- A'B'C'D' + A'B'C'D = A'B'C' (2 cells)<br><br>
+Wait, let me recheck -- m(0,1,8,9) also forms a group: B'C' (row 00 and 10, col 00 and 01).<br>
+Group: m(0,1,8,9) = B'C'<br>
+Group: m(2,6,10,14) = CD'<br>
+Group: m(5,7) = A'BD<br><br>
+<strong>F = B'C' + CD' + A'BD</strong><br><br>
+Verification: m(0)=0000: B'C'=1. m(5)=0101: A'BD=1. m(14)=1110: CD'=1. All check out.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> K-map grouping rules: groups must be 1, 2, 4, 8, or 16 cells. Wrap around edges. Don't-cares can be included in groups for simplification. Essential prime implicants must be included; others are chosen to cover remaining minterms.
+</div>
+
+<h2>Problem 2: Boolean Algebra Simplification</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Simplify F = AB + A'C + BC using the consensus theorem and Boolean algebra laws.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Consensus theorem: XY + X'Z + YZ = XY + X'Z (the term YZ is redundant).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+F = AB + A'C + BC<br><br>
+By the <strong>consensus theorem</strong> with X=A, Y=B, Z=C:<br>
+AB + A'C + BC = AB + A'C<br><br>
+<strong>Proof:</strong><br>
+BC = BC(A + A') = ABC + A'BC<br>
+ABC is covered by AB (when C=1, AB includes ABC).<br>
+A'BC is covered by A'C (when B=1, A'C includes A'BC).<br>
+Therefore BC is redundant.<br><br>
+<strong>F = AB + A'C</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> The consensus theorem is one of the most useful simplification tools. Other key identities: absorption (A + AB = A), De Morgan's, XOR properties (A XOR 0 = A, A XOR 1 = A'). In GATE, identify the consensus pattern to quickly simplify.
+</div>
+
+<h2>Problem 3: JK Flip-Flop State Table</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A sequential circuit has one JK flip-flop (state Q) and one input X. J = XQ', K = X'Q. Find the state table, state diagram, and identify the circuit's function.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> For each combination of current state Q and input X, compute J and K, then find next state Q<sup>+</sup> using: Q<sup>+</sup> = JQ' + K'Q.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Q</th><th>X</th><th>J = XQ'</th><th>K = X'Q</th><th>Q<sup>+</sup> = JQ' + K'Q</th></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+</table>
+Simplified: Q<sup>+</sup> = X (the next state always equals the input!).<br><br>
+<strong>This circuit is a D flip-flop equivalent</strong> (since Q<sup>+</sup> = X regardless of current state).<br>
+The JK flip-flop with J=XQ' and K=X'Q behaves like a D flip-flop with D=X.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> JK flip-flop conversion: D=JQ'+K'Q. T=JQ'+K'Q where T means toggle. To convert D to JK: J=D, K=D'. To convert T to JK: J=K=T. Excitation tables are crucial for sequential circuit design problems.
+</div>
+
+<h2>Problem 4: Number System Conversion</h2>
+<div class="problem-box">
+<strong>Problem:</strong> (a) Convert -43 to 8-bit 2's complement. (b) Perform 25 - 43 using 8-bit 2's complement arithmetic. (c) Detect if overflow occurred.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> 2's complement of N: flip bits of |N| and add 1. Subtraction A-B = A + (-B).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) -43 in 2's complement:</strong><br>
+43 = 00101011<br>
+Flip: 11010100<br>
+Add 1: <strong>11010101</strong><br>
+Verify: 11010101 = -128+64+16+4+1 = -128+85 = -43. Correct.<br><br>
+<strong>(b) 25 - 43:</strong><br>
+25 = 00011001<br>
+-43 = 11010101<br>
+<pre>  00011001  (25)
++ 11010101  (-43)
+----------
+  11101110  (-18)</pre>
+Verify: 11101110 = -128+64+32+8+4+2 = -128+110 = -18. <strong>Result: -18</strong><br><br>
+<strong>(c) Overflow check:</strong><br>
+Positive + Negative: Overflow CANNOT occur (result always fits).<br>
+MSBs: 0+1 = 1 (no carry in or out of sign bit issues).<br>
+<strong>No overflow.</strong><br>
+Rule: Overflow occurs only when two numbers of the same sign produce a result with the opposite sign.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> 2's complement range for n bits: -2<sup>n-1</sup> to 2<sup>n-1</sup>-1. For 8 bits: -128 to +127. Overflow detection: carry_in to MSB XOR carry_out from MSB. Alternatively: same-sign operands produce opposite-sign result.
+</div>
+
+<h2>Problem 5: IEEE 754 Representation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Represent -12.625 in IEEE 754 single-precision (32-bit) format. Also find the decimal value of the bit pattern 0 10000010 10100000000000000000000.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> IEEE 754: sign(1) + exponent(8) + mantissa(23). Bias = 127. Stored exponent = actual + 127. Mantissa stores fractional part (implicit leading 1).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Part 1: -12.625</strong><br>
+Sign: 1 (negative)<br>
+12 in binary: 1100<br>
+0.625 in binary: 0.625 &times; 2 = 1.25 &rarr; 1. 0.25 &times; 2 = 0.5 &rarr; 0. 0.5 &times; 2 = 1.0 &rarr; 1. So 0.625 = 0.101<br>
+12.625 = 1100.101<br>
+Normalized: 1.100101 &times; 2<sup>3</sup><br>
+Exponent: 3 + 127 = 130 = 10000010<br>
+Mantissa: 10010100000000000000000 (drop leading 1, pad with zeros)<br><br>
+<strong>IEEE 754: 1 10000010 10010100000000000000000</strong><br><br>
+<strong>Part 2: 0 10000010 10100000000000000000000</strong><br>
+Sign: 0 (positive)<br>
+Exponent: 10000010 = 130. Actual = 130 - 127 = 3.<br>
+Mantissa: 1.10100000... = 1 + 0.5 + 0.125 = 1.625<br>
+Value = +1.625 &times; 2<sup>3</sup> = 1.625 &times; 8 = <strong>13.0</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Special values: exponent all 0s with mantissa 0 = &plusmn;0. All 0s exponent with non-zero mantissa = denormalized. All 1s exponent with mantissa 0 = &plusmn;infinity. All 1s with non-zero mantissa = NaN. Range for single precision: &approx; &plusmn;3.4 &times; 10<sup>38</sup>.
+</div>
+
+<h2>Problem 6: Pipeline Performance</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A 5-stage pipeline has stage delays: IF=1ns, ID=1.5ns, EX=2ns, MEM=1ns, WB=0.5ns. Find: (a) Clock cycle time (pipelined and non-pipelined). (b) Time for 100 instructions. (c) Speedup. (d) CPI with 20% stalls (1 cycle each).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Pipelined clock = max stage delay. Non-pipelined = sum of stages. Time for n instructions = (k + n - 1) &times; cycle_time where k = stages.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) Clock cycle:</strong><br>
+Non-pipelined: 1 + 1.5 + 2 + 1 + 0.5 = <strong>6 ns per instruction</strong><br>
+Pipelined: max(1, 1.5, 2, 1, 0.5) = <strong>2 ns</strong> (bottleneck is EX stage)<br><br>
+<strong>(b) Time for 100 instructions:</strong><br>
+Non-pipelined: 100 &times; 6 = <strong>600 ns</strong><br>
+Pipelined: (5 + 100 - 1) &times; 2 = 104 &times; 2 = <strong>208 ns</strong><br><br>
+<strong>(c) Speedup:</strong><br>
+S = 600/208 = <strong>2.88</strong><br>
+Ideal speedup = 6/2 = 3.0 (limited by imbalanced stages)<br>
+For balanced k-stage pipeline, ideal speedup = k.<br><br>
+<strong>(d) CPI with stalls:</strong><br>
+Ideal CPI = 1 (pipelined). With 20% instructions causing 1-cycle stall:<br>
+CPI = 1 + 0.20 &times; 1 = <strong>1.2</strong><br>
+Effective time per instruction = 1.2 &times; 2 = 2.4 ns<br>
+Effective throughput = 1/2.4 ns &approx; 417 MIPS
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Pipeline speedup = Non-pipelined time / Pipelined time. Maximum speedup = number of stages (for balanced pipeline, infinite instructions). With stalls: CPI = 1 + stall_frequency &times; stall_cycles. Speedup = ideal_CPI / actual_CPI &times; freq_ratio.
+</div>
+
+<h2>Problem 7: Pipeline Hazards</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given instructions: (1) ADD R1, R2, R3; (2) SUB R4, R1, R5; (3) AND R6, R1, R7; (4) OR R8, R9, R10. Identify data hazards. How many stalls without forwarding? How many with forwarding?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> RAW hazards: source of later instruction = destination of earlier. Without forwarding, must wait for WB. With forwarding, result available after EX.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Dependencies:</strong><br>
+- I2 reads R1 (written by I1): RAW hazard, distance = 1<br>
+- I3 reads R1 (written by I1): RAW hazard, distance = 2<br>
+- I4: no dependency on R1.<br><br>
+<strong>Without forwarding (result available after WB, stage 5):</strong><br>
+I1 writes R1 at end of cycle 5.<br>
+I2 needs R1 at ID (cycle 3). Must wait until cycle 6. <strong>2 stall cycles</strong> for I2.<br>
+I3 needs R1 at ID (cycle 4, but delayed). With I2 stalled, I3 is also delayed.<br>
+After I2's stalls: I3 needs R1 at its ID. I1 has completed WB by then. <strong>0 additional stalls for I3.</strong><br>
+<strong>Total stalls without forwarding: 2</strong><br><br>
+<strong>With forwarding (result available after EX, stage 3):</strong><br>
+I1 produces R1 at end of EX (cycle 3).<br>
+I2 needs R1 at EX (cycle 4 with forwarding from I1's EX to I2's EX). <strong>0 stalls for I2.</strong><br>
+I3 needs R1 at EX (cycle 5). I1's result available from cycle 3. <strong>0 stalls for I3.</strong><br>
+<strong>Total stalls with forwarding: 0</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Load-use hazard still requires 1 stall even with forwarding (load result available after MEM, not EX). Other ALU-ALU hazards are fully resolved by forwarding. Control hazards (branches) typically cause 1-2 stalls depending on when branch target is computed.
+</div>
+
+<h2>Problem 8: Cache Performance (Direct-Mapped)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A direct-mapped cache has 8 blocks, block size = 4 words. Memory address is 16 bits (word-addressable). For address sequence: 0, 4, 8, 12, 16, 20, 24, 28, 32, 0, 4, 8, find: (a) Tag, index, offset bits. (b) Hit/miss for each access. (c) Hit rate.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Block offset = log<sub>2</sub>(block size). Index = log<sub>2</sub>(num blocks). Tag = remaining bits. Map: block number = address / block_size. Cache index = block_number mod num_blocks.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) Address breakdown:</strong><br>
+Block offset: log<sub>2</sub>(4) = 2 bits<br>
+Index: log<sub>2</sub>(8) = 3 bits<br>
+Tag: 16 - 2 - 3 = 11 bits<br><br>
+<strong>(b) Access trace:</strong><br>
+<table>
+<tr><th>Address</th><th>Block #</th><th>Index (block%8)</th><th>Tag</th><th>Hit/Miss</th></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>Miss</td></tr>
+<tr><td>4</td><td>1</td><td>1</td><td>0</td><td>Miss</td></tr>
+<tr><td>8</td><td>2</td><td>2</td><td>0</td><td>Miss</td></tr>
+<tr><td>12</td><td>3</td><td>3</td><td>0</td><td>Miss</td></tr>
+<tr><td>16</td><td>4</td><td>4</td><td>0</td><td>Miss</td></tr>
+<tr><td>20</td><td>5</td><td>5</td><td>0</td><td>Miss</td></tr>
+<tr><td>24</td><td>6</td><td>6</td><td>0</td><td>Miss</td></tr>
+<tr><td>28</td><td>7</td><td>7</td><td>0</td><td>Miss</td></tr>
+<tr><td>32</td><td>8</td><td>0</td><td>1</td><td>Miss (evicts block 0)</td></tr>
+<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>Miss (evicted!)</td></tr>
+<tr><td>4</td><td>1</td><td>1</td><td>0</td><td>Hit</td></tr>
+<tr><td>8</td><td>2</td><td>2</td><td>0</td><td>Hit</td></tr>
+</table>
+<strong>(c) Hit rate = 2/12 = 16.67%</strong><br>
+Miss rate = 83.33%. Many compulsory misses. Address 0 also has a conflict miss (evicted by address 32).
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Three C's of cache misses: Compulsory (cold start), Capacity (cache too small), Conflict (too many blocks map to same set). Direct-mapped has most conflicts. Increasing associativity reduces conflict misses. AMAT = hit_time + miss_rate &times; miss_penalty.
+</div>
+
+<h2>Problem 9: AMAT Calculation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> L1 cache: hit time = 1 cycle, miss rate = 5%. L2 cache: hit time = 10 cycles, miss rate = 20% (local). Main memory: access time = 100 cycles. Find AMAT.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> AMAT = L1_hit_time + L1_miss_rate &times; (L2_hit_time + L2_miss_rate &times; memory_time).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+L2 miss penalty (going to memory) = 100 cycles<br>
+L2 access time = 10 + 0.20 &times; 100 = 10 + 20 = 30 cycles<br><br>
+AMAT = 1 + 0.05 &times; 30 = 1 + 1.5 = <strong>2.5 cycles</strong><br><br>
+<strong>Alternatively (global miss rate perspective):</strong><br>
+Global L2 miss rate = 0.05 &times; 0.20 = 0.01 (1% of all accesses miss both caches)<br>
+AMAT = 1 + 0.05 &times; 10 + 0.01 &times; 100 = 1 + 0.5 + 1.0 = <strong>2.5 cycles</strong>. Same answer.
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Local miss rate = misses in this cache / accesses to this cache. Global miss rate = misses in this cache / total CPU accesses. For multi-level caches, either method gives the same AMAT. GATE frequently tests this with 2-level caches.
+</div>
+
+<h2>Problem 10: Addressing Modes</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given: PC = 1000, R1 = 200, R2 = 50, Memory[1200] = 800, Memory[250] = 600, Memory[800] = 500. Find the effective address and operand value for each mode:<br>
+(a) Immediate #200<br>
+(b) Register R1<br>
+(c) Direct 1200<br>
+(d) Register Indirect (R1)<br>
+(e) Indexed R1 + R2<br>
+(f) Relative 200
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Apply each addressing mode formula to find effective address, then look up the value.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Mode</th><th>EA Formula</th><th>EA</th><th>Operand</th></tr>
+<tr><td>(a) Immediate #200</td><td>N/A (operand is the value)</td><td>N/A</td><td>200</td></tr>
+<tr><td>(b) Register R1</td><td>N/A (register itself)</td><td>R1</td><td>200</td></tr>
+<tr><td>(c) Direct 1200</td><td>EA = 1200</td><td>1200</td><td>Memory[1200] = 800</td></tr>
+<tr><td>(d) Reg Indirect (R1)</td><td>EA = [R1] = 200</td><td>200</td><td>Memory[200] = ?</td></tr>
+<tr><td>(e) Indexed R1+R2</td><td>EA = R1+R2 = 250</td><td>250</td><td>Memory[250] = 600</td></tr>
+<tr><td>(f) Relative 200</td><td>EA = PC+200 = 1200</td><td>1200</td><td>Memory[1200] = 800</td></tr>
+</table>
+Note: For (d), Memory[200] is not given, so we cannot determine the value unless additional memory contents are specified.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Addressing mode hierarchy by memory accesses: Immediate(0), Register(0), Direct(1), Register Indirect(1), Indexed(1), Indirect(2). PC-relative is used for branch instructions. Auto-increment/decrement is used with stack and array traversal.
+</div>
+
+<h2>Problem 11: Memory Interleaving</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A main memory has access time = 80 ns and cycle time = 120 ns. The processor requires a word every 20 ns. How many memory banks are needed for (a) low-order interleaving to avoid stalls? (b) What is the effective bandwidth?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> With m-way interleaving, successive accesses go to different banks. Need cycle_time / processor_rate &le; m banks.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a) Number of banks:</strong><br>
+Each bank needs cycle_time = 120 ns to be ready again.<br>
+Processor requests one word every 20 ns.<br>
+Banks needed = &lceil;cycle_time / processor_period&rceil; = &lceil;120/20&rceil; = <strong>6 banks minimum</strong><br>
+(Round up to power of 2 for addressing: <strong>8 banks</strong>)<br><br>
+<strong>(b) Effective bandwidth:</strong><br>
+With 8-way interleaving and 20 ns between requests:<br>
+First word available after access_time = 80 ns<br>
+Subsequent words available every 20 ns (if no bank conflicts)<br><br>
+For n words: time = access_time + (n-1) &times; processor_period = 80 + (n-1) &times; 20 ns<br>
+For large n: effective rate &approx; 1 word per 20 ns = <strong>50 million words/sec</strong><br>
+Without interleaving: 1 word per 120 ns = 8.33 million words/sec<br>
+<strong>Speedup = 120/20 = 6x</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Low-order interleaving distributes consecutive addresses across banks (good for sequential access). High-order interleaving puts consecutive addresses in the same bank (good for independent access by multiple processors). Ideal banks = cycle_time / access_time_per_word.
+</div>
+
+<h2>Problem 12: Microprogrammed Control</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A microprogrammed control unit has: 128 microinstructions in control memory, each 40 bits wide. 4-bit condition select field, 7-bit branch address field. If each microinstruction takes 200 ns, how large is the control memory? If an instruction requires 5 microinstructions on average, and the clock for hardwired control is 50 ns, compare the performance.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Control memory size = number of microinstructions &times; width. Performance comparison: microprogrammed instruction time = #microinstructions &times; micro_cycle.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Control memory size:</strong><br>
+128 &times; 40 bits = 5120 bits = <strong>640 bytes</strong><br>
+Address bits needed: log<sub>2</sub>(128) = 7 bits (matches the branch address field).<br><br>
+<strong>Performance comparison:</strong><br>
+Microprogrammed: 5 microinstructions &times; 200 ns = <strong>1000 ns per instruction</strong><br>
+Hardwired: assume 1 clock cycle per instruction = <strong>50 ns per instruction</strong><br><br>
+<strong>Hardwired is 1000/50 = 20x faster.</strong><br><br>
+However, microprogrammed control is:<br>
+- Easier to modify (just change microcode)<br>
+- Supports complex instruction sets (CISC)<br>
+- Less error-prone to design<br><br>
+Hardwired control is used in RISC processors for speed.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Microprogrammed control: flexible but slower. Hardwired control: fast but inflexible. Horizontal microprogramming: wide microinstructions, more parallelism. Vertical: narrow, encoded fields, slower but smaller control memory. GATE may ask you to calculate control memory dimensions.
+</div>
+
+</article>
+</body>
+</html>

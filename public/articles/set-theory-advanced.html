@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Set Theory — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Advanced Set Theory</h1>
+  <p class="article-section-tag">📐 Engineering Mathematics</p>
+
+  <h2>1. Power Set</h2>
+  <p><strong>Definition:</strong> The power set P(A) of a set A is the set of all subsets of A, including the empty set and A itself.</p>
+  <ul>
+    <li>If |A| = n, then <code>|P(A)| = 2^n</code>.</li>
+    <li>P({}) = {{}}, so |P({})| = 1.</li>
+    <li>P({a}) = {{}, {a}}, so |P({a})| = 2.</li>
+    <li>P({a, b}) = {{}, {a}, {b}, {a,b}}, so |P({a,b})| = 4.</li>
+  </ul>
+
+  <p><strong>Example:</strong> If A = {1, 2, 3}, then |P(A)| = 2^3 = 8.</p>
+  <pre><code>P(A) = { {}, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3} }</code></pre>
+
+  <div class="note"><strong>GATE Favorite:</strong> |P(P({}))| = |P({{}})| = 2^1 = 2. And |P(P(P({})))| = 2^2 = 4. This nesting is frequently asked.</div>
+
+  <h2>2. Cartesian Product</h2>
+  <p><strong>Definition:</strong> A x B = {(a, b) | a in A, b in B}</p>
+  <ul>
+    <li>|A x B| = |A| * |B|</li>
+    <li>A x B is NOT equal to B x A (unless A = B or one is empty).</li>
+    <li>A x {} = {} (Cartesian product with empty set is empty).</li>
+    <li>A x (B &cup; C) = (A x B) &cup; (A x C) — distributes over union.</li>
+  </ul>
+
+  <p><strong>Example:</strong> A = {1, 2}, B = {a, b, c}.</p>
+  <pre><code>A x B = {(1,a), (1,b), (1,c), (2,a), (2,b), (2,c)}
+|A x B| = 2 * 3 = 6</code></pre>
+
+  <h2>3. Countable vs Uncountable Sets</h2>
+
+  <h3>3.1 Definitions</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th><th>Examples</th></tr>
+    <tr><td>Finite</td><td>Has a fixed number of elements</td><td>{1, 2, 3}, {a, b}</td></tr>
+    <tr><td>Countably Infinite</td><td>Can be put in 1-1 correspondence with natural numbers</td><td>N, Z, Q, set of all strings over finite alphabet</td></tr>
+    <tr><td>Uncountable</td><td>Cannot be enumerated by natural numbers</td><td>R, [0,1], P(N), set of all real functions</td></tr>
+  </table>
+
+  <h3>3.2 Key Results</h3>
+  <ul>
+    <li>N (natural numbers) is countably infinite. Cardinality = aleph-naught.</li>
+    <li>Z (integers) is countably infinite (enumerate: 0, 1, -1, 2, -2, 3, -3, ...).</li>
+    <li>Q (rationals) is countably infinite (Cantor's diagonal argument / zig-zag enumeration).</li>
+    <li>R (reals) is uncountable (proved by Cantor's diagonal argument).</li>
+    <li>Union of countably many countable sets is countable.</li>
+    <li>Cartesian product of two countable sets is countable.</li>
+    <li>Power set of a countably infinite set is uncountable: |P(N)| = 2^(aleph-naught) = cardinality of R.</li>
+  </ul>
+
+  <h2>4. Cantor's Diagonal Argument</h2>
+  <p>This proves that the set of real numbers in [0, 1] is uncountable.</p>
+  <p><strong>Proof by contradiction:</strong></p>
+  <ol>
+    <li>Assume [0,1] is countable. Then we can list all reals: r1, r2, r3, ...</li>
+    <li>Write each real in decimal expansion:
+      <pre><code>r1 = 0.d(1,1) d(1,2) d(1,3) ...
+r2 = 0.d(2,1) d(2,2) d(2,3) ...
+r3 = 0.d(3,1) d(3,2) d(3,3) ...
+...</code></pre>
+    </li>
+    <li>Construct a new number s = 0.s1 s2 s3 ... where s_i differs from d(i,i) (e.g., s_i = d(i,i) + 1 mod 10, avoiding 0 and 9 to prevent issues with dual representations).</li>
+    <li>Then s differs from every r_i in at least the i-th digit.</li>
+    <li>So s is in [0,1] but not in our list. Contradiction.</li>
+  </ol>
+  <p>Therefore [0,1] (and hence R) is uncountable.</p>
+
+  <h2>5. Cardinality of Infinite Sets</h2>
+  <table>
+    <tr><th>Symbol</th><th>Name</th><th>Sets with this Cardinality</th></tr>
+    <tr><td>aleph-naught</td><td>Countably infinite</td><td>N, Z, Q, set of all finite strings, set of all programs</td></tr>
+    <tr><td>c (= 2^(aleph-naught))</td><td>Cardinality of continuum</td><td>R, [0,1], P(N), set of all functions from N to {0,1}</td></tr>
+  </table>
+  <ul>
+    <li><strong>Cantor's theorem:</strong> For any set A, |P(A)| > |A|. There is no surjection from A to P(A).</li>
+    <li>This means there is an infinite hierarchy of infinities: |N| &lt; |P(N)| &lt; |P(P(N))| &lt; ...</li>
+  </ul>
+
+  <div class="note"><strong>GATE Application:</strong> The set of all languages over a finite alphabet is uncountable, but the set of all Turing machines is countable. Therefore, there exist languages that are not recognizable by any Turing machine.</div>
+
+  <h2>6. Inclusion-Exclusion Principle</h2>
+
+  <h3>6.1 Formula for Two Sets</h3>
+  <p><code>|A &cup; B| = |A| + |B| - |A &cap; B|</code></p>
+
+  <h3>6.2 Formula for Three Sets</h3>
+  <p><code>|A &cup; B &cup; C| = |A| + |B| + |C| - |A&cap;B| - |B&cap;C| - |A&cap;C| + |A&cap;B&cap;C|</code></p>
+
+  <h3>6.3 General Formula</h3>
+  <p>|A1 &cup; A2 &cup; ... &cup; An| = &Sigma;|Ai| - &Sigma;|Ai &cap; Aj| + &Sigma;|Ai &cap; Aj &cap; Ak| - ... + (-1)^(n+1)|A1 &cap; ... &cap; An|</p>
+
+  <h3>6.4 Example</h3>
+  <p><strong>Q:</strong> In a class of 100 students, 40 study Math, 30 study Physics, 20 study Chemistry. 10 study both Math and Physics, 8 study both Physics and Chemistry, 5 study both Math and Chemistry, 3 study all three. How many study at least one subject?</p>
+  <pre><code>|M ∪ P ∪ C| = 40 + 30 + 20 - 10 - 8 - 5 + 3 = 70
+
+70 students study at least one subject.
+30 students study none.</code></pre>
+
+  <p><strong>Q:</strong> How many integers from 1 to 1000 are divisible by 2, 3, or 5?</p>
+  <pre><code>|A2| = floor(1000/2) = 500
+|A3| = floor(1000/3) = 333
+|A5| = floor(1000/5) = 200
+|A2 ∩ A3| = floor(1000/6) = 166
+|A2 ∩ A5| = floor(1000/10) = 100
+|A3 ∩ A5| = floor(1000/15) = 66
+|A2 ∩ A3 ∩ A5| = floor(1000/30) = 33
+
+Answer = 500 + 333 + 200 - 166 - 100 - 66 + 33 = 734</code></pre>
+
+  <h2>7. Pigeonhole Principle</h2>
+
+  <h3>7.1 Basic Principle</h3>
+  <p>If n items are placed into m containers and n > m, at least one container has more than one item.</p>
+  <p><strong>Generalized:</strong> If n items in m containers, at least one container has at least ceil(n/m) items.</p>
+
+  <h3>7.2 Advanced Applications</h3>
+
+  <p><strong>Example 1:</strong> Among any 13 people, at least 2 were born in the same month.</p>
+  <p>13 people, 12 months. By pigeonhole, at least ceil(13/12) = 2 share a month.</p>
+
+  <p><strong>Example 2:</strong> In any group of 6 people, either 3 mutually know each other or 3 mutually do not know each other.</p>
+  <p>This is Ramsey theory: R(3,3) = 6. Consider one person P. By pigeonhole, P either knows 3+ people or does not know 3+ people. In either case, among those 3, check pairwise relationships.</p>
+
+  <p><strong>Example 3:</strong> Pick 5 numbers from {1, 2, ..., 8}. Prove two of them sum to 9.</p>
+  <pre><code>Pairs that sum to 9: {1,8}, {2,7}, {3,6}, {4,5}.
+That's 4 "pigeonholes". Picking 5 numbers from 8,
+by pigeonhole, two must come from the same pair.
+Those two sum to 9.</code></pre>
+
+  <h2>8. De Morgan's Laws for Sets</h2>
+  <table>
+    <tr><th>Law</th><th>Statement</th></tr>
+    <tr><td>De Morgan's 1</td><td>(A &cup; B)' = A' &cap; B'</td></tr>
+    <tr><td>De Morgan's 2</td><td>(A &cap; B)' = A' &cup; B'</td></tr>
+    <tr><td>Generalized 1</td><td>(&cup; Ai)' = &cap; Ai'</td></tr>
+    <tr><td>Generalized 2</td><td>(&cap; Ai)' = &cup; Ai'</td></tr>
+  </table>
+  <p><strong>In words:</strong> The complement of a union is the intersection of complements, and vice versa.</p>
+
+  <p><strong>Proof sketch (De Morgan's 1):</strong> x is in (A&cup;B)' iff x is not in A&cup;B iff x is not in A AND x is not in B iff x is in A' AND x is in B' iff x is in A'&cap;B'.</p>
+
+  <h2>9. Additional Set Identities</h2>
+  <table>
+    <tr><th>Identity</th><th>Formula</th></tr>
+    <tr><td>Set Difference</td><td>A - B = A &cap; B'</td></tr>
+    <tr><td>Symmetric Difference</td><td>A &Delta; B = (A - B) &cup; (B - A) = (A &cup; B) - (A &cap; B)</td></tr>
+    <tr><td>|A - B|</td><td>|A| - |A &cap; B|</td></tr>
+    <tr><td>|A &Delta; B|</td><td>|A| + |B| - 2|A &cap; B|</td></tr>
+    <tr><td>Absorption</td><td>A &cup; (A &cap; B) = A and A &cap; (A &cup; B) = A</td></tr>
+    <tr><td>Distributive</td><td>A &cap; (B &cup; C) = (A&cap;B) &cup; (A&cap;C)</td></tr>
+  </table>
+
+  <div class="important"><strong>GATE Tip:</strong> Inclusion-exclusion and pigeonhole problems appear frequently in the combinatorics section. Practice computing |A &cup; B &cup; C| problems with 3 sets — they are almost guaranteed to appear.</div>
+
+</article>
+</body>
+</html>

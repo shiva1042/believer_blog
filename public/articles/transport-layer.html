@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transport Layer | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Transport Layer</h1>
+  <p class="article-section-tag">&#127760; Section 10: Computer Networks</p>
+
+  <!-- ===================== UDP ===================== -->
+  <h2>1. User Datagram Protocol (UDP)</h2>
+  <p>UDP is a connectionless, unreliable transport protocol that provides minimal overhead. It sends datagrams without establishing a connection and offers no guarantees on delivery, ordering, or duplicate protection.</p>
+
+  <h3>1.1 UDP Header (8 bytes)</h3>
+  <table>
+    <tr><th>Field</th><th>Size</th><th>Description</th></tr>
+    <tr><td>Source Port</td><td>16 bits</td><td>Sender's port number</td></tr>
+    <tr><td>Destination Port</td><td>16 bits</td><td>Receiver's port number</td></tr>
+    <tr><td>Length</td><td>16 bits</td><td>Total length of UDP datagram (header + data), minimum 8 bytes</td></tr>
+    <tr><td>Checksum</td><td>16 bits</td><td>Error detection (optional in IPv4, mandatory in IPv6)</td></tr>
+  </table>
+
+  <h3>1.2 UDP Characteristics and Use Cases</h3>
+  <table>
+    <tr><th>Feature</th><th>Detail</th></tr>
+    <tr><td>Connection</td><td>Connectionless (no handshake)</td></tr>
+    <tr><td>Reliability</td><td>Unreliable (no ACK, no retransmission)</td></tr>
+    <tr><td>Ordering</td><td>No ordering guarantee</td></tr>
+    <tr><td>Flow Control</td><td>None</td></tr>
+    <tr><td>Congestion Control</td><td>None</td></tr>
+    <tr><td>Overhead</td><td>Minimal (8-byte header)</td></tr>
+    <tr><td>Use Cases</td><td>DNS, DHCP, SNMP, real-time streaming, VoIP, online gaming, TFTP</td></tr>
+  </table>
+
+  <!-- ===================== TCP ===================== -->
+  <h2>2. Transmission Control Protocol (TCP)</h2>
+  <p>TCP is a connection-oriented, reliable, byte-stream protocol. It provides ordered delivery, error detection, flow control, and congestion control.</p>
+
+  <h3>2.1 TCP Header (20-60 bytes)</h3>
+  <table>
+    <tr><th>Field</th><th>Size</th><th>Description</th></tr>
+    <tr><td>Source Port</td><td>16 bits</td><td>Sender's port</td></tr>
+    <tr><td>Destination Port</td><td>16 bits</td><td>Receiver's port</td></tr>
+    <tr><td>Sequence Number</td><td>32 bits</td><td>Byte number of first data byte in this segment</td></tr>
+    <tr><td>Acknowledgment Number</td><td>32 bits</td><td>Next byte expected from the other side</td></tr>
+    <tr><td>Data Offset (Header Length)</td><td>4 bits</td><td>Header length in 32-bit words</td></tr>
+    <tr><td>Flags</td><td>6 bits</td><td>URG, ACK, PSH, RST, SYN, FIN</td></tr>
+    <tr><td>Window Size</td><td>16 bits</td><td>Receiver's advertised window (flow control)</td></tr>
+    <tr><td>Checksum</td><td>16 bits</td><td>Error detection (covers header + data + pseudo-header)</td></tr>
+    <tr><td>Urgent Pointer</td><td>16 bits</td><td>Points to end of urgent data (when URG flag set)</td></tr>
+    <tr><td>Options</td><td>0-320 bits</td><td>MSS, Window Scaling, Timestamps, SACK</td></tr>
+  </table>
+
+  <h3>2.2 TCP vs UDP Comparison</h3>
+  <table>
+    <tr><th>Feature</th><th>TCP</th><th>UDP</th></tr>
+    <tr><td>Connection</td><td>Connection-oriented</td><td>Connectionless</td></tr>
+    <tr><td>Reliability</td><td>Reliable (ACK, retransmission)</td><td>Unreliable</td></tr>
+    <tr><td>Ordering</td><td>Ordered (sequence numbers)</td><td>Unordered</td></tr>
+    <tr><td>Flow Control</td><td>Yes (sliding window)</td><td>No</td></tr>
+    <tr><td>Congestion Control</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Header Size</td><td>20-60 bytes</td><td>8 bytes</td></tr>
+    <tr><td>Speed</td><td>Slower (overhead)</td><td>Faster</td></tr>
+    <tr><td>Broadcast/Multicast</td><td>No</td><td>Yes</td></tr>
+  </table>
+
+  <!-- ===================== TCP CONNECTION ===================== -->
+  <h2>3. TCP Connection Management</h2>
+
+  <h3>3.1 Three-Way Handshake (Connection Establishment)</h3>
+  <div class="mermaid">
+    sequenceDiagram
+      participant C as Client
+      participant S as Server
+      Note over S: LISTEN state
+      C->>S: SYN (seq=x)
+      Note over C: SYN_SENT
+      S->>C: SYN+ACK (seq=y, ack=x+1)
+      Note over S: SYN_RCVD
+      C->>S: ACK (seq=x+1, ack=y+1)
+      Note over C,S: ESTABLISHED
+  </div>
+
+  <div class="note">
+    <strong>SYN consumes a sequence number.</strong> After the handshake, the client's next sequence number is x+1 and the server's is y+1. The ACK in step 3 can carry data (piggybacking).
+  </div>
+
+  <h3>3.2 Four-Way Termination (Connection Teardown)</h3>
+  <div class="mermaid">
+    sequenceDiagram
+      participant C as Client
+      participant S as Server
+      C->>S: FIN (seq=u)
+      Note over C: FIN_WAIT_1
+      S->>C: ACK (ack=u+1)
+      Note over C: FIN_WAIT_2
+      Note over S: CLOSE_WAIT
+      Note right of S: Server may still send data
+      S->>C: FIN (seq=v)
+      Note over S: LAST_ACK
+      C->>S: ACK (ack=v+1)
+      Note over C: TIME_WAIT (2MSL)
+      Note over S: CLOSED
+      Note over C: CLOSED (after timeout)
+  </div>
+
+  <p><strong>TIME_WAIT:</strong> The client waits for 2 &times; MSL (Maximum Segment Lifetime, typically 2 minutes) before closing to ensure the final ACK is received and to prevent old segments from being confused with new connections.</p>
+
+  <!-- ===================== FLOW CONTROL ===================== -->
+  <h2>4. Flow Control: Sliding Window</h2>
+  <p>TCP uses a sliding window mechanism for flow control. The receiver advertises its available buffer space (<strong>rwnd</strong> = receive window). The sender cannot have more than <code>min(cwnd, rwnd)</code> unacknowledged bytes outstanding.</p>
+
+  <table>
+    <tr><th>Protocol</th><th>Description</th><th>Efficiency</th></tr>
+    <tr><td><strong>Stop-and-Wait</strong></td><td>Send one frame, wait for ACK</td><td>&eta; = t<sub>trans</sub> / (t<sub>trans</sub> + 2 &times; t<sub>prop</sub>) = 1/(1+2a)</td></tr>
+    <tr><td><strong>Go-Back-N</strong></td><td>Window size N; retransmit all frames from the errored one</td><td>&eta; = N/(1+2a) if N &lt; 1+2a; else 1</td></tr>
+    <tr><td><strong>Selective Repeat</strong></td><td>Window size N; retransmit only the errored frame</td><td>Same formula as GBN but only one frame retransmitted</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Window Size Constraints:</strong>
+    <ul>
+      <li>Go-Back-N: Sender window &le; 2<sup>n</sup> &minus; 1 (where n = bits for sequence number)</li>
+      <li>Selective Repeat: Sender window &le; 2<sup>n&minus;1</sup> and Receiver window &le; 2<sup>n&minus;1</sup></li>
+      <li>Reason: To avoid ambiguity between new and retransmitted frames</li>
+    </ul>
+  </div>
+
+  <!-- ===================== CONGESTION CONTROL ===================== -->
+  <h2>5. Congestion Control</h2>
+  <p>TCP uses congestion control to prevent overloading the network. The sender maintains a <strong>congestion window (cwnd)</strong> that limits the amount of data in transit.</p>
+
+  <h3>5.1 Congestion Control Phases</h3>
+  <div class="mermaid">
+    sequenceDiagram
+      participant S as Sender
+      Note over S: cwnd = 1 MSS
+      Note over S: === Slow Start ===
+      Note over S: cwnd doubles each RTT
+      Note over S: cwnd: 1, 2, 4, 8, 16...
+      Note over S: Until cwnd >= ssthresh
+      Note over S: === Congestion Avoidance ===
+      Note over S: cwnd increases by 1 MSS per RTT
+      Note over S: cwnd: 16, 17, 18, 19...
+      Note over S: Until packet loss detected
+      Note over S: === Loss Event ===
+      Note over S: Timeout: ssthresh = cwnd/2, cwnd = 1
+      Note over S: 3 dup ACKs: ssthresh = cwnd/2, cwnd = ssthresh + 3 (Fast Recovery)
+  </div>
+
+  <table>
+    <tr><th>Phase</th><th>Trigger</th><th>cwnd Growth</th><th>Description</th></tr>
+    <tr><td><strong>Slow Start</strong></td><td>Connection start or timeout</td><td>Exponential (double each RTT)</td><td>cwnd starts at 1 MSS; increases by 1 MSS for each ACK received</td></tr>
+    <tr><td><strong>Congestion Avoidance</strong></td><td>cwnd &ge; ssthresh</td><td>Linear (+1 MSS per RTT)</td><td>cwnd increases by MSS &times; MSS / cwnd for each ACK (additive increase)</td></tr>
+    <tr><td><strong>Fast Retransmit</strong></td><td>3 duplicate ACKs</td><td>N/A</td><td>Retransmit the lost segment immediately without waiting for timeout</td></tr>
+    <tr><td><strong>Fast Recovery</strong></td><td>After fast retransmit</td><td>Linear</td><td>ssthresh = cwnd/2; cwnd = ssthresh + 3 MSS; increase by 1 MSS per duplicate ACK; exit to congestion avoidance on new ACK</td></tr>
+  </table>
+
+  <h3>5.2 TCP Variants</h3>
+  <table>
+    <tr><th>Variant</th><th>On Timeout</th><th>On 3 Dup ACKs</th></tr>
+    <tr><td><strong>TCP Tahoe</strong></td><td>ssthresh = cwnd/2; cwnd = 1</td><td>ssthresh = cwnd/2; cwnd = 1 (slow start)</td></tr>
+    <tr><td><strong>TCP Reno</strong></td><td>ssthresh = cwnd/2; cwnd = 1</td><td>ssthresh = cwnd/2; cwnd = ssthresh (fast recovery)</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Example:</strong> ssthresh = 16 MSS. Connection starts.
+    <table>
+      <tr><th>RTT</th><th>cwnd (MSS)</th><th>Phase</th></tr>
+      <tr><td>1</td><td>1</td><td>Slow Start</td></tr>
+      <tr><td>2</td><td>2</td><td>Slow Start</td></tr>
+      <tr><td>3</td><td>4</td><td>Slow Start</td></tr>
+      <tr><td>4</td><td>8</td><td>Slow Start</td></tr>
+      <tr><td>5</td><td>16</td><td>Slow Start (reaches ssthresh)</td></tr>
+      <tr><td>6</td><td>17</td><td>Congestion Avoidance</td></tr>
+      <tr><td>7</td><td>18</td><td>Congestion Avoidance</td></tr>
+      <tr><td>8</td><td>19</td><td>Congestion Avoidance</td></tr>
+    </table>
+    <p>If loss detected at cwnd=19 via 3 dup ACKs (TCP Reno): ssthresh = 9, cwnd = 9 (fast recovery). Then linear growth: 10, 11, 12...</p>
+  </div>
+
+  <!-- ===================== SOCKETS ===================== -->
+  <h2>6. Sockets</h2>
+  <p>A <strong>socket</strong> is an endpoint for communication, identified by an IP address and a port number. It serves as the interface between the application layer and the transport layer.</p>
+
+  <table>
+    <tr><th>Concept</th><th>Description</th></tr>
+    <tr><td>Socket Address</td><td>(IP address, Port number) tuple</td></tr>
+    <tr><td>Well-known Ports</td><td>0-1023 (HTTP=80, HTTPS=443, FTP=21, SSH=22, DNS=53, SMTP=25)</td></tr>
+    <tr><td>Registered Ports</td><td>1024-49151</td></tr>
+    <tr><td>Dynamic/Private Ports</td><td>49152-65535</td></tr>
+  </table>
+
+  <h3>6.1 Socket Programming Flow</h3>
+  <table>
+    <tr><th>TCP Server</th><th>TCP Client</th></tr>
+    <tr><td><code>socket()</code> - create socket</td><td><code>socket()</code> - create socket</td></tr>
+    <tr><td><code>bind()</code> - bind to address/port</td><td>&mdash;</td></tr>
+    <tr><td><code>listen()</code> - mark as passive</td><td>&mdash;</td></tr>
+    <tr><td><code>accept()</code> - wait for connection</td><td><code>connect()</code> - initiate connection</td></tr>
+    <tr><td><code>read()/write()</code> - exchange data</td><td><code>read()/write()</code> - exchange data</td></tr>
+    <tr><td><code>close()</code> - terminate</td><td><code>close()</code> - terminate</td></tr>
+  </table>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>7. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>UDP header = 8 bytes; TCP header = 20-60 bytes.</li>
+      <li>TCP 3-way handshake: SYN, SYN+ACK, ACK. Both SYN and FIN consume one sequence number.</li>
+      <li>TIME_WAIT = 2 &times; MSL ensures old segments do not interfere with new connections.</li>
+      <li>Go-Back-N window size &le; 2<sup>n</sup> &minus; 1; Selective Repeat &le; 2<sup>n&minus;1</sup>.</li>
+      <li>Slow Start: cwnd doubles each RTT (exponential). Congestion Avoidance: cwnd += 1 each RTT (linear).</li>
+      <li>TCP Tahoe: always goes to cwnd=1 on loss. TCP Reno: goes to cwnd = ssthresh on 3 dup ACKs (fast recovery).</li>
+      <li>Effective throughput = cwnd / RTT (approximately).</li>
+      <li>Sender's effective window = min(cwnd, rwnd).</li>
+      <li>TCP provides: reliability, ordering, flow control, congestion control. UDP provides: none of these.</li>
+      <li>Stop-and-Wait efficiency = 1/(1+2a) where a = propagation delay / transmission delay.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Transport Layer Quiz",
+      "questions": [
+        {
+          "question": "In TCP, if the sequence number field uses n bits, what is the maximum window size for Go-Back-N protocol?",
+          "options": ["2^n", "2^n - 1", "2^(n-1)", "2^n + 1"],
+          "answer": 1,
+          "explanation": "For Go-Back-N, the sender window size must be at most 2^n - 1 to avoid ambiguity between new frames and retransmitted frames. If the window were 2^n, the receiver could not distinguish between a new frame and a retransmission."
+        },
+        {
+          "question": "During TCP congestion control with ssthresh = 16 MSS, starting from cwnd = 1 MSS, what is the cwnd after 6 RTTs (no loss)?",
+          "options": ["32 MSS", "17 MSS", "64 MSS", "22 MSS"],
+          "answer": 1,
+          "explanation": "Slow start: RTT1: cwnd=1, RTT2: 2, RTT3: 4, RTT4: 8, RTT5: 16 (reaches ssthresh). Switch to congestion avoidance: RTT6: 17. After 6 RTTs, cwnd = 17 MSS."
+        },
+        {
+          "question": "In TCP Reno, if the current cwnd is 20 MSS and 3 duplicate ACKs are received, what are the new values of ssthresh and cwnd?",
+          "options": ["ssthresh=10, cwnd=1", "ssthresh=10, cwnd=10", "ssthresh=10, cwnd=13", "ssthresh=20, cwnd=10"],
+          "answer": 1,
+          "explanation": "In TCP Reno on 3 duplicate ACKs (fast recovery): ssthresh = cwnd/2 = 20/2 = 10. cwnd = ssthresh = 10 MSS (then enters congestion avoidance with linear growth). TCP Tahoe would set cwnd=1; Reno sets cwnd=ssthresh."
+        },
+        {
+          "question": "The efficiency of a Stop-and-Wait protocol with propagation delay = 10 ms and transmission delay = 5 ms is:",
+          "options": ["20%", "50%", "33%", "25%"],
+          "answer": 0,
+          "explanation": "Efficiency = t_trans / (t_trans + 2*t_prop) = 5 / (5 + 2*10) = 5/25 = 0.20 = 20%. Alternatively, a = t_prop/t_trans = 10/5 = 2. Efficiency = 1/(1+2a) = 1/5 = 20%."
+        },
+        {
+          "question": "During a TCP 3-way handshake, the client sends SYN with seq=100. The server responds with SYN+ACK with seq=300, ack=101. The client then sends ACK with seq=101, ack=301. What is the sequence number of the first data byte sent by the client?",
+          "options": ["100", "101", "102", "301"],
+          "answer": 1,
+          "explanation": "The SYN flag consumes one sequence number. The client's SYN had seq=100, so the next byte is 101. The ACK packet (step 3) uses seq=101. The first data byte sent by the client also has sequence number 101 (the ACK and first data can be combined)."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

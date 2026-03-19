@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Revision: Algorithms — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Quick Revision: Algorithms</h1>
+  <p class="article-section-tag">📝 Quick Revision</p>
+
+  <h2>1. Sorting Algorithms Comparison</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable</th><th>Method</th></tr>
+    <tr><td>Bubble Sort</td><td>O(n)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>Yes</td><td>Comparison</td></tr>
+    <tr><td>Selection Sort</td><td>O(n^2)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>No</td><td>Comparison</td></tr>
+    <tr><td>Insertion Sort</td><td>O(n)</td><td>O(n^2)</td><td>O(n^2)</td><td>O(1)</td><td>Yes</td><td>Comparison</td></tr>
+    <tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>Yes</td><td>Divide &amp; Conquer</td></tr>
+    <tr><td>Quick Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n^2)</td><td>O(log n)</td><td>No</td><td>Divide &amp; Conquer</td></tr>
+    <tr><td>Heap Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td>No</td><td>Selection/Heap</td></tr>
+    <tr><td>Counting Sort</td><td>O(n+k)</td><td>O(n+k)</td><td>O(n+k)</td><td>O(k)</td><td>Yes</td><td>Non-comparison</td></tr>
+    <tr><td>Radix Sort</td><td>O(d*(n+k))</td><td>O(d*(n+k))</td><td>O(d*(n+k))</td><td>O(n+k)</td><td>Yes</td><td>Non-comparison</td></tr>
+    <tr><td>Bucket Sort</td><td>O(n+k)</td><td>O(n+k)</td><td>O(n^2)</td><td>O(n)</td><td>Yes</td><td>Non-comparison</td></tr>
+  </table>
+  <div class="note"><strong>Remember:</strong> Comparison-based sorting lower bound is O(n log n). Counting/Radix/Bucket beat this by not comparing elements directly.</div>
+
+  <h2>2. Master Theorem Quick Reference</h2>
+  <p>For <code>T(n) = aT(n/b) + O(n^c)</code>, let p = log_b(a):</p>
+  <table>
+    <tr><th>Case</th><th>Condition</th><th>T(n)</th></tr>
+    <tr><td>1</td><td>c &lt; p</td><td>O(n^p)</td></tr>
+    <tr><td>2</td><td>c = p</td><td>O(n^p log n)</td></tr>
+    <tr><td>3</td><td>c &gt; p</td><td>O(n^c)</td></tr>
+  </table>
+
+  <h3>Common Recurrences</h3>
+  <table>
+    <tr><th>Recurrence</th><th>Solution</th><th>Example</th></tr>
+    <tr><td>T(n) = T(n/2) + 1</td><td>O(log n)</td><td>Binary search</td></tr>
+    <tr><td>T(n) = 2T(n/2) + n</td><td>O(n log n)</td><td>Merge sort</td></tr>
+    <tr><td>T(n) = 2T(n/2) + 1</td><td>O(n)</td><td>Tree traversal</td></tr>
+    <tr><td>T(n) = T(n-1) + 1</td><td>O(n)</td><td>Linear scan</td></tr>
+    <tr><td>T(n) = T(n-1) + n</td><td>O(n^2)</td><td>Selection sort</td></tr>
+    <tr><td>T(n) = 2T(n-1) + 1</td><td>O(2^n)</td><td>Tower of Hanoi</td></tr>
+  </table>
+
+  <h2>3. Greedy vs DP vs Divide &amp; Conquer</h2>
+  <table>
+    <tr><th>Aspect</th><th>Greedy</th><th>Dynamic Programming</th><th>Divide &amp; Conquer</th></tr>
+    <tr><td>Approach</td><td>Make locally optimal choice</td><td>Solve all subproblems, combine</td><td>Divide, solve, merge</td></tr>
+    <tr><td>Subproblems</td><td>Never revisited</td><td>Overlapping, solved once</td><td>Independent, no overlap</td></tr>
+    <tr><td>Optimality</td><td>Not always optimal</td><td>Guaranteed optimal</td><td>Depends on problem</td></tr>
+    <tr><td>Key property</td><td>Greedy choice property</td><td>Optimal substructure + overlapping subproblems</td><td>Independent subproblems</td></tr>
+    <tr><td>Examples</td><td>Huffman, Kruskal, Prim, Activity Selection, Dijkstra</td><td>LCS, Knapsack (0/1), Matrix Chain, Floyd-Warshall, Bellman-Ford</td><td>Merge Sort, Quick Sort, Binary Search, Strassen</td></tr>
+  </table>
+
+  <h2>4. Graph Algorithm Complexities</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Time (Adj List)</th><th>Problem</th><th>Notes</th></tr>
+    <tr><td>BFS</td><td>O(V+E)</td><td>Shortest path (unweighted)</td><td>Uses queue</td></tr>
+    <tr><td>DFS</td><td>O(V+E)</td><td>Cycle detection, topological sort</td><td>Uses stack/recursion</td></tr>
+    <tr><td>Dijkstra (binary heap)</td><td>O((V+E) log V)</td><td>SSSP, non-negative weights</td><td>Greedy</td></tr>
+    <tr><td>Bellman-Ford</td><td>O(VE)</td><td>SSSP, handles negative weights</td><td>DP, detects negative cycle</td></tr>
+    <tr><td>Floyd-Warshall</td><td>O(V^3)</td><td>All-pairs shortest path</td><td>DP</td></tr>
+    <tr><td>Prim (binary heap)</td><td>O((V+E) log V)</td><td>MST</td><td>Greedy, grows one tree</td></tr>
+    <tr><td>Kruskal</td><td>O(E log E)</td><td>MST</td><td>Greedy, uses Union-Find</td></tr>
+    <tr><td>Topological Sort</td><td>O(V+E)</td><td>Ordering of DAG</td><td>DFS or BFS (Kahn's)</td></tr>
+    <tr><td>SCC (Kosaraju/Tarjan)</td><td>O(V+E)</td><td>Strongly Connected Components</td><td>Two DFS passes</td></tr>
+  </table>
+
+  <h2>5. Complexity Classes</h2>
+  <ul>
+    <li><strong>P:</strong> Problems solvable in polynomial time by a deterministic TM.</li>
+    <li><strong>NP:</strong> Problems verifiable in polynomial time. P &sube; NP.</li>
+    <li><strong>NP-Complete:</strong> In NP + every NP problem reduces to it. If any NPC problem is in P, then P = NP.</li>
+    <li><strong>NP-Hard:</strong> At least as hard as NPC, but not necessarily in NP.</li>
+    <li><strong>Classic NPC problems:</strong> SAT, 3-SAT, Vertex Cover, Hamiltonian Cycle, TSP (decision), Graph Coloring, Subset Sum, Clique.</li>
+  </ul>
+
+  <h2>6. Key Algorithm Facts</h2>
+  <ul>
+    <li>Stable sorts: Bubble, Insertion, Merge, Counting, Radix.</li>
+    <li>In-place sorts: Bubble, Selection, Insertion, Quick, Heap.</li>
+    <li>Quicksort worst case (O(n^2)) when already sorted and pivot = first element.</li>
+    <li>Activity selection and fractional knapsack: greedy works. 0/1 knapsack: needs DP.</li>
+    <li>Longest Common Subsequence: O(mn) DP. Longest Increasing Subsequence: O(n log n).</li>
+    <li>Matrix Chain Multiplication: O(n^3) DP.</li>
+  </ul>
+
+  <div class="important"><strong>Most Tested:</strong> Sorting comparison table, Master theorem application, graph shortest path algorithms, and greedy vs DP identification questions.</div>
+
+</article>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Machine Learning Fundamentals | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Machine Learning Fundamentals</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. What is Machine Learning?</h2>
+  <p>Machine Learning (ML) is a subfield of AI that focuses on building systems that learn from data and improve their performance without being explicitly programmed. Tom Mitchell's formal definition:</p>
+
+  <div class="formula">
+    A computer program is said to learn from experience E with respect to some task T<br>
+    and performance measure P, if its performance on T, as measured by P, improves with experience E.
+  </div>
+
+  <h2>2. Types of Machine Learning</h2>
+
+  <h3>2.1 Supervised Learning</h3>
+  <p>The algorithm learns from <strong>labeled training data</strong> &mdash; each input has a corresponding desired output. The goal is to learn a mapping from inputs to outputs that generalizes to unseen data.</p>
+  <ul>
+    <li><strong>Classification:</strong> Output is a discrete category (e.g., spam/not-spam, digit recognition)</li>
+    <li><strong>Regression:</strong> Output is a continuous value (e.g., house price prediction, temperature forecasting)</li>
+  </ul>
+  <p>Examples: Linear Regression, Logistic Regression, Decision Trees, SVM, KNN, Naive Bayes, Neural Networks.</p>
+
+  <h3>2.2 Unsupervised Learning</h3>
+  <p>The algorithm learns from <strong>unlabeled data</strong>, discovering hidden patterns or structures without guidance.</p>
+  <ul>
+    <li><strong>Clustering:</strong> Grouping similar data points (e.g., K-Means, DBSCAN)</li>
+    <li><strong>Dimensionality Reduction:</strong> Reducing the number of features while preserving information (e.g., PCA)</li>
+    <li><strong>Association Rule Mining:</strong> Finding interesting relationships between variables (e.g., Apriori)</li>
+  </ul>
+
+  <h3>2.3 Reinforcement Learning</h3>
+  <p>An agent learns by <strong>interacting with an environment</strong>, receiving rewards or penalties for its actions, and learning a policy that maximizes cumulative reward.</p>
+  <ul>
+    <li><strong>Key concepts:</strong> Agent, Environment, State, Action, Reward, Policy</li>
+    <li><strong>Exploration vs. Exploitation:</strong> Balancing trying new actions vs. using known good actions</li>
+    <li>Examples: Q-Learning, SARSA, Deep Q-Networks, Policy Gradient methods</li>
+  </ul>
+
+  <table>
+    <tr><th>Type</th><th>Data</th><th>Goal</th><th>Feedback</th></tr>
+    <tr><td>Supervised</td><td>Labeled</td><td>Predict output for new input</td><td>Correct output for each input</td></tr>
+    <tr><td>Unsupervised</td><td>Unlabeled</td><td>Discover structure/patterns</td><td>No feedback</td></tr>
+    <tr><td>Reinforcement</td><td>Interaction</td><td>Maximize cumulative reward</td><td>Delayed reward signal</td></tr>
+  </table>
+
+  <h2>3. Bias-Variance Tradeoff</h2>
+  <p>The prediction error of any ML model can be decomposed into three components:</p>
+
+  <div class="formula">
+    Total Error = Bias&sup2; + Variance + Irreducible Noise
+  </div>
+
+  <table>
+    <tr><th>Component</th><th>Description</th><th>Effect</th></tr>
+    <tr><td><strong>Bias</strong></td><td>Error from overly simplistic assumptions in the model</td><td>High bias &rarr; underfitting (misses relevant patterns)</td></tr>
+    <tr><td><strong>Variance</strong></td><td>Error from sensitivity to small fluctuations in training data</td><td>High variance &rarr; overfitting (captures noise as patterns)</td></tr>
+    <tr><td><strong>Irreducible Noise</strong></td><td>Inherent noise in the data that no model can capture</td><td>Cannot be reduced by any model</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Intuition:</strong>
+    <ul>
+      <li><strong>High bias, low variance:</strong> Linear model on non-linear data &mdash; consistently wrong but in a predictable way</li>
+      <li><strong>Low bias, high variance:</strong> Deep decision tree &mdash; fits training data perfectly but gives very different results on different training sets</li>
+      <li><strong>Sweet spot:</strong> A model with the right complexity that balances bias and variance</li>
+    </ul>
+  </div>
+
+  <h2>4. Overfitting and Underfitting</h2>
+
+  <h3>4.1 Overfitting</h3>
+  <p>Model learns noise and fluctuations in the training data. Performs well on training data but poorly on unseen data. Caused by excessive model complexity relative to the amount of training data.</p>
+  <p><strong>Solutions:</strong> Regularization (L1/L2), pruning (decision trees), dropout (neural networks), more training data, simpler model, cross-validation, early stopping.</p>
+
+  <h3>4.2 Underfitting</h3>
+  <p>Model is too simple to capture the underlying patterns. Performs poorly on both training and test data.</p>
+  <p><strong>Solutions:</strong> More complex model, more features, reduce regularization, longer training.</p>
+
+  <table>
+    <tr><th>Metric</th><th>Overfitting</th><th>Underfitting</th><th>Good Fit</th></tr>
+    <tr><td>Training Error</td><td>Very Low</td><td>High</td><td>Low</td></tr>
+    <tr><td>Test Error</td><td>High</td><td>High</td><td>Low</td></tr>
+    <tr><td>Gap (Test - Train)</td><td>Large</td><td>Small</td><td>Small</td></tr>
+  </table>
+
+  <h2>5. Cross-Validation</h2>
+  <p>Cross-validation is a technique for assessing model generalization performance by partitioning data into training and validation sets multiple times.</p>
+
+  <h3>5.1 K-Fold Cross-Validation</h3>
+  <ol>
+    <li>Split data into K equal folds</li>
+    <li>For each fold i (i = 1 to K): train on all folds except fold i, validate on fold i</li>
+    <li>Average the K validation scores</li>
+  </ol>
+
+  <div class="formula">
+    CV Score = (1/K) &sum; Score_i  for i = 1 to K
+  </div>
+
+  <p>Common choices: K = 5 or K = 10. <strong>Leave-One-Out CV (LOOCV)</strong> uses K = N (number of samples) &mdash; computationally expensive but minimal bias.</p>
+
+  <h3>5.2 Stratified K-Fold</h3>
+  <p>Ensures each fold has approximately the same proportion of each class label. Important for imbalanced datasets.</p>
+
+  <h2>6. Evaluation Metrics</h2>
+
+  <h3>6.1 Confusion Matrix</h3>
+  <table>
+    <tr><th></th><th>Predicted Positive</th><th>Predicted Negative</th></tr>
+    <tr><td><strong>Actual Positive</strong></td><td>True Positive (TP)</td><td>False Negative (FN) - Type II Error</td></tr>
+    <tr><td><strong>Actual Negative</strong></td><td>False Positive (FP) - Type I Error</td><td>True Negative (TN)</td></tr>
+  </table>
+
+  <h3>6.2 Metrics from Confusion Matrix</h3>
+  <div class="formula">
+    Accuracy = (TP + TN) / (TP + TN + FP + FN)<br><br>
+    Precision = TP / (TP + FP)  [Of predicted positives, how many are correct?]<br><br>
+    Recall (Sensitivity/TPR) = TP / (TP + FN)  [Of actual positives, how many are found?]<br><br>
+    Specificity (TNR) = TN / (TN + FP)  [Of actual negatives, how many are correctly identified?]<br><br>
+    F1 Score = 2 &times; (Precision &times; Recall) / (Precision + Recall)  [Harmonic mean]<br><br>
+    False Positive Rate (FPR) = FP / (FP + TN) = 1 - Specificity
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> Medical test with TP=90, FP=10, FN=20, TN=880:<br>
+    Accuracy = (90+880)/(90+880+10+20) = 970/1000 = 97%<br>
+    Precision = 90/(90+10) = 90%<br>
+    Recall = 90/(90+20) = 81.8%<br>
+    F1 = 2 &times; 0.9 &times; 0.818 / (0.9 + 0.818) = 85.7%
+  </div>
+
+  <h3>6.3 ROC Curve and AUC</h3>
+  <p>The <strong>ROC (Receiver Operating Characteristic) curve</strong> plots <strong>True Positive Rate (Recall)</strong> vs. <strong>False Positive Rate</strong> at various classification thresholds.</p>
+  <ul>
+    <li><strong>AUC (Area Under the Curve):</strong> Ranges from 0 to 1. AUC = 1 is a perfect classifier. AUC = 0.5 is random guessing.</li>
+    <li>ROC-AUC is threshold-independent and useful for comparing classifiers.</li>
+    <li>Particularly useful when class distribution is balanced.</li>
+  </ul>
+
+  <h3>6.4 When to Use Which Metric</h3>
+  <table>
+    <tr><th>Scenario</th><th>Preferred Metric</th><th>Reason</th></tr>
+    <tr><td>Balanced classes</td><td>Accuracy, F1</td><td>Accuracy is meaningful when classes are balanced</td></tr>
+    <tr><td>Imbalanced classes</td><td>Precision, Recall, F1, AUC</td><td>Accuracy can be misleading (e.g., 99% accuracy by predicting majority class)</td></tr>
+    <tr><td>Cost of FP is high</td><td>Precision</td><td>Minimize false positives (e.g., spam detection)</td></tr>
+    <tr><td>Cost of FN is high</td><td>Recall</td><td>Minimize false negatives (e.g., disease detection)</td></tr>
+  </table>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "Machine Learning Fundamentals - GATE Quiz",
+    "questions": [
+      {
+        "question": "A model has very low training error but high test error. This is an indication of:",
+        "options": ["Underfitting", "Overfitting", "High bias", "Optimal model complexity"],
+        "answer": 1,
+        "explanation": "Low training error but high test error indicates overfitting. The model has memorized the training data (including noise) but fails to generalize to unseen data. This corresponds to low bias but high variance."
+      },
+      {
+        "question": "Given a confusion matrix with TP=80, FP=20, FN=10, TN=90, what is the precision?",
+        "options": ["80%", "88.9%", "80/110 = 72.7%", "80/100 = 80%"],
+        "answer": 0,
+        "explanation": "Precision = TP / (TP + FP) = 80 / (80 + 20) = 80/100 = 80%. Precision measures the proportion of predicted positives that are actually positive."
+      },
+      {
+        "question": "In K-fold cross-validation with K=5, what fraction of the data is used for validation in each iteration?",
+        "options": ["1/5 (20%)", "4/5 (80%)", "1/2 (50%)", "Depends on the dataset"],
+        "answer": 0,
+        "explanation": "In K-fold cross-validation, the data is split into K equal folds. In each iteration, one fold (1/K = 1/5 = 20%) is used for validation and the remaining K-1 folds (4/5 = 80%) are used for training."
+      },
+      {
+        "question": "Which type of learning involves an agent receiving delayed reward signals from the environment?",
+        "options": ["Supervised Learning", "Unsupervised Learning", "Reinforcement Learning", "Semi-supervised Learning"],
+        "answer": 2,
+        "explanation": "Reinforcement learning involves an agent interacting with an environment and receiving reward signals (which may be delayed) for its actions. The agent learns a policy to maximize cumulative reward over time."
+      },
+      {
+        "question": "The F1 score is the harmonic mean of:",
+        "options": ["Accuracy and Recall", "Precision and Accuracy", "Precision and Recall", "Sensitivity and Specificity"],
+        "answer": 2,
+        "explanation": "F1 = 2 × (Precision × Recall) / (Precision + Recall). It is the harmonic mean of precision and recall, providing a single metric that balances both. The harmonic mean penalizes extreme differences between the two values."
+      },
+      {
+        "question": "An ROC-AUC value of 0.5 indicates:",
+        "options": ["A perfect classifier", "A model performing no better than random guessing", "An overfitting model", "An underfitting model"],
+        "answer": 1,
+        "explanation": "AUC = 0.5 means the ROC curve follows the diagonal line, indicating the classifier performs no better than random guessing. AUC = 1.0 indicates a perfect classifier, and AUC < 0.5 indicates performance worse than random."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

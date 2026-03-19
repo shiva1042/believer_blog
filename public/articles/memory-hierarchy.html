@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Hierarchy — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Memory Hierarchy</h1>
+  <p class="article-section-tag">🖥️ Section 3: Computer Organization</p>
+
+  <h2>1. Introduction</h2>
+  <p>The memory hierarchy exploits the principle of <strong>locality of reference</strong> to provide the illusion of a large, fast, and cheap memory. Data that is accessed frequently is kept in smaller, faster (and more expensive) memory levels.</p>
+
+  <h3>1.1 Locality of Reference</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th><th>Example</th></tr>
+    <tr><td>Temporal Locality</td><td>Recently accessed data will likely be accessed again soon</td><td>Loop variables, counters</td></tr>
+    <tr><td>Spatial Locality</td><td>Nearby memory locations will likely be accessed soon</td><td>Array traversal, sequential code</td></tr>
+  </table>
+
+  <h3>1.2 Memory Hierarchy Pyramid</h3>
+  <div class="mermaid">
+flowchart TD
+    R["Registers\n~1 ns | Bytes | $$$$$"] --> L1["L1 Cache\n~2-4 ns | 32-64 KB | $$$$"]
+    L1 --> L2["L2 Cache\n~5-10 ns | 256 KB-1 MB | $$$"]
+    L2 --> L3["L3 Cache\n~10-30 ns | 2-32 MB | $$"]
+    L3 --> MM["Main Memory (RAM)\n~50-100 ns | 4-64 GB | $"]
+    MM --> SSD["SSD/Flash\n~0.1 ms | 256 GB-4 TB"]
+    SSD --> HDD["Hard Disk\n~5-10 ms | 1-16 TB"]
+  </div>
+
+  <h3>1.3 Hierarchy Properties</h3>
+  <table>
+    <tr><th>Level</th><th>Speed</th><th>Size</th><th>Cost per bit</th><th>Managed by</th></tr>
+    <tr><td>Registers</td><td>Fastest</td><td>Smallest</td><td>Highest</td><td>Compiler</td></tr>
+    <tr><td>Cache (L1/L2/L3)</td><td>Fast</td><td>Small</td><td>High</td><td>Hardware</td></tr>
+    <tr><td>Main Memory</td><td>Moderate</td><td>Medium</td><td>Moderate</td><td>OS (virtual memory)</td></tr>
+    <tr><td>Secondary Storage</td><td>Slow</td><td>Large</td><td>Low</td><td>OS (file system)</td></tr>
+  </table>
+
+  <h2>2. Cache Memory</h2>
+  <p>Cache is a small, fast SRAM memory that stores copies of frequently accessed main memory data. The CPU checks the cache first before accessing main memory.</p>
+
+  <h3>2.1 Cache Terminology</h3>
+  <table>
+    <tr><th>Term</th><th>Definition</th></tr>
+    <tr><td>Cache Hit</td><td>Requested data found in cache</td></tr>
+    <tr><td>Cache Miss</td><td>Requested data not in cache; must fetch from lower level</td></tr>
+    <tr><td>Hit Rate (h)</td><td>Fraction of accesses that are hits</td></tr>
+    <tr><td>Miss Rate (m)</td><td>1 - h; fraction that are misses</td></tr>
+    <tr><td>Hit Time</td><td>Time to access cache on a hit</td></tr>
+    <tr><td>Miss Penalty</td><td>Additional time to fetch from lower level on a miss</td></tr>
+    <tr><td>Block/Line</td><td>Unit of data transfer between cache and memory</td></tr>
+    <tr><td>Tag</td><td>Bits used to identify which memory block is in a cache line</td></tr>
+  </table>
+
+  <h3>2.2 Address Breakdown</h3>
+  <p>For a cache with 2<sup>s</sup> sets, 2<sup>b</sup> bytes per block:</p>
+  <table>
+    <tr><th>Field</th><th>Bits</th><th>Purpose</th></tr>
+    <tr><td>Tag</td><td>Address bits - s - b</td><td>Identifies which memory block</td></tr>
+    <tr><td>Set Index</td><td>s bits</td><td>Selects the cache set</td></tr>
+    <tr><td>Block Offset</td><td>b bits</td><td>Selects byte within block</td></tr>
+  </table>
+
+  <h2>3. Cache Mapping Techniques</h2>
+
+  <h3>3.1 Direct Mapped Cache</h3>
+  <p>Each memory block maps to exactly one cache line: <code>Cache line = (Block address) mod (Number of lines)</code></p>
+  <table>
+    <tr><th>Advantage</th><th>Disadvantage</th></tr>
+    <tr><td>Simple hardware</td><td>High conflict misses</td></tr>
+    <tr><td>Fast lookup</td><td>No flexibility in placement</td></tr>
+  </table>
+
+  <p><strong>Example:</strong> 8-line cache, block addresses 0-31. Block 0, 8, 16, 24 all map to line 0. If a program alternates between blocks 0 and 8, every access is a miss (thrashing).</p>
+
+  <h3>3.2 Fully Associative Cache</h3>
+  <p>A block can be placed in any cache line. All tags must be compared simultaneously.</p>
+  <table>
+    <tr><th>Advantage</th><th>Disadvantage</th></tr>
+    <tr><td>No conflict misses</td><td>Complex hardware (parallel comparators)</td></tr>
+    <tr><td>Maximum flexibility</td><td>Slow for large caches</td></tr>
+  </table>
+
+  <h3>3.3 Set Associative Cache</h3>
+  <p>A compromise: cache is divided into sets, each containing n lines (n-way set associative). A block maps to a specific set but can go in any line within that set.</p>
+  <p><code>Set = (Block address) mod (Number of sets)</code></p>
+
+  <table>
+    <tr><th>Associativity</th><th>Sets</th><th>Lines per Set</th><th>Description</th></tr>
+    <tr><td>Direct Mapped</td><td>N (= total lines)</td><td>1</td><td>1-way set associative</td></tr>
+    <tr><td>2-way</td><td>N/2</td><td>2</td><td>Each set has 2 lines</td></tr>
+    <tr><td>4-way</td><td>N/4</td><td>4</td><td>Each set has 4 lines</td></tr>
+    <tr><td>Fully Associative</td><td>1</td><td>N</td><td>N-way set associative</td></tr>
+  </table>
+
+  <div class="note">
+    <p><strong>Key Formula:</strong> Number of sets = Cache size / (Block size &times; Associativity)<br/>
+    Tag bits = Address bits - log<sub>2</sub>(sets) - log<sub>2</sub>(block size)</p>
+  </div>
+
+  <h2>4. Cache Performance</h2>
+
+  <h3>4.1 Average Memory Access Time (AMAT)</h3>
+  <p><code>AMAT = Hit Time + Miss Rate &times; Miss Penalty</code></p>
+
+  <p><strong>Example:</strong> Hit time = 1 cycle, miss rate = 5%, miss penalty = 100 cycles.</p>
+  <p><code>AMAT = 1 + 0.05 &times; 100 = 6 cycles</code></p>
+
+  <h3>4.2 Multi-Level Cache AMAT</h3>
+  <p><code>AMAT = L1 Hit Time + L1 Miss Rate &times; (L2 Hit Time + L2 Miss Rate &times; L2 Miss Penalty)</code></p>
+
+  <p><strong>Example:</strong> L1: hit time = 1 cycle, miss rate = 5%. L2: hit time = 10 cycles, miss rate = 20% (local). Memory: 100 cycles.</p>
+  <p><code>AMAT = 1 + 0.05 &times; (10 + 0.20 &times; 100) = 1 + 0.05 &times; 30 = 2.5 cycles</code></p>
+
+  <h3>4.3 Types of Cache Misses (3 Cs)</h3>
+  <table>
+    <tr><th>Type</th><th>Cause</th><th>Solution</th></tr>
+    <tr><td>Compulsory (Cold)</td><td>First access to a block</td><td>Prefetching, larger blocks</td></tr>
+    <tr><td>Capacity</td><td>Cache too small for working set</td><td>Larger cache</td></tr>
+    <tr><td>Conflict</td><td>Multiple blocks map to same set</td><td>Higher associativity</td></tr>
+  </table>
+
+  <h2>5. Replacement Policies</h2>
+  <p>When a cache set is full and a new block must be loaded, a replacement policy determines which existing block to evict.</p>
+
+  <table>
+    <tr><th>Policy</th><th>Description</th><th>Complexity</th><th>Performance</th></tr>
+    <tr><td>LRU (Least Recently Used)</td><td>Evict block not used for longest time</td><td>High (needs tracking)</td><td>Best (exploits temporal locality)</td></tr>
+    <tr><td>FIFO (First In First Out)</td><td>Evict oldest block in set</td><td>Medium</td><td>Good</td></tr>
+    <tr><td>Random</td><td>Evict a random block</td><td>Low</td><td>Surprisingly good for high associativity</td></tr>
+    <tr><td>LFU (Least Frequently Used)</td><td>Evict least accessed block</td><td>High</td><td>Good for some workloads</td></tr>
+  </table>
+
+  <div class="note">
+    <p><strong>LRU implementation:</strong> For 2-way, 1 bit per set suffices. For n-way, tracking requires log<sub>2</sub>(n!) bits for exact LRU (impractical for large n), so pseudo-LRU approximations are used.</p>
+  </div>
+
+  <h2>6. Write Policies</h2>
+
+  <h3>6.1 On a Write Hit</h3>
+  <table>
+    <tr><th>Policy</th><th>Action</th><th>Pro</th><th>Con</th></tr>
+    <tr><td>Write-Through</td><td>Write to both cache and memory</td><td>Memory always consistent</td><td>Slow (every write goes to memory)</td></tr>
+    <tr><td>Write-Back</td><td>Write only to cache; write to memory on eviction</td><td>Faster (fewer memory writes)</td><td>Inconsistency risk; needs dirty bit</td></tr>
+  </table>
+
+  <h3>6.2 On a Write Miss</h3>
+  <table>
+    <tr><th>Policy</th><th>Action</th><th>Typical Pairing</th></tr>
+    <tr><td>Write-Allocate</td><td>Load block into cache, then write</td><td>Used with write-back</td></tr>
+    <tr><td>No-Write-Allocate</td><td>Write directly to memory, don't load to cache</td><td>Used with write-through</td></tr>
+  </table>
+
+  <h3>6.3 Write Buffer</h3>
+  <p>A small FIFO buffer between cache and memory that holds pending writes. The CPU can continue executing while writes drain to memory in the background. Used primarily with write-through caches.</p>
+
+  <h2>7. Cache Design Example</h2>
+  <p><strong>Given:</strong> 32-bit address, 64 KB cache, 64-byte blocks, 4-way set associative.</p>
+  <table>
+    <tr><th>Parameter</th><th>Calculation</th><th>Value</th></tr>
+    <tr><td>Block offset bits</td><td>log<sub>2</sub>(64)</td><td>6 bits</td></tr>
+    <tr><td>Number of blocks</td><td>64 KB / 64 B</td><td>1024</td></tr>
+    <tr><td>Number of sets</td><td>1024 / 4</td><td>256</td></tr>
+    <tr><td>Set index bits</td><td>log<sub>2</sub>(256)</td><td>8 bits</td></tr>
+    <tr><td>Tag bits</td><td>32 - 8 - 6</td><td>18 bits</td></tr>
+  </table>
+
+  <h2>8. Virtual Memory (Brief)</h2>
+  <p>Virtual memory extends the memory hierarchy to disk, giving each process a private address space. The OS manages page tables that map virtual to physical addresses. The TLB (Translation Lookaside Buffer) is a cache for page table entries.</p>
+
+  <table>
+    <tr><th>Concept</th><th>Cache Analogy</th></tr>
+    <tr><td>Page</td><td>Block</td></tr>
+    <tr><td>Page fault</td><td>Cache miss (very expensive: ~ms)</td></tr>
+    <tr><td>Page table</td><td>Tag store</td></tr>
+    <tr><td>TLB</td><td>Cache for page table</td></tr>
+    <tr><td>Fully associative</td><td>Common TLB organization</td></tr>
+  </table>
+
+  <h2>9. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Memorize AMAT = Hit Time + Miss Rate &times; Miss Penalty.</li>
+      <li>Tag bits = total address bits - index bits - offset bits.</li>
+      <li>Total cache bits = lines &times; (valid bit + dirty bit + tag bits + data bits).</li>
+      <li>Direct mapped: index determines location completely. No replacement needed.</li>
+      <li>Fully associative: no index bits. All bits except offset are tag.</li>
+      <li>Write-back + write-allocate is the most common combination in modern CPUs.</li>
+      <li>For multi-level AMAT, local miss rate is per that level; global miss rate = product of local miss rates.</li>
+    </ul>
+  </div>
+
+  <h2>10. Practice Problems</h2>
+  <ol>
+    <li>A 256 KB, 2-way set associative cache with 128-byte blocks and 32-bit addresses. How many tag bits?</li>
+    <li>L1 cache: 2 ns hit time, 8% miss rate. L2 cache: 10 ns hit time, 30% local miss rate. Main memory: 100 ns. Calculate AMAT.</li>
+    <li>A direct-mapped cache has 16 blocks. Show the sequence of hits/misses for the block access sequence: 0, 8, 0, 6, 8, 0.</li>
+  </ol>
+
+</article>
+</body>
+</html>

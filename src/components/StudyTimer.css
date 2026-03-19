@@ -1,0 +1,141 @@
+.study-timer {
+  position: relative;
+}
+
+.study-timer-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.study-timer-toggle:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.timer-mini {
+  font-variant-numeric: tabular-nums;
+}
+
+.study-timer-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  width: 200px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.timer-display {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.timer-ring {
+  display: block;
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timer-time {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-heading);
+  font-family: var(--font-mono, monospace);
+}
+
+.timer-mode {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-light);
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.timer-btn {
+  flex: 1;
+  padding: 6px 0;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+
+.timer-btn:hover {
+  border-color: var(--color-primary);
+}
+
+.timer-start {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.timer-start:hover {
+  opacity: 0.85;
+  border-color: var(--color-primary);
+}
+
+.timer-pause {
+  background: #f59e0b;
+  color: #fff;
+  border-color: #f59e0b;
+}
+
+.timer-pause:hover {
+  opacity: 0.85;
+  border-color: #f59e0b;
+}
+
+.timer-today {
+  font-size: 0.78rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .study-timer-panel {
+    right: -20px;
+  }
+}

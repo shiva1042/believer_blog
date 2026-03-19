@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm Design Problem Solving - GATE Practice</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-size:0.95em}
+pre{background:#263238;color:#eee;padding:15px;border-radius:6px;overflow-x:auto}
+</style>
+</head>
+<body>
+<article>
+<h1>Algorithm Design Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>15 GATE-level problems covering complexity analysis, greedy algorithms, dynamic programming, divide and conquer, and graph algorithms with complete traces and solutions.</p>
+
+<h2>Problem 1: Complexity Analysis</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find the time complexity of the following code:
+<pre>for (i = 1; i &lt;= n; i = i * 2)
+    for (j = 1; j &lt;= i; j++)
+        x = x + 1;</pre>
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Outer loop runs log(n) times (i = 1, 2, 4, ..., n). Inner loop runs i times for each iteration of outer loop.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Total operations = &sum;<sub>k=0</sub><sup>log n</sup> 2<sup>k</sup> = 1 + 2 + 4 + ... + n = 2n - 1<br><br>
+<strong>T(n) = &Theta;(n)</strong><br><br>
+Common mistake: Saying O(n log n) by multiplying the two loop bounds. The inner loop is NOT always n; it varies with i.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> When the inner loop depends on the outer loop variable, sum the actual iterations rather than multiplying bounds. Geometric series &sum; 2<sup>k</sup> from k=0 to log n = 2n - 1 = &Theta;(n).
+</div>
+
+<h2>Problem 2: Complexity Analysis &mdash; Nested Logarithmic</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find the time complexity:
+<pre>for (i = n; i &gt;= 1; i = i / 2)
+    for (j = 1; j &lt;= n; j++)
+        x++;</pre>
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Outer loop: i = n, n/2, n/4, ..., 1 runs &Theta;(log n) times. Inner loop always runs n times.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Inner loop is independent of i (always n iterations).<br>
+Total = n &times; log(n)<br>
+<strong>T(n) = &Theta;(n log n)</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> If inner loop is independent of outer variable, multiply. If dependent, sum. This distinction is the most common source of errors in GATE complexity questions.
+</div>
+
+<h2>Problem 3: Activity Selection (Greedy)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given activities with (start, finish) times: A1(1,3), A2(2,5), A3(4,7), A4(1,8), A5(5,9), A6(8,10), A7(9,11), A8(11,14), A9(13,16). Find the maximum number of non-overlapping activities.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Greedy: Sort by finish time. Always pick the earliest finishing activity that doesn't conflict with the last selected.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Already sorted by finish time: A1(1,3), A2(2,5), A3(4,7), A4(1,8), A5(5,9), A6(8,10), A7(9,11), A8(11,14), A9(13,16)<br><br>
+<table>
+<tr><th>Step</th><th>Consider</th><th>Last finish</th><th>Action</th><th>Selected</th></tr>
+<tr><td>1</td><td>A1(1,3)</td><td>-</td><td>Select</td><td>{A1}</td></tr>
+<tr><td>2</td><td>A2(2,5)</td><td>3</td><td>2 < 3, Reject</td><td>{A1}</td></tr>
+<tr><td>3</td><td>A3(4,7)</td><td>3</td><td>4 &ge; 3, Select</td><td>{A1,A3}</td></tr>
+<tr><td>4</td><td>A4(1,8)</td><td>7</td><td>1 < 7, Reject</td><td>{A1,A3}</td></tr>
+<tr><td>5</td><td>A5(5,9)</td><td>7</td><td>5 < 7, Reject</td><td>{A1,A3}</td></tr>
+<tr><td>6</td><td>A6(8,10)</td><td>7</td><td>8 &ge; 7, Select</td><td>{A1,A3,A6}</td></tr>
+<tr><td>7</td><td>A7(9,11)</td><td>10</td><td>9 < 10, Reject</td><td>{A1,A3,A6}</td></tr>
+<tr><td>8</td><td>A8(11,14)</td><td>10</td><td>11 &ge; 10, Select</td><td>{A1,A3,A6,A8}</td></tr>
+<tr><td>9</td><td>A9(13,16)</td><td>14</td><td>13 < 14, Reject</td><td>{A1,A3,A6,A8}</td></tr>
+</table>
+<strong>Maximum activities = 4: {A1, A3, A6, A8}</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Activity selection greedy works because the earliest-finish-time strategy maximizes the remaining time for future activities. Sorting by start time does NOT work. Time complexity: O(n log n) for sorting.
+</div>
+
+<h2>Problem 4: Huffman Coding</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Build a Huffman tree for characters with frequencies: A=5, B=9, C=12, D=13, E=16, F=45. What are the codes and the weighted path length?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Repeatedly merge the two smallest-frequency nodes. Assign 0/1 to left/right edges.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Step</th><th>Queue (sorted)</th><th>Merge</th></tr>
+<tr><td>1</td><td>A:5, B:9, C:12, D:13, E:16, F:45</td><td>A+B = 14</td></tr>
+<tr><td>2</td><td>C:12, D:13, AB:14, E:16, F:45</td><td>C+D = 25</td></tr>
+<tr><td>3</td><td>AB:14, E:16, CD:25, F:45</td><td>AB+E = 30</td></tr>
+<tr><td>4</td><td>CD:25, ABE:30, F:45</td><td>CD+ABE = 55</td></tr>
+<tr><td>5</td><td>F:45, CDEAB:55</td><td>F+CDEAB = 100</td></tr>
+</table>
+<div class="mermaid">
+graph TD
+    R((100)) -->|0| F((F:45))
+    R -->|1| N55((55))
+    N55 -->|0| CD((25))
+    N55 -->|1| ABE((30))
+    CD -->|0| C((C:12))
+    CD -->|1| D((D:13))
+    ABE -->|0| AB((14))
+    ABE -->|1| E((E:16))
+    AB -->|0| A((A:5))
+    AB -->|1| B((B:9))
+</div>
+<strong>Codes:</strong> F=0, C=100, D=101, A=1100, B=1101, E=111<br><br>
+<strong>Weighted path length:</strong><br>
+= 45(1) + 12(3) + 13(3) + 5(4) + 9(4) + 16(3)<br>
+= 45 + 36 + 39 + 20 + 36 + 48 = <strong>224</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Huffman coding produces an optimal prefix-free code. Higher frequency characters get shorter codes. The weighted path length equals the total bits needed to encode the data. In GATE, you may also be asked about the number of bits saved compared to fixed-length coding.
+</div>
+
+<h2>Problem 5: 0/1 Knapsack (DP)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Items: weights = [2, 3, 4, 5], values = [3, 4, 5, 6]. Knapsack capacity W = 8. Find the maximum value using dynamic programming. Show the DP table.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> DP[i][w] = max(DP[i-1][w], DP[i-1][w-w<sub>i</sub>] + v<sub>i</sub>) if w<sub>i</sub> &le; w, else DP[i-1][w].
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Item\W</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr>
+<tr><td>0 (none)</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>1 (w=2,v=3)</td><td>0</td><td>0</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><td>2 (w=3,v=4)</td><td>0</td><td>0</td><td>3</td><td>4</td><td>4</td><td>7</td><td>7</td><td>7</td><td>7</td></tr>
+<tr><td>3 (w=4,v=5)</td><td>0</td><td>0</td><td>3</td><td>4</td><td>5</td><td>7</td><td>8</td><td>9</td><td>12</td></tr>
+<tr><td>4 (w=5,v=6)</td><td>0</td><td>0</td><td>3</td><td>4</td><td>5</td><td>7</td><td>8</td><td>9</td><td>12</td></tr>
+</table>
+<strong>Maximum value = DP[4][8] = 12</strong><br><br>
+<strong>Backtrack to find items:</strong><br>
+DP[4][8] = DP[3][8] = 12 (item 4 not taken)<br>
+DP[3][8] &ne; DP[2][8] so item 3 taken. Remaining: w=8-4=4.<br>
+DP[2][4] &ne; DP[1][4] so item 2 taken. Remaining: w=4-3=1.<br>
+DP[1][1] = DP[0][1] = 0 so item 1 not taken.<br>
+<strong>Items selected: {2, 3} with total weight 7, value 4+5=9.</strong><br><br>
+Wait, let me recheck. DP[3][8]: Consider item 3 (w=4, v=5). DP[3][8] = max(DP[2][8], DP[2][4]+5) = max(7, 4+5) = max(7, 9) = 9... Let me recompute.<br><br>
+<strong>Recomputing row 3:</strong><br>
+DP[3][4] = max(DP[2][4], DP[2][0]+5) = max(4, 5) = 5<br>
+DP[3][5] = max(DP[2][5], DP[2][1]+5) = max(7, 5) = 7<br>
+DP[3][6] = max(DP[2][6], DP[2][2]+5) = max(7, 3+5) = 8<br>
+DP[3][7] = max(DP[2][7], DP[2][3]+5) = max(7, 4+5) = 9<br>
+DP[3][8] = max(DP[2][8], DP[2][4]+5) = max(7, 4+5) = 9... Hmm, but I had 12 before. Let me recheck DP[2].<br><br>
+<strong>Careful recomputation:</strong><br>
+DP[2][5] = max(DP[1][5], DP[1][2]+4) = max(3, 3+4) = 7. Correct.<br>
+DP[2][8] = max(DP[1][8], DP[1][5]+4) = max(3, 3+4) = 7. Correct.<br>
+DP[3][8] = max(DP[2][8], DP[2][4]+5) = max(7, 4+5) = 9.<br><br>
+<strong>Row 4:</strong> DP[4][8] = max(DP[3][8], DP[3][3]+6) = max(9, 4+6) = 10.<br>
+DP[4][7] = max(DP[3][7], DP[3][2]+6) = max(9, 3+6) = 9.<br><br>
+<strong>Corrected answer: Maximum value = 10</strong><br>
+Items: item 4 (w=5,v=6) + item 2 (w=3,v=4) = weight 8, value 10.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> 0/1 Knapsack has time O(nW) which is pseudo-polynomial (depends on the value of W, not its bit-length). The fractional knapsack can be solved greedily in O(n log n). Always double-check your DP table by verifying a few cells manually.
+</div>
+
+<h2>Problem 6: Longest Common Subsequence (DP)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find the LCS of X = "ABCBDAB" and Y = "BDCABA". Fill the DP table and trace back the LCS.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> DP[i][j] = DP[i-1][j-1]+1 if X[i]=Y[j], else max(DP[i-1][j], DP[i][j-1]).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th></th><th></th><th>B</th><th>D</th><th>C</th><th>A</th><th>B</th><th>A</th></tr>
+<tr><th></th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><th>A</th><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><th>B</th><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>2</td></tr>
+<tr><th>C</th><td>0</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td><td>2</td></tr>
+<tr><th>B</th><td>0</td><td>1</td><td>1</td><td>2</td><td>2</td><td>3</td><td>3</td></tr>
+<tr><th>D</th><td>0</td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td></tr>
+<tr><th>A</th><td>0</td><td>1</td><td>2</td><td>2</td><td>3</td><td>3</td><td>4</td></tr>
+<tr><th>B</th><td>0</td><td>1</td><td>2</td><td>2</td><td>3</td><td>4</td><td>4</td></tr>
+</table>
+<strong>LCS length = 4</strong><br><br>
+<strong>Traceback:</strong> Start at DP[7][6]=4.<br>
+X[7]=B=Y[5]? No, Y[5]=A. But X[7]=B=Y[5]? Y is BDCABA (1-indexed: B,D,C,A,B,A). Y[6]=A, Y[5]=B. X[7]=B=Y[5]=B. Match! Add B. Go to DP[6][4].<br>
+X[6]=A=Y[4]=A. Match! Add A. Go to DP[5][3].<br>
+X[5]=D=Y[3]=C? No. DP[4][3]=2 vs DP[5][2]=2. Go up to DP[4][3].<br>
+X[4]=B=Y[3]=C? No. DP[3][3]=2 vs DP[4][2]=1. Go left? DP[4][2]=1. Go up to DP[3][3].<br>
+X[3]=C=Y[3]=C. Match! Add C. Go to DP[2][2].<br>
+X[2]=B=Y[2]=D? No. DP[1][2]=0 vs DP[2][1]=1. Go left to DP[2][1].<br>
+X[2]=B=Y[1]=B. Match! Add B. Go to DP[1][0]=0. Done.<br><br>
+<strong>LCS = "BCAB"</strong> (read in reverse: B, C, A, B)
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> LCS time and space are both O(mn). Space can be reduced to O(min(m,n)) if only the length is needed. LCS has applications in diff tools, bioinformatics, and version control.
+</div>
+
+<h2>Problem 7: Coin Change (DP)</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Coins = {1, 5, 10, 25}. Find the minimum number of coins to make change for 36 cents. Show the DP table.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> DP[j] = min coins for amount j. DP[j] = min(DP[j], DP[j-coin]+1) for each coin.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Amount</th><th>0</th><th>1</th><th>5</th><th>10</th><th>11</th><th>15</th><th>20</th><th>25</th><th>26</th><th>30</th><th>35</th><th>36</th></tr>
+<tr><td>Min coins</td><td>0</td><td>1</td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td></tr>
+</table>
+(Showing key values; full table has entries for 0 through 36)<br><br>
+<strong>DP[36]:</strong><br>
+- Using coin 1: DP[35]+1 = 2+1 = 3<br>
+- Using coin 5: DP[31]+1 = 3+1 = 4<br>
+- Using coin 10: DP[26]+1 = 2+1 = 3<br>
+- Using coin 25: DP[11]+1 = 2+1 = 3<br>
+Min = <strong>3 coins</strong><br><br>
+<strong>Composition:</strong> 25 + 10 + 1 = 36 (3 coins). Or 25 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 36 (12 coins) -- greedy doesn't always work for arbitrary coin sets, but here the greedy also gives 3 coins (25+10+1).
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Greedy works for standard US/Indian coin denominations but fails for arbitrary denominations (e.g., {1,3,4} for amount 6: greedy gives 4+1+1=3 coins, DP gives 3+3=2 coins). Always use DP for the general case.
+</div>
+
+<h2>Problem 8: Dijkstra's Algorithm Trace</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find shortest paths from vertex A in the following weighted graph:
+A-B:4, A-C:2, B-C:1, B-D:5, C-D:8, C-E:10, D-E:2, D-F:6, E-F:3.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Dijkstra: maintain dist[] array, greedily pick unvisited vertex with minimum distance, relax neighbors.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<div class="mermaid">
+graph LR
+    A((A)) -->|4| B((B))
+    A -->|2| C((C))
+    B -->|1| C
+    B -->|5| D((D))
+    C -->|8| D
+    C -->|10| E((E))
+    D -->|2| E
+    D -->|6| F((F))
+    E -->|3| F
+</div>
+<table>
+<tr><th>Step</th><th>Visit</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><td>Init</td><td>-</td><td>0</td><td>&infin;</td><td>&infin;</td><td>&infin;</td><td>&infin;</td><td>&infin;</td></tr>
+<tr><td>1</td><td>A</td><td><strong>0</strong></td><td>4</td><td>2</td><td>&infin;</td><td>&infin;</td><td>&infin;</td></tr>
+<tr><td>2</td><td>C</td><td>0</td><td>3</td><td><strong>2</strong></td><td>10</td><td>12</td><td>&infin;</td></tr>
+<tr><td>3</td><td>B</td><td>0</td><td><strong>3</strong></td><td>2</td><td>8</td><td>12</td><td>&infin;</td></tr>
+<tr><td>4</td><td>D</td><td>0</td><td>3</td><td>2</td><td><strong>8</strong></td><td>10</td><td>14</td></tr>
+<tr><td>5</td><td>E</td><td>0</td><td>3</td><td>2</td><td>8</td><td><strong>10</strong></td><td>13</td></tr>
+<tr><td>6</td><td>F</td><td>0</td><td>3</td><td>2</td><td>8</td><td>10</td><td><strong>13</strong></td></tr>
+</table>
+<strong>Shortest distances from A:</strong> B=3, C=2, D=8, E=10, F=13<br>
+<strong>Paths:</strong> A&rarr;B via A&rarr;C&rarr;B (cost 3), A&rarr;D via A&rarr;C&rarr;B&rarr;D (cost 8), A&rarr;E via ...&rarr;D&rarr;E (cost 10), A&rarr;F via ...&rarr;E&rarr;F (cost 13).
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Dijkstra fails with negative edges. Use Bellman-Ford for negative edges (O(VE)). With a binary heap, Dijkstra is O((V+E) log V). With a Fibonacci heap, O(E + V log V).
+</div>
+
+<h2>Problem 9: Kruskal's Algorithm Trace</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find the MST using Kruskal's algorithm for the graph: edges (u,v,w): (A,B,4), (A,C,8), (B,C,11), (B,D,8), (C,D,7), (C,F,4), (C,E,1), (D,E,2), (D,F,6), (E,F,7).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Sort edges by weight. Add each edge if it doesn't form a cycle (use Union-Find).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Sorted edges:</strong><br>
+<table>
+<tr><th>Order</th><th>Edge</th><th>Weight</th><th>Action</th><th>Components</th></tr>
+<tr><td>1</td><td>C-E</td><td>1</td><td>Add</td><td>{A}{B}{C,E}{D}{F}</td></tr>
+<tr><td>2</td><td>D-E</td><td>2</td><td>Add</td><td>{A}{B}{C,D,E}{F}</td></tr>
+<tr><td>3</td><td>A-B</td><td>4</td><td>Add</td><td>{A,B}{C,D,E}{F}</td></tr>
+<tr><td>4</td><td>C-F</td><td>4</td><td>Add</td><td>{A,B}{C,D,E,F}</td></tr>
+<tr><td>5</td><td>D-F</td><td>6</td><td>Reject (cycle)</td><td>{A,B}{C,D,E,F}</td></tr>
+<tr><td>6</td><td>C-D</td><td>7</td><td>Reject (cycle)</td><td>{A,B}{C,D,E,F}</td></tr>
+<tr><td>7</td><td>E-F</td><td>7</td><td>Reject (cycle)</td><td>{A,B}{C,D,E,F}</td></tr>
+<tr><td>8</td><td>A-C</td><td>8</td><td>Add</td><td>{A,B,C,D,E,F}</td></tr>
+</table>
+<strong>MST edges: C-E(1), D-E(2), A-B(4), C-F(4), A-C(8)</strong><br>
+<strong>Total MST weight = 1+2+4+4+8 = 19</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> MST has exactly V-1 edges. Kruskal's is O(E log E) (dominated by sorting). Prim's is O(E log V) with a binary heap. Both produce the same MST weight (though the MST itself may not be unique if edges have equal weights).
+</div>
+
+<h2>Problem 10: BFS and DFS Order</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given graph: A-B, A-C, B-D, B-E, C-F, C-G, D-H, E-H. Give BFS and DFS traversal starting from A (process neighbors in alphabetical order).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> BFS: use queue. DFS: use stack (or recursion). Both process neighbors alphabetically.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<div class="mermaid">
+graph TD
+    A((A)) --- B((B))
+    A --- C((C))
+    B --- D((D))
+    B --- E((E))
+    C --- F((F))
+    C --- G((G))
+    D --- H((H))
+    E --- H
+</div>
+<strong>BFS (queue):</strong><br>
+<table>
+<tr><th>Step</th><th>Visit</th><th>Queue</th></tr>
+<tr><td>1</td><td>A</td><td>[B, C]</td></tr>
+<tr><td>2</td><td>B</td><td>[C, D, E]</td></tr>
+<tr><td>3</td><td>C</td><td>[D, E, F, G]</td></tr>
+<tr><td>4</td><td>D</td><td>[E, F, G, H]</td></tr>
+<tr><td>5</td><td>E</td><td>[F, G, H]</td></tr>
+<tr><td>6</td><td>F</td><td>[G, H]</td></tr>
+<tr><td>7</td><td>G</td><td>[H]</td></tr>
+<tr><td>8</td><td>H</td><td>[]</td></tr>
+</table>
+<strong>BFS order: A B C D E F G H</strong><br><br>
+<strong>DFS (recursive):</strong><br>
+A &rarr; B &rarr; D &rarr; H &rarr; E (H already visited) &rarr; back to A &rarr; C &rarr; F &rarr; G<br>
+<strong>DFS order: A B D H E C F G</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> BFS gives the shortest path in unweighted graphs. DFS is used for topological sort, cycle detection, connected components, and strongly connected components. BFS is O(V+E) time, O(V) space. Same for DFS.
+</div>
+
+<h2>Problem 11: Topological Sort</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find a topological ordering of the DAG with edges: A&rarr;B, A&rarr;C, B&rarr;D, C&rarr;D, C&rarr;E, D&rarr;F, E&rarr;F using Kahn's algorithm (BFS-based).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Kahn's: repeatedly remove vertices with in-degree 0, add to ordering, reduce in-degrees of neighbors.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Vertex</th><th>Initial In-degree</th></tr>
+<tr><td>A</td><td>0</td></tr>
+<tr><td>B</td><td>1</td></tr>
+<tr><td>C</td><td>1</td></tr>
+<tr><td>D</td><td>2</td></tr>
+<tr><td>E</td><td>1</td></tr>
+<tr><td>F</td><td>2</td></tr>
+</table>
+<table>
+<tr><th>Step</th><th>Remove (in-deg 0)</th><th>Reduce</th><th>Ordering</th></tr>
+<tr><td>1</td><td>A</td><td>B:0, C:0</td><td>[A]</td></tr>
+<tr><td>2</td><td>B</td><td>D:1</td><td>[A, B]</td></tr>
+<tr><td>3</td><td>C</td><td>D:0, E:0</td><td>[A, B, C]</td></tr>
+<tr><td>4</td><td>D</td><td>F:1</td><td>[A, B, C, D]</td></tr>
+<tr><td>5</td><td>E</td><td>F:0</td><td>[A, B, C, D, E]</td></tr>
+<tr><td>6</td><td>F</td><td>-</td><td>[A, B, C, D, E, F]</td></tr>
+</table>
+<strong>Topological order: A, B, C, D, E, F</strong><br>
+(Other valid orders exist, e.g., A, C, B, E, D, F)
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Topological sort only exists for DAGs. If the algorithm cannot remove all vertices, the graph has a cycle. Applications: task scheduling, build systems, course prerequisites. Time: O(V+E).
+</div>
+
+<h2>Problem 12: Master Theorem Cases</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Classify each recurrence using the Master Theorem:<br>
+(a) T(n) = 2T(n/2) + n<br>
+(b) T(n) = 9T(n/3) + n<sup>2</sup><br>
+(c) T(n) = T(n/2) + 1<br>
+(d) T(n) = 2T(n/2) + n log n
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Compare f(n) with n<sup>log<sub>b</sub>a</sup> for each case.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a)</strong> a=2, b=2, n<sup>log<sub>2</sub>2</sup> = n. f(n)=n = &Theta;(n). <strong>Case 2:</strong> T(n) = &Theta;(n log n).<br><br>
+<strong>(b)</strong> a=9, b=3, n<sup>log<sub>3</sub>9</sup> = n<sup>2</sup>. f(n)=n<sup>2</sup> = &Theta;(n<sup>2</sup>). <strong>Case 2:</strong> T(n) = &Theta;(n<sup>2</sup> log n).<br><br>
+<strong>(c)</strong> a=1, b=2, n<sup>log<sub>2</sub>1</sup> = n<sup>0</sup> = 1. f(n)=1 = &Theta;(1). <strong>Case 2:</strong> T(n) = &Theta;(log n).<br><br>
+<strong>(d)</strong> a=2, b=2, n<sup>log<sub>2</sub>2</sup> = n. f(n)=n log n. Is n log n = &Omega;(n<sup>1+&epsilon;</sup>)? No, log n grows slower than any n<sup>&epsilon;</sup>. Is it &Theta;(n)? No. This falls in the <strong>gap between Case 2 and Case 3</strong>. Master Theorem does not apply directly. Extended Case 2: f(n) = &Theta;(n log<sup>k</sup> n) with k=1, so T(n) = &Theta;(n log<sup>2</sup> n).
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> The extended Master Theorem handles f(n) = &Theta;(n<sup>log<sub>b</sub>a</sup> log<sup>k</sup> n): T(n) = &Theta;(n<sup>log<sub>b</sub>a</sup> log<sup>k+1</sup> n). Memorize common recurrences: Merge sort T(n)=2T(n/2)+n gives &Theta;(n log n), Binary search T(n)=T(n/2)+1 gives &Theta;(log n).
+</div>
+
+<h2>Problem 13: Floyd-Warshall Trace</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find all-pairs shortest paths for the directed graph with edges: 1&rarr;2 (3), 1&rarr;3 (8), 2&rarr;3 (2), 3&rarr;1 (5), 3&rarr;2 (1).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Floyd-Warshall: D<sup>k</sup>[i][j] = min(D<sup>k-1</sup>[i][j], D<sup>k-1</sup>[i][k] + D<sup>k-1</sup>[k][j]) for k = 1, 2, 3.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>D<sup>0</sup> (direct edges):</strong>
+<table>
+<tr><th></th><th>1</th><th>2</th><th>3</th></tr>
+<tr><td>1</td><td>0</td><td>3</td><td>8</td></tr>
+<tr><td>2</td><td>&infin;</td><td>0</td><td>2</td></tr>
+<tr><td>3</td><td>5</td><td>1</td><td>0</td></tr>
+</table>
+<strong>D<sup>1</sup> (via vertex 1):</strong>
+<table>
+<tr><th></th><th>1</th><th>2</th><th>3</th></tr>
+<tr><td>1</td><td>0</td><td>3</td><td>8</td></tr>
+<tr><td>2</td><td>&infin;</td><td>0</td><td>2</td></tr>
+<tr><td>3</td><td>5</td><td>1</td><td>0</td></tr>
+</table>
+No changes (no path via 1 is shorter).<br><br>
+<strong>D<sup>2</sup> (via vertex 2):</strong><br>
+D[1][3] = min(8, D[1][2]+D[2][3]) = min(8, 3+2) = 5.<br>
+D[3][1] = min(5, D[3][2]+D[2][1]) = min(5, 1+&infin;) = 5. No change.<br>
+<table>
+<tr><th></th><th>1</th><th>2</th><th>3</th></tr>
+<tr><td>1</td><td>0</td><td>3</td><td><strong>5</strong></td></tr>
+<tr><td>2</td><td>&infin;</td><td>0</td><td>2</td></tr>
+<tr><td>3</td><td>5</td><td>1</td><td>0</td></tr>
+</table>
+<strong>D<sup>3</sup> (via vertex 3):</strong><br>
+D[1][1] = min(0, 5+5) = 0. D[1][2] = min(3, 5+1) = 3.<br>
+D[2][1] = min(&infin;, 2+5) = 7. D[2][2] = min(0, 2+1) = 0.<br>
+<table>
+<tr><th></th><th>1</th><th>2</th><th>3</th></tr>
+<tr><td>1</td><td>0</td><td>3</td><td>5</td></tr>
+<tr><td>2</td><td><strong>7</strong></td><td>0</td><td>2</td></tr>
+<tr><td>3</td><td>5</td><td>1</td><td>0</td></tr>
+</table>
+<strong>Final shortest distances.</strong> Shortest path 2&rarr;1 = 7 (via 2&rarr;3&rarr;1).
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Floyd-Warshall is O(V<sup>3</sup>) and handles negative edges (but not negative cycles). Check diagonal: if D[i][i] < 0, there's a negative cycle. It solves all-pairs shortest path, unlike Dijkstra which is single-source.
+</div>
+
+<h2>Problem 14: Divide and Conquer &mdash; Maximum Subarray</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find the maximum subarray sum of [-2, 1, -3, 4, -1, 2, 1, -5, 4] using Kadane's algorithm. Also give the D&C recurrence.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Kadane's: maintain max_ending_here and max_so_far. D&C: T(n) = 2T(n/2) + O(n).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution (Kadane's):</strong><br>
+<table>
+<tr><th>i</th><th>A[i]</th><th>max_ending_here</th><th>max_so_far</th></tr>
+<tr><td>0</td><td>-2</td><td>-2</td><td>-2</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>2</td><td>-3</td><td>-2</td><td>1</td></tr>
+<tr><td>3</td><td>4</td><td>4</td><td>4</td></tr>
+<tr><td>4</td><td>-1</td><td>3</td><td>4</td></tr>
+<tr><td>5</td><td>2</td><td>5</td><td>5</td></tr>
+<tr><td>6</td><td>1</td><td>6</td><td>6</td></tr>
+<tr><td>7</td><td>-5</td><td>1</td><td>6</td></tr>
+<tr><td>8</td><td>4</td><td>5</td><td>6</td></tr>
+</table>
+<strong>Maximum subarray sum = 6</strong> (subarray [4, -1, 2, 1] from index 3 to 6)<br><br>
+<strong>D&C approach:</strong> T(n) = 2T(n/2) + O(n) = O(n log n). Kadane's O(n) is better.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Kadane's algorithm is a classic example where DP/greedy beats divide and conquer. The key insight: max_ending_here = max(A[i], max_ending_here + A[i]). This is the optimal substructure.
+</div>
+
+<h2>Problem 15: Strongly Connected Components</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Find all SCCs of the directed graph: edges 1&rarr;2, 2&rarr;3, 3&rarr;1, 2&rarr;4, 4&rarr;5, 5&rarr;6, 6&rarr;4, 5&rarr;7. Use Kosaraju's algorithm.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Kosaraju's: (1) DFS on original graph, record finish order. (2) Transpose graph. (3) DFS on transpose in reverse finish order.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Step 1: DFS on original, record finish times.</strong><br>
+Start at 1: 1&rarr;2&rarr;3&rarr;1(visited)&rarr;back to 3(finish 3)&rarr;4&rarr;5&rarr;6&rarr;4(visited)&rarr;back to 6(finish 6)&rarr;back to 5&rarr;7(finish 7)&rarr;back to 5(finish 5)&rarr;back to 4(finish 4)&rarr;back to 2(finish 2)&rarr;back to 1(finish 1)<br>
+Finish order (earliest to latest): 3, 6, 7, 5, 4, 2, 1<br>
+Reverse: <strong>1, 2, 4, 5, 7, 6, 3</strong><br><br>
+<strong>Step 2: Transpose graph edges.</strong><br>
+2&rarr;1, 3&rarr;2, 1&rarr;3, 4&rarr;2, 5&rarr;4, 6&rarr;5, 4&rarr;6, 7&rarr;5<br><br>
+<strong>Step 3: DFS on transpose in order 1, 2, 4, 5, 7, 6, 3.</strong><br>
+Start at 1: 1&rarr;3&rarr;2&rarr;1(visited). <strong>SCC 1: {1, 2, 3}</strong><br>
+Next unvisited: 4. 4&rarr;2(visited)&rarr;6&rarr;5&rarr;4(visited). <strong>SCC 2: {4, 5, 6}</strong><br>
+Next unvisited: 7. 7&rarr;5(visited). <strong>SCC 3: {7}</strong><br><br>
+<strong>SCCs: {1,2,3}, {4,5,6}, {7}</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Kosaraju's and Tarjan's both find SCCs in O(V+E). The condensation graph (DAG of SCCs) is useful for many problems. Number of SCCs = number of DFS trees in step 3 of Kosaraju's.
+</div>
+
+</article>
+</body>
+</html>

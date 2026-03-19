@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sets, Relations, and Functions | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+    .mermaid { text-align: center; margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Sets, Relations, and Functions</h1>
+  <p class="article-section-tag">Section 1: Engineering Mathematics</p>
+
+  <h2>1. Sets and Set Operations</h2>
+  <p>A <strong>set</strong> is a well-defined collection of distinct objects called <strong>elements</strong> or <strong>members</strong>.</p>
+
+  <h3>1.1 Set Notation</h3>
+  <ul>
+    <li><strong>Roster form:</strong> A = {1, 2, 3, 4, 5}</li>
+    <li><strong>Set-builder form:</strong> A = {x | x is a positive integer and x &le; 5}</li>
+    <li><strong>Membership:</strong> 3 &isin; A means 3 is an element of A</li>
+    <li><strong>Subset:</strong> A &sube; B means every element of A is in B</li>
+    <li><strong>Proper subset:</strong> A &sub; B means A &sube; B and A &ne; B</li>
+  </ul>
+
+  <h3>1.2 Important Sets</h3>
+  <table>
+    <tr><th>Symbol</th><th>Set</th><th>Description</th></tr>
+    <tr><td>&empty;</td><td>Empty set</td><td>Set with no elements</td></tr>
+    <tr><td>&naturals;</td><td>Natural numbers</td><td>{0, 1, 2, 3, ...} or {1, 2, 3, ...}</td></tr>
+    <tr><td>&integers;</td><td>Integers</td><td>{..., -2, -1, 0, 1, 2, ...}</td></tr>
+    <tr><td>&rationals;</td><td>Rational numbers</td><td>{p/q | p, q &isin; Z, q &ne; 0}</td></tr>
+    <tr><td>&reals;</td><td>Real numbers</td><td>All rational and irrational numbers</td></tr>
+  </table>
+
+  <h3>1.3 Set Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Notation</th><th>Definition</th></tr>
+    <tr><td>Union</td><td>A &cup; B</td><td>{x | x &isin; A or x &isin; B}</td></tr>
+    <tr><td>Intersection</td><td>A &cap; B</td><td>{x | x &isin; A and x &isin; B}</td></tr>
+    <tr><td>Difference</td><td>A &minus; B</td><td>{x | x &isin; A and x &notin; B}</td></tr>
+    <tr><td>Symmetric Difference</td><td>A &oplus; B</td><td>(A &minus; B) &cup; (B &minus; A)</td></tr>
+    <tr><td>Complement</td><td>A'</td><td>{x &isin; U | x &notin; A}</td></tr>
+    <tr><td>Power Set</td><td>P(A)</td><td>Set of all subsets of A</td></tr>
+    <tr><td>Cartesian Product</td><td>A &times; B</td><td>{(a, b) | a &isin; A and b &isin; B}</td></tr>
+  </table>
+
+  <div class="formula">
+    |P(A)| = 2<sup>|A|</sup><br>
+    |A &cup; B| = |A| + |B| - |A &cap; B| (Inclusion-Exclusion Principle)<br>
+    |A &times; B| = |A| &middot; |B|
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> Let A = {1, 2, 3}, B = {2, 3, 4}<br>
+    A &cup; B = {1, 2, 3, 4}, A &cap; B = {2, 3}, A &minus; B = {1}, B &minus; A = {4}<br>
+    A &oplus; B = {1, 4}, |P(A)| = 2<sup>3</sup> = 8
+  </div>
+
+  <h2>2. Relations</h2>
+  <p>A <strong>relation R</strong> from set A to set B is a subset of A &times; B. A relation on set A is a subset of A &times; A.</p>
+
+  <h3>2.1 Properties of Relations on a Set A</h3>
+  <table>
+    <tr><th>Property</th><th>Definition</th><th>Matrix Condition</th></tr>
+    <tr><td>Reflexive</td><td>&forall;a &isin; A: (a, a) &isin; R</td><td>All diagonal entries are 1</td></tr>
+    <tr><td>Irreflexive</td><td>&forall;a &isin; A: (a, a) &notin; R</td><td>All diagonal entries are 0</td></tr>
+    <tr><td>Symmetric</td><td>(a, b) &isin; R &rArr; (b, a) &isin; R</td><td>M = M<sup>T</sup></td></tr>
+    <tr><td>Antisymmetric</td><td>(a, b) &isin; R &and; (b, a) &isin; R &rArr; a = b</td><td>M[i][j] = 1 &and; M[j][i] = 1 &rArr; i = j</td></tr>
+    <tr><td>Transitive</td><td>(a, b) &isin; R &and; (b, c) &isin; R &rArr; (a, c) &isin; R</td><td>M<sup>2</sup> has no 1 where M has 0</td></tr>
+  </table>
+
+  <h3>2.2 Counting Relations</h3>
+  <div class="formula">
+    Total relations on a set of n elements: 2<sup>n&sup2;</sup><br>
+    Reflexive relations: 2<sup>n&sup2; &minus; n</sup><br>
+    Symmetric relations: 2<sup>n(n+1)/2</sup><br>
+    Antisymmetric relations: 2<sup>n</sup> &middot; 3<sup>n(n&minus;1)/2</sup>
+  </div>
+
+  <h3>2.3 Equivalence Relations</h3>
+  <p>A relation R on set A is an <strong>equivalence relation</strong> if it is reflexive, symmetric, and transitive. It partitions A into disjoint <strong>equivalence classes</strong>.</p>
+
+  <div class="example">
+    <strong>Example:</strong> Relation "congruence modulo 3" on integers.<br>
+    a R b if and only if a &equiv; b (mod 3).<br>
+    Equivalence classes: [0] = {..., -3, 0, 3, 6, ...}, [1] = {..., -2, 1, 4, 7, ...}, [2] = {..., -1, 2, 5, 8, ...}<br>
+    The number of equivalence relations on a set of n elements equals the Bell number B(n).
+  </div>
+
+  <h3>2.4 Partial Order Relations</h3>
+  <p>A relation R on set A is a <strong>partial order</strong> (POSET) if it is reflexive, antisymmetric, and transitive. The pair (A, R) is called a partially ordered set.</p>
+
+  <table>
+    <tr><th>Concept</th><th>Definition</th></tr>
+    <tr><td>Total/Linear Order</td><td>Partial order where every pair of elements is comparable</td></tr>
+    <tr><td>Maximal Element</td><td>No element in the set is greater than it</td></tr>
+    <tr><td>Minimal Element</td><td>No element in the set is less than it</td></tr>
+    <tr><td>Greatest Element (Maximum)</td><td>Greater than or equal to every element</td></tr>
+    <tr><td>Least Element (Minimum)</td><td>Less than or equal to every element</td></tr>
+    <tr><td>Upper Bound of S</td><td>Element &ge; every element of subset S</td></tr>
+    <tr><td>Lower Bound of S</td><td>Element &le; every element of subset S</td></tr>
+    <tr><td>LUB (Supremum)</td><td>Least upper bound of S</td></tr>
+    <tr><td>GLB (Infimum)</td><td>Greatest lower bound of S</td></tr>
+  </table>
+
+  <h2>3. Lattices</h2>
+  <p>A <strong>lattice</strong> is a partially ordered set in which every pair of elements has a <strong>least upper bound (join, &or;)</strong> and a <strong>greatest lower bound (meet, &and;)</strong>.</p>
+
+  <h3>3.1 Properties of Lattices</h3>
+  <ul>
+    <li><strong>Bounded lattice:</strong> Has a greatest element (top, 1) and least element (bottom, 0)</li>
+    <li><strong>Complemented lattice:</strong> Every element has a complement</li>
+    <li><strong>Distributive lattice:</strong> a &and; (b &or; c) = (a &and; b) &or; (a &and; c)</li>
+    <li><strong>Boolean algebra:</strong> Complemented distributive lattice</li>
+  </ul>
+
+  <h3>3.2 Hasse Diagram: Divisibility Lattice on {1, 2, 3, 5, 6, 10, 15, 30}</h3>
+  <div class="mermaid">
+graph BT
+    A["1"] --> B["2"]
+    A --> C["3"]
+    A --> D["5"]
+    B --> E["6"]
+    B --> F["10"]
+    C --> E
+    C --> G["15"]
+    D --> F
+    D --> G
+    E --> H["30"]
+    F --> H
+    G --> H
+  </div>
+  <p>In the divisibility lattice above, the meet of two elements is their GCD and the join is their LCM. For example: 6 &and; 10 = GCD(6,10) = 2, and 6 &or; 10 = LCM(6,10) = 30.</p>
+
+  <h2>4. Functions</h2>
+  <p>A <strong>function</strong> f: A &rarr; B is a relation from A to B where every element of A is related to exactly one element of B.</p>
+
+  <h3>4.1 Types of Functions</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th><th>Also Called</th><th>Condition</th></tr>
+    <tr><td>Injective</td><td>f(a) = f(b) &rArr; a = b</td><td>One-to-one</td><td>|A| &le; |B|</td></tr>
+    <tr><td>Surjective</td><td>&forall;b &isin; B, &exist;a &isin; A: f(a) = b</td><td>Onto</td><td>|A| &ge; |B|</td></tr>
+    <tr><td>Bijective</td><td>Both injective and surjective</td><td>One-to-one correspondence</td><td>|A| = |B|</td></tr>
+  </table>
+
+  <h3>4.2 Counting Functions</h3>
+  <div class="formula">
+    Total functions from A to B (|A| = m, |B| = n): n<sup>m</sup><br>
+    Injective functions: n! / (n &minus; m)! (when m &le; n), else 0<br>
+    Surjective functions: &sum;<sub>k=0</sub><sup>n</sup> (-1)<sup>k</sup> C(n, k)(n &minus; k)<sup>m</sup><br>
+    Bijective functions: n! (when m = n)
+  </div>
+
+  <h3>4.3 Composition and Inverse</h3>
+  <ul>
+    <li><strong>Composition:</strong> (g &compfn; f)(x) = g(f(x)), where f: A &rarr; B and g: B &rarr; C</li>
+    <li><strong>Inverse:</strong> f<sup>&minus;1</sup> exists iff f is bijective</li>
+    <li>If f and g are injective, then g &compfn; f is injective</li>
+    <li>If f and g are surjective, then g &compfn; f is surjective</li>
+    <li>If g &compfn; f is injective, then f is injective</li>
+    <li>If g &compfn; f is surjective, then g is surjective</li>
+  </ul>
+
+  <h2>5. Closures of Relations</h2>
+  <p>The <strong>closure</strong> of a relation R with respect to a property P is the smallest relation that contains R and satisfies P.</p>
+  <table>
+    <tr><th>Closure</th><th>Method</th></tr>
+    <tr><td>Reflexive closure</td><td>R &cup; {(a, a) | a &isin; A} = R &cup; I<sub>A</sub></td></tr>
+    <tr><td>Symmetric closure</td><td>R &cup; R<sup>&minus;1</sup></td></tr>
+    <tr><td>Transitive closure</td><td>R &cup; R<sup>2</sup> &cup; R<sup>3</sup> &cup; ... &cup; R<sup>n</sup> (Warshall's algorithm)</td></tr>
+  </table>
+
+  <h2>6. Summary of Key GATE Concepts</h2>
+  <ul>
+    <li>Know the inclusion-exclusion principle and power set cardinality.</li>
+    <li>Distinguish between equivalence relations (reflexive + symmetric + transitive) and partial orders (reflexive + antisymmetric + transitive).</li>
+    <li>Practice counting: number of relations, equivalence relations, and functions.</li>
+    <li>Understand Hasse diagrams and lattice properties (distributive, complemented, Boolean).</li>
+    <li>For functions: injective requires |A| &le; |B|, surjective requires |A| &ge; |B|.</li>
+    <li>Composition preserves injectivity and surjectivity.</li>
+  </ul>
+
+</article>
+</body>
+</html>

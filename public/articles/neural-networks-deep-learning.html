@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Networks and Deep Learning | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Neural Networks and Deep Learning</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. The Perceptron</h2>
+  <p>The perceptron is the simplest neural network &mdash; a single neuron that computes a weighted sum of inputs and applies a step function.</p>
+
+  <div class="formula">
+    Output y = step(w<sub>1</sub>x<sub>1</sub> + w<sub>2</sub>x<sub>2</sub> + ... + w<sub>n</sub>x<sub>n</sub> + b)<br>
+    y = step(W<sup>T</sup>X + b)<br><br>
+    step(z) = 1 if z &ge; 0, else 0
+  </div>
+
+  <p>The perceptron learning rule updates weights when a misclassification occurs:</p>
+  <div class="formula">
+    w<sub>i</sub> := w<sub>i</sub> + &alpha;(y - y&#770;)x<sub>i</sub><br>
+    where &alpha; is the learning rate, y is the true label, y&#770; is the predicted label
+  </div>
+
+  <p><strong>Perceptron Convergence Theorem:</strong> If the training data is linearly separable, the perceptron learning algorithm will converge to a solution in a finite number of steps.</p>
+
+  <div class="example">
+    <strong>Limitation:</strong> The perceptron can only learn linearly separable functions.<br>
+    It can learn AND, OR, and NOT but <strong>cannot learn XOR</strong>.<br>
+    XOR requires at least one hidden layer (Multi-Layer Perceptron).
+  </div>
+
+  <h2>2. Multi-Layer Perceptron (MLP)</h2>
+  <p>An MLP consists of an input layer, one or more hidden layers, and an output layer. Each layer is fully connected to the next. MLPs can learn non-linear decision boundaries.</p>
+
+  <ul>
+    <li><strong>Input layer:</strong> Receives the feature vector (no computation)</li>
+    <li><strong>Hidden layers:</strong> Apply weighted sum + activation function. Each hidden layer learns increasingly abstract features.</li>
+    <li><strong>Output layer:</strong> Produces the final prediction</li>
+  </ul>
+
+  <div class="formula">
+    For each neuron j in layer l:<br>
+    z<sub>j</sub><sup>(l)</sup> = &sum; w<sub>ij</sub><sup>(l)</sup> a<sub>i</sub><sup>(l-1)</sup> + b<sub>j</sub><sup>(l)</sup>  (weighted sum)<br>
+    a<sub>j</sub><sup>(l)</sup> = g(z<sub>j</sub><sup>(l)</sup>)  (activation)<br>
+    where g is the activation function
+  </div>
+
+  <p><strong>Universal Approximation Theorem:</strong> A feedforward network with a single hidden layer containing a finite number of neurons can approximate any continuous function on a compact subset of R<sup>n</sup>, given a suitable activation function.</p>
+
+  <h2>3. Activation Functions</h2>
+
+  <table>
+    <tr><th>Function</th><th>Formula</th><th>Range</th><th>Properties</th></tr>
+    <tr>
+      <td><strong>Sigmoid</strong></td>
+      <td>&sigma;(z) = 1/(1 + e<sup>-z</sup>)</td>
+      <td>(0, 1)</td>
+      <td>Smooth, differentiable. Suffers from vanishing gradient for large |z|. Output not zero-centered.</td>
+    </tr>
+    <tr>
+      <td><strong>Tanh</strong></td>
+      <td>tanh(z) = (e<sup>z</sup> - e<sup>-z</sup>)/(e<sup>z</sup> + e<sup>-z</sup>)</td>
+      <td>(-1, 1)</td>
+      <td>Zero-centered. Still suffers from vanishing gradient. tanh(z) = 2&sigma;(2z) - 1</td>
+    </tr>
+    <tr>
+      <td><strong>ReLU</strong></td>
+      <td>f(z) = max(0, z)</td>
+      <td>[0, &infin;)</td>
+      <td>Efficient computation. No vanishing gradient for z > 0. Can cause "dying ReLU" (neurons stuck at 0).</td>
+    </tr>
+    <tr>
+      <td><strong>Leaky ReLU</strong></td>
+      <td>f(z) = max(&alpha;z, z), &alpha; small</td>
+      <td>(-&infin;, &infin;)</td>
+      <td>Fixes dying ReLU problem. Typically &alpha; = 0.01.</td>
+    </tr>
+    <tr>
+      <td><strong>Softmax</strong></td>
+      <td>softmax(z<sub>i</sub>) = e<sup>z<sub>i</sub></sup> / &sum;e<sup>z<sub>j</sub></sup></td>
+      <td>(0, 1), sum = 1</td>
+      <td>Used for multi-class classification in the output layer. Outputs a probability distribution.</td>
+    </tr>
+  </table>
+
+  <div class="formula">
+    Derivatives:<br>
+    Sigmoid: &sigma;'(z) = &sigma;(z)(1 - &sigma;(z)), max value = 0.25 at z=0<br>
+    Tanh: tanh'(z) = 1 - tanh&sup2;(z)<br>
+    ReLU: f'(z) = 1 if z > 0, 0 if z &lt; 0 (undefined at z=0, typically set to 0 or 1)
+  </div>
+
+  <h2>4. Backpropagation</h2>
+  <p>Backpropagation is the algorithm for computing gradients of the loss function with respect to all weights in the network. It uses the <strong>chain rule</strong> of calculus to propagate error signals backward from the output layer to earlier layers.</p>
+
+  <h3>4.1 Steps</h3>
+  <ol>
+    <li><strong>Forward pass:</strong> Compute activations layer by layer from input to output</li>
+    <li><strong>Compute loss:</strong> Calculate the error between predicted and actual output</li>
+    <li><strong>Backward pass:</strong> Compute gradients starting from the output layer, propagating backward through the network using the chain rule</li>
+    <li><strong>Update weights:</strong> w := w - &alpha; &middot; &part;L/&part;w</li>
+  </ol>
+
+  <div class="formula">
+    Chain rule application:<br>
+    &part;L/&part;w<sub>ij</sub><sup>(l)</sup> = &part;L/&part;a<sub>j</sub><sup>(l)</sup> &middot; &part;a<sub>j</sub><sup>(l)</sup>/&part;z<sub>j</sub><sup>(l)</sup> &middot; &part;z<sub>j</sub><sup>(l)</sup>/&part;w<sub>ij</sub><sup>(l)</sup><br><br>
+    = &delta;<sub>j</sub><sup>(l)</sup> &middot; a<sub>i</sub><sup>(l-1)</sup><br>
+    where &delta;<sub>j</sub><sup>(l)</sup> = &part;L/&part;z<sub>j</sub><sup>(l)</sup> is the error signal at neuron j in layer l
+  </div>
+
+  <h2>5. Gradient Descent Variants</h2>
+
+  <table>
+    <tr><th>Variant</th><th>Batch Size</th><th>Update Frequency</th><th>Properties</th></tr>
+    <tr><td><strong>Batch GD</strong></td><td>Entire dataset</td><td>Once per epoch</td><td>Stable convergence, slow for large data, may get stuck in local minima</td></tr>
+    <tr><td><strong>Stochastic GD (SGD)</strong></td><td>1 sample</td><td>After each sample</td><td>Noisy updates, can escape local minima, high variance</td></tr>
+    <tr><td><strong>Mini-Batch GD</strong></td><td>Small batch (32-256)</td><td>After each batch</td><td>Balance between batch and SGD, most commonly used</td></tr>
+  </table>
+
+  <h3>5.1 Advanced Optimizers</h3>
+  <table>
+    <tr><th>Optimizer</th><th>Key Idea</th></tr>
+    <tr><td><strong>SGD + Momentum</strong></td><td>Accumulates exponentially decaying moving average of past gradients. Helps accelerate through narrow ravines.</td></tr>
+    <tr><td><strong>RMSProp</strong></td><td>Adapts learning rate per parameter using exponential average of squared gradients. Good for non-stationary objectives.</td></tr>
+    <tr><td><strong>Adam</strong></td><td>Combines momentum (first moment) and RMSProp (second moment) with bias correction. Most popular default optimizer.</td></tr>
+  </table>
+
+  <div class="formula">
+    Adam update rules:<br>
+    m<sub>t</sub> = &beta;<sub>1</sub> m<sub>t-1</sub> + (1 - &beta;<sub>1</sub>) g<sub>t</sub>  (first moment estimate)<br>
+    v<sub>t</sub> = &beta;<sub>2</sub> v<sub>t-1</sub> + (1 - &beta;<sub>2</sub>) g<sub>t</sub>&sup2;  (second moment estimate)<br>
+    m&#770;<sub>t</sub> = m<sub>t</sub> / (1 - &beta;<sub>1</sub><sup>t</sup>)  (bias correction)<br>
+    v&#770;<sub>t</sub> = v<sub>t</sub> / (1 - &beta;<sub>2</sub><sup>t</sup>)  (bias correction)<br>
+    w<sub>t</sub> = w<sub>t-1</sub> - &alpha; m&#770;<sub>t</sub> / (&radic;v&#770;<sub>t</sub> + &epsilon;)<br>
+    Defaults: &beta;<sub>1</sub>=0.9, &beta;<sub>2</sub>=0.999, &epsilon;=10<sup>-8</sup>
+  </div>
+
+  <h2>6. Convolutional Neural Networks (CNN) Basics</h2>
+  <p>CNNs are designed for processing grid-structured data (images, sequences). They use three key operations:</p>
+
+  <h3>6.1 Convolution Layer</h3>
+  <p>Applies learnable <strong>filters (kernels)</strong> that slide over the input. Each filter detects a specific feature (edges, textures, patterns).</p>
+  <div class="formula">
+    Output size = (W - F + 2P) / S + 1<br>
+    W = input size, F = filter size, P = padding, S = stride
+  </div>
+  <p><strong>Parameter sharing:</strong> The same filter weights are used across the entire input, drastically reducing the number of parameters compared to a fully connected layer.</p>
+
+  <h3>6.2 Pooling Layer</h3>
+  <p>Reduces spatial dimensions. <strong>Max pooling</strong> takes the maximum value in each pooling window. <strong>Average pooling</strong> takes the average. Provides translational invariance and reduces computation.</p>
+
+  <h3>6.3 Typical CNN Architecture</h3>
+  <p>Input &rarr; [Conv &rarr; ReLU &rarr; Pool] &times; N &rarr; Flatten &rarr; Fully Connected &rarr; Softmax</p>
+
+  <div class="example">
+    <strong>Example:</strong> Input image 32&times;32, filter 5&times;5, stride 1, no padding:<br>
+    Output size = (32 - 5 + 0) / 1 + 1 = 28&times;28<br>
+    With 10 filters: output volume is 28&times;28&times;10<br>
+    Parameters per filter: 5&times;5&times;1 + 1 (bias) = 26<br>
+    Total parameters: 26 &times; 10 = 260
+  </div>
+
+  <h2>7. Recurrent Neural Networks (RNN) Basics</h2>
+  <p>RNNs process sequential data by maintaining a <strong>hidden state</strong> that captures information from previous time steps.</p>
+
+  <div class="formula">
+    h<sub>t</sub> = g(W<sub>hh</sub> h<sub>t-1</sub> + W<sub>xh</sub> x<sub>t</sub> + b<sub>h</sub>)  (hidden state update)<br>
+    y<sub>t</sub> = W<sub>hy</sub> h<sub>t</sub> + b<sub>y</sub>  (output)
+  </div>
+
+  <p>RNNs share weights across time steps. They are trained using <strong>Backpropagation Through Time (BPTT)</strong>, which unrolls the network across time steps and applies standard backpropagation.</p>
+
+  <p>Applications: language modeling, machine translation, speech recognition, time series prediction.</p>
+
+  <h2>8. Vanishing and Exploding Gradient Problem</h2>
+  <p>During backpropagation in deep networks, gradients are multiplied through many layers. This leads to:</p>
+
+  <table>
+    <tr><th>Problem</th><th>Cause</th><th>Effect</th><th>Solutions</th></tr>
+    <tr>
+      <td><strong>Vanishing Gradient</strong></td>
+      <td>Gradients &lt; 1 are multiplied repeatedly, shrinking exponentially</td>
+      <td>Early layers learn extremely slowly; weights barely update</td>
+      <td>ReLU activation, LSTM/GRU (for RNNs), residual connections, batch normalization, careful initialization</td>
+    </tr>
+    <tr>
+      <td><strong>Exploding Gradient</strong></td>
+      <td>Gradients &gt; 1 are multiplied repeatedly, growing exponentially</td>
+      <td>Weights oscillate or diverge; training becomes unstable</td>
+      <td>Gradient clipping, weight regularization, LSTM/GRU</td>
+    </tr>
+  </table>
+
+  <div class="formula">
+    For sigmoid: max derivative = 0.25<br>
+    After L layers: gradient &le; 0.25<sup>L</sup><br>
+    For L=10: 0.25<sup>10</sup> &approx; 9.5 &times; 10<sup>-7</sup> (effectively zero!)<br><br>
+    ReLU gradient = 1 for z > 0, avoiding vanishing gradient (but "dying ReLU" can occur).
+  </div>
+
+  <h3>8.1 LSTM (Long Short-Term Memory)</h3>
+  <p>LSTM cells address the vanishing gradient problem in RNNs by introducing <strong>gates</strong> that control information flow:</p>
+  <ul>
+    <li><strong>Forget gate:</strong> Decides what information to discard from the cell state</li>
+    <li><strong>Input gate:</strong> Decides what new information to store in the cell state</li>
+    <li><strong>Output gate:</strong> Decides what to output based on the cell state</li>
+  </ul>
+  <p>The cell state acts as a "conveyor belt" that allows gradients to flow unchanged through many time steps.</p>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "Neural Networks and Deep Learning - GATE Quiz",
+    "questions": [
+      {
+        "question": "A single-layer perceptron cannot learn which of the following functions?",
+        "options": ["AND", "OR", "NOT", "XOR"],
+        "answer": 3,
+        "explanation": "XOR is not linearly separable — no single straight line can separate the positive (1,0), (0,1) and negative (0,0), (1,1) examples. A single-layer perceptron can only learn linearly separable functions. XOR requires at least one hidden layer."
+      },
+      {
+        "question": "What is the output size of a convolutional layer with input 64×64, filter 3×3, stride 2, and padding 1?",
+        "options": ["32×32", "31×31", "62×62", "33×33"],
+        "answer": 0,
+        "explanation": "Using the formula: Output = (W - F + 2P) / S + 1 = (64 - 3 + 2×1) / 2 + 1 = (64 - 3 + 2) / 2 + 1 = 63/2 + 1 = 31.5 + 1 = 32. So the output is 32×32."
+      },
+      {
+        "question": "Which activation function is most prone to the vanishing gradient problem?",
+        "options": ["ReLU", "Leaky ReLU", "Sigmoid", "Linear"],
+        "answer": 2,
+        "explanation": "The sigmoid function has a maximum derivative of 0.25 (at z=0), and the derivative approaches 0 for large |z|. When gradients are multiplied through many layers, they shrink exponentially (0.25^L), causing the vanishing gradient problem. ReLU has gradient 1 for z>0."
+      },
+      {
+        "question": "The Adam optimizer combines which two techniques?",
+        "options": ["Dropout and batch normalization", "Momentum and RMSProp", "L1 and L2 regularization", "SGD and gradient clipping"],
+        "answer": 1,
+        "explanation": "Adam (Adaptive Moment Estimation) combines momentum (exponential moving average of gradients — first moment) and RMSProp (exponential moving average of squared gradients — second moment), with bias correction for both."
+      },
+      {
+        "question": "In an LSTM cell, which gate decides what information to discard from the cell state?",
+        "options": ["Input gate", "Output gate", "Forget gate", "Cell gate"],
+        "answer": 2,
+        "explanation": "The forget gate outputs values between 0 and 1 for each element of the cell state. A value of 0 means 'completely forget this information' and 1 means 'completely keep this information'. This allows the LSTM to selectively retain or discard information over long sequences."
+      },
+      {
+        "question": "In mini-batch gradient descent with a batch size of 32 and 960 training samples, how many weight updates occur per epoch?",
+        "options": ["1", "32", "30", "960"],
+        "answer": 2,
+        "explanation": "Per epoch, the number of weight updates = total samples / batch size = 960 / 32 = 30. Each mini-batch triggers one weight update. Batch GD would do 1 update per epoch, while SGD would do 960 updates per epoch."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

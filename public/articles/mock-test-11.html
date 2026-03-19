@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 11: AI & Machine Learning Focus — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 11: AI & Machine Learning Focus</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Focus:</strong> Artificial Intelligence, Machine Learning basics, Search Algorithms, Neural Networks, NLP, Bayesian Networks, Probability for ML, Python Programming</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 11 — AI & ML Focus",
+      "questions": [
+        {
+          "question": "Q1. In the A* search algorithm, the evaluation function f(n) = g(n) + h(n). For A* to be optimal, h(n) must be:",
+          "options": ["(A) Consistent (monotonic) and admissible", "(B) Always equal to the actual cost", "(C) Greater than the actual cost", "(D) Independent of g(n)"],
+          "answer": 0,
+          "explanation": "For A* to guarantee optimality, the heuristic h(n) must be admissible (never overestimates the actual cost to the goal). With consistency (|h(n) - h(n')| <= cost(n, n')), A* is also optimally efficient — no other algorithm with the same heuristic expands fewer nodes."
+        },
+        {
+          "question": "Q2. What is the time complexity of the minimax algorithm with alpha-beta pruning in the best case for a game tree with branching factor b and depth d?",
+          "options": ["(A) O(b^d)", "(B) O(b^(d/2))", "(C) O(b^d * log b)", "(D) O(d * b)"],
+          "answer": 1,
+          "explanation": "With perfect move ordering, alpha-beta pruning can reduce the effective branching factor from b to sqrt(b), giving O(b^(d/2)) in the best case. This allows searching to roughly twice the depth compared to plain minimax in the same time."
+        },
+        {
+          "question": "Q3. In a Bayesian network, if X and Y are d-separated given Z, which of the following is true?",
+          "options": ["(A) X and Y are conditionally independent given Z", "(B) X and Y are marginally independent", "(C) Z is always a descendant of X", "(D) X causes Y through Z"],
+          "answer": 0,
+          "explanation": "D-separation is the graphical criterion in Bayesian networks for testing conditional independence. If all paths between X and Y are blocked when conditioning on Z, then X and Y are d-separated given Z, meaning X ⊥ Y | Z (conditionally independent)."
+        },
+        {
+          "question": "Q4. Consider a perceptron with inputs x1, x2 and weights w1=1, w2=1, bias=-1.5. Using step activation (output 1 if net >= 0, else 0), this perceptron computes:",
+          "options": ["(A) OR function", "(B) AND function", "(C) XOR function", "(D) NAND function"],
+          "answer": 1,
+          "explanation": "For AND: inputs (0,0) → -1.5 < 0 → 0; (0,1) → -0.5 < 0 → 0; (1,0) → -0.5 < 0 → 0; (1,1) → 0.5 >= 0 → 1. This matches the AND truth table. OR would need bias = -0.5, and XOR cannot be computed by a single perceptron."
+        },
+        {
+          "question": "Q5. The gradient descent update rule for a weight w with learning rate α and loss function L is:",
+          "options": ["(A) w = w - α * (∂L/∂w)", "(B) w = w + α * (∂L/∂w)", "(C) w = w - (∂L/∂w) / α", "(D) w = α * w - (∂L/∂w)"],
+          "answer": 0,
+          "explanation": "Gradient descent moves in the direction opposite to the gradient to minimize the loss. The update rule is w = w - α * (∂L/∂w), where α is the learning rate controlling step size. Moving in the gradient direction would maximize the function instead."
+        },
+        {
+          "question": "Q6. In k-means clustering, which of the following statements is FALSE?",
+          "options": ["(A) The algorithm always converges to a local minimum", "(B) The result depends on initial centroid selection", "(C) It always finds the global optimum", "(D) The number of clusters k must be specified in advance"],
+          "answer": 2,
+          "explanation": "K-means is guaranteed to converge but only to a local minimum of the within-cluster sum of squares objective, not necessarily the global optimum. Different initializations can lead to different solutions. K-means++ was developed to improve initialization and get closer to global optima."
+        },
+        {
+          "question": "Q7. Given P(Disease) = 0.01, P(Positive|Disease) = 0.95, and P(Positive|No Disease) = 0.05, what is P(Disease|Positive)?",
+          "options": ["(A) 0.95", "(B) 0.161", "(C) 0.50", "(D) 0.01"],
+          "answer": 1,
+          "explanation": "Using Bayes' theorem: P(D|+) = P(+|D)*P(D) / [P(+|D)*P(D) + P(+|~D)*P(~D)] = (0.95 * 0.01) / (0.95 * 0.01 + 0.05 * 0.99) = 0.0095 / (0.0095 + 0.0495) = 0.0095 / 0.059 ≈ 0.161. Despite the test being 95% accurate, the low prior probability means only ~16% of positive results are true positives."
+        },
+        {
+          "question": "Q8. Which of the following is NOT a valid kernel function for SVM?",
+          "options": ["(A) K(x,y) = (x·y + 1)^2 (Polynomial)", "(B) K(x,y) = exp(-||x-y||²/2σ²) (RBF)", "(C) K(x,y) = x·y (Linear)", "(D) K(x,y) = log(x·y) for all x,y"],
+          "answer": 3,
+          "explanation": "A valid kernel must satisfy Mercer's condition (the kernel matrix must be positive semi-definite). K(x,y) = log(x·y) does not satisfy this condition in general — it can produce negative values and a non-PSD kernel matrix. Polynomial, RBF, and linear kernels are all valid Mercer kernels."
+        },
+        {
+          "question": "Q9. In a feedforward neural network with one hidden layer of 10 neurons, input dimension 5, and output dimension 3, how many total trainable parameters are there (including biases)?",
+          "options": ["(A) 83", "(B) 93", "(C) 80", "(D) 50"],
+          "answer": 1,
+          "explanation": "Input → Hidden: 5*10 weights + 10 biases = 60. Hidden → Output: 10*3 weights + 3 biases = 33. Total = 60 + 33 = 93 trainable parameters."
+        },
+        {
+          "question": "Q10. Breadth-First Search (BFS) is complete and optimal when:",
+          "options": ["(A) The graph has cycles", "(B) Step costs are equal (uniform)", "(C) The heuristic is admissible", "(D) The branching factor is infinite"],
+          "answer": 1,
+          "explanation": "BFS is complete (finds a solution if one exists) when the branching factor is finite. It is optimal when all step costs are equal (uniform cost), as it finds the shallowest goal first. For non-uniform costs, Uniform Cost Search (UCS) or A* should be used instead."
+        },
+        {
+          "question": "Q11. What is the output of the following Python code?\nx = [1, 2, 3, 4, 5]\nprint(x[1:4:2])",
+          "options": ["(A) [1, 3, 5]", "(B) [2, 4]", "(C) [2, 3, 4]", "(D) [1, 2, 3, 4]"],
+          "answer": 1,
+          "explanation": "x[1:4:2] slices from index 1 to 4 (exclusive) with step 2. So it picks x[1]=2 and x[3]=4. Result is [2, 4]. The syntax is list[start:stop:step]."
+        },
+        {
+          "question": "Q12. In the Naive Bayes classifier, the 'naive' assumption is:",
+          "options": ["(A) All features have equal importance", "(B) Features are conditionally independent given the class", "(C) The prior probability is uniform", "(D) The likelihood follows a Gaussian distribution"],
+          "answer": 1,
+          "explanation": "The 'naive' assumption in Naive Bayes is that all features are conditionally independent given the class label. This means P(x1,x2,...,xn|C) = P(x1|C)*P(x2|C)*...*P(xn|C). Despite this strong assumption rarely being true in practice, Naive Bayes often performs surprisingly well."
+        },
+        {
+          "question": "Q13. In iterative deepening depth-first search (IDDFS), if the solution is at depth d and branching factor is b, the time complexity is:",
+          "options": ["(A) O(b^d)", "(B) O(b^(d+1))", "(C) O(d * b^d)", "(D) O(b^(2d))"],
+          "answer": 0,
+          "explanation": "While IDDFS re-explores nodes at each depth limit, the overhead is only a constant factor. The total nodes expanded are O(b^d) asymptotically. Specifically, the ratio of total work to BFS work approaches b/(b-1), which is a constant. So IDDFS has the same asymptotic time complexity as BFS: O(b^d)."
+        },
+        {
+          "question": "Q14. The vanishing gradient problem in deep neural networks is primarily addressed by:",
+          "options": ["(A) Using sigmoid activation in all layers", "(B) Using ReLU activation function", "(C) Increasing the learning rate", "(D) Reducing the number of layers"],
+          "answer": 1,
+          "explanation": "The vanishing gradient problem occurs when gradients become exponentially small through many layers (especially with sigmoid/tanh). ReLU (Rectified Linear Unit) f(x) = max(0,x) has a gradient of 1 for positive inputs, preventing gradient vanishing. Other solutions include batch normalization, residual connections, and LSTM for RNNs."
+        },
+        {
+          "question": "Q15. What does the following Python function return for f(5)?\ndef f(n): return 1 if n <= 1 else f(n-1) + f(n-2)",
+          "options": ["(A) 5", "(B) 8", "(C) 13", "(D) 3"],
+          "answer": 1,
+          "explanation": "This computes the Fibonacci sequence. f(0)=1, f(1)=1, f(2)=2, f(3)=3, f(4)=5, f(5)=8. So f(5) returns 8."
+        },
+        {
+          "question": "Q16. In a decision tree, the attribute with the highest ______ is selected as the root node in the ID3 algorithm.",
+          "options": ["(A) Gini impurity", "(B) Information gain", "(C) Variance reduction", "(D) Chi-squared value"],
+          "answer": 1,
+          "explanation": "ID3 uses information gain (based on entropy reduction) to select attributes. The attribute that provides the maximum information gain (maximum reduction in entropy) is chosen for splitting. C4.5 uses gain ratio, and CART uses Gini impurity."
+        },
+        {
+          "question": "Q17. In a constraint satisfaction problem (CSP), arc consistency ensures that:",
+          "options": ["(A) The problem has a unique solution", "(B) For every value of one variable, there exists a consistent value in every neighbor", "(C) No backtracking is needed", "(D) All constraints are satisfied simultaneously"],
+          "answer": 1,
+          "explanation": "Arc consistency (AC-3) ensures that for every value in the domain of variable Xi, there exists at least one value in the domain of every neighboring variable Xj that satisfies the constraint between Xi and Xj. It prunes domains but doesn't guarantee a solution exists or that backtracking can be avoided."
+        },
+        {
+          "question": "Q18. If a dataset has 1000 samples with 950 positive and 50 negative, a classifier that always predicts 'positive' has accuracy:",
+          "options": ["(A) 50%", "(B) 95%", "(C) 100%", "(D) 5%"],
+          "answer": 1,
+          "explanation": "A classifier that always predicts positive will correctly classify all 950 positive samples and misclassify all 50 negative samples. Accuracy = 950/1000 = 95%. This demonstrates why accuracy alone is a poor metric for imbalanced datasets — precision, recall, and F1-score are more informative."
+        },
+        {
+          "question": "Q19. In Python, what is the output of: print(type(lambda x: x+1))",
+          "options": ["(A) <class 'int'>", "(B) <class 'function'>", "(C) <class 'lambda'>", "(D) Error"],
+          "answer": 1,
+          "explanation": "In Python, lambda expressions create anonymous function objects. The type of a lambda is <class 'function'>, the same as regular functions defined with def. There is no separate 'lambda' type in Python."
+        },
+        {
+          "question": "Q20. The bias-variance tradeoff states that as model complexity increases:",
+          "options": ["(A) Both bias and variance increase", "(B) Bias increases and variance decreases", "(C) Bias decreases and variance increases", "(D) Both bias and variance decrease"],
+          "answer": 2,
+          "explanation": "As model complexity increases, bias decreases (the model can fit the training data better) but variance increases (the model becomes more sensitive to the specific training data). The optimal complexity minimizes the total error (bias² + variance + irreducible error). Underfitting = high bias, overfitting = high variance."
+        },
+        {
+          "question": "Q21. In a Bayesian network with variables A → B → C (chain structure), A and C are:",
+          "options": ["(A) Always independent", "(B) Conditionally independent given B", "(C) Never independent", "(D) Conditionally dependent given B"],
+          "answer": 1,
+          "explanation": "In a chain A → B → C, information flows from A to C through B. When B is observed (conditioned on), the path is blocked, making A and C conditionally independent given B. Without conditioning on B, A and C are generally dependent."
+        },
+        {
+          "question": "Q22. What is the VC dimension of a linear classifier in 2D (2-dimensional space)?",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) Infinite"],
+          "answer": 1,
+          "explanation": "The VC dimension of a linear classifier (hyperplane) in d dimensions is d+1. In 2D, a line can shatter any set of 3 non-collinear points (classify them in all 2^3 = 8 possible ways), but no set of 4 points can be shattered (XOR configuration). So VC dimension = 3."
+        },
+        {
+          "question": "Q23. In Natural Language Processing, TF-IDF stands for:",
+          "options": ["(A) Term Frequency-Inverse Document Frequency", "(B) Text Feature-Indexed Data Format", "(C) Total Frequency-Inverse Data Flow", "(D) Token Format-Inverse Distribution Function"],
+          "answer": 0,
+          "explanation": "TF-IDF = Term Frequency × Inverse Document Frequency. TF measures how often a term appears in a document, and IDF measures how rare the term is across all documents. TF-IDF gives high weight to terms that are frequent in a specific document but rare overall, making it useful for text classification and information retrieval."
+        },
+        {
+          "question": "Q24. Given a confusion matrix with TP=80, FP=10, FN=20, TN=90, what is the precision?",
+          "options": ["(A) 0.80", "(B) 0.89", "(C) 0.90", "(D) 0.85"],
+          "answer": 1,
+          "explanation": "Precision = TP / (TP + FP) = 80 / (80 + 10) = 80/90 ≈ 0.889 ≈ 0.89. Precision measures the fraction of positive predictions that are actually positive. Recall = TP/(TP+FN) = 80/100 = 0.80."
+        },
+        {
+          "question": "Q25. Which search algorithm uses a priority queue ordered by f(n) = g(n) + h(n)?",
+          "options": ["(A) Uniform Cost Search", "(B) Greedy Best-First Search", "(C) A* Search", "(D) Depth-First Search"],
+          "answer": 2,
+          "explanation": "A* Search uses f(n) = g(n) + h(n) where g(n) is the actual cost from start to n, and h(n) is the heuristic estimate from n to goal. UCS uses only g(n), Greedy Best-First uses only h(n), and DFS uses a stack (LIFO)."
+        },
+        {
+          "question": "Q26. In Python, what is the output of:\nprint([x**2 for x in range(5) if x % 2 == 0])",
+          "options": ["(A) [0, 4, 16]", "(B) [1, 9, 25]", "(C) [0, 1, 4, 9, 16]", "(D) [4, 16]"],
+          "answer": 0,
+          "explanation": "range(5) gives 0,1,2,3,4. Filtering for x%2==0 gives 0,2,4. Squaring these gives [0, 4, 16]. List comprehensions with conditions filter elements before applying the expression."
+        },
+        {
+          "question": "Q27. Cross-validation is primarily used to:",
+          "options": ["(A) Increase the training data size", "(B) Estimate model performance on unseen data", "(C) Select features for the model", "(D) Normalize the input data"],
+          "answer": 1,
+          "explanation": "Cross-validation (e.g., k-fold CV) splits data into k parts, trains on k-1 parts and validates on 1 part, rotating through all parts. Its primary purpose is to estimate how well the model generalizes to unseen data, helping detect overfitting and compare model performance."
+        },
+        {
+          "question": "Q28. In a Hidden Markov Model (HMM), the Viterbi algorithm is used to:",
+          "options": ["(A) Learn the model parameters", "(B) Find the most likely sequence of hidden states", "(C) Compute the probability of observations", "(D) Generate new sequences"],
+          "answer": 1,
+          "explanation": "The Viterbi algorithm uses dynamic programming to find the most likely sequence of hidden states given a sequence of observations. The Forward algorithm computes observation probability, and Baum-Welch (EM) learns parameters. Viterbi is widely used in speech recognition and POS tagging."
+        },
+        {
+          "question": "Q29. What is the output of this Python code?\nd = {'a': 1, 'b': 2, 'c': 3}\nprint(list(d.values()))",
+          "options": ["(A) ['a', 'b', 'c']", "(B) [1, 2, 3]", "(C) [('a',1), ('b',2), ('c',3)]", "(D) {'a': 1, 'b': 2, 'c': 3}"],
+          "answer": 1,
+          "explanation": "d.values() returns a view of the dictionary's values. Converting to list gives [1, 2, 3]. d.keys() would give the keys, and d.items() would give key-value tuples."
+        },
+        {
+          "question": "Q30. In reinforcement learning, the Q-learning update rule uses:",
+          "options": ["(A) The average of all future rewards", "(B) The maximum Q-value of the next state (off-policy)", "(C) The Q-value of the action actually taken in the next state (on-policy)", "(D) Only the immediate reward"],
+          "answer": 1,
+          "explanation": "Q-learning is an off-policy algorithm. Its update rule is: Q(s,a) ← Q(s,a) + α[r + γ * max_a' Q(s',a') - Q(s,a)]. It uses the maximum Q-value over all possible next actions, regardless of which action is actually taken. SARSA is the on-policy variant that uses the Q-value of the action actually taken."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operating Systems Problem Solving - GATE Practice</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px}
+</style>
+</head>
+<body>
+<article>
+<h1>Operating Systems Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>12 GATE-level OS problems on process scheduling, page replacement, Banker's algorithm, disk scheduling, virtual memory, and synchronization with detailed step-by-step solutions.</p>
+
+<h2>Problem 1: FCFS Scheduling</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Processes with (Arrival Time, Burst Time): P1(0,6), P2(1,8), P3(2,7), P4(3,3). Compute average waiting time and turnaround time for FCFS scheduling.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> FCFS: execute in arrival order. Waiting time = Start time - Arrival time. Turnaround = Completion - Arrival.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Process</th><th>AT</th><th>BT</th><th>Start</th><th>CT</th><th>TAT</th><th>WT</th></tr>
+<tr><td>P1</td><td>0</td><td>6</td><td>0</td><td>6</td><td>6</td><td>0</td></tr>
+<tr><td>P2</td><td>1</td><td>8</td><td>6</td><td>14</td><td>13</td><td>5</td></tr>
+<tr><td>P3</td><td>2</td><td>7</td><td>14</td><td>21</td><td>19</td><td>12</td></tr>
+<tr><td>P4</td><td>3</td><td>3</td><td>21</td><td>24</td><td>21</td><td>18</td></tr>
+</table>
+<strong>Average TAT = (6+13+19+21)/4 = 59/4 = 14.75</strong><br>
+<strong>Average WT = (0+5+12+18)/4 = 35/4 = 8.75</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> FCFS is non-preemptive and suffers from the convoy effect (short processes wait behind long ones). It is the simplest but often has the worst average waiting time.
+</div>
+
+<h2>Problem 2: SJF (Non-Preemptive) Scheduling</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Same processes: P1(0,6), P2(1,8), P3(2,7), P4(3,3). Compute average WT for non-preemptive SJF.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> At each decision point (when CPU becomes free), choose the arrived process with shortest burst time.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+t=0: Only P1 available. Run P1 (BT=6). Completes at t=6.<br>
+t=6: P2(8), P3(7), P4(3) available. Shortest = P4(3). Run P4. Completes at t=9.<br>
+t=9: P2(8), P3(7) available. Shortest = P3(7). Run P3. Completes at t=16.<br>
+t=16: P2(8) left. Run P2. Completes at t=24.<br>
+<table>
+<tr><th>Process</th><th>AT</th><th>BT</th><th>CT</th><th>TAT</th><th>WT</th></tr>
+<tr><td>P1</td><td>0</td><td>6</td><td>6</td><td>6</td><td>0</td></tr>
+<tr><td>P4</td><td>3</td><td>3</td><td>9</td><td>6</td><td>3</td></tr>
+<tr><td>P3</td><td>2</td><td>7</td><td>16</td><td>14</td><td>7</td></tr>
+<tr><td>P2</td><td>1</td><td>8</td><td>24</td><td>23</td><td>15</td></tr>
+</table>
+<strong>Average WT = (0+3+7+15)/4 = 25/4 = 6.25</strong> (better than FCFS's 8.75)
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> SJF is optimal for average waiting time among non-preemptive algorithms. SRTF (preemptive SJF) is optimal among all. In practice, SJF needs burst time prediction (exponential averaging).
+</div>
+
+<h2>Problem 3: Round Robin Scheduling</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Processes: P1(0,5), P2(1,4), P3(2,2), P4(4,1). Time quantum = 2. Find average waiting time.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> RR: preemptive. Each process runs for at most quantum time, then goes to back of queue.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Time</th><th>Running</th><th>Remaining</th><th>Ready Queue</th></tr>
+<tr><td>0-2</td><td>P1</td><td>P1:3</td><td>P2</td></tr>
+<tr><td>2-4</td><td>P2</td><td>P2:2</td><td>P3, P1</td></tr>
+<tr><td>4-6</td><td>P3</td><td>P3:0 (done)</td><td>P1, P4, P2</td></tr>
+<tr><td>6-8</td><td>P1</td><td>P1:1</td><td>P4, P2</td></tr>
+<tr><td>8-9</td><td>P4</td><td>P4:0 (done)</td><td>P2, P1</td></tr>
+<tr><td>9-11</td><td>P2</td><td>P2:0 (done)</td><td>P1</td></tr>
+<tr><td>11-12</td><td>P1</td><td>P1:0 (done)</td><td>-</td></tr>
+</table>
+<table>
+<tr><th>Process</th><th>AT</th><th>BT</th><th>CT</th><th>TAT</th><th>WT</th></tr>
+<tr><td>P1</td><td>0</td><td>5</td><td>12</td><td>12</td><td>7</td></tr>
+<tr><td>P2</td><td>1</td><td>4</td><td>11</td><td>10</td><td>6</td></tr>
+<tr><td>P3</td><td>2</td><td>2</td><td>6</td><td>4</td><td>2</td></tr>
+<tr><td>P4</td><td>4</td><td>1</td><td>9</td><td>5</td><td>4</td></tr>
+</table>
+<strong>Average WT = (7+6+2+4)/4 = 19/4 = 4.75</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> RR fairness depends on quantum size. Large quantum approaches FCFS. Small quantum increases context switches. Rule of thumb: 80% of bursts should complete within one quantum.
+</div>
+
+<h2>Problem 4: FIFO Page Replacement</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Reference string: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1. Frames = 3. Count page faults using FIFO. Does Belady's anomaly occur if we increase to 4 frames?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> FIFO: replace the oldest page in memory. Track the order of insertion.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution (3 frames):</strong><br>
+<table>
+<tr><th>Ref</th><th>7</th><th>0</th><th>1</th><th>2</th><th>0</th><th>3</th><th>0</th><th>4</th><th>2</th><th>3</th><th>0</th><th>3</th><th>2</th><th>1</th><th>2</th><th>0</th><th>1</th><th>7</th><th>0</th><th>1</th></tr>
+<tr><td>F1</td><td>7</td><td>7</td><td>7</td><td>2</td><td>2</td><td>2</td><td>4</td><td>4</td><td>4</td><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>7</td><td>7</td><td>7</td></tr>
+<tr><td>F2</td><td></td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>3</td><td>3</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>F3</td><td></td><td></td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>Fault?</td><td>F</td><td>F</td><td>F</td><td>F</td><td>H</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>H</td><td>H</td><td>F</td><td>F</td><td>F</td><td>H</td><td>F</td><td>F</td><td>F</td></tr>
+</table>
+<strong>Page faults with 3 frames = 15</strong><br><br>
+With 4 frames, FIFO gives 10 page faults for this reference string. <strong>No Belady's anomaly here</strong> (more frames = fewer faults). But FIFO can exhibit Belady's anomaly for other reference strings.
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> FIFO can suffer Belady's anomaly (more frames = more faults). LRU and Optimal never exhibit this. Classic Belady's example: reference string 1,2,3,4,1,2,5,1,2,3,4,5 with 3 vs 4 frames.
+</div>
+
+<h2>Problem 5: LRU Page Replacement</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Reference string: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5. Frames = 3. Count page faults using LRU.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> LRU: replace the page that was least recently used. Track last-use time for each page.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Ref</th><th>1</th><th>2</th><th>3</th><th>4</th><th>1</th><th>2</th><th>5</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+<tr><td>Frames</td><td>{1}</td><td>{1,2}</td><td>{1,2,3}</td><td>{4,2,3}</td><td>{4,1,3}</td><td>{4,1,2}</td><td>{5,1,2}</td><td>{5,1,2}</td><td>{5,1,2}</td><td>{3,1,2}</td><td>{3,4,2}</td><td>{3,4,5}</td></tr>
+<tr><td>LRU victim</td><td>-</td><td>-</td><td>-</td><td>1</td><td>2</td><td>3</td><td>4</td><td>-</td><td>-</td><td>5</td><td>1</td><td>2</td></tr>
+<tr><td>Fault?</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>H</td><td>H</td><td>F</td><td>F</td><td>F</td></tr>
+</table>
+<strong>Page faults = 10</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> LRU is a stack algorithm (no Belady's anomaly). It's optimal among online algorithms. Hardware implementation uses counters or a stack. Approximate LRU: clock algorithm (second chance).
+</div>
+
+<h2>Problem 6: Optimal Page Replacement</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Same reference string: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5. Frames = 3. Count faults using Optimal algorithm.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Optimal (Belady's): replace the page that will not be used for the longest time in the future.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Ref</th><th>1</th><th>2</th><th>3</th><th>4</th><th>1</th><th>2</th><th>5</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+<tr><td>Frames</td><td>{1}</td><td>{1,2}</td><td>{1,2,3}</td><td>{1,2,4}</td><td>{1,2,4}</td><td>{1,2,4}</td><td>{1,2,5}</td><td>{1,2,5}</td><td>{1,2,5}</td><td>{3,2,5}</td><td>{3,4,5}</td><td>{3,4,5}</td></tr>
+<tr><td>Victim</td><td>-</td><td>-</td><td>-</td><td>3 (used farthest)</td><td>-</td><td>-</td><td>4</td><td>-</td><td>-</td><td>1</td><td>2</td><td>-</td></tr>
+<tr><td>Fault?</td><td>F</td><td>F</td><td>F</td><td>F</td><td>H</td><td>H</td><td>F</td><td>H</td><td>H</td><td>F</td><td>F</td><td>H</td></tr>
+</table>
+<strong>Page faults = 7</strong> (best possible for 3 frames)
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Optimal is not implementable (requires future knowledge) but serves as a lower bound. Comparison: FIFO has the most faults, then LRU, then Optimal. The difference shows how good LRU approximation is.
+</div>
+
+<h2>Problem 7: Banker's Algorithm</h2>
+<div class="problem-box">
+<strong>Problem:</strong> 5 processes, 3 resource types. Available = [3,3,2].
+<table>
+<tr><th>Process</th><th>Allocation (A,B,C)</th><th>Max (A,B,C)</th></tr>
+<tr><td>P0</td><td>0,1,0</td><td>7,5,3</td></tr>
+<tr><td>P1</td><td>2,0,0</td><td>3,2,2</td></tr>
+<tr><td>P2</td><td>3,0,2</td><td>9,0,2</td></tr>
+<tr><td>P3</td><td>2,1,1</td><td>2,2,2</td></tr>
+<tr><td>P4</td><td>0,0,2</td><td>4,3,3</td></tr>
+</table>
+Find the safe sequence.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Compute Need = Max - Allocation. Find a process whose Need &le; Available. Execute it, release its resources. Repeat.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Need matrix:</strong>
+<table>
+<tr><th>Process</th><th>Need (A,B,C)</th></tr>
+<tr><td>P0</td><td>7,4,3</td></tr>
+<tr><td>P1</td><td>1,2,2</td></tr>
+<tr><td>P2</td><td>6,0,0</td></tr>
+<tr><td>P3</td><td>0,1,1</td></tr>
+<tr><td>P4</td><td>4,3,1</td></tr>
+</table>
+<table>
+<tr><th>Step</th><th>Available</th><th>Can run?</th><th>Execute</th><th>New Available</th></tr>
+<tr><td>1</td><td>[3,3,2]</td><td>P1(1,2,2)&le;[3,3,2], P3(0,1,1)&le;[3,3,2]</td><td>P1</td><td>[3,3,2]+[2,0,0]=[5,3,2]</td></tr>
+<tr><td>2</td><td>[5,3,2]</td><td>P3(0,1,1)&le;[5,3,2], P4(4,3,1)&le;[5,3,2]</td><td>P3</td><td>[5,3,2]+[2,1,1]=[7,4,3]</td></tr>
+<tr><td>3</td><td>[7,4,3]</td><td>P0(7,4,3)&le;[7,4,3], P2(6,0,0), P4</td><td>P4</td><td>[7,4,3]+[0,0,2]=[7,4,5]</td></tr>
+<tr><td>4</td><td>[7,4,5]</td><td>P0, P2</td><td>P2</td><td>[7,4,5]+[3,0,2]=[10,4,7]</td></tr>
+<tr><td>5</td><td>[10,4,7]</td><td>P0</td><td>P0</td><td>[10,5,7]</td></tr>
+</table>
+<strong>Safe sequence: P1, P3, P4, P2, P0</strong><br>
+(Other safe sequences also exist, e.g., P1, P3, P4, P0, P2)
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> If no safe sequence exists, the state is unsafe (not necessarily deadlocked, but potentially). The Banker's algorithm is O(m*n^2) where m = resource types, n = processes. A request is granted only if it leads to a safe state.
+</div>
+
+<h2>Problem 8: Disk Scheduling &mdash; SCAN</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Disk has 200 cylinders (0-199). Head starts at cylinder 53, moving toward 0. Request queue: 98, 183, 37, 122, 14, 124, 65, 67. Calculate total seek time for SCAN and C-SCAN.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> SCAN: move in current direction servicing requests, reverse at end. C-SCAN: move in one direction, jump to other end.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>SCAN (moving toward 0):</strong><br>
+Order: 53 &rarr; 37 &rarr; 14 &rarr; 0 (end) &rarr; 65 &rarr; 67 &rarr; 98 &rarr; 122 &rarr; 124 &rarr; 183<br><br>
+Seek distances: |53-37| + |37-14| + |14-0| + |0-65| + |65-67| + |67-98| + |98-122| + |122-124| + |124-183|<br>
+= 16 + 23 + 14 + 65 + 2 + 31 + 24 + 2 + 59 = <strong>236</strong><br><br>
+<strong>C-SCAN (moving toward 0, circular):</strong><br>
+Order: 53 &rarr; 37 &rarr; 14 &rarr; 0 (end) &rarr; 199 (jump to other end) &rarr; 183 &rarr; 124 &rarr; 122 &rarr; 98 &rarr; 67 &rarr; 65<br><br>
+Seek = 53 + 199 + (199-65) = 53 + 199 + 134 = <strong>386</strong><br>
+(53 to 0, then 0 to 199 is counted as 199, then 199 down to 65 is 134)
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> SCAN provides uniform wait time for middle cylinders but not edges. C-SCAN provides more uniform wait times. LOOK and C-LOOK are practical variants that don't go to the absolute ends if there are no requests there.
+</div>
+
+<h2>Problem 9: Virtual Memory &mdash; Page Table Calculation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Virtual address space = 32 bits, page size = 4 KB, physical memory = 256 MB, page table entry = 4 bytes. Calculate: (a) Number of pages, (b) Number of frames, (c) Page table size, (d) Number of page tables if using 2-level paging with 10-bit first level.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Pages = VA space / page size. Frames = physical memory / page size. Page table size = pages * PTE size.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>(a)</strong> Page size = 4 KB = 2<sup>12</sup> bytes. Offset bits = 12.<br>
+Number of pages = 2<sup>32</sup> / 2<sup>12</sup> = 2<sup>20</sup> = <strong>1,048,576 pages (1M)</strong><br><br>
+<strong>(b)</strong> Physical memory = 256 MB = 2<sup>28</sup> bytes.<br>
+Number of frames = 2<sup>28</sup> / 2<sup>12</sup> = 2<sup>16</sup> = <strong>65,536 frames</strong><br><br>
+<strong>(c)</strong> Page table size = 2<sup>20</sup> &times; 4 bytes = 4 MB<br>
+<strong>Single-level page table = 4 MB</strong> (too large to keep in contiguous memory!)<br><br>
+<strong>(d)</strong> 2-level paging: 20 page number bits split as 10 + 10.<br>
+First level: 2<sup>10</sup> entries &times; 4 bytes = 4 KB (1 page -- fits nicely)<br>
+Each second level table: 2<sup>10</sup> entries &times; 4 bytes = 4 KB<br>
+Max second level tables: 2<sup>10</sup> = 1024<br>
+But only the needed ones are allocated.<br>
+<strong>Total if all allocated: 1 + 1024 = 1025 page tables, total size = 1025 &times; 4KB &approx; 4 MB + 4 KB</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Two-level paging reduces memory usage because not all second-level tables need to be in memory. Inverted page table: one entry per frame (2<sup>16</sup> entries here = 256 KB), but requires hashing for lookup. TLB hit dramatically reduces access time.
+</div>
+
+<h2>Problem 10: Effective Memory Access Time with TLB</h2>
+<div class="problem-box">
+<strong>Problem:</strong> TLB access time = 5 ns, Memory access time = 100 ns, TLB hit ratio = 90%, page fault rate = 2% (of TLB misses), page fault service time = 5 ms. Calculate effective memory access time.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> EMAT = TLB_hit_time + TLB_miss_time, accounting for page faults on misses.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>TLB Hit (90%):</strong> TLB access + Memory access = 5 + 100 = 105 ns<br><br>
+<strong>TLB Miss, No Page Fault (10% &times; 98% = 9.8%):</strong><br>
+TLB access + Page table access (memory) + Memory access = 5 + 100 + 100 = 205 ns<br><br>
+<strong>TLB Miss, Page Fault (10% &times; 2% = 0.2%):</strong><br>
+TLB access + Page table access + Page fault service + Memory access = 5 + 100 + 5,000,000 + 100 = 5,000,205 ns<br><br>
+<strong>EMAT = 0.90(105) + 0.098(205) + 0.002(5,000,205)</strong><br>
+= 94.5 + 20.09 + 10,000.41<br>
+= <strong>10,115 ns &approx; 10.1 microseconds</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Even a tiny page fault rate dominates EMAT because disk access is ~10<sup>7</sup> times slower than memory. For acceptable performance (< 10% slowdown), page fault rate must be < 1 in 10 million. This is why locality of reference is critical.
+</div>
+
+<h2>Problem 11: Semaphore &mdash; Producer-Consumer</h2>
+<div class="problem-box">
+<strong>Problem:</strong> In the bounded-buffer problem with buffer size 5, if initially 3 items are in the buffer, what are the initial values of semaphores? If 2 producers and 1 consumer operate, trace the semaphore values after: Producer produces, Producer produces, Consumer consumes, Consumer consumes.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Three semaphores: mutex=1, empty=N-current, full=current. Producer: wait(empty), wait(mutex), produce, signal(mutex), signal(full). Consumer: wait(full), wait(mutex), consume, signal(mutex), signal(empty).
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+N = 5, initially 3 items in buffer.<br>
+<strong>Initial: mutex=1, empty=2, full=3</strong><br>
+<table>
+<tr><th>Operation</th><th>mutex</th><th>empty</th><th>full</th><th>Buffer items</th></tr>
+<tr><td>Initial</td><td>1</td><td>2</td><td>3</td><td>3</td></tr>
+<tr><td>Producer produces</td><td>1</td><td>1</td><td>4</td><td>4</td></tr>
+<tr><td>Producer produces</td><td>1</td><td>0</td><td>5</td><td>5</td></tr>
+<tr><td>Consumer consumes</td><td>1</td><td>1</td><td>4</td><td>4</td></tr>
+<tr><td>Consumer consumes</td><td>1</td><td>2</td><td>3</td><td>3</td></tr>
+</table>
+Note: mutex returns to 1 after each complete operation (wait+signal pair within each operation).<br>
+If another producer tries when empty=0, it blocks on wait(empty) until a consumer runs.
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> In producer-consumer: empty + full = N always. If you swap the order of wait(empty) and wait(mutex) in the producer, deadlock can occur (holding mutex while blocked on empty). Order matters!
+</div>
+
+<h2>Problem 12: Deadlock Detection</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given: Available = [0, 0, 0].
+<table>
+<tr><th>Process</th><th>Allocation</th><th>Request</th></tr>
+<tr><td>P0</td><td>0,1,0</td><td>0,0,0</td></tr>
+<tr><td>P1</td><td>2,0,0</td><td>2,0,2</td></tr>
+<tr><td>P2</td><td>3,0,3</td><td>0,0,0</td></tr>
+<tr><td>P3</td><td>2,1,1</td><td>1,0,0</td></tr>
+<tr><td>P4</td><td>0,0,2</td><td>0,0,2</td></tr>
+</table>
+Is the system deadlocked? If so, which processes are deadlocked?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Similar to Banker's safety algorithm but using Request instead of Need. Find processes whose Request &le; Available.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Available = [0, 0, 0]<br><br>
+<strong>Step 1:</strong> Check P0: Request [0,0,0] &le; [0,0,0]. Yes! Run P0, release [0,1,0]. Available = [0,1,0].<br>
+<strong>Step 2:</strong> Check P2: Request [0,0,0] &le; [0,1,0]. Yes! Run P2, release [3,0,3]. Available = [3,1,3].<br>
+<strong>Step 3:</strong> Check P1: Request [2,0,2] &le; [3,1,3]. Yes! Run P1, release [2,0,0]. Available = [5,1,3].<br>
+<strong>Step 4:</strong> Check P3: Request [1,0,0] &le; [5,1,3]. Yes! Run P3, release [2,1,1]. Available = [7,2,4].<br>
+<strong>Step 5:</strong> Check P4: Request [0,0,2] &le; [7,2,4]. Yes! Run P4.<br><br>
+<strong>All processes can complete. The system is NOT deadlocked.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Deadlock detection is like the safety algorithm but uses actual pending requests, not maximum future needs. If some processes cannot be completed, those processes are deadlocked. The four necessary conditions for deadlock: mutual exclusion, hold and wait, no preemption, circular wait.
+</div>
+
+</article>
+</body>
+</html>

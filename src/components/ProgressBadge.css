@@ -1,0 +1,57 @@
+.progress-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text);
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.progress-badge:hover {
+  border-color: var(--color-primary);
+}
+
+.progress-badge-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid var(--color-border);
+}
+
+.progress-badge--in-progress .progress-badge-dot {
+  border-color: #f59e0b;
+}
+
+.progress-badge--completed .progress-badge-dot {
+  border-color: #22c55e;
+}
+
+.progress-badge--revision-needed .progress-badge-dot {
+  border-color: #ef4444;
+}
+
+.progress-badge--in-progress {
+  border-color: #f59e0b;
+  background: color-mix(in srgb, #f59e0b 8%, var(--color-surface));
+  color: #b45309;
+}
+
+.progress-badge--completed {
+  border-color: #22c55e;
+  background: color-mix(in srgb, #22c55e 8%, var(--color-surface));
+  color: #15803d;
+}
+
+.progress-badge--revision-needed {
+  border-color: #ef4444;
+  background: color-mix(in srgb, #ef4444 8%, var(--color-surface));
+  color: #dc2626;
+}

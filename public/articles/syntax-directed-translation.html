@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syntax-Directed Translation and Intermediate Code — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fce4ec; color: #c62828; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Syntax-Directed Translation and Intermediate Code</h1>
+  <p class="article-section-tag">🔧 Section 7: Compiler Design</p>
+
+  <h2>1. Syntax-Directed Definitions (SDD)</h2>
+  <p>A Syntax-Directed Definition associates <strong>semantic rules</strong> (attribute computations) with grammar productions. Each grammar symbol has a set of attributes, and each production has a set of rules for computing attribute values.</p>
+
+  <h3>1.1 Attributes</h3>
+  <table>
+    <tr><th>Attribute Type</th><th>Direction</th><th>Computed From</th><th>Example</th></tr>
+    <tr><td><strong>Synthesized</strong></td><td>Bottom-up</td><td>Attributes of children in parse tree</td><td>E.val from T.val and E'.val</td></tr>
+    <tr><td><strong>Inherited</strong></td><td>Top-down / Sideways</td><td>Attributes of parent and/or siblings</td><td>Type info passed down from declaration</td></tr>
+  </table>
+
+  <h3>1.2 Example: Desk Calculator SDD</h3>
+  <pre>
+Production              Semantic Rule
+-------------------------------------------
+L -> E \n              print(E.val)
+E -> E1 + T            E.val = E1.val + T.val
+E -> T                 E.val = T.val
+T -> T1 * F            T.val = T1.val * F.val
+T -> F                 T.val = F.val
+F -> ( E )             F.val = E.val
+F -> digit             F.val = digit.lexval
+  </pre>
+  <p>All attributes here are <strong>synthesized</strong> — values flow from leaves to root.</p>
+
+  <h2>2. S-Attributed and L-Attributed Definitions</h2>
+
+  <h3>2.1 S-Attributed Definition</h3>
+  <ul>
+    <li>Uses <strong>only synthesized attributes</strong>.</li>
+    <li>Can be evaluated in a single <strong>bottom-up</strong> pass (e.g., during LR parsing).</li>
+    <li>Semantic actions are placed at the end of productions.</li>
+  </ul>
+
+  <h3>2.2 L-Attributed Definition</h3>
+  <ul>
+    <li>Uses both synthesized and inherited attributes.</li>
+    <li>Restriction: inherited attributes of a symbol can depend only on attributes of symbols <strong>to its left</strong> in the production (or inherited attributes of the LHS).</li>
+    <li>Can be evaluated in a single <strong>left-to-right</strong> pass (e.g., during LL parsing).</li>
+    <li>Every S-attributed definition is also L-attributed.</li>
+  </ul>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> S-attributed SDDs are a subset of L-attributed SDDs. S-attributed works with bottom-up parsing; L-attributed works with top-down parsing. Every S-attributed SDD is L-attributed, but not vice versa.
+  </div>
+
+  <h2>3. Syntax-Directed Translation Schemes (SDT)</h2>
+  <p>An SDT embeds <strong>semantic actions</strong> (program fragments) within the production bodies. Actions are enclosed in curly braces and execute when the parser reaches that position.</p>
+
+  <pre>
+Production with embedded actions:
+  E -> T { E'.inh = T.val } E' { E.val = E'.syn }
+  E' -> + T { E1'.inh = E'.inh + T.val } E1' { E'.syn = E1'.syn }
+  E' -> epsilon { E'.syn = E'.inh }
+  </pre>
+
+  <h3>Postfix SDT (for S-attributed)</h3>
+  <p>All actions are placed at the end of productions. Compatible with LR parsing — actions execute when reductions occur.</p>
+  <pre>
+E -> E1 + T  { E.val = E1.val + T.val; }
+T -> T1 * F  { T.val = T1.val * F.val; }
+F -> digit   { F.val = digit.lexval; }
+  </pre>
+
+  <h2>4. Runtime Environments</h2>
+
+  <h3>4.1 Storage Organization</h3>
+  <p>At runtime, the program's memory is organized into regions:</p>
+  <ul>
+    <li><strong>Code area:</strong> The compiled machine code (fixed size, read-only).</li>
+    <li><strong>Static area:</strong> Global variables, constants (fixed size, allocated at compile time).</li>
+    <li><strong>Stack area:</strong> Activation records for function calls (grows and shrinks with calls/returns).</li>
+    <li><strong>Heap area:</strong> Dynamically allocated memory (managed by malloc/free or garbage collector).</li>
+  </ul>
+
+  <h3>4.2 Activation Records (Stack Frames)</h3>
+  <div class="mermaid">
+graph TD
+    subgraph "Activation Record"
+        A["Return Value"] --> B["Actual Parameters"]
+        B --> C["Control Link<br>(Saved Frame Pointer)"]
+        C --> D["Access Link<br>(Static Link for nested scopes)"]
+        D --> E["Saved Machine Status<br>(Return Address, Registers)"]
+        E --> F["Local Variables"]
+        F --> G["Temporaries"]
+    end
+    style A fill:#e3f2fd
+    style B fill:#e3f2fd
+    style C fill:#fff3e0
+    style D fill:#fff3e0
+    style E fill:#fce4ec
+    style F fill:#e8f5e9
+    style G fill:#e8f5e9
+  </div>
+
+  <table>
+    <tr><th>Field</th><th>Purpose</th></tr>
+    <tr><td>Return Value</td><td>Space for the function's return value</td></tr>
+    <tr><td>Actual Parameters</td><td>Arguments passed by the caller</td></tr>
+    <tr><td>Control Link</td><td>Pointer to caller's activation record (dynamic link)</td></tr>
+    <tr><td>Access Link</td><td>Pointer to activation record of enclosing scope (for nested functions)</td></tr>
+    <tr><td>Saved Machine Status</td><td>Return address, saved registers</td></tr>
+    <tr><td>Local Variables</td><td>Variables declared within the function</td></tr>
+    <tr><td>Temporaries</td><td>Intermediate results during expression evaluation</td></tr>
+  </table>
+
+  <h3>4.3 Stack Allocation</h3>
+  <p>When a function is called, a new activation record is pushed onto the stack. When the function returns, its activation record is popped. This naturally supports recursion — each recursive call gets its own frame.</p>
+
+  <h3>4.4 Heap Allocation</h3>
+  <p>Used for data that must outlive the function call that creates it (e.g., objects in OOP, dynamically allocated arrays).</p>
+  <ul>
+    <li><strong>Fragmentation:</strong> External fragmentation occurs when free memory is scattered in small blocks.</li>
+    <li><strong>Garbage collection:</strong> Automatically reclaims unreachable heap memory (mark-and-sweep, reference counting, generational GC).</li>
+  </ul>
+
+  <h3>4.5 Parameter Passing Mechanisms</h3>
+  <table>
+    <tr><th>Mechanism</th><th>Description</th><th>Effect on Caller</th></tr>
+    <tr><td>Call by Value</td><td>Copy of argument passed</td><td>No effect (C default)</td></tr>
+    <tr><td>Call by Reference</td><td>Address of argument passed</td><td>Modifications visible (C++ &amp;)</td></tr>
+    <tr><td>Call by Value-Result</td><td>Copy in, copy back on return</td><td>Modifications visible on return</td></tr>
+    <tr><td>Call by Name</td><td>Expression substituted textually</td><td>Re-evaluated each access</td></tr>
+  </table>
+
+  <h2>5. Intermediate Code Representations</h2>
+  <p>Intermediate code is a machine-independent representation that sits between the source language and target machine code. It facilitates optimization and portability.</p>
+
+  <h3>5.1 Three-Address Code (TAC)</h3>
+  <p>Each instruction has at most three operands (addresses). General form: <code>x = y op z</code>.</p>
+
+  <pre>
+Source: a = b * c + d * e
+
+Three-Address Code:
+  t1 = b * c
+  t2 = d * e
+  t3 = t1 + t2
+  a = t3
+  </pre>
+
+  <h3>Types of Three-Address Instructions</h3>
+  <table>
+    <tr><th>Type</th><th>Form</th><th>Example</th></tr>
+    <tr><td>Assignment</td><td>x = y op z</td><td>t1 = a + b</td></tr>
+    <tr><td>Unary</td><td>x = op y</td><td>t1 = -a</td></tr>
+    <tr><td>Copy</td><td>x = y</td><td>a = t1</td></tr>
+    <tr><td>Conditional Jump</td><td>if x relop y goto L</td><td>if t1 &lt; t2 goto L3</td></tr>
+    <tr><td>Unconditional Jump</td><td>goto L</td><td>goto L5</td></tr>
+    <tr><td>Indexed Assignment</td><td>x = y[i] or x[i] = y</td><td>t1 = a[i]</td></tr>
+    <tr><td>Pointer</td><td>x = &amp;y, x = *y, *x = y</td><td>t1 = *p</td></tr>
+    <tr><td>Function Call</td><td>param x, call f, n</td><td>param a; call f, 1</td></tr>
+  </table>
+
+  <h3>5.2 Quadruples</h3>
+  <p>Four fields: (operator, arg1, arg2, result). Each instruction stored in a record.</p>
+  <pre>
+Source: a = b * c + d
+
+Quadruples:
+  (0)  *, b, c, t1
+  (1)  +, t1, d, t2
+  (2)  =, t2, _, a
+  </pre>
+
+  <h3>5.3 Triples</h3>
+  <p>Three fields: (operator, arg1, arg2). The result is referenced by the instruction number (position).</p>
+  <pre>
+Triples:
+  (0)  *, b, c       // result is (0)
+  (1)  +, (0), d     // result is (1)
+  (2)  =, a, (1)     // a = (1)
+  </pre>
+
+  <h3>5.4 Indirect Triples</h3>
+  <p>A list of pointers to triples. This allows reordering instructions for optimization without renumbering references.</p>
+
+  <h3>Comparison</h3>
+  <table>
+    <tr><th>Representation</th><th>Fields</th><th>Ease of Optimization</th><th>Space</th></tr>
+    <tr><td>Quadruples</td><td>4</td><td>Easy (results in named temps)</td><td>More</td></tr>
+    <tr><td>Triples</td><td>3</td><td>Harder (positional references)</td><td>Less</td></tr>
+    <tr><td>Indirect Triples</td><td>3 + pointers</td><td>Easy (reorderable)</td><td>More</td></tr>
+  </table>
+
+  <h2>6. Generating TAC for Control Flow</h2>
+  <pre>
+Source: if (a &lt; b) { x = 1; } else { x = 2; }
+
+Three-Address Code:
+  if a &lt; b goto L1
+  goto L2
+L1: x = 1
+  goto L3
+L2: x = 2
+L3: ...
+  </pre>
+
+  <pre>
+Source: while (a &lt; b) { a = a + 1; }
+
+Three-Address Code:
+L1: if a &lt; b goto L2
+  goto L3
+L2: t1 = a + 1
+  a = t1
+  goto L1
+L3: ...
+  </pre>
+
+  <h2>7. Key GATE Takeaways</h2>
+  <ul>
+    <li>SDDs attach semantic rules to grammar productions. Attributes are synthesized (bottom-up) or inherited (top-down).</li>
+    <li>S-attributed SDDs use only synthesized attributes and work with LR parsers.</li>
+    <li>L-attributed SDDs work with LL parsers and allow inherited attributes from left siblings only.</li>
+    <li>Activation records store function call information on the stack: parameters, locals, return address, links.</li>
+    <li>Three-address code is the most common intermediate representation. Each instruction has at most 3 operands.</li>
+    <li>Quadruples name results explicitly; triples use positional references; indirect triples allow easy reordering.</li>
+    <li>Know how to generate TAC for arithmetic expressions, if-else, and while loops.</li>
+  </ul>
+</article>
+</body>
+</html>

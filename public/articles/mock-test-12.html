@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 12: Data Structures Deep Dive — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 12: Data Structures Deep Dive</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Focus:</strong> Hard questions on complex tree operations, graph algorithms, hashing analysis, heap operations, BST properties, AVL/Red-Black trees, linked list problems</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 12 — Data Structures Deep Dive",
+      "questions": [
+        {
+          "question": "Q1. What is the maximum number of nodes in an AVL tree of height 5?",
+          "options": ["(A) 31", "(B) 63", "(C) 32", "(D) 64"],
+          "answer": 1,
+          "explanation": "The maximum number of nodes in any binary tree of height h is 2^(h+1) - 1. For height 5: 2^6 - 1 = 63. This occurs when the AVL tree is a complete/perfect binary tree, which is a valid AVL tree since all balance factors are 0."
+        },
+        {
+          "question": "Q2. What is the minimum number of nodes in an AVL tree of height 5?",
+          "options": ["(A) 12", "(B) 20", "(C) 15", "(D) 10"],
+          "answer": 1,
+          "explanation": "The minimum number of nodes in an AVL tree follows the recurrence N(h) = N(h-1) + N(h-2) + 1, with N(0)=1, N(1)=2. Computing: N(2)=4, N(3)=7, N(4)=12, N(5)=20. These are related to Fibonacci numbers: N(h) = F(h+3) - 1."
+        },
+        {
+          "question": "Q3. In a hash table of size 10 using linear probing, keys 72, 27, 36, 24, 63, 81, 92 are inserted using h(k) = k mod 10. How many collisions occur?",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) 2"],
+          "answer": 1,
+          "explanation": "h(72)=2, h(27)=7, h(36)=6, h(24)=4, h(63)=3, h(81)=1, h(92)=2→collision→3(occupied by 63)→collision→4(occupied)→collision→5. Then 92 has 3 collisions but actually: 72→slot2, 27→slot7, 36→slot6, 24→slot4, 63→slot3, 81→slot1, 92→slot2(collision)→3(collision)→4(collision)→5(collision). Total collision probes: 4 collisions for 92 = 4 collisions total."
+        },
+        {
+          "question": "Q4. A Red-Black tree with n internal nodes has height at most:",
+          "options": ["(A) log₂(n+1)", "(B) 2·log₂(n+1)", "(C) n-1", "(D) 1.44·log₂(n+2)"],
+          "answer": 1,
+          "explanation": "A Red-Black tree with n internal nodes has height at most 2·log₂(n+1). This is because every path from root to leaf has the same number of black nodes (black-height), and no two consecutive red nodes appear. The worst case is when one path alternates red-black and another is all black."
+        },
+        {
+          "question": "Q5. Given inorder traversal DBEAFCG and preorder traversal ABDECFG of a binary tree, what is the postorder traversal?",
+          "options": ["(A) DEBFGCA", "(B) DEBGFCA", "(C) DBEFGCA", "(D) BDEAGFC"],
+          "answer": 0,
+          "explanation": "From preorder, A is root. In inorder, DBE is left subtree, FCG is right. From preorder of left subtree: B is root of left, D is left of B, E is right of B. For right subtree: C is root, F is left, G is right. Postorder (left-right-root): D,E,B,F,G,C,A = DEBFGCA."
+        },
+        {
+          "question": "Q6. In a B-tree of order 5 (max 4 keys per node), what is the minimum number of keys in a non-root internal node?",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 1,
+          "explanation": "In a B-tree of order m, every non-root node must have at least ⌈m/2⌉ - 1 keys. For order 5: ⌈5/2⌉ - 1 = 3 - 1 = 2 keys minimum. The root can have as few as 1 key."
+        },
+        {
+          "question": "Q7. What is the amortized time complexity of n insert operations on a splay tree?",
+          "options": ["(A) O(n log n)", "(B) O(n²)", "(C) O(n)", "(D) O(n√n)"],
+          "answer": 0,
+          "explanation": "Splay trees have O(log n) amortized time per operation, including insert, search, and delete. Thus, n insert operations take O(n log n) amortized time. While individual operations can take O(n) in the worst case, the amortized analysis using potential function shows O(log n) per operation."
+        },
+        {
+          "question": "Q8. In a max-heap with n elements, what is the time complexity of finding the k-th largest element?",
+          "options": ["(A) O(k log n)", "(B) O(n)", "(C) O(k log k)", "(D) O(n log k)"],
+          "answer": 0,
+          "explanation": "To find the k-th largest in a max-heap, extract-max k times, each taking O(log n). Total: O(k log n). There exists an O(k log k) algorithm using an auxiliary heap, but the straightforward approach is O(k log n). For the standard extract approach, O(k log n) is correct."
+        },
+        {
+          "question": "Q9. A circular doubly linked list has nodes A↔B↔C↔D↔A. After deleting node C, which statement about pointers is correct?",
+          "options": ["(A) B→next = D and D→prev = B", "(B) B→next = A and D→prev = A", "(C) B→next = D and D→prev = A", "(D) B→next = A and A→prev = D"],
+          "answer": 0,
+          "explanation": "When C is deleted: B's next pointer (which pointed to C) now points to D, and D's prev pointer (which pointed to C) now points to B. The circular structure becomes A↔B↔D↔A. So B→next = D and D→prev = B."
+        },
+        {
+          "question": "Q10. How many distinct BSTs can be formed with 5 distinct keys?",
+          "options": ["(A) 14", "(B) 42", "(C) 132", "(D) 48"],
+          "answer": 1,
+          "explanation": "The number of distinct BSTs with n keys is the n-th Catalan number: C(n) = (2n)! / ((n+1)! * n!). For n=5: C(5) = 10!/(6!*5!) = 252/6 = 42. Catalan numbers: C(0)=1, C(1)=1, C(2)=2, C(3)=5, C(4)=14, C(5)=42."
+        },
+        {
+          "question": "Q11. In a graph with V vertices and E edges, Dijkstra's algorithm using a binary heap has time complexity:",
+          "options": ["(A) O(V²)", "(B) O((V+E) log V)", "(C) O(VE)", "(D) O(V log V + E)"],
+          "answer": 1,
+          "explanation": "With a binary heap: each of V extract-min operations takes O(log V), and each of E decrease-key operations takes O(log V). Total: O(V log V + E log V) = O((V+E) log V). With a Fibonacci heap, it improves to O(V log V + E)."
+        },
+        {
+          "question": "Q12. What is the worst-case time complexity of searching in a skip list with n elements?",
+          "options": ["(A) O(log n) with high probability", "(B) O(n) deterministic worst case", "(C) O(√n)", "(D) O(log²n)"],
+          "answer": 1,
+          "explanation": "Skip lists use randomization to achieve O(log n) expected time for search, insert, and delete. However, the deterministic worst case is O(n) — if coin flips are unlucky and all elements end up at only level 1. With high probability, the height is O(log n), giving O(log n) search time."
+        },
+        {
+          "question": "Q13. In an adjacency matrix representation of an undirected graph with n vertices, the space complexity is:",
+          "options": ["(A) O(n)", "(B) O(n²)", "(C) O(n + m) where m is edges", "(D) O(n log n)"],
+          "answer": 1,
+          "explanation": "An adjacency matrix uses an n×n 2D array regardless of the number of edges, so space complexity is always O(n²). An adjacency list uses O(n + m) space. For sparse graphs (m << n²), adjacency list is more space-efficient."
+        },
+        {
+          "question": "Q14. The number of leaf nodes in a full binary tree with 15 total nodes is:",
+          "options": ["(A) 7", "(B) 8", "(C) 6", "(D) 9"],
+          "answer": 1,
+          "explanation": "In a full binary tree (every node has 0 or 2 children), if there are n nodes total, the number of leaf nodes = (n+1)/2. For 15 nodes: (15+1)/2 = 8 leaves. Alternatively, internal nodes = 7, and leaves = internal + 1 = 8 (property of full binary trees)."
+        },
+        {
+          "question": "Q15. Consider a hash table with chaining. If n keys are hashed into m slots, what is the expected length of each chain under uniform hashing?",
+          "options": ["(A) n/m", "(B) n", "(C) m/n", "(D) log(n/m)"],
+          "answer": 0,
+          "explanation": "Under the assumption of simple uniform hashing, each key is equally likely to hash to any of the m slots. The expected number of keys in each chain (load factor α) is n/m. For O(1) expected-time operations, we want α = n/m = O(1)."
+        },
+        {
+          "question": "Q16. In a threaded binary tree, a thread replaces a NULL pointer to point to the:",
+          "options": ["(A) Parent node only", "(B) Inorder predecessor or successor", "(C) Preorder successor only", "(D) Nearest ancestor"],
+          "answer": 1,
+          "explanation": "In a threaded binary tree, NULL left pointers are replaced with threads to the inorder predecessor, and NULL right pointers are replaced with threads to the inorder successor. This allows inorder traversal without recursion or a stack, using O(1) extra space."
+        },
+        {
+          "question": "Q17. What is the time complexity of building a heap from an unsorted array of n elements?",
+          "options": ["(A) O(n log n)", "(B) O(n)", "(C) O(n²)", "(D) O(log n)"],
+          "answer": 1,
+          "explanation": "Bottom-up heap construction (heapify) runs in O(n) time. Starting from the last non-leaf node, each node is sifted down. The total work is: sum over all levels of (nodes at level × height below level). This telescopes to O(n), not O(n log n) as one might naively expect."
+        },
+        {
+          "question": "Q18. In Kruskal's algorithm, the Union-Find data structure with union by rank and path compression performs m operations on n elements in:",
+          "options": ["(A) O(m log n)", "(B) O(m · α(n)) where α is inverse Ackermann", "(C) O(m·n)", "(D) O(m)"],
+          "answer": 1,
+          "explanation": "Union-Find with both union by rank and path compression achieves O(α(n)) amortized time per operation, where α is the inverse Ackermann function. α(n) ≤ 4 for all practical values of n (up to 2^65536), making it effectively O(1) per operation, and O(m·α(n)) total for m operations."
+        },
+        {
+          "question": "Q19. A trie storing n strings of average length L uses space:",
+          "options": ["(A) O(n)", "(B) O(n·L·|Σ|) in the worst case", "(C) O(n·L)", "(D) O(|Σ|^L)"],
+          "answer": 1,
+          "explanation": "In a trie (standard array implementation), each node has |Σ| child pointers (where |Σ| is alphabet size). The total number of nodes can be up to n·L (if no prefixes are shared). So worst-case space is O(n·L·|Σ|). Compressed tries and hash-map children can reduce this."
+        },
+        {
+          "question": "Q20. After inserting keys 10, 20, 30 into an initially empty AVL tree, the resulting tree has root:",
+          "options": ["(A) 10", "(B) 20", "(C) 30", "(D) None — it's unbalanced"],
+          "answer": 1,
+          "explanation": "Insert 10 (root). Insert 20 (right child of 10). Insert 30 (right child of 20). Now 10 has balance factor -2 (left-heavy = right-heavy actually: right subtree height 2, left 0). This is an RR case. Left rotation at 10 makes 20 the new root, with 10 as left child and 30 as right child."
+        },
+        {
+          "question": "Q21. The Floyd-Warshall algorithm for all-pairs shortest paths has time complexity:",
+          "options": ["(A) O(V²)", "(B) O(V² log V)", "(C) O(V³)", "(D) O(VE log V)"],
+          "answer": 2,
+          "explanation": "Floyd-Warshall uses dynamic programming with three nested loops over V vertices each, giving O(V³) time complexity. It works even with negative edge weights (but no negative cycles). Running Dijkstra V times gives O(V(V+E)log V), which can be better for sparse graphs."
+        },
+        {
+          "question": "Q22. In a binomial heap, the maximum number of trees in a heap with n nodes is:",
+          "options": ["(A) n", "(B) log₂n + 1", "(C) ⌊log₂n⌋ + 1", "(D) n/2"],
+          "answer": 2,
+          "explanation": "A binomial heap with n nodes has at most ⌊log₂n⌋ + 1 binomial trees, one for each 1-bit in the binary representation of n. For example, n=13 = 1101₂ has 3 trees: B₃, B₂, and B₀."
+        },
+        {
+          "question": "Q23. What is the worst-case time to delete an arbitrary element from a doubly linked list, given a pointer to that element?",
+          "options": ["(A) O(n)", "(B) O(log n)", "(C) O(1)", "(D) O(n log n)"],
+          "answer": 2,
+          "explanation": "With a doubly linked list and a direct pointer to the node, deletion is O(1): set prev→next = node→next and next→prev = node→prev, then free the node. In a singly linked list, deleting a node given only its pointer is O(n) because we need to find the previous node."
+        },
+        {
+          "question": "Q24. Topological sorting is possible only for:",
+          "options": ["(A) Connected undirected graphs", "(B) Directed Acyclic Graphs (DAGs)", "(C) Any directed graph", "(D) Complete graphs"],
+          "answer": 1,
+          "explanation": "Topological sorting produces a linear ordering of vertices such that for every directed edge (u,v), u comes before v. This is only possible for DAGs. If a directed graph has a cycle, no topological ordering exists because the cycle creates a contradiction in ordering."
+        },
+        {
+          "question": "Q25. In a B+ tree of order 4, each leaf node can hold at most how many key-pointer pairs?",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+          "answer": 1,
+          "explanation": "In a B+ tree of order m (sometimes called order p), each leaf node can hold at most m-1 = 3 key-pointer pairs. Each leaf also has a pointer to the next leaf for sequential access. Internal nodes can have at most m children and m-1 keys."
+        },
+        {
+          "question": "Q26. The number of edges in a complete graph K₁₀ is:",
+          "options": ["(A) 45", "(B) 90", "(C) 100", "(D) 50"],
+          "answer": 0,
+          "explanation": "A complete graph Kₙ has n(n-1)/2 edges. For K₁₀: 10 × 9 / 2 = 45 edges. Each of 10 vertices connects to 9 others, but each edge is counted twice, so divide by 2."
+        },
+        {
+          "question": "Q27. A segment tree built on an array of n elements uses space:",
+          "options": ["(A) O(n)", "(B) O(n log n)", "(C) O(4n) ≈ O(n)", "(D) O(n²)"],
+          "answer": 2,
+          "explanation": "A segment tree for n elements uses at most 4n nodes (specifically 2·2^⌈log₂n⌉ nodes for array-based implementation). This is O(n) space. The tree has height O(log n) and supports range queries and point updates in O(log n) time."
+        },
+        {
+          "question": "Q28. Given a graph with negative weight edges but no negative weight cycles, which algorithm correctly finds single-source shortest paths?",
+          "options": ["(A) Dijkstra's algorithm", "(B) BFS", "(C) Bellman-Ford algorithm", "(D) Prim's algorithm"],
+          "answer": 2,
+          "explanation": "Bellman-Ford handles negative weight edges correctly (as long as no negative cycles exist). It runs in O(VE) time by relaxing all edges V-1 times. Dijkstra's algorithm may produce incorrect results with negative edges. BFS only works for unweighted graphs."
+        },
+        {
+          "question": "Q29. In a BST, the inorder successor of a node with a right subtree is:",
+          "options": ["(A) The rightmost node in the right subtree", "(B) The leftmost node in the right subtree", "(C) The parent of the node", "(D) The root of the tree"],
+          "answer": 1,
+          "explanation": "The inorder successor is the next node in inorder traversal. If a node has a right subtree, its inorder successor is the leftmost (minimum) node in that right subtree. If there is no right subtree, the successor is the nearest ancestor for which the node is in the left subtree."
+        },
+        {
+          "question": "Q30. What is the time complexity of detecting a cycle in a directed graph using DFS?",
+          "options": ["(A) O(V)", "(B) O(V + E)", "(C) O(V²)", "(D) O(V · E)"],
+          "answer": 1,
+          "explanation": "DFS visits each vertex once and each edge once, giving O(V + E) time. A back edge (an edge to a currently active/gray ancestor in the DFS tree) indicates a cycle. We maintain three states: white (unvisited), gray (in progress), black (finished). A cycle exists iff we find an edge to a gray vertex."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Structures Problem Solving - GATE Practice</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.7;max-width:900px;margin:0 auto;padding:20px;background:#f5f5f5;color:#333}
+article{background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+h1{color:#1a237e;border-bottom:3px solid #1a237e;padding-bottom:10px}
+h2{color:#283593;margin-top:40px;border-left:4px solid #3f51b5;padding-left:12px}
+.article-section-tag{background:#e8eaf6;color:#1a237e;padding:6px 16px;border-radius:20px;display:inline-block;font-weight:600}
+.problem-box{background:#e3f2fd;border-left:5px solid #1565c0;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.approach-box{background:#fff3e0;border-left:5px solid #ef6c00;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.solution-box{background:#f1f8e9;border-left:5px solid #33691e;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0}
+.takeaway-box{background:#fce4ec;border-left:5px solid #c62828;padding:15px 20px;margin:15px 0;border-radius:0 8px 8px 0;font-weight:500}
+table{border-collapse:collapse;width:100%;margin:15px 0}
+th,td{border:1px solid #ccc;padding:8px 12px;text-align:center}
+th{background:#e8eaf6;color:#1a237e}
+code{background:#eceff1;padding:2px 6px;border-radius:3px;font-size:0.95em}
+pre{background:#263238;color:#eee;padding:15px;border-radius:6px;overflow-x:auto}
+</style>
+</head>
+<body>
+<article>
+<h1>Data Structures Problem Solving</h1>
+<p class="article-section-tag">🧩 Problem Solving</p>
+<p>15 GATE-level problems on arrays, stacks, queues, linked lists, BSTs, heaps, and AVL trees with complete step-by-step solutions and state diagrams.</p>
+
+<h2>Problem 1: Array Rotation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given an array A = [1,2,3,4,5,6,7], rotate it left by 3 positions to get [4,5,6,7,1,2,3] using the reversal algorithm. Show each step. What is the time complexity?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Reversal algorithm: (1) Reverse first d elements, (2) Reverse remaining n-d elements, (3) Reverse entire array. O(n) time, O(1) space.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Original: [1, 2, 3, 4, 5, 6, 7], d = 3<br><br>
+Step 1: Reverse A[0..2]: [<strong>3, 2, 1</strong>, 4, 5, 6, 7]<br>
+Step 2: Reverse A[3..6]: [3, 2, 1, <strong>7, 6, 5, 4</strong>]<br>
+Step 3: Reverse A[0..6]: [<strong>4, 5, 6, 7, 1, 2, 3</strong>]<br><br>
+<strong>Time: O(n), Space: O(1)</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> The reversal algorithm is the optimal in-place rotation method. An alternative is the juggling algorithm using GCD(n,d) sets. Both are O(n) time and O(1) space.
+</div>
+
+<h2>Problem 2: Stack-Based Expression Evaluation</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Evaluate the postfix expression: <code>6 3 2 * + 5 - 4 /</code>. Show the stack state after each token.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Scan left to right. Push operands. On operator, pop two operands, apply operator, push result.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Token</th><th>Action</th><th>Stack (top &rarr;)</th></tr>
+<tr><td>6</td><td>Push 6</td><td>[6]</td></tr>
+<tr><td>3</td><td>Push 3</td><td>[6, 3]</td></tr>
+<tr><td>2</td><td>Push 2</td><td>[6, 3, 2]</td></tr>
+<tr><td>*</td><td>Pop 2,3; push 3*2=6</td><td>[6, 6]</td></tr>
+<tr><td>+</td><td>Pop 6,6; push 6+6=12</td><td>[12]</td></tr>
+<tr><td>5</td><td>Push 5</td><td>[12, 5]</td></tr>
+<tr><td>-</td><td>Pop 5,12; push 12-5=7</td><td>[7]</td></tr>
+<tr><td>4</td><td>Push 4</td><td>[7, 4]</td></tr>
+<tr><td>/</td><td>Pop 4,7; push 7/4=1</td><td>[1]</td></tr>
+</table>
+<strong>Result: 1</strong> (integer division)
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> For subtraction and division in postfix, the first popped element is the second operand: (second popped) OP (first popped). The equivalent infix is ((6+(3*2))-5)/4 = 7/4.
+</div>
+
+<h2>Problem 3: Infix to Postfix Conversion</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Convert the infix expression <code>A + B * C - (D / E + F) * G</code> to postfix using the shunting-yard algorithm.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use an operator stack. Precedence: */&gt;+-. Push operators respecting precedence. Parentheses force grouping.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Token</th><th>Output Queue</th><th>Operator Stack</th></tr>
+<tr><td>A</td><td>A</td><td></td></tr>
+<tr><td>+</td><td>A</td><td>+</td></tr>
+<tr><td>B</td><td>A B</td><td>+</td></tr>
+<tr><td>*</td><td>A B</td><td>+ *</td></tr>
+<tr><td>C</td><td>A B C</td><td>+ *</td></tr>
+<tr><td>-</td><td>A B C * +</td><td>-</td></tr>
+<tr><td>(</td><td>A B C * +</td><td>- (</td></tr>
+<tr><td>D</td><td>A B C * + D</td><td>- (</td></tr>
+<tr><td>/</td><td>A B C * + D</td><td>- ( /</td></tr>
+<tr><td>E</td><td>A B C * + D E</td><td>- ( /</td></tr>
+<tr><td>+</td><td>A B C * + D E /</td><td>- ( +</td></tr>
+<tr><td>F</td><td>A B C * + D E / F</td><td>- ( +</td></tr>
+<tr><td>)</td><td>A B C * + D E / F +</td><td>-</td></tr>
+<tr><td>*</td><td>A B C * + D E / F +</td><td>- *</td></tr>
+<tr><td>G</td><td>A B C * + D E / F + G</td><td>- *</td></tr>
+<tr><td>END</td><td>A B C * + D E / F + G * -</td><td></td></tr>
+</table>
+<strong>Postfix: A B C * + D E / F + G * -</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Higher precedence operators stay on stack above lower ones. Equal precedence: left-associative operators pop (like + and -), right-associative (like ^) push. Parentheses override everything.
+</div>
+
+<h2>Problem 4: Queue Simulation &mdash; Circular Queue</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A circular queue of size 5 (indices 0-4) has front=0, rear=-1 (empty). Perform: Enqueue(10), Enqueue(20), Enqueue(30), Dequeue, Dequeue, Enqueue(40), Enqueue(50), Enqueue(60), Enqueue(70). Show state after each operation.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> rear = (rear+1) % SIZE for enqueue. front = (front+1) % SIZE for dequeue. Full condition: (rear+1)%SIZE == front.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Operation</th><th>Queue Contents</th><th>Front</th><th>Rear</th><th>Count</th></tr>
+<tr><td>Initial</td><td>[ _, _, _, _, _ ]</td><td>0</td><td>-1</td><td>0</td></tr>
+<tr><td>Enqueue(10)</td><td>[10, _, _, _, _ ]</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>Enqueue(20)</td><td>[10, 20, _, _, _ ]</td><td>0</td><td>1</td><td>2</td></tr>
+<tr><td>Enqueue(30)</td><td>[10, 20, 30, _, _ ]</td><td>0</td><td>2</td><td>3</td></tr>
+<tr><td>Dequeue(10)</td><td>[ _, 20, 30, _, _ ]</td><td>1</td><td>2</td><td>2</td></tr>
+<tr><td>Dequeue(20)</td><td>[ _, _, 30, _, _ ]</td><td>2</td><td>2</td><td>1</td></tr>
+<tr><td>Enqueue(40)</td><td>[ _, _, 30, 40, _ ]</td><td>2</td><td>3</td><td>2</td></tr>
+<tr><td>Enqueue(50)</td><td>[ _, _, 30, 40, 50 ]</td><td>2</td><td>4</td><td>3</td></tr>
+<tr><td>Enqueue(60)</td><td>[60, _, 30, 40, 50 ]</td><td>2</td><td>0</td><td>4</td></tr>
+<tr><td>Enqueue(70)</td><td>Queue FULL</td><td>2</td><td>0</td><td>4</td></tr>
+</table>
+Note: With 5 slots and the standard full condition (rear+1)%5 == front, we can store at most 4 elements (one slot wasted to distinguish full from empty).
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> A circular queue of size n can hold at most n-1 elements (one slot wasted) unless a separate count variable is maintained. Always check: is the implementation using a count or a wasted slot?
+</div>
+
+<h2>Problem 5: Linked List &mdash; Reverse a Singly Linked List</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given the linked list 1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; NULL, reverse it iteratively. Show pointer states at each step.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use three pointers: prev, curr, next. Traverse and reverse links one by one.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Initial: prev=NULL, curr=1, next=NULL<br><br>
+<table>
+<tr><th>Step</th><th>prev</th><th>curr</th><th>next (saved)</th><th>Action</th></tr>
+<tr><td>1</td><td>NULL</td><td>1</td><td>2</td><td>1.next = NULL</td></tr>
+<tr><td>2</td><td>1</td><td>2</td><td>3</td><td>2.next = 1</td></tr>
+<tr><td>3</td><td>2</td><td>3</td><td>4</td><td>3.next = 2</td></tr>
+<tr><td>4</td><td>3</td><td>4</td><td>NULL</td><td>4.next = 3</td></tr>
+</table>
+curr becomes NULL, loop ends. New head = prev = 4.<br>
+<strong>Result: 4 &rarr; 3 &rarr; 2 &rarr; 1 &rarr; NULL</strong><br><br>
+<pre>Node* reverse(Node* head) {
+    Node *prev = NULL, *curr = head, *next;
+    while (curr != NULL) {
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+}</pre>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Iterative reversal is O(n) time, O(1) space. Recursive reversal uses O(n) stack space. In GATE, questions often ask about pointer manipulation after k steps of reversal.
+</div>
+
+<h2>Problem 6: Detect Cycle in Linked List</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Use Floyd's cycle detection algorithm on: 1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 3 (cycle back to node 3). Show slow and fast pointer positions at each step. Also find the cycle start node.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Slow moves 1 step, fast moves 2 steps. If they meet, cycle exists. To find start: reset one pointer to head, move both by 1 until they meet.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Step</th><th>Slow</th><th>Fast</th></tr>
+<tr><td>0</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>2</td><td>3</td></tr>
+<tr><td>2</td><td>3</td><td>5</td></tr>
+<tr><td>3</td><td>4</td><td>4 (5&rarr;3&rarr;4)</td></tr>
+</table>
+Slow == Fast at node 4. <strong>Cycle detected!</strong><br><br>
+<strong>Finding cycle start:</strong><br>
+Reset slow to head (node 1). Keep fast at node 4. Move both by 1.<br>
+<table>
+<tr><th>Step</th><th>Slow</th><th>Fast</th></tr>
+<tr><td>0</td><td>1</td><td>4</td></tr>
+<tr><td>1</td><td>2</td><td>5</td></tr>
+<tr><td>2</td><td>3</td><td>3</td></tr>
+</table>
+They meet at node 3. <strong>Cycle starts at node 3.</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Floyd's algorithm is O(n) time, O(1) space. Cycle length can be found by keeping one pointer fixed and moving the other until they meet again, counting steps. This is a very common GATE question.
+</div>
+
+<h2>Problem 7: Merge Two Sorted Linked Lists</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Merge L1: 1&rarr;3&rarr;5&rarr;7 and L2: 2&rarr;4&rarr;6&rarr;8 into a single sorted list. Show each comparison step.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Use two pointers, compare heads, append smaller to result. O(m+n) time.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Step</th><th>L1 head</th><th>L2 head</th><th>Chosen</th><th>Result so far</th></tr>
+<tr><td>1</td><td>1</td><td>2</td><td>1</td><td>1</td></tr>
+<tr><td>2</td><td>3</td><td>2</td><td>2</td><td>1&rarr;2</td></tr>
+<tr><td>3</td><td>3</td><td>4</td><td>3</td><td>1&rarr;2&rarr;3</td></tr>
+<tr><td>4</td><td>5</td><td>4</td><td>4</td><td>1&rarr;2&rarr;3&rarr;4</td></tr>
+<tr><td>5</td><td>5</td><td>6</td><td>5</td><td>1&rarr;2&rarr;3&rarr;4&rarr;5</td></tr>
+<tr><td>6</td><td>7</td><td>6</td><td>6</td><td>1&rarr;2&rarr;3&rarr;4&rarr;5&rarr;6</td></tr>
+<tr><td>7</td><td>7</td><td>8</td><td>7</td><td>1&rarr;2&rarr;3&rarr;4&rarr;5&rarr;6&rarr;7</td></tr>
+<tr><td>8</td><td>NULL</td><td>8</td><td>8</td><td>1&rarr;2&rarr;3&rarr;4&rarr;5&rarr;6&rarr;7&rarr;8</td></tr>
+</table>
+<strong>Merged: 1&rarr;2&rarr;3&rarr;4&rarr;5&rarr;6&rarr;7&rarr;8</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> This is the merge step of merge sort on linked lists. Merge sort on linked lists is preferred over arrays because it doesn't need O(n) extra space for merging (just pointer changes). Merge sort on linked lists is O(n log n) time, O(log n) stack space.
+</div>
+
+<h2>Problem 8: BST Insertion and Deletion</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Insert the sequence [50, 30, 70, 20, 40, 60, 80] into an empty BST. Then delete 50 (root). Show the tree after each major operation.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Insert by BST property. Delete node with two children: replace with inorder successor (smallest in right subtree) or inorder predecessor.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>After all insertions:</strong>
+<div class="mermaid">
+graph TD
+    50((50)) --> 30((30))
+    50 --> 70((70))
+    30 --> 20((20))
+    30 --> 40((40))
+    70 --> 60((60))
+    70 --> 80((80))
+</div>
+<strong>Delete 50 (has two children):</strong><br>
+Inorder successor of 50 = leftmost node in right subtree = 60.<br>
+Replace 50 with 60, then delete original 60 (leaf).<br>
+<strong>After deletion:</strong>
+<div class="mermaid">
+graph TD
+    60((60)) --> 30((30))
+    60 --> 70((70))
+    30 --> 20((20))
+    30 --> 40((40))
+    70 --> 80((80))
+</div>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> BST deletion cases: (1) Leaf: just remove. (2) One child: replace with child. (3) Two children: replace with inorder successor or predecessor. The tree structure differs depending on which you choose. Inorder successor is more common in practice.
+</div>
+
+<h2>Problem 9: BST &mdash; Count Nodes in Range</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Given a BST with nodes [5, 10, 15, 20, 25, 30, 35], how many nodes fall in the range [12, 28]? What is the optimal time complexity?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Traverse BST, pruning branches that cannot contain values in range. If node < low, go right only. If node > high, go left only. Otherwise, count and recurse both.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+BST (balanced):
+<div class="mermaid">
+graph TD
+    20((20)) --> 10((10))
+    20 --> 30((30))
+    10 --> 5((5))
+    10 --> 15((15))
+    30 --> 25((25))
+    30 --> 35((35))
+</div>
+Range [12, 28]:<br>
+- Visit 20: 12 &le; 20 &le; 28. Count it. Recurse both.<br>
+- Visit 10: 10 < 12. Go right only.<br>
+- Visit 15: 12 &le; 15 &le; 28. Count it. Left child=NULL, right=NULL. Done.<br>
+- Visit 30: 30 > 28. Go left only.<br>
+- Visit 25: 12 &le; 25 &le; 28. Count it. Left=NULL, right=NULL. Done.<br><br>
+Nodes in range: {15, 20, 25}. <strong>Count = 3</strong><br>
+Nodes visited: 5 (out of 7). Pruned subtrees rooted at 5 and 35.<br>
+<strong>Time: O(h + k) where h = height, k = number of nodes in range.</strong>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Range queries on BST are efficient because of pruning. For a balanced BST, this gives O(log n + k) where k is the output size. This is optimal since you must visit all k nodes.
+</div>
+
+<h2>Problem 10: Min-Heap Operations</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Build a min-heap from the array [9, 6, 5, 2, 8, 3, 1]. Then perform two extract-min operations. Show the heap after each step.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Build heap using bottom-up heapify (O(n)). Extract-min: replace root with last element, heapify down.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Build heap (bottom-up):</strong><br>
+Initial array: [9, 6, 5, 2, 8, 3, 1]<br>
+Start from last non-leaf (index 2, value 5).<br><br>
+Heapify index 2 (5): children are 3, 1. Min child = 1. Swap 5 and 1.<br>
+Array: [9, 6, 1, 2, 8, 3, 5]<br><br>
+Heapify index 1 (6): children are 2, 8. Min child = 2. Swap 6 and 2.<br>
+Array: [9, 2, 1, 6, 8, 3, 5]<br><br>
+Heapify index 0 (9): children are 2, 1. Min child = 1. Swap 9 and 1.<br>
+Array: [1, 2, 9, 6, 8, 3, 5]<br>
+Heapify index 2 (9): children are 3, 5. Min child = 3. Swap 9 and 3.<br>
+Array: [1, 2, 3, 6, 8, 9, 5]<br>
+Wait -- recheck: index 2 children are at 5 and 6, values 9 and 5. Min is 5. Swap 9 and 5.<br>
+Array: [1, 2, 5, 6, 8, 3, 9]... Let me redo carefully.<br><br>
+Actually, let me redo the build with correct child indices.<br>
+For index i: left=2i+1, right=2i+2.<br>
+Array (0-indexed): [9, 6, 5, 2, 8, 3, 1]<br><br>
+Last non-leaf = (7/2)-1 = 2.<br>
+<strong>i=2 (val=5):</strong> left=5(val=3), right=6(val=1). Min=1 at index 6. Swap. [9,6,<strong>1</strong>,2,8,3,<strong>5</strong>]<br>
+<strong>i=1 (val=6):</strong> left=3(val=2), right=4(val=8). Min=2 at index 3. Swap. [9,<strong>2</strong>,1,<strong>6</strong>,8,3,5]<br>
+<strong>i=0 (val=9):</strong> left=1(val=2), right=2(val=1). Min=1 at index 2. Swap. [<strong>1</strong>,2,<strong>9</strong>,6,8,3,5]<br>
+Heapify 9 at index 2: left=5(val=3), right=6(val=5). Min=3 at index 5. Swap. [1,2,<strong>3</strong>,6,8,<strong>9</strong>,5]<br><br>
+<strong>Final heap: [1, 2, 3, 6, 8, 9, 5]</strong><br><br>
+<strong>Extract-Min #1:</strong> Remove 1. Replace root with last (5). Array: [5, 2, 3, 6, 8, 9]<br>
+Heapify: 5 vs children 2,3. Min=2. Swap. [2, 5, 3, 6, 8, 9]<br>
+Heapify 5 at index 1: children 6,8. 5 < both. Stop.<br>
+<strong>Heap after 1st extract: [2, 5, 3, 6, 8, 9]</strong><br><br>
+<strong>Extract-Min #2:</strong> Remove 2. Replace root with last (9). Array: [9, 5, 3, 6, 8]<br>
+Heapify: 9 vs children 5,3. Min=3. Swap. [3, 5, 9, 6, 8]<br>
+Heapify 9 at index 2: no children (index 5,6 out of bounds). Stop.<br>
+<strong>Heap after 2nd extract: [3, 5, 9, 6, 8]</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Build heap is O(n) not O(n log n). Extract-min is O(log n). A common GATE question: "After building heap from array X and performing k extract-min, what is the resulting array?" Always show the array representation, not just the tree.
+</div>
+
+<h2>Problem 11: AVL Tree Rotations</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Insert keys 30, 20, 10, 25, 28 into an empty AVL tree. Show each rotation performed with the type (LL, RR, LR, RL).
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Insert as in BST, then check balance factors. If |BF| > 1, perform appropriate rotation.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<strong>Insert 30:</strong> Tree = [30]. Balanced.<br>
+<strong>Insert 20:</strong> 20 < 30, goes left. BF(30)=1. Balanced.<br>
+<strong>Insert 10:</strong> 10 < 20, goes left of 20. BF(30)=2 (left-heavy). BF(20)=1 (left-heavy).<br>
+This is an <strong>LL case</strong>. Right rotation on 30.<br>
+<div class="mermaid">
+graph TD
+    subgraph After LL Rotation
+    B20((20)) --> B10((10))
+    B20 --> B30((30))
+    end
+</div>
+<strong>Insert 25:</strong> 25 > 20, right to 30, left of 30. Now 25 is left child of 30.<br>
+BF(20) = -1, all balanced. Tree: 20(10, 30(25, _)).<br><br>
+<strong>Insert 28:</strong> Goes: 20&rarr;right&rarr;30&rarr;left&rarr;25&rarr;right&rarr;28.<br>
+BF(25)=-1, BF(30)=2 (left-heavy, since left subtree height=2, right=0). BF(25)=-1 (right-heavy).<br>
+This is an <strong>LR case</strong> at node 30. Left rotation on 25, then right rotation on 30.<br><br>
+Step 1: Left rotate at 25: 28 becomes parent of 25.<br>
+Step 2: Right rotate at 30: 28 becomes parent of 30.<br>
+<div class="mermaid">
+graph TD
+    subgraph Final AVL Tree
+    C20((20)) --> C10((10))
+    C20 --> C28((28))
+    C28 --> C25((25))
+    C28 --> C30((30))
+    end
+</div>
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> AVL rotation rules: LL&rarr;Right rotate, RR&rarr;Left rotate, LR&rarr;Left then Right, RL&rarr;Right then Left. The rotation type is determined by the path from the unbalanced node to the newly inserted node.
+</div>
+
+<h2>Problem 12: Hashing with Chaining</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Insert keys [15, 28, 7, 19, 33, 42, 11] into a hash table of size 7 using h(k) = k mod 7 with separate chaining. What is the load factor? What is the average search time for a successful search?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Compute hash for each key, insert at front of chain. Load factor &alpha; = n/m. Average successful search = 1 + &alpha;/2.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Key</th><th>h(k) = k mod 7</th></tr>
+<tr><td>15</td><td>1</td></tr>
+<tr><td>28</td><td>0</td></tr>
+<tr><td>7</td><td>0</td></tr>
+<tr><td>19</td><td>5</td></tr>
+<tr><td>33</td><td>5</td></tr>
+<tr><td>42</td><td>0</td></tr>
+<tr><td>11</td><td>4</td></tr>
+</table>
+<strong>Hash Table:</strong><br>
+Slot 0: 42 &rarr; 7 &rarr; 28<br>
+Slot 1: 15<br>
+Slot 2: (empty)<br>
+Slot 3: (empty)<br>
+Slot 4: 11<br>
+Slot 5: 33 &rarr; 19<br>
+Slot 6: (empty)<br><br>
+Load factor &alpha; = 7/7 = <strong>1.0</strong><br><br>
+Average successful search time (comparisons):<br>
+15: 1, 28: 3, 7: 2, 19: 2, 33: 1, 42: 1, 11: 1<br>
+Average = (1+3+2+2+1+1+1)/7 = 11/7 &asymp; <strong>1.571</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> For chaining: average successful search = 1 + &alpha;/2, average unsuccessful = 1 + &alpha;. For open addressing: formulas differ by probing method. Load factor &gt; 1 is possible with chaining, not with open addressing.
+</div>
+
+<h2>Problem 13: Hashing with Open Addressing</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Insert keys [10, 22, 31, 4, 15, 28] into a hash table of size 11 using h(k) = k mod 11 with linear probing. Show the probe sequence for each key.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> h(k,i) = (k mod 11 + i) mod 11. On collision, probe next slot linearly.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<table>
+<tr><th>Key</th><th>h(k)</th><th>Probe Sequence</th><th>Placed at</th></tr>
+<tr><td>10</td><td>10</td><td>10</td><td>10</td></tr>
+<tr><td>22</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>31</td><td>9</td><td>9</td><td>9</td></tr>
+<tr><td>4</td><td>4</td><td>4</td><td>4</td></tr>
+<tr><td>15</td><td>4</td><td>4(occupied), 5</td><td>5</td></tr>
+<tr><td>28</td><td>6</td><td>6</td><td>6</td></tr>
+</table>
+<strong>Final table:</strong> [22, _, _, _, 4, 15, 28, _, _, 31, 10]
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Linear probing suffers from primary clustering. Quadratic probing: h(k,i) = (h(k) + c1*i + c2*i^2) mod m avoids primary but may have secondary clustering. Double hashing: h(k,i) = (h1(k) + i*h2(k)) mod m is best among open addressing.
+</div>
+
+<h2>Problem 14: Priority Queue using Heap</h2>
+<div class="problem-box">
+<strong>Problem:</strong> A min-priority queue contains: [3, 7, 5, 12, 9, 8, 6]. Perform: decrease-key(index 3, new value 1), then extract-min. Show the heap after each operation.
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Decrease-key: update value, then bubble up. Extract-min: swap root with last, remove last, heapify down.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+Heap array: [3, 7, 5, 12, 9, 8, 6]<br><br>
+<strong>Decrease-key(index 3, value 1):</strong><br>
+Set A[3] = 1. Array: [3, 7, 5, 1, 9, 8, 6]<br>
+Bubble up: parent of 3 is 1 (value 7). 1 < 7, swap. [3, 1, 5, 7, 9, 8, 6]<br>
+Parent of 1 is 0 (value 3). 1 < 3, swap. [1, 3, 5, 7, 9, 8, 6]<br>
+Index 0 is root. Stop.<br>
+<strong>After decrease-key: [1, 3, 5, 7, 9, 8, 6]</strong><br><br>
+<strong>Extract-min:</strong><br>
+Remove 1. Replace with last (6). Array: [6, 3, 5, 7, 9, 8]<br>
+Heapify down: 6 vs children 3, 5. Min = 3. Swap. [3, 6, 5, 7, 9, 8]<br>
+6 at index 1 vs children 7, 9. 6 < both. Stop.<br>
+<strong>After extract-min: [3, 6, 5, 7, 9, 8]</strong>
+</div>
+<div class="takeaway-box">
+<strong>GATE Tip:</strong> Decrease-key is O(log n) and is crucial for Dijkstra's algorithm efficiency. With a binary heap, Dijkstra runs in O((V+E) log V). With a Fibonacci heap, decrease-key is O(1) amortized.
+</div>
+
+<h2>Problem 15: Trie Construction</h2>
+<div class="problem-box">
+<strong>Problem:</strong> Insert the words ["the", "there", "their", "them", "then"] into a trie. How many nodes does the trie have? How many leaf nodes?
+</div>
+<div class="approach-box">
+<strong>Approach:</strong> Build trie character by character. Shared prefixes share nodes.
+</div>
+<div class="solution-box">
+<strong>Step-by-step Solution:</strong><br>
+<div class="mermaid">
+graph TD
+    R((root)) --> T((t))
+    T --> H((h))
+    H --> E1((e))
+    E1 --> M((m*))
+    E1 --> N((n*))
+    E1 --> R2((r))
+    E1 --> I((i))
+    R2 --> E2((e*))
+    I --> R3((r*))
+    E1 -.->|"the*"| E1
+</div>
+<strong>Building step by step:</strong><br>
+1. "the": root &rarr; t &rarr; h &rarr; e* (3 new nodes + root)<br>
+2. "there": root &rarr; t &rarr; h &rarr; e &rarr; r &rarr; e* (2 new nodes: r, e)<br>
+3. "their": root &rarr; t &rarr; h &rarr; e &rarr; i &rarr; r* (2 new nodes: i, r)<br>
+4. "them": root &rarr; t &rarr; h &rarr; e &rarr; m* (1 new node: m)<br>
+5. "then": root &rarr; t &rarr; h &rarr; e &rarr; n* (1 new node: n)<br><br>
+<strong>Total nodes (excluding root): 9</strong> (t, h, e, r, e, i, r, m, n)<br>
+<strong>Including root: 10 nodes</strong><br>
+<strong>Leaf nodes: 4</strong> (the second e in "there", r in "their", m in "them", n in "then")<br>
+<strong>Words ending mid-trie: 1</strong> ("the" ends at 'e' which is not a leaf)
+</div>
+<div class="takeaway-box">
+<strong>Key Takeaway:</strong> Tries provide O(L) lookup where L is the key length, independent of the number of stored keys. Space can be optimized with compressed tries (Patricia/radix trees). In GATE, trie questions usually involve counting nodes or analyzing complexity.
+</div>
+
+</article>
+</body>
+</html>

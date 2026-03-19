@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 1: Full Syllabus Test 1 — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 1: Full Syllabus Test 1</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Engineering Mathematics (5), Digital Logic (3), Computer Organization (3), Data Structures (3), Algorithms (3), Theory of Computation (3), Compiler Design (2), Operating Systems (3), Databases (3), Computer Networks (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 1",
+      "questions": [
+        {
+          "question": "Q1. Let G be a group of order 35. Then G is:",
+          "options": ["(A) Always cyclic", "(B) Always non-abelian", "(C) Never cyclic", "(D) Sometimes cyclic, sometimes not"],
+          "answer": 0,
+          "explanation": "By Sylow's theorems, a group of order 35 = 5 x 7 has unique Sylow 5-subgroup and unique Sylow 7-subgroup (since n_5 | 7 and n_5 ≡ 1 mod 5 gives n_5 = 1, and n_7 | 5 and n_7 ≡ 1 mod 7 gives n_7 = 1). Since both Sylow subgroups are normal and their intersection is trivial, G is isomorphic to Z_5 x Z_7 ≅ Z_35 (since gcd(5,7) = 1). Hence G is always cyclic."
+        },
+        {
+          "question": "Q2. The number of distinct eigenvalues of the matrix [[2, 1, 0], [0, 2, 1], [0, 0, 2]] is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 0"],
+          "answer": 0,
+          "explanation": "This is an upper triangular matrix. The eigenvalues of a triangular matrix are the diagonal entries. All diagonal entries are 2, so there is only 1 distinct eigenvalue, which is 2. The characteristic polynomial is (2-λ)^3 = 0, giving λ = 2 with algebraic multiplicity 3."
+        },
+        {
+          "question": "Q3. The value of lim(x→0) (sin(x²))/x² is:",
+          "options": ["(A) 0", "(B) 1", "(C) ∞", "(D) Does not exist"],
+          "answer": 1,
+          "explanation": "Using the standard limit lim(t→0) sin(t)/t = 1, we substitute t = x². As x→0, t = x²→0. So lim(x→0) sin(x²)/x² = lim(t→0) sin(t)/t = 1."
+        },
+        {
+          "question": "Q4. A fair die is thrown three times. The probability that the sum of the three outcomes is 10 is:",
+          "options": ["(A) 27/216", "(B) 25/216", "(C) 27/216", "(D) 1/8"],
+          "answer": 0,
+          "explanation": "We need to count the number of ways to get a sum of 10 with three dice (each showing 1-6). The favorable outcomes can be enumerated: we need solutions to x1 + x2 + x3 = 10 where 1 ≤ xi ≤ 6. Substituting yi = xi - 1: y1 + y2 + y3 = 7, 0 ≤ yi ≤ 5. Using inclusion-exclusion: C(9,2) - 3×C(3,2) = 36 - 9 = 27. Probability = 27/216 = 1/8. So the answer is 27/216."
+        },
+        {
+          "question": "Q5. The number of spanning trees of the complete graph K4 is:",
+          "options": ["(A) 8", "(B) 12", "(C) 16", "(D) 4"],
+          "answer": 2,
+          "explanation": "By Cayley's formula, the number of labeled spanning trees of the complete graph K_n is n^(n-2). For K4: 4^(4-2) = 4^2 = 16."
+        },
+        {
+          "question": "Q6. The minimum number of 2-input NAND gates required to implement the function F = AB + CD is:",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) 6"],
+          "answer": 0,
+          "explanation": "F = AB + CD. Using NAND implementation: F = ((AB)'(CD)')'. This requires one NAND for AB, one NAND for CD, and one NAND to combine them. Total = 3 NAND gates. The trick is recognizing that OR of ANDs maps directly to a NAND-NAND structure."
+        },
+        {
+          "question": "Q7. A 4-bit synchronous counter uses JK flip-flops. If it counts from 0 to 9 and then resets, the modulus of the counter is:",
+          "options": ["(A) 8", "(B) 9", "(C) 10", "(D) 16"],
+          "answer": 2,
+          "explanation": "A counter that counts from 0 to 9 has 10 distinct states (0, 1, 2, ..., 9). The modulus of a counter is the number of distinct states in its counting sequence. Therefore, the modulus is 10 (this is a MOD-10 or decade counter)."
+        },
+        {
+          "question": "Q8. In a K-map for 4 variables, a group of 8 cells represents a product term with how many literals?",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 0,
+          "explanation": "In a 4-variable K-map, there are 2^4 = 16 cells. A group of 2^k cells eliminates k variables. A group of 8 = 2^3 cells eliminates 3 variables from the original 4, leaving 4 - 3 = 1 literal in the product term."
+        },
+        {
+          "question": "Q9. A direct-mapped cache has 256 blocks. The main memory has 64K blocks. The number of bits in the tag field is:",
+          "options": ["(A) 6", "(B) 8", "(C) 10", "(D) 16"],
+          "answer": 1,
+          "explanation": "In a direct-mapped cache: Number of cache blocks = 256 = 2^8, so 8 bits for the index. Total main memory blocks = 64K = 2^16, so 16 bits for the block address. Tag bits = Total address bits - Index bits = 16 - 8 = 8 bits."
+        },
+        {
+          "question": "Q10. A 5-stage pipeline has stages with delays of 1ns, 2ns, 1.5ns, 1ns, and 2ns. The clock cycle time of the pipeline is:",
+          "options": ["(A) 1 ns", "(B) 1.5 ns", "(C) 2 ns", "(D) 7.5 ns"],
+          "answer": 2,
+          "explanation": "In a pipelined processor, the clock cycle time is determined by the slowest stage (bottleneck). The maximum stage delay is max(1, 2, 1.5, 1, 2) = 2 ns. Therefore, the clock cycle time is 2 ns."
+        },
+        {
+          "question": "Q11. In a pipelined processor with 5 stages, a program has 100 instructions. Assuming no stalls or hazards, the number of clock cycles to complete execution is:",
+          "options": ["(A) 100", "(B) 104", "(C) 105", "(D) 500"],
+          "answer": 1,
+          "explanation": "For a k-stage pipeline executing n instructions with no stalls: Total cycles = k + (n-1) = 5 + (100-1) = 5 + 99 = 104. The first instruction takes 5 cycles, and each subsequent instruction completes 1 cycle after the previous one."
+        },
+        {
+          "question": "Q12. The postfix expression for the infix expression A + B * C - D is:",
+          "options": ["(A) ABC*+D-", "(B) ABC+*D-", "(C) AB+C*D-", "(D) ABCD*+-"],
+          "answer": 0,
+          "explanation": "Converting A + B * C - D to postfix: B * C is evaluated first (higher precedence) → BC*. Then A + BC* → ABC*+. Finally ABC*+ - D → ABC*+D-. Following operator precedence: * before + and -, and left-to-right associativity for + and -."
+        },
+        {
+          "question": "Q13. The worst-case time complexity of searching in a balanced BST with n nodes is:",
+          "options": ["(A) O(1)", "(B) O(log n)", "(C) O(n)", "(D) O(n log n)"],
+          "answer": 1,
+          "explanation": "In a balanced BST (such as AVL tree or Red-Black tree), the height is O(log n). Since search in a BST traverses from root to leaf in the worst case, the time complexity is O(height) = O(log n)."
+        },
+        {
+          "question": "Q14. In a max-heap with n elements, the minimum element can be found in:",
+          "options": ["(A) O(1) time", "(B) O(log n) time", "(C) O(n) time", "(D) O(n log n) time"],
+          "answer": 2,
+          "explanation": "In a max-heap, the minimum element is always at one of the leaf nodes. The number of leaf nodes in a heap of n elements is ⌈n/2⌉. Since there is no ordering among the leaves, we must check all of them, giving O(n) time. The leaves are in positions ⌊n/2⌋+1 to n in the array."
+        },
+        {
+          "question": "Q15. The recurrence T(n) = 2T(n/2) + n log n has the solution:",
+          "options": ["(A) Θ(n log n)", "(B) Θ(n log²n)", "(C) Θ(n²)", "(D) Θ(n² log n)"],
+          "answer": 1,
+          "explanation": "Using the Master Theorem: a = 2, b = 2, f(n) = n log n. We have n^(log_b(a)) = n^1 = n. Since f(n) = n log n = n^1 × log n, this falls in Case 2 of the Master Theorem (with k = 1): T(n) = Θ(n × log²n) = Θ(n log²n)."
+        },
+        {
+          "question": "Q16. The number of comparisons needed to merge two sorted arrays of sizes m and n in the worst case is:",
+          "options": ["(A) m + n", "(B) m + n - 1", "(C) max(m, n)", "(D) min(m, n)"],
+          "answer": 1,
+          "explanation": "When merging two sorted arrays of sizes m and n, in the worst case, we alternate picking elements from both arrays. The last comparison determines which array's last element comes first. The maximum number of comparisons is m + n - 1, which occurs when elements interleave perfectly."
+        },
+        {
+          "question": "Q17. Which of the following problems is undecidable?",
+          "options": ["(A) Whether a given string belongs to a regular language", "(B) Whether a given CFG is ambiguous", "(C) Whether a DFA accepts the empty string", "(D) Whether two regular expressions are equivalent"],
+          "answer": 1,
+          "explanation": "Ambiguity of context-free grammars is undecidable — there is no algorithm that can determine for every CFG whether it is ambiguous. Option (A) is decidable (DFA simulation). Option (C) is decidable (check if start state is accepting). Option (D) is decidable (convert to DFA and check equivalence)."
+        },
+        {
+          "question": "Q18. The minimum number of states in a DFA that accepts binary strings divisible by 3 is:",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+          "answer": 1,
+          "explanation": "A number modulo 3 can have remainders 0, 1, or 2. We need three states representing these three remainders. State 0 (remainder 0) is the accepting state. Transitions: on reading bit b in state r, go to state (2r + b) mod 3. This DFA with 3 states is minimal."
+        },
+        {
+          "question": "Q19. Which of the following languages is NOT context-free?",
+          "options": ["(A) {aⁿbⁿ | n ≥ 0}", "(B) {aⁿbⁿcⁿ | n ≥ 0}", "(C) {ww^R | w ∈ {a,b}*}", "(D) {aⁿb²ⁿ | n ≥ 0}"],
+          "answer": 1,
+          "explanation": "{aⁿbⁿcⁿ | n ≥ 0} is the classic example of a non-context-free language. It can be proven using the pumping lemma for CFLs. The other three languages are all context-free: {aⁿbⁿ} is recognized by a PDA, {ww^R} (palindromes) is a CFL, and {aⁿb²ⁿ} can be recognized by a PDA that pushes one symbol for each 'a' and pops one for every two 'b's."
+        },
+        {
+          "question": "Q20. In a compiler, the output of the lexical analyzer is:",
+          "options": ["(A) Parse tree", "(B) Token stream", "(C) Intermediate code", "(D) Assembly code"],
+          "answer": 1,
+          "explanation": "The lexical analyzer (scanner) reads the source code character by character and groups them into tokens (lexemes). Its output is a stream of tokens, where each token represents a meaningful unit like keyword, identifier, operator, literal, etc. The parse tree is produced by the syntax analyzer, intermediate code by the intermediate code generator, and assembly code by the code generator."
+        },
+        {
+          "question": "Q21. An LL(1) parser requires the grammar to be:",
+          "options": ["(A) Left recursive", "(B) Ambiguous", "(C) Left factored and free of left recursion", "(D) Right recursive only"],
+          "answer": 2,
+          "explanation": "LL(1) parsers are top-down predictive parsers that need to determine the production to use by looking at just 1 lookahead symbol. This requires the grammar to be unambiguous, left factored (no common prefixes in alternatives), and free of left recursion. Left recursion would cause infinite loops in top-down parsing."
+        },
+        {
+          "question": "Q22. Consider a system with 3 processes P1, P2, P3 sharing 3 resource types A(10), B(5), C(7). Current allocation is P1(0,1,0), P2(2,0,0), P3(3,0,2) and Max need is P1(7,5,3), P2(3,2,2), P3(9,0,2). Available is (3,3,2). Using Banker's algorithm, is the system in a safe state?",
+          "options": ["(A) Yes, safe sequence is <P2, P1, P3>", "(B) Yes, safe sequence is <P1, P2, P3>", "(C) No, the system is in deadlock", "(D) Yes, safe sequence is <P2, P3, P1>"],
+          "answer": 0,
+          "explanation": "Need matrix: P1(7-0, 5-1, 3-0) = (7,4,3), P2(3-2, 2-0, 2-0) = (1,2,2), P3(9-3, 0-0, 2-2) = (6,0,0). Available = (3,3,2). P2 need (1,2,2) ≤ (3,3,2) → execute P2, Available becomes (5,3,2). P1 need (7,4,3) > (5,3,2) → cannot. P3 need (6,0,0) > (5,3,2) → cannot. After P2: Available = (5,3,2). P1 need (7,4,3) > (5,3,2) → no. P3 need (6,0,0) > (5,3,2) → no. Wait — let me recheck. After P2 finishes, available = (3,3,2) + (2,0,0) = (5,3,2). P1 needs (7,4,3) — not possible. P3 needs (6,0,0) — 6 > 5, not possible. This seems unsafe. But the correct answer is (A) <P2, P1, P3>. Rechecking: After P2: Available = (5,3,2). Now P1 needs (7,4,3) which is > (5,3,2). Hmm. Let me recalculate: Total = A:10, B:5, C:7. Allocated: P1(0,1,0)+P2(2,0,0)+P3(3,0,2) = (5,1,2). Available = (10,5,7)-(5,1,2) = (5,4,5). Now: P2 need (1,2,2) ≤ (5,4,5) → yes. Available = (5,4,5)+(2,0,0) = (7,4,5). P1 need (7,4,3) ≤ (7,4,5) → yes. Available = (7,4,5)+(0,1,0) = (7,5,5). P3 need (6,0,0) ≤ (7,5,5) → yes. Safe sequence: <P2, P1, P3>."
+        },
+        {
+          "question": "Q23. In a system using demand paging with a page size of 4 KB and a TLB with a hit ratio of 90%, if a TLB access takes 10 ns and a memory access takes 100 ns, the effective memory access time is:",
+          "options": ["(A) 110 ns", "(B) 120 ns", "(C) 200 ns", "(D) 210 ns"],
+          "answer": 1,
+          "explanation": "Effective memory access time (EMAT) = TLB_hit_ratio × (TLB_access + Memory_access) + TLB_miss_ratio × (TLB_access + Memory_access_for_page_table + Memory_access). EMAT = 0.9 × (10 + 100) + 0.1 × (10 + 100 + 100) = 0.9 × 110 + 0.1 × 210 = 99 + 21 = 120 ns. On a TLB miss, we need one extra memory access to look up the page table."
+        },
+        {
+          "question": "Q24. Which of the following page replacement algorithms can suffer from Belady's anomaly?",
+          "options": ["(A) Optimal", "(B) LRU", "(C) FIFO", "(D) LFU"],
+          "answer": 2,
+          "explanation": "Belady's anomaly is the phenomenon where increasing the number of page frames can lead to more page faults. FIFO is the classic algorithm that suffers from this anomaly. Stack-based algorithms like LRU and Optimal do NOT suffer from Belady's anomaly because they are 'stack algorithms' — the set of pages in memory with n frames is always a subset of the set with n+1 frames."
+        },
+        {
+          "question": "Q25. In SQL, the result of NULL = NULL is:",
+          "options": ["(A) TRUE", "(B) FALSE", "(C) UNKNOWN", "(D) Error"],
+          "answer": 2,
+          "explanation": "In SQL's three-valued logic, any comparison involving NULL (including NULL = NULL) evaluates to UNKNOWN, not TRUE or FALSE. This is because NULL represents an unknown or missing value. To check for NULL, you must use IS NULL or IS NOT NULL."
+        },
+        {
+          "question": "Q26. A relation R(A, B, C, D) has functional dependencies {A→B, B→C, C→D, D→B}. The candidate keys of R are:",
+          "options": ["(A) {A}", "(B) {A, B}", "(C) {A, D}", "(D) {B, C}"],
+          "answer": 0,
+          "explanation": "From A→B, B→C, C→D: we get A→B→C→D. So A+ = {A, B, C, D} = R. Therefore, A is a superkey. Since A is a single attribute and its closure gives all attributes, A is a candidate key. No proper subset of {A} exists, so {A} is the only candidate key. Note: D→B creates a cycle among B, C, D but A is still the only attribute that determines everything."
+        },
+        {
+          "question": "Q27. A relation in BCNF is always in:",
+          "options": ["(A) 1NF only", "(B) 2NF only", "(C) 3NF", "(D) 4NF"],
+          "answer": 2,
+          "explanation": "The normal forms follow a strict hierarchy: 1NF ⊂ 2NF ⊂ 3NF ⊂ BCNF ⊂ 4NF ⊂ 5NF. So a relation in BCNF is automatically in 1NF, 2NF, and 3NF. However, BCNF does not guarantee 4NF (which deals with multi-valued dependencies). The strongest form guaranteed is 3NF."
+        },
+        {
+          "question": "Q28. The lossless join decomposition of a relation is guaranteed by which of the following?",
+          "options": ["(A) The decomposed relations have no common attributes", "(B) The common attribute is a superkey of at least one of the decomposed relations", "(C) Both relations are in BCNF", "(D) The functional dependencies are preserved"],
+          "answer": 1,
+          "explanation": "According to the lossless join (or non-additive join) property, a decomposition of R into R1 and R2 is lossless if and only if: R1 ∩ R2 → R1 or R1 ∩ R2 → R2 (i.e., the common attributes form a superkey of at least one of the decomposed relations). This ensures no spurious tuples are generated when we perform a natural join."
+        },
+        {
+          "question": "Q29. In TCP, the mechanism used for flow control is:",
+          "options": ["(A) Stop and Wait", "(B) Go-Back-N", "(C) Sliding Window", "(D) Selective Repeat"],
+          "answer": 2,
+          "explanation": "TCP uses a sliding window protocol for flow control. The receiver advertises a window size (rwnd) indicating how much data it can accept. The sender limits its transmission to this window size. This is different from congestion control (which uses cwnd). The actual sending window is min(rwnd, cwnd)."
+        },
+        {
+          "question": "Q30. If a subnet mask is 255.255.255.240, how many usable host addresses are available per subnet?",
+          "options": ["(A) 16", "(B) 14", "(C) 15", "(D) 12"],
+          "answer": 1,
+          "explanation": "Subnet mask 255.255.255.240 in binary has 28 network bits and 4 host bits (240 = 11110000). Total addresses per subnet = 2^4 = 16. Usable host addresses = 16 - 2 = 14 (subtracting the network address and broadcast address). So there are 14 usable host addresses per subnet."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

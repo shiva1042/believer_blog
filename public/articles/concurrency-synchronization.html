@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concurrency and Synchronization | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Concurrency and Synchronization</h1>
+  <p class="article-section-tag">&#9881;&#65039; Section 8: Operating System</p>
+
+  <!-- ===================== CRITICAL SECTION ===================== -->
+  <h2>1. Critical Section Problem</h2>
+  <p>When multiple processes or threads access shared data concurrently, and the outcome depends on the order of execution, a <strong>race condition</strong> occurs. The <strong>critical section</strong> is the portion of code where a process accesses shared resources. A correct solution must satisfy three requirements:</p>
+
+  <table>
+    <tr><th>Requirement</th><th>Description</th></tr>
+    <tr><td><strong>Mutual Exclusion</strong></td><td>If process P<sub>i</sub> is executing in its critical section, no other process can execute in its critical section.</td></tr>
+    <tr><td><strong>Progress</strong></td><td>If no process is in its critical section and some processes wish to enter, only processes not in their remainder section can participate in the decision, and the decision cannot be postponed indefinitely.</td></tr>
+    <tr><td><strong>Bounded Waiting</strong></td><td>There exists a bound on the number of times other processes can enter their critical sections after a process has made a request and before that request is granted.</td></tr>
+  </table>
+
+  <h3>1.1 Race Condition Example</h3>
+  <div class="example">
+    <strong>Example:</strong> Two threads incrementing a shared counter <code>count = 5</code>.
+    <pre><code>Thread A: register_A = count     // register_A = 5
+Thread A: register_A = register_A + 1  // register_A = 6
+Thread B: register_B = count     // register_B = 5
+Thread B: register_B = register_B + 1  // register_B = 6
+Thread A: count = register_A     // count = 6
+Thread B: count = register_B     // count = 6
+// Expected: 7, Actual: 6  -- Race condition!</code></pre>
+  </div>
+
+  <!-- ===================== PETERSON'S SOLUTION ===================== -->
+  <h2>2. Peterson's Solution</h2>
+  <p>Peterson's solution is a classic software-based approach for two processes. It uses two shared variables: <code>flag[2]</code> (indicates willingness to enter) and <code>turn</code> (indicates whose turn it is).</p>
+
+  <pre><code>// Process i (j = 1 - i)
+flag[i] = true;
+turn = j;
+while (flag[j] && turn == j)
+    ; // busy wait
+// --- Critical Section ---
+flag[i] = false;
+// --- Remainder Section ---</code></pre>
+
+  <table>
+    <tr><th>Property</th><th>Satisfied?</th><th>Reasoning</th></tr>
+    <tr><td>Mutual Exclusion</td><td>Yes</td><td>Both cannot have <code>turn</code> equal to their own value simultaneously.</td></tr>
+    <tr><td>Progress</td><td>Yes</td><td>If P<sub>j</sub> does not want to enter (<code>flag[j]=false</code>), P<sub>i</sub> enters immediately.</td></tr>
+    <tr><td>Bounded Waiting</td><td>Yes</td><td>After P<sub>i</sub> sets <code>turn=j</code>, P<sub>j</sub> enters at most once before P<sub>i</sub>.</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Note:</strong> Peterson's solution assumes sequential consistency. On modern processors with out-of-order execution, memory barriers are needed. It works for only two processes. For <em>n</em> processes, the Bakery Algorithm by Lamport is used.
+  </div>
+
+  <!-- ===================== SYNCHRONIZATION TOOLS ===================== -->
+  <h2>3. Synchronization Tools</h2>
+
+  <h3>3.1 Mutex Locks</h3>
+  <p>A <strong>mutex</strong> (mutual exclusion) lock is the simplest synchronization tool. A process must acquire the lock before entering the critical section and release it when exiting.</p>
+  <pre><code>acquire(lock);
+// --- Critical Section ---
+release(lock);</code></pre>
+  <p>Simple implementations use busy waiting (spinlock). On multiprocessor systems, spinlocks can be efficient for short critical sections since they avoid the overhead of context switching.</p>
+
+  <h3>3.2 Semaphores</h3>
+  <p>A <strong>semaphore</strong> S is an integer variable accessed through two atomic operations:</p>
+  <pre><code>wait(S):          // also called P() or down()
+    while (S &lt;= 0)
+        ; // busy wait
+    S--;
+
+signal(S):        // also called V() or up()
+    S++;</code></pre>
+
+  <table>
+    <tr><th>Type</th><th>Range</th><th>Purpose</th></tr>
+    <tr><td><strong>Binary Semaphore</strong></td><td>0 or 1</td><td>Functions like a mutex lock. Controls access to a single resource.</td></tr>
+    <tr><td><strong>Counting Semaphore</strong></td><td>0 to N</td><td>Controls access to a resource with multiple instances. Initialized to the number of available resources.</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Busy waiting vs. Blocking:</strong> To avoid busy waiting, semaphores can be implemented with a waiting queue. When <code>wait()</code> finds S &le; 0, the process is placed on the queue and blocked. <code>signal()</code> removes a process from the queue and wakes it.
+  </div>
+
+  <h3>3.3 Monitors</h3>
+  <p>A <strong>monitor</strong> is a high-level synchronization construct that encapsulates shared data, operations, and synchronization into a single unit. Only one process can be active within a monitor at any time.</p>
+  <p>Monitors use <strong>condition variables</strong> with two operations:</p>
+  <ul>
+    <li><code>x.wait()</code> &mdash; the process is suspended until another process calls <code>x.signal()</code></li>
+    <li><code>x.signal()</code> &mdash; resumes exactly one suspended process; if none is suspended, the signal has no effect (unlike semaphore signal which increments)</li>
+  </ul>
+  <pre><code>monitor BoundedBuffer {
+    condition full, empty;
+    int count = 0;
+
+    void produce(item) {
+        if (count == N) full.wait();
+        // add item to buffer
+        count++;
+        empty.signal();
+    }
+
+    void consume() {
+        if (count == 0) empty.wait();
+        // remove item from buffer
+        count--;
+        full.signal();
+    }
+}</code></pre>
+
+  <!-- ===================== CLASSICAL PROBLEMS ===================== -->
+  <h2>4. Classical Synchronization Problems</h2>
+
+  <h3>4.1 Producer-Consumer Problem</h3>
+  <p>A producer creates data items and places them in a bounded buffer. A consumer removes items from the buffer. The challenge is to ensure the producer waits when the buffer is full and the consumer waits when it is empty.</p>
+
+  <div class="mermaid">
+    flowchart LR
+      P["Producer"] -->|"produce item"| B["wait(empty)\nwait(mutex)"]
+      B -->|"add to buffer"| BUF[("Bounded Buffer\n(size N)")]
+      BUF -->|"remove from buffer"| C["wait(full)\nwait(mutex)"]
+      C -->|"consume item"| CO["Consumer"]
+      B -->|"signal(mutex)\nsignal(full)"| BUF
+      C -->|"signal(mutex)\nsignal(empty)"| BUF
+  </div>
+
+  <pre><code>// Shared: semaphore mutex = 1, empty = N, full = 0;
+
+// Producer                    // Consumer
+while (true) {                 while (true) {
+    produce(item);                 wait(full);
+    wait(empty);                   wait(mutex);
+    wait(mutex);                   item = buffer[out];
+    buffer[in] = item;             out = (out+1) % N;
+    in = (in+1) % N;              signal(mutex);
+    signal(mutex);                 signal(empty);
+    signal(full);                  consume(item);
+}                              }</code></pre>
+
+  <h3>4.2 Readers-Writers Problem</h3>
+  <p>Multiple readers can read simultaneously, but a writer needs exclusive access. The <strong>first readers-writers problem</strong> gives priority to readers (writers may starve); the <strong>second</strong> gives priority to writers (readers may starve).</p>
+
+  <pre><code>// First Readers-Writers Solution
+// Shared: semaphore rw_mutex = 1, mutex = 1; int read_count = 0;
+
+// Writer                      // Reader
+wait(rw_mutex);                wait(mutex);
+// --- write ---               read_count++;
+signal(rw_mutex);              if (read_count == 1) wait(rw_mutex);
+                               signal(mutex);
+                               // --- read ---
+                               wait(mutex);
+                               read_count--;
+                               if (read_count == 0) signal(rw_mutex);
+                               signal(mutex);</code></pre>
+
+  <h3>4.3 Dining Philosophers Problem</h3>
+  <p>Five philosophers sit around a table with five chopsticks (one between each pair). A philosopher needs both adjacent chopsticks to eat. The challenge is to avoid deadlock and starvation.</p>
+
+  <table>
+    <tr><th>Solution</th><th>Approach</th><th>Limitation</th></tr>
+    <tr><td>Allow at most 4 to sit</td><td>Limits concurrent diners to N&minus;1</td><td>Reduces concurrency</td></tr>
+    <tr><td>Pick up both or none</td><td>Atomic acquisition of both chopsticks</td><td>Requires additional mechanism</td></tr>
+    <tr><td>Asymmetric</td><td>Odd philosophers pick left first, even pick right first</td><td>Simple and deadlock-free</td></tr>
+    <tr><td>Monitor-based</td><td>Use condition variables per philosopher</td><td>Most elegant, no deadlock or starvation</td></tr>
+  </table>
+
+  <!-- ===================== COMPARISON ===================== -->
+  <h2>5. Comparison of Synchronization Mechanisms</h2>
+  <table>
+    <tr><th>Mechanism</th><th>Level</th><th>Busy Wait?</th><th>Deadlock Risk</th><th>Ease of Use</th></tr>
+    <tr><td>Disable Interrupts</td><td>Hardware</td><td>No</td><td>Low</td><td>Simple but dangerous</td></tr>
+    <tr><td>Test-and-Set</td><td>Hardware</td><td>Yes (spinlock)</td><td>Medium</td><td>Low level</td></tr>
+    <tr><td>Mutex Lock</td><td>OS</td><td>Can be either</td><td>Medium</td><td>Moderate</td></tr>
+    <tr><td>Semaphore</td><td>OS</td><td>Optional</td><td>Medium</td><td>Moderate</td></tr>
+    <tr><td>Monitor</td><td>Language</td><td>No</td><td>Low</td><td>Easiest</td></tr>
+  </table>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>6. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>A critical section solution must satisfy mutual exclusion, progress, and bounded waiting.</li>
+      <li>Peterson's solution works for two processes; requires sequential consistency.</li>
+      <li>Binary semaphore has value 0 or 1; counting semaphore can go up to N.</li>
+      <li>In the producer-consumer problem, the order of <code>wait()</code> calls matters: always wait on the counting semaphore before the mutex, or deadlock can occur.</li>
+      <li>In the readers-writers problem, the first reader locks the resource, and the last reader unlocks it.</li>
+      <li>Monitors automatically enforce mutual exclusion; <code>signal()</code> on a condition variable has no effect if no process is waiting (unlike semaphore).</li>
+      <li>The dining philosophers problem is a classic test case for deadlock prevention strategies.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

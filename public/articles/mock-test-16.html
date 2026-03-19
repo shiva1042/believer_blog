@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 16: Quick Fire Test (Easy-Medium) — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 16: Quick Fire Test (Easy-Medium)</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Focus:</strong> Quick questions solvable in under 1 minute each — tests fundamentals and speed across all subjects</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 16 — Quick Fire Test",
+      "questions": [
+        {
+          "question": "Q1. What is 2^10?",
+          "options": ["(A) 512", "(B) 1024", "(C) 2048", "(D) 256"],
+          "answer": 1,
+          "explanation": "2^10 = 1024. This is a fundamental value: 1 KB = 1024 bytes."
+        },
+        {
+          "question": "Q2. The worst-case time complexity of binary search is:",
+          "options": ["(A) O(n)", "(B) O(log n)", "(C) O(n log n)", "(D) O(1)"],
+          "answer": 1,
+          "explanation": "Binary search halves the search space each time, giving O(log₂ n) comparisons in the worst case."
+        },
+        {
+          "question": "Q3. The Boolean expression A + A'B simplifies to:",
+          "options": ["(A) A", "(B) A + B", "(C) B", "(D) A'B"],
+          "answer": 1,
+          "explanation": "A + A'B = A + B (by absorption/consensus). Proof: A + A'B = (A+A')(A+B) = 1·(A+B) = A+B."
+        },
+        {
+          "question": "Q4. In SQL, which command removes all rows from a table but keeps the table structure?",
+          "options": ["(A) DROP TABLE", "(B) DELETE FROM table", "(C) TRUNCATE TABLE", "(D) Both B and C"],
+          "answer": 3,
+          "explanation": "Both DELETE FROM table (without WHERE) and TRUNCATE TABLE remove all rows but keep the structure. TRUNCATE is faster (no logging per row) and resets auto-increment. DROP removes the entire table including structure."
+        },
+        {
+          "question": "Q5. The number of bits in an IPv4 address is:",
+          "options": ["(A) 16", "(B) 32", "(C) 64", "(D) 128"],
+          "answer": 1,
+          "explanation": "IPv4 addresses are 32 bits (4 bytes), written as four octets (e.g., 192.168.1.1). IPv6 addresses are 128 bits."
+        },
+        {
+          "question": "Q6. In C, sizeof(char) is always:",
+          "options": ["(A) 1 byte", "(B) 2 bytes", "(C) 4 bytes", "(D) Platform dependent"],
+          "answer": 0,
+          "explanation": "By the C standard, sizeof(char) is always 1 byte. A byte is at least 8 bits (defined by CHAR_BIT in limits.h)."
+        },
+        {
+          "question": "Q7. The time complexity of inserting at the beginning of a singly linked list is:",
+          "options": ["(A) O(n)", "(B) O(log n)", "(C) O(1)", "(D) O(n²)"],
+          "answer": 2,
+          "explanation": "Inserting at the head of a singly linked list: create new node, set its next to current head, update head pointer. All O(1) operations."
+        },
+        {
+          "question": "Q8. Which normal form deals with multivalued dependencies?",
+          "options": ["(A) 2NF", "(B) 3NF", "(C) BCNF", "(D) 4NF"],
+          "answer": 3,
+          "explanation": "4NF (Fourth Normal Form) handles multivalued dependencies. A relation is in 4NF if it is in BCNF and has no non-trivial multivalued dependencies except those implied by candidate keys."
+        },
+        {
+          "question": "Q9. The decimal equivalent of binary 11001010 is:",
+          "options": ["(A) 200", "(B) 202", "(C) 204", "(D) 198"],
+          "answer": 1,
+          "explanation": "11001010₂ = 128+64+0+0+8+0+2+0 = 202."
+        },
+        {
+          "question": "Q10. A full adder has how many inputs and outputs?",
+          "options": ["(A) 2 inputs, 1 output", "(B) 3 inputs, 2 outputs", "(C) 2 inputs, 2 outputs", "(D) 3 inputs, 1 output"],
+          "answer": 1,
+          "explanation": "A full adder has 3 inputs (A, B, Carry-in) and 2 outputs (Sum, Carry-out). A half adder has 2 inputs and 2 outputs."
+        },
+        {
+          "question": "Q11. Which data structure is used for BFS traversal?",
+          "options": ["(A) Stack", "(B) Queue", "(C) Priority Queue", "(D) Deque"],
+          "answer": 1,
+          "explanation": "BFS uses a queue (FIFO) to process vertices level by level. DFS uses a stack (or recursion)."
+        },
+        {
+          "question": "Q12. The complement of 0 in Boolean algebra is:",
+          "options": ["(A) 0", "(B) 1", "(C) Undefined", "(D) -1"],
+          "answer": 1,
+          "explanation": "In Boolean algebra, 0' = 1 and 1' = 0. The complement inverts the value."
+        },
+        {
+          "question": "Q13. Which layer of the OSI model is responsible for routing?",
+          "options": ["(A) Data Link Layer", "(B) Network Layer", "(C) Transport Layer", "(D) Session Layer"],
+          "answer": 1,
+          "explanation": "The Network Layer (Layer 3) handles routing — determining the path packets take from source to destination. Routers operate at this layer. IP is a Layer 3 protocol."
+        },
+        {
+          "question": "Q14. The postfix notation for the infix expression a + b * c is:",
+          "options": ["(A) abc*+", "(B) ab+c*", "(C) +a*bc", "(D) abc+*"],
+          "answer": 0,
+          "explanation": "In a + b * c, multiplication has higher precedence, so it becomes a + (b*c). Postfix: first bc*, then a(bc*)+, giving abc*+."
+        },
+        {
+          "question": "Q15. In C, what does malloc(0) return?",
+          "options": ["(A) Always NULL", "(B) Implementation-defined (may return NULL or a unique pointer)", "(C) A pointer to 1 byte", "(D) Compilation error"],
+          "answer": 1,
+          "explanation": "Per the C standard, malloc(0) is implementation-defined. It may return NULL or a unique pointer that can be passed to free(). Either behavior is conforming."
+        },
+        {
+          "question": "Q16. The time complexity of Prim's algorithm using an adjacency matrix is:",
+          "options": ["(A) O(V²)", "(B) O(E log V)", "(C) O(V³)", "(D) O(V + E)"],
+          "answer": 0,
+          "explanation": "Prim's algorithm with adjacency matrix: for each of V vertices, scan all V vertices to find minimum key. Total: O(V²). With a binary heap and adjacency list, it is O(E log V)."
+        },
+        {
+          "question": "Q17. A process in the 'zombie' state means:",
+          "options": ["(A) It is waiting for I/O", "(B) It has terminated but its parent hasn't read its exit status", "(C) It is blocked indefinitely", "(D) It has been swapped out"],
+          "answer": 1,
+          "explanation": "A zombie process has completed execution but remains in the process table because its parent has not yet called wait() to read its exit status. Once the parent reads it, the zombie is removed."
+        },
+        {
+          "question": "Q18. The dual of the Boolean expression A + 0 = A is:",
+          "options": ["(A) A · 1 = A", "(B) A + 1 = 1", "(C) A · 0 = 0", "(D) A' + 0 = A'"],
+          "answer": 0,
+          "explanation": "To find the dual, interchange AND↔OR and 0↔1. Dual of A + 0 = A is A · 1 = A. Both are identity laws."
+        },
+        {
+          "question": "Q19. HTTP uses which transport layer protocol?",
+          "options": ["(A) UDP", "(B) TCP", "(C) Both TCP and UDP", "(D) Neither"],
+          "answer": 1,
+          "explanation": "HTTP (and HTTPS) use TCP for reliable data transfer. HTTP/3 (QUIC) uses UDP, but traditional HTTP/1.1 and HTTP/2 use TCP."
+        },
+        {
+          "question": "Q20. The recurrence T(n) = T(n/2) + 1 solves to:",
+          "options": ["(A) O(n)", "(B) O(log n)", "(C) O(n log n)", "(D) O(1)"],
+          "answer": 1,
+          "explanation": "Each level does O(1) work and halves the problem. There are log₂n levels. Total: O(log n). This is the recurrence for binary search."
+        },
+        {
+          "question": "Q21. In a relational database, the Cartesian product of relations R(a rows) and S(b rows) has how many rows?",
+          "options": ["(A) a + b", "(B) a × b", "(C) max(a, b)", "(D) a - b"],
+          "answer": 1,
+          "explanation": "The Cartesian product R × S pairs every tuple of R with every tuple of S, producing a × b tuples."
+        },
+        {
+          "question": "Q22. The minimum number of queues needed to implement a stack is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 0,
+          "explanation": "A stack can be implemented using a single queue. For push: enqueue the element, then dequeue and re-enqueue all other elements (n-1 times). Pop: simply dequeue. Push is O(n), pop is O(1)."
+        },
+        {
+          "question": "Q23. Which of the following is a valid MAC address?",
+          "options": ["(A) 192.168.1.1", "(B) AA:BB:CC:DD:EE:FF", "(C) 2001:0db8::1", "(D) 255.255.255.0"],
+          "answer": 1,
+          "explanation": "MAC addresses are 48 bits (6 bytes), written as 6 pairs of hex digits separated by colons or hyphens. AA:BB:CC:DD:EE:FF is a valid format. The others are IPv4 address, IPv6 address, and subnet mask."
+        },
+        {
+          "question": "Q24. The number of leaf nodes in a complete binary tree with 10 internal nodes is:",
+          "options": ["(A) 10", "(B) 11", "(C) 9", "(D) 12"],
+          "answer": 1,
+          "explanation": "For a complete binary tree, if it's also a full binary tree, leaves = internal nodes + 1. With 10 internal nodes in a full binary tree: 11 leaves. For any binary tree, L = n₂ + 1 where n₂ is the number of nodes with 2 children."
+        },
+        {
+          "question": "Q25. Which scheduling algorithm gives the minimum average waiting time?",
+          "options": ["(A) FCFS", "(B) SJF (Shortest Job First)", "(C) Round Robin", "(D) Priority Scheduling"],
+          "answer": 1,
+          "explanation": "SJF (non-preemptive) gives the minimum average waiting time among non-preemptive algorithms. This can be proven using the exchange argument. SRTF (preemptive SJF) gives the minimum average waiting time overall."
+        },
+        {
+          "question": "Q26. The hexadecimal representation of decimal 255 is:",
+          "options": ["(A) FE", "(B) FF", "(C) F0", "(D) EF"],
+          "answer": 1,
+          "explanation": "255 = 15 × 16 + 15 = F × 16 + F = FF in hexadecimal."
+        },
+        {
+          "question": "Q27. In SQL, which join returns all rows from the left table and matching rows from the right?",
+          "options": ["(A) INNER JOIN", "(B) LEFT OUTER JOIN", "(C) RIGHT OUTER JOIN", "(D) CROSS JOIN"],
+          "answer": 1,
+          "explanation": "LEFT OUTER JOIN returns all rows from the left table and matching rows from the right table. If there is no match, NULL values are used for right table columns."
+        },
+        {
+          "question": "Q28. The space complexity of merge sort is:",
+          "options": ["(A) O(1)", "(B) O(log n)", "(C) O(n)", "(D) O(n²)"],
+          "answer": 2,
+          "explanation": "Merge sort requires O(n) auxiliary space for the merge step (to hold the merged subarrays). The recursion stack adds O(log n) space, so total is O(n)."
+        },
+        {
+          "question": "Q29. A context-free grammar that generates exactly {ε} (only the empty string) can have how many productions minimally?",
+          "options": ["(A) 0", "(B) 1", "(C) 2", "(D) 3"],
+          "answer": 1,
+          "explanation": "One production: S → ε. This generates the language {ε} containing only the empty string."
+        },
+        {
+          "question": "Q30. The 2's complement representation of -5 in 8 bits is:",
+          "options": ["(A) 11111011", "(B) 10000101", "(C) 11111010", "(D) 10000100"],
+          "answer": 0,
+          "explanation": "5 in binary: 00000101. 1's complement: 11111010. 2's complement: 11111010 + 1 = 11111011."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

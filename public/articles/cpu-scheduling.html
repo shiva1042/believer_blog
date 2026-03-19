@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPU and I/O Scheduling | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>CPU and I/O Scheduling</h1>
+  <p class="article-section-tag">&#9881;&#65039; Section 8: Operating System</p>
+
+  <!-- ===================== SCHEDULING CRITERIA ===================== -->
+  <h2>1. Scheduling Criteria</h2>
+  <p>The CPU scheduler selects a process from the ready queue and allocates the CPU. The choice of algorithm depends on several performance metrics:</p>
+
+  <table>
+    <tr><th>Criterion</th><th>Definition</th><th>Goal</th></tr>
+    <tr><td><strong>CPU Utilization</strong></td><td>Percentage of time the CPU is busy</td><td>Maximize</td></tr>
+    <tr><td><strong>Throughput</strong></td><td>Number of processes completed per unit time</td><td>Maximize</td></tr>
+    <tr><td><strong>Turnaround Time</strong></td><td>Total time from submission to completion: Turnaround = Completion &minus; Arrival</td><td>Minimize</td></tr>
+    <tr><td><strong>Waiting Time</strong></td><td>Total time spent in the ready queue: Waiting = Turnaround &minus; Burst Time</td><td>Minimize</td></tr>
+    <tr><td><strong>Response Time</strong></td><td>Time from submission until first response is produced</td><td>Minimize</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Preemptive vs Non-Preemptive:</strong> In preemptive scheduling, the OS can interrupt a running process and reallocate the CPU. In non-preemptive scheduling, a process runs until it voluntarily releases the CPU (by terminating or entering a waiting state).
+  </div>
+
+  <!-- ===================== CPU SCHEDULING ALGORITHMS ===================== -->
+  <h2>2. CPU Scheduling Algorithms</h2>
+
+  <h3>2.1 First-Come, First-Served (FCFS)</h3>
+  <p>Processes are served in the order they arrive. Non-preemptive.</p>
+  <div class="example">
+    <strong>Example:</strong>
+    <table>
+      <tr><th>Process</th><th>Arrival</th><th>Burst</th><th>Completion</th><th>Turnaround</th><th>Waiting</th></tr>
+      <tr><td>P1</td><td>0</td><td>24</td><td>24</td><td>24</td><td>0</td></tr>
+      <tr><td>P2</td><td>1</td><td>3</td><td>27</td><td>26</td><td>23</td></tr>
+      <tr><td>P3</td><td>2</td><td>3</td><td>30</td><td>28</td><td>25</td></tr>
+    </table>
+    <p>Average Waiting Time = (0 + 23 + 25) / 3 = 16.0</p>
+  </div>
+  <p><strong>Convoy Effect:</strong> Short processes stuck behind a long process, leading to high average waiting time.</p>
+
+  <h3>2.2 Shortest Job First (SJF)</h3>
+  <p>Selects the process with the smallest burst time. Non-preemptive. Optimal for minimizing average waiting time among non-preemptive algorithms.</p>
+  <p><strong>Problem:</strong> Requires knowing burst time in advance (estimated using exponential averaging). Can cause starvation of long processes.</p>
+
+  <h3>2.3 Shortest Remaining Time First (SRTF)</h3>
+  <p>Preemptive version of SJF. If a new process arrives with a shorter remaining time than the currently running process, the CPU is preempted.</p>
+  <div class="example">
+    <strong>Example:</strong>
+    <table>
+      <tr><th>Process</th><th>Arrival</th><th>Burst</th></tr>
+      <tr><td>P1</td><td>0</td><td>8</td></tr>
+      <tr><td>P2</td><td>1</td><td>4</td></tr>
+      <tr><td>P3</td><td>2</td><td>2</td></tr>
+      <tr><td>P4</td><td>3</td><td>1</td></tr>
+    </table>
+    <p>Execution order: P1(0-1), P2(1-2), P3(2-3), P4(3-4), P3(4-5), P2(5-8), P1(8-15)</p>
+  </div>
+
+  <h3>2.4 Gantt Chart - SRTF Example</h3>
+  <div class="mermaid">
+    gantt
+      title SRTF Scheduling Example
+      dateFormat X
+      axisFormat %s
+      section CPU
+      P1 :p1a, 0, 1
+      P2 :p2a, 1, 2
+      P3 :p3a, 2, 3
+      P4 :p4, 3, 4
+      P3 :p3b, 4, 5
+      P2 :p2b, 5, 8
+      P1 :p1b, 8, 15
+  </div>
+
+  <h3>2.5 Priority Scheduling</h3>
+  <p>Each process is assigned a priority. The CPU is allocated to the highest-priority process. Can be preemptive or non-preemptive.</p>
+  <p><strong>Starvation:</strong> Low-priority processes may never execute. <strong>Solution:</strong> Aging &mdash; gradually increase the priority of waiting processes.</p>
+
+  <h3>2.6 Round Robin (RR)</h3>
+  <p>Each process gets a fixed <strong>time quantum</strong> (q). After the quantum expires, the process is preempted and placed at the end of the ready queue.</p>
+  <table>
+    <tr><th>Time Quantum</th><th>Behavior</th></tr>
+    <tr><td>Very large q</td><td>Degenerates to FCFS</td></tr>
+    <tr><td>Very small q</td><td>High context switch overhead (processor sharing)</td></tr>
+    <tr><td>Optimal q</td><td>Typically 10-100 ms; should be large compared to context switch time</td></tr>
+  </table>
+  <p>Rule of thumb: 80% of CPU bursts should be shorter than the time quantum.</p>
+
+  <h3>2.7 Multilevel Queue Scheduling</h3>
+  <p>The ready queue is divided into separate queues based on process type (e.g., foreground/interactive and background/batch). Each queue has its own scheduling algorithm. A fixed priority or time-slice division determines which queue is served.</p>
+
+  <h3>2.8 Multilevel Feedback Queue</h3>
+  <p>Processes can move between queues based on their behavior. CPU-bound processes move to lower-priority queues. I/O-bound processes stay in or move to higher-priority queues. This allows the scheduler to adapt to process behavior.</p>
+
+  <!-- ===================== COMPARISON TABLE ===================== -->
+  <h2>3. Comparison of CPU Scheduling Algorithms</h2>
+  <table>
+    <tr><th>Algorithm</th><th>Preemptive?</th><th>Starvation?</th><th>Convoy Effect?</th><th>Optimal?</th><th>Complexity</th></tr>
+    <tr><td>FCFS</td><td>No</td><td>No</td><td>Yes</td><td>No</td><td>O(n)</td></tr>
+    <tr><td>SJF</td><td>No</td><td>Yes</td><td>No</td><td>Yes (non-preemptive)</td><td>O(n log n)</td></tr>
+    <tr><td>SRTF</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes (overall)</td><td>O(n log n)</td></tr>
+    <tr><td>Priority</td><td>Both</td><td>Yes</td><td>No</td><td>No</td><td>O(n)</td></tr>
+    <tr><td>Round Robin</td><td>Yes</td><td>No</td><td>No</td><td>No</td><td>O(n)</td></tr>
+    <tr><td>MLQ</td><td>Yes</td><td>Possible</td><td>No</td><td>No</td><td>Varies</td></tr>
+    <tr><td>MLFQ</td><td>Yes</td><td>No (with aging)</td><td>No</td><td>Adaptive</td><td>Varies</td></tr>
+  </table>
+
+  <!-- ===================== I/O SCHEDULING ===================== -->
+  <h2>4. I/O (Disk) Scheduling</h2>
+  <p>Disk scheduling algorithms optimize the order of disk I/O requests to minimize seek time. The disk head moves across tracks (cylinders) to read/write data.</p>
+
+  <h3>4.1 Disk Scheduling Algorithms</h3>
+  <table>
+    <tr><th>Algorithm</th><th>Description</th><th>Pros</th><th>Cons</th></tr>
+    <tr><td><strong>FCFS</strong></td><td>Serve requests in arrival order</td><td>Fair, simple</td><td>Large seek times</td></tr>
+    <tr><td><strong>SSTF</strong></td><td>Shortest Seek Time First; serve the closest request</td><td>Better than FCFS</td><td>Starvation of far requests</td></tr>
+    <tr><td><strong>SCAN (Elevator)</strong></td><td>Head moves in one direction servicing requests, then reverses</td><td>No starvation</td><td>Uneven wait times at edges</td></tr>
+    <tr><td><strong>C-SCAN</strong></td><td>Like SCAN but returns to start without servicing on return trip</td><td>More uniform wait time</td><td>Wasted return movement</td></tr>
+    <tr><td><strong>LOOK</strong></td><td>Like SCAN but reverses at the last request (not at disk end)</td><td>Avoids unnecessary travel</td><td>Slight overhead to track last request</td></tr>
+    <tr><td><strong>C-LOOK</strong></td><td>Like C-SCAN but reverses at last request in each direction</td><td>Most practical</td><td>Slight overhead</td></tr>
+  </table>
+
+  <h3>4.2 Disk Scheduling Example</h3>
+  <div class="example">
+    <strong>Request queue:</strong> 98, 183, 37, 122, 14, 124, 65, 67<br/>
+    <strong>Initial head position:</strong> 53<br/>
+    <strong>Direction:</strong> Right (toward higher tracks)
+    <table>
+      <tr><th>Algorithm</th><th>Order Served</th><th>Total Head Movement</th></tr>
+      <tr><td>FCFS</td><td>98, 183, 37, 122, 14, 124, 65, 67</td><td>640</td></tr>
+      <tr><td>SSTF</td><td>65, 67, 37, 14, 98, 122, 124, 183</td><td>236</td></tr>
+      <tr><td>SCAN (right)</td><td>65, 67, 98, 122, 124, 183, 37, 14</td><td>332</td></tr>
+      <tr><td>C-SCAN (right)</td><td>65, 67, 98, 122, 124, 183, 14, 37</td><td>382</td></tr>
+    </table>
+  </div>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>5. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>SRTF gives the minimum average waiting time among all scheduling algorithms.</li>
+      <li>FCFS suffers from the convoy effect; SJF/SRTF can cause starvation.</li>
+      <li>Round Robin performance depends on the time quantum. Very small q = high overhead; very large q = FCFS behavior.</li>
+      <li>In Round Robin, if there are <em>n</em> processes with quantum <em>q</em>, each process gets 1/n of CPU time and no process waits more than (n&minus;1)q time units.</li>
+      <li>Priority scheduling with aging eliminates starvation.</li>
+      <li>For disk scheduling: SSTF is similar to SJF and can cause starvation. SCAN/C-SCAN are used in practice.</li>
+      <li>LOOK and C-LOOK are practical improvements over SCAN and C-SCAN.</li>
+      <li>Turnaround Time = Completion Time &minus; Arrival Time. Waiting Time = Turnaround Time &minus; Burst Time.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

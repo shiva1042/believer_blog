@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Fundamentals for GATE — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>AI Fundamentals for GATE</h1>
+  <p class="article-section-tag">🤖 Artificial Intelligence</p>
+
+  <h2>1. Search Algorithms Overview</h2>
+  <p>Search algorithms are the backbone of AI problem solving. They explore a <strong>state space</strong> to find a path from an initial state to a goal state. Understanding their properties is critical for GATE.</p>
+
+  <h3>1.1 Breadth-First Search (BFS)</h3>
+  <p>BFS explores all nodes at the current depth before moving to the next level. It uses a <strong>FIFO queue</strong>.</p>
+  <ul>
+    <li><strong>Complete:</strong> Yes (if branching factor b is finite)</li>
+    <li><strong>Optimal:</strong> Yes (if all step costs are equal)</li>
+    <li><strong>Time Complexity:</strong> O(b<sup>d</sup>)</li>
+    <li><strong>Space Complexity:</strong> O(b<sup>d</sup>) &mdash; stores all nodes at current level</li>
+  </ul>
+
+  <h3>1.2 Depth-First Search (DFS)</h3>
+  <p>DFS explores as deep as possible before backtracking. It uses a <strong>LIFO stack</strong> (or recursion).</p>
+  <ul>
+    <li><strong>Complete:</strong> No (can get stuck in infinite paths; yes if state space is finite)</li>
+    <li><strong>Optimal:</strong> No</li>
+    <li><strong>Time Complexity:</strong> O(b<sup>m</sup>) where m is max depth</li>
+    <li><strong>Space Complexity:</strong> O(bm) &mdash; linear in depth</li>
+  </ul>
+
+  <h3>1.3 Iterative Deepening Depth-First Search (IDDFS)</h3>
+  <p>IDDFS combines BFS completeness with DFS space efficiency. It runs DFS with increasing depth limits.</p>
+  <ul>
+    <li><strong>Complete:</strong> Yes</li>
+    <li><strong>Optimal:</strong> Yes (uniform cost steps)</li>
+    <li><strong>Time Complexity:</strong> O(b<sup>d</sup>)</li>
+    <li><strong>Space Complexity:</strong> O(bd) &mdash; same as DFS</li>
+  </ul>
+  <div class="note"><strong>GATE Tip:</strong> IDDFS is the preferred uninformed search when space is limited and the solution depth is unknown. The overhead of re-expanding nodes is only O(b/(b-1)) times more than BFS.</div>
+
+  <h3>1.4 A* Search</h3>
+  <p>A* uses an evaluation function <strong>f(n) = g(n) + h(n)</strong> where g(n) is the path cost and h(n) is the heuristic estimate to the goal.</p>
+  <ul>
+    <li><strong>Complete:</strong> Yes (if step costs &ge; some positive &epsilon;)</li>
+    <li><strong>Optimal:</strong> Yes (if h(n) is admissible; for graph search, h must also be consistent)</li>
+    <li><strong>Time Complexity:</strong> O(b<sup>d</sup>) worst case</li>
+    <li><strong>Space Complexity:</strong> O(b<sup>d</sup>) &mdash; stores all generated nodes</li>
+  </ul>
+
+  <h3>1.5 Hill Climbing</h3>
+  <p>Hill climbing is a <strong>local search</strong> algorithm that greedily moves toward neighbors with better heuristic values. It does not maintain a search tree.</p>
+  <ul>
+    <li>Can get stuck at <strong>local maxima</strong>, <strong>plateaus</strong>, and <strong>ridges</strong></li>
+    <li>Variants: steepest-ascent, stochastic, random-restart</li>
+  </ul>
+
+  <h3>1.6 Simulated Annealing</h3>
+  <p>Simulated annealing allows "bad" moves with a probability that decreases over time (controlled by temperature T). This helps escape local optima.</p>
+  <pre>
+Probability of accepting worse move:
+  P = e^(-(delta_E / T))
+
+where delta_E = cost(new) - cost(current) &gt; 0
+As T decreases, probability of accepting bad moves approaches 0.
+  </pre>
+
+  <h2>2. Informed vs Uninformed Search Comparison</h2>
+  <table>
+    <tr><th>Property</th><th>BFS</th><th>DFS</th><th>IDDFS</th><th>UCS</th><th>Greedy</th><th>A*</th></tr>
+    <tr><td>Uses heuristic?</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td>Complete?</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Optimal?</td><td>Yes*</td><td>No</td><td>Yes*</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Time</td><td>O(b<sup>d</sup>)</td><td>O(b<sup>m</sup>)</td><td>O(b<sup>d</sup>)</td><td>O(b<sup>1+C*/&epsilon;</sup>)</td><td>O(b<sup>m</sup>)</td><td>O(b<sup>d</sup>)</td></tr>
+    <tr><td>Space</td><td>O(b<sup>d</sup>)</td><td>O(bm)</td><td>O(bd)</td><td>O(b<sup>1+C*/&epsilon;</sup>)</td><td>O(b<sup>m</sup>)</td><td>O(b<sup>d</sup>)</td></tr>
+    <tr><td>Data structure</td><td>Queue</td><td>Stack</td><td>Stack</td><td>Priority Q</td><td>Priority Q</td><td>Priority Q</td></tr>
+  </table>
+  <p>*BFS and IDDFS are optimal only when all step costs are equal.</p>
+
+  <h2>3. Heuristic Functions</h2>
+
+  <h3>3.1 Admissibility</h3>
+  <p>A heuristic h(n) is <strong>admissible</strong> if it never overestimates the true cost to reach the goal:</p>
+  <pre>
+h(n) &le; h*(n) for all n
+where h*(n) is the true optimal cost from n to the goal.
+  </pre>
+  <p>An admissible heuristic guarantees A* finds the optimal solution in tree search.</p>
+
+  <h3>3.2 Consistency (Monotonicity)</h3>
+  <p>A heuristic is <strong>consistent</strong> if for every node n and successor n':</p>
+  <pre>
+h(n) &le; c(n, a, n') + h(n')   (triangle inequality)
+  </pre>
+  <p>Consistency implies admissibility. A consistent heuristic guarantees A* optimality in <strong>graph search</strong> (with closed list).</p>
+
+  <h3>3.3 Dominance</h3>
+  <p>Heuristic h<sub>2</sub> <strong>dominates</strong> h<sub>1</sub> if h<sub>2</sub>(n) &ge; h<sub>1</sub>(n) for all n. A dominant heuristic expands fewer nodes while remaining optimal (if both are admissible).</p>
+
+  <div class="note"><strong>Example:</strong> For the 8-puzzle:
+    <br>h1 = number of misplaced tiles (admissible)
+    <br>h2 = sum of Manhattan distances (admissible)
+    <br>h2 dominates h1 because h2(n) &ge; h1(n) always.
+  </div>
+
+  <h2>4. Search Tree Visualization</h2>
+  <div class="mermaid">
+graph TD
+    A["S (h=6)"] --> B["A (g=1, h=5, f=6)"]
+    A --> C["B (g=4, h=2, f=6)"]
+    B --> D["C (g=3, h=2, f=5)"]
+    B --> E["D (g=5, h=4, f=9)"]
+    C --> F["E (g=6, h=1, f=7)"]
+    C --> G["G (g=8, h=0, f=8)"]
+    D --> H["G (g=5, h=0, f=5) ✓"]
+
+    style A fill:#ff9800,color:#fff
+    style H fill:#4caf50,color:#fff
+  </div>
+  <p>A* expands nodes in order of f-value. The optimal path S &rarr; A &rarr; C &rarr; G with cost 5 is found.</p>
+
+  <h2>5. Game Playing: Minimax Algorithm</h2>
+  <p>Minimax is used for <strong>adversarial search</strong> in two-player zero-sum games. MAX tries to maximize the utility; MIN tries to minimize it.</p>
+
+  <h3>5.1 Minimax Procedure</h3>
+  <pre>
+function MINIMAX(node, depth, isMaximizing):
+    if depth == 0 or node is terminal:
+        return heuristic value of node
+
+    if isMaximizing:
+        bestVal = -infinity
+        for each child of node:
+            val = MINIMAX(child, depth-1, false)
+            bestVal = max(bestVal, val)
+        return bestVal
+    else:
+        bestVal = +infinity
+        for each child of node:
+            val = MINIMAX(child, depth-1, true)
+            bestVal = min(bestVal, val)
+        return bestVal
+  </pre>
+
+  <h3>5.2 Minimax Example Tree</h3>
+  <div class="mermaid">
+graph TD
+    R["MAX: 3"] --> A["MIN: 3"]
+    R --> B["MIN: 2"]
+    A --> C["MAX: 3"]
+    A --> D["MAX: 5"]
+    B --> E["MAX: 2"]
+    B --> F["MAX: 9"]
+    C --> G["3"]
+    C --> H["8"]
+    D --> I["5"]
+    D --> J["1"]
+    E --> K["2"]
+    E --> L["7"]
+    F --> M["9"]
+    F --> N["4"]
+
+    style R fill:#1565c0,color:#fff
+    style A fill:#c62828,color:#fff
+    style B fill:#c62828,color:#fff
+    style C fill:#1565c0,color:#fff
+    style D fill:#1565c0,color:#fff
+    style E fill:#1565c0,color:#fff
+    style F fill:#1565c0,color:#fff
+  </div>
+  <p>At MAX nodes, the maximum child value is chosen. At MIN nodes, the minimum child value is chosen. The root evaluates to 3.</p>
+
+  <h2>6. Alpha-Beta Pruning</h2>
+  <p>Alpha-beta pruning optimizes minimax by eliminating branches that cannot influence the final decision.</p>
+  <ul>
+    <li><strong>&alpha;</strong> = best value MAX can guarantee (initialized to -&infin;)</li>
+    <li><strong>&beta;</strong> = best value MIN can guarantee (initialized to +&infin;)</li>
+    <li><strong>Prune when:</strong> &alpha; &ge; &beta;</li>
+  </ul>
+
+  <h3>6.1 Alpha-Beta Example</h3>
+  <pre>
+         MAX (alpha=-inf, beta=+inf)
+        /     \
+     MIN       MIN
+    /   \     /   \
+   3     5   2     9
+
+Step 1: Evaluate left MIN node:
+  - See 3: MIN updates beta=3
+  - See 5: min(3,5)=3 -> MIN returns 3
+  - MAX updates alpha=3
+
+Step 2: Evaluate right MIN node:
+  - See 2: MIN updates beta=2
+  - Now alpha(3) >= beta(2) -> PRUNE! Don't evaluate 9
+  - MIN returns 2
+
+Step 3: MAX chooses max(3, 2) = 3
+  </pre>
+
+  <div class="warning"><strong>Key Insight:</strong> With perfect ordering, alpha-beta pruning can reduce the effective branching factor from b to sqrt(b), allowing search to go twice as deep in the same time.</div>
+
+  <h3>6.2 Properties of Alpha-Beta Pruning</h3>
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Best case time</td><td>O(b<sup>d/2</sup>)</td></tr>
+    <tr><td>Worst case time</td><td>O(b<sup>d</sup>) (no pruning)</td></tr>
+    <tr><td>Average case</td><td>O(b<sup>3d/4</sup>)</td></tr>
+    <tr><td>Optimal ordering</td><td>Best moves first for MAX, worst for MIN</td></tr>
+    <tr><td>Result</td><td>Same as minimax (no loss of optimality)</td></tr>
+  </table>
+
+  <h2>7. GATE Practice: Key Formulas</h2>
+  <table>
+    <tr><th>Concept</th><th>Formula / Rule</th></tr>
+    <tr><td>BFS nodes generated</td><td>1 + b + b<sup>2</sup> + ... + b<sup>d</sup> = O(b<sup>d</sup>)</td></tr>
+    <tr><td>IDDFS total nodes</td><td>(d+1)(1) + d(b) + (d-1)(b<sup>2</sup>) + ... + 1(b<sup>d</sup>)</td></tr>
+    <tr><td>A* optimality condition</td><td>h(n) admissible (tree), h(n) consistent (graph)</td></tr>
+    <tr><td>Minimax value at root</td><td>minimax(root) = max(min(children))</td></tr>
+    <tr><td>Alpha-beta best case</td><td>O(b<sup>d/2</sup>) with perfect ordering</td></tr>
+    <tr><td>Simulated annealing acceptance</td><td>P = e<sup>-&Delta;E/T</sup></td></tr>
+  </table>
+
+  <h2>8. Common GATE Questions Pattern</h2>
+  <div class="note">
+    <strong>Q: In A* search, how many nodes are expanded?</strong><br>
+    Approach: Build the search tree, compute f(n) = g(n) + h(n) for each node, and expand nodes in order of increasing f-value. Count the nodes removed from the priority queue (expanded), not those merely generated.
+  </div>
+
+  <div class="note">
+    <strong>Q: Which nodes are pruned by alpha-beta?</strong><br>
+    Approach: Trace the minimax tree left-to-right, tracking alpha and beta values at each node. When alpha &ge; beta, mark remaining children as pruned.
+  </div>
+
+  <div class="warning"><strong>Common Mistake:</strong> Confusing "generated" vs "expanded" nodes. A node is generated when created, but expanded when its successors are generated. BFS time complexity counts expanded nodes.</div>
+
+</article>
+</body>
+</html>

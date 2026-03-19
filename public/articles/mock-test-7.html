@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 7: Databases & Computer Networks Focus — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 7: Databases & Computer Networks Focus</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> ER Model (3), SQL (5), Normalization (4), Indexing/Transactions (3), OSI/TCP Model (3), Data Link Layer (3), IP/Routing (4), Transport Layer (3), Application Layer (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 7",
+      "questions": [
+        {
+          "question": "Q1. In an ER diagram, a weak entity set is represented by:",
+          "options": ["(A) A single rectangle", "(B) A double rectangle", "(C) A diamond", "(D) An oval"],
+          "answer": 1,
+          "explanation": "In ER diagrams, a weak entity set is depicted by a double (or bold) rectangle. A weak entity cannot be uniquely identified by its own attributes alone — it depends on a strong (owner) entity through an identifying relationship (shown as double diamond). The weak entity's key is a combination of the owner's key and its own partial key (discriminator)."
+        },
+        {
+          "question": "Q2. A relationship between an entity set and itself is called:",
+          "options": ["(A) Binary relationship", "(B) Recursive (unary) relationship", "(C) Ternary relationship", "(D) Weak relationship"],
+          "answer": 1,
+          "explanation": "A recursive or unary relationship is a relationship where the same entity set participates more than once in different roles. Example: an Employee entity with a 'manages' relationship to itself — one employee manages another employee. The roles (manager, subordinate) must be specified to distinguish the participation."
+        },
+        {
+          "question": "Q3. The minimum number of tables required to represent a many-to-many relationship between two entity sets A and B (with no extra attributes) is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 2,
+          "explanation": "A many-to-many (M:N) relationship requires 3 tables: one for entity A, one for entity B, and one relationship table containing the primary keys of both A and B as foreign keys. The relationship table's primary key is the combination of both foreign keys. A 1:N relationship can be represented with just 2 tables by adding a foreign key to the N-side table."
+        },
+        {
+          "question": "Q4. Consider the tables: Student(sid, name, dept) and Enrollment(sid, cid, grade). The SQL query to find students enrolled in more than 3 courses is:",
+          "options": ["(A) SELECT sid FROM Enrollment WHERE COUNT(cid) > 3", "(B) SELECT sid FROM Enrollment GROUP BY sid HAVING COUNT(cid) > 3", "(C) SELECT sid FROM Enrollment HAVING COUNT(*) > 3", "(D) SELECT sid FROM Enrollment WHERE COUNT(*) > 3 GROUP BY sid"],
+          "answer": 1,
+          "explanation": "To filter groups of rows, we use GROUP BY with HAVING (not WHERE). GROUP BY sid groups enrollments by student, and HAVING COUNT(cid) > 3 filters to only students with more than 3 courses. WHERE is applied before grouping and cannot use aggregate functions. HAVING is applied after grouping."
+        },
+        {
+          "question": "Q5. The SQL keyword DISTINCT is used to:",
+          "options": ["(A) Sort results", "(B) Remove duplicate rows from the result", "(C) Join tables", "(D) Filter NULL values"],
+          "answer": 1,
+          "explanation": "DISTINCT eliminates duplicate rows from the query result. SELECT DISTINCT dept FROM Student returns each department name only once, even if multiple students belong to the same department. Without DISTINCT, duplicates appear in the result. Note: DISTINCT applies to the entire row, not just one column."
+        },
+        {
+          "question": "Q6. What is the result of: SELECT COUNT(*) FROM R WHERE A IS NULL; if table R has 10 rows and column A has 3 NULL values?",
+          "options": ["(A) 10", "(B) 7", "(C) 3", "(D) 0"],
+          "answer": 2,
+          "explanation": "The query counts rows where column A is NULL. With 3 NULL values in column A out of 10 rows, the result is 3. Note: COUNT(*) counts rows regardless of NULL values, but the WHERE clause filters to only rows where A IS NULL. If we used COUNT(A) without WHERE, it would return 7 (excluding NULLs)."
+        },
+        {
+          "question": "Q7. The SQL operation that combines rows from two tables based on a related column is:",
+          "options": ["(A) UNION", "(B) JOIN", "(C) INTERSECT", "(D) EXCEPT"],
+          "answer": 1,
+          "explanation": "JOIN combines rows from two (or more) tables based on a related column. Types include INNER JOIN (matching rows only), LEFT/RIGHT OUTER JOIN (includes unmatched rows from one side), and FULL OUTER JOIN. UNION, INTERSECT, and EXCEPT are set operations that combine results of two queries with compatible schemas."
+        },
+        {
+          "question": "Q8. A correlated subquery is one that:",
+          "options": ["(A) Returns multiple rows", "(B) References columns from the outer query", "(C) Uses the IN operator", "(D) Is always faster than a join"],
+          "answer": 1,
+          "explanation": "A correlated subquery references columns from the outer query, so it is re-evaluated for each row of the outer query. Example: SELECT * FROM Emp e WHERE salary > (SELECT AVG(salary) FROM Emp WHERE dept = e.dept). This is typically slower than an equivalent join because the subquery runs once per outer row, but sometimes it's the most natural way to express a query."
+        },
+        {
+          "question": "Q9. A relation R(A, B, C, D, E) with FDs {A→BC, CD→E, B→D, E→A}. The candidate keys are:",
+          "options": ["(A) {A} and {E}", "(B) {A, B} only", "(C) {A}, {E}, {BC}, {CD}", "(D) {B, C} only"],
+          "answer": 2,
+          "explanation": "A+ = {A,B,C,D,E} (A→BC, B→D, CD→E) — so A is a key. E+ = {E,A,B,C,D} (E→A, then A→BC, B→D, CD→E) — E is a key. BC+ = {B,C,D,E,A} (B→D, CD→E, E→A) — BC is a key. CD+ = {C,D,E,A,B} (CD→E, E→A, A→BC) — CD is a key. All four are candidate keys since no proper subset of any of them determines all attributes."
+        },
+        {
+          "question": "Q10. A relation R(A, B, C) with FDs {A→B, B→C}. R is in which normal form?",
+          "options": ["(A) 1NF only", "(B) 2NF but not 3NF", "(C) 3NF", "(D) BCNF"],
+          "answer": 1,
+          "explanation": "Candidate key is {A}. FD B→C: B is not a superkey, and C is not part of any candidate key (C is a non-prime attribute). This is a transitive dependency: A→B→C. Transitive dependencies violate 3NF. However, there's no partial dependency (key A is a single attribute), so 2NF is satisfied. Hence R is in 2NF but not 3NF."
+        },
+        {
+          "question": "Q11. Which normal form deals with multi-valued dependencies?",
+          "options": ["(A) 2NF", "(B) 3NF", "(C) BCNF", "(D) 4NF"],
+          "answer": 3,
+          "explanation": "4NF (Fourth Normal Form) deals with multi-valued dependencies (MVDs). A relation is in 4NF if for every non-trivial MVD A →→ B, A is a superkey. MVDs arise when two or more independent multi-valued attributes are stored in the same relation, causing redundancy. 4NF is stricter than BCNF."
+        },
+        {
+          "question": "Q12. Dependency preservation means that:",
+          "options": ["(A) All FDs can be checked using individual decomposed relations without joins", "(B) All FDs are removed after decomposition", "(C) The decomposition is always in BCNF", "(D) No data is lost"],
+          "answer": 0,
+          "explanation": "A decomposition is dependency-preserving if every functional dependency from the original relation can be enforced by checking constraints on individual decomposed relations — no joins are needed. This is important for efficiency: we can verify constraints locally. Note: lossless join and dependency preservation are independent properties. A BCNF decomposition may not preserve all dependencies."
+        },
+        {
+          "question": "Q13. A B+ tree of order p with n keys has a height of at most:",
+          "options": ["(A) log₂(n)", "(B) log_(⌈p/2⌉)(n)", "(C) log_p(n)", "(D) n/p"],
+          "answer": 1,
+          "explanation": "In a B+ tree of order p, each internal node (except root) has at least ⌈p/2⌉ children. The height is at most log_(⌈p/2⌉)((n+1)/2) ≈ O(log_(⌈p/2⌉)(n)). This logarithmic height ensures efficient search, insert, and delete operations. B+ trees are preferred over B-trees for database indexing because all data pointers are in leaf nodes, and leaves are linked for range queries."
+        },
+        {
+          "question": "Q14. In a concurrent schedule, serializability ensures:",
+          "options": ["(A) All transactions execute sequentially", "(B) The result is equivalent to some serial schedule", "(C) No transaction is ever aborted", "(D) Locks are never used"],
+          "answer": 1,
+          "explanation": "A schedule is serializable if its result (final database state) is equivalent to that of some serial schedule (where transactions execute one at a time without interleaving). This ensures correctness while allowing concurrency. Conflict serializability (no cycles in precedence graph) is a sufficient condition commonly checked."
+        },
+        {
+          "question": "Q15. The two-phase locking (2PL) protocol ensures:",
+          "options": ["(A) Deadlock freedom", "(B) Conflict serializability", "(C) Starvation freedom", "(D) All of the above"],
+          "answer": 1,
+          "explanation": "Two-Phase Locking (2PL) guarantees conflict serializability by ensuring each transaction has two phases: a growing phase (acquiring locks, no releases) and a shrinking phase (releasing locks, no new acquisitions). However, 2PL does NOT prevent deadlocks (transactions can still form circular wait) or starvation. Strict 2PL (hold all exclusive locks until commit) additionally prevents cascading rollbacks."
+        },
+        {
+          "question": "Q16. The OSI model has how many layers?",
+          "options": ["(A) 4", "(B) 5", "(C) 6", "(D) 7"],
+          "answer": 3,
+          "explanation": "The OSI (Open Systems Interconnection) model has 7 layers: (1) Physical, (2) Data Link, (3) Network, (4) Transport, (5) Session, (6) Presentation, (7) Application. The TCP/IP model has 4 (or 5) layers. The OSI model is a reference model; TCP/IP is the practical protocol suite used on the Internet."
+        },
+        {
+          "question": "Q17. In the TCP/IP model, which layer corresponds to OSI layers 5, 6, and 7?",
+          "options": ["(A) Network layer", "(B) Transport layer", "(C) Application layer", "(D) Internet layer"],
+          "answer": 2,
+          "explanation": "The TCP/IP Application layer combines the functionality of OSI Session (5), Presentation (6), and Application (7) layers. TCP/IP model: Network Access → Internet → Transport → Application. Examples of application layer protocols: HTTP, FTP, SMTP, DNS, SSH."
+        },
+        {
+          "question": "Q18. Which protocol operates at the Data Link layer?",
+          "options": ["(A) IP", "(B) TCP", "(C) Ethernet", "(D) HTTP"],
+          "answer": 2,
+          "explanation": "Ethernet (IEEE 802.3) operates at the Data Link layer (Layer 2). It handles framing, MAC addressing, and media access control for local area networks. IP operates at Network layer (3), TCP at Transport layer (4), and HTTP at Application layer (7)."
+        },
+        {
+          "question": "Q19. In CSMA/CD, what happens when a collision is detected?",
+          "options": ["(A) Both stations immediately retransmit", "(B) Stations send a jam signal, wait a random backoff time, then retransmit", "(C) The station with higher priority transmits first", "(D) Both stations stop transmitting permanently"],
+          "answer": 1,
+          "explanation": "In CSMA/CD (Carrier Sense Multiple Access with Collision Detection), when a collision is detected: (1) both stations stop transmitting, (2) both send a jam signal to notify all stations, (3) both wait for a random backoff period using the Binary Exponential Backoff algorithm, (4) then reattempt transmission. The random wait prevents repeated collisions."
+        },
+        {
+          "question": "Q20. The minimum frame size in Ethernet is 64 bytes. This ensures:",
+          "options": ["(A) Maximum throughput", "(B) Collision detection works correctly (frame transmission time ≥ 2 × propagation delay)", "(C) Compatibility with Token Ring", "(D) Error correction is possible"],
+          "answer": 1,
+          "explanation": "The minimum frame size of 64 bytes (512 bits) ensures that the sender is still transmitting when a collision signal returns. For collision detection to work, the frame transmission time must be ≥ 2 × end-to-end propagation delay (round-trip time). For 10 Mbps Ethernet with 2500m max segment length: 512 bits / 10 Mbps = 51.2 μs ≥ 2 × 25.6 μs."
+        },
+        {
+          "question": "Q21. CRC (Cyclic Redundancy Check) can detect:",
+          "options": ["(A) Only single-bit errors", "(B) All single-bit errors, all double-bit errors, and all burst errors shorter than the CRC length", "(C) No errors", "(D) Only even number of bit errors"],
+          "answer": 1,
+          "explanation": "CRC with a polynomial of degree r can detect: all single-bit errors, all double-bit errors (if the polynomial has at least 3 terms), all odd-number-of-bit errors (if the polynomial has (x+1) as a factor), and all burst errors of length ≤ r. CRC is widely used in Ethernet, WiFi, and storage systems."
+        },
+        {
+          "question": "Q22. An IPv4 address is of length:",
+          "options": ["(A) 16 bits", "(B) 32 bits", "(C) 64 bits", "(D) 128 bits"],
+          "answer": 1,
+          "explanation": "IPv4 addresses are 32 bits (4 bytes), written in dotted decimal notation (e.g., 192.168.1.1). This allows 2³² ≈ 4.3 billion addresses, which has been exhausted, leading to NAT and the development of IPv6 (128-bit addresses = 2¹²⁸ addresses)."
+        },
+        {
+          "question": "Q23. A network 192.168.1.0/24 is divided into 4 equal subnets. The subnet mask for each subnet is:",
+          "options": ["(A) 255.255.255.192", "(B) 255.255.255.128", "(C) 255.255.255.224", "(D) 255.255.255.240"],
+          "answer": 0,
+          "explanation": "Original /24 has 8 host bits. To create 4 subnets: need 2 extra bits for subnet ID (2² = 4). New prefix = /26 (24 + 2). Subnet mask for /26: 255.255.255.192 (last octet: 11000000 = 192). Each subnet has 2⁶ = 64 addresses (62 usable hosts). Subnets: .0/26, .64/26, .128/26, .192/26."
+        },
+        {
+          "question": "Q24. The Dijkstra's algorithm is used in which routing protocol?",
+          "options": ["(A) RIP", "(B) OSPF", "(C) BGP", "(D) ARP"],
+          "answer": 1,
+          "explanation": "OSPF (Open Shortest Path First) is a link-state routing protocol that uses Dijkstra's shortest path algorithm. Each router builds a complete topology map and computes shortest paths to all destinations. RIP uses distance vector (Bellman-Ford), BGP uses path vector, and ARP is for address resolution (IP → MAC), not routing."
+        },
+        {
+          "question": "Q25. The time-to-live (TTL) field in the IP header is used to:",
+          "options": ["(A) Encrypt the packet", "(B) Prevent packets from looping indefinitely by limiting hop count", "(C) Set the packet priority", "(D) Specify the protocol type"],
+          "answer": 1,
+          "explanation": "TTL (Time to Live) limits the number of hops (routers) a packet can traverse. Each router decrements TTL by 1; when TTL reaches 0, the packet is discarded and an ICMP Time Exceeded message is sent back. This prevents packets from circulating forever due to routing loops. Tools like traceroute exploit this by sending packets with incrementally increasing TTL values."
+        },
+        {
+          "question": "Q26. TCP uses a 3-way handshake for connection establishment. The sequence of segments is:",
+          "options": ["(A) SYN, ACK, FIN", "(B) SYN, SYN-ACK, ACK", "(C) ACK, SYN, FIN", "(D) SYN, SYN, ACK"],
+          "answer": 1,
+          "explanation": "TCP 3-way handshake: (1) Client sends SYN (with initial sequence number), (2) Server responds with SYN-ACK (acknowledges client's SYN and sends its own SYN with its initial sequence number), (3) Client sends ACK (acknowledges server's SYN). After this, the connection is established and data transfer can begin."
+        },
+        {
+          "question": "Q27. The TCP congestion control algorithm starts with:",
+          "options": ["(A) Congestion Avoidance", "(B) Slow Start", "(C) Fast Recovery", "(D) Fast Retransmit"],
+          "answer": 1,
+          "explanation": "TCP congestion control begins with Slow Start: the congestion window (cwnd) starts at 1 MSS and doubles every RTT (exponential growth) until it reaches the slow start threshold (ssthresh). Then it transitions to Congestion Avoidance (linear growth, +1 MSS per RTT). On packet loss (timeout), cwnd resets to 1 MSS and ssthresh is halved. On 3 duplicate ACKs, Fast Retransmit and Fast Recovery are used."
+        },
+        {
+          "question": "Q28. UDP is preferred over TCP for:",
+          "options": ["(A) File transfer", "(B) Email", "(C) Real-time video streaming", "(D) Web browsing"],
+          "answer": 2,
+          "explanation": "UDP is preferred for real-time applications (video/audio streaming, VoIP, online gaming) because it has lower latency — no connection setup, no retransmission of lost packets, and no flow/congestion control overhead. TCP's reliability mechanisms (retransmission, ordering) introduce delay that is unacceptable for real-time applications where slightly degraded quality is preferred over delay."
+        },
+        {
+          "question": "Q29. DNS primarily uses which transport protocol?",
+          "options": ["(A) TCP only", "(B) UDP for queries, TCP for zone transfers", "(C) Neither TCP nor UDP", "(D) ICMP"],
+          "answer": 1,
+          "explanation": "DNS uses UDP (port 53) for regular queries because they are small and need fast response. UDP's lack of connection overhead makes it efficient for short request-response exchanges. DNS uses TCP (port 53) for zone transfers (transferring large amounts of DNS data between servers) and for responses exceeding 512 bytes. Modern DNS also uses TCP for DNSSEC."
+        },
+        {
+          "question": "Q30. The protocol used to send email from a client to a mail server is:",
+          "options": ["(A) POP3", "(B) IMAP", "(C) SMTP", "(D) FTP"],
+          "answer": 2,
+          "explanation": "SMTP (Simple Mail Transfer Protocol, port 25/587) is used to send email from a client to a server and between mail servers. POP3 (port 110) and IMAP (port 143) are used by clients to retrieve/read email from the mail server. POP3 downloads and optionally deletes from server; IMAP allows server-side management."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

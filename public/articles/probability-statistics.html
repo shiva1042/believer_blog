@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Probability and Statistics | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+    .mermaid { text-align: center; margin: 1.5em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Probability and Statistics</h1>
+  <p class="article-section-tag">Section 1: Engineering Mathematics</p>
+
+  <h2>1. Basic Probability</h2>
+
+  <h3>1.1 Axioms of Probability</h3>
+  <ul>
+    <li>For any event A: 0 &le; P(A) &le; 1</li>
+    <li>P(S) = 1 where S is the sample space</li>
+    <li>For mutually exclusive events A and B: P(A &cup; B) = P(A) + P(B)</li>
+  </ul>
+
+  <h3>1.2 Fundamental Formulas</h3>
+  <div class="formula">
+    P(A &cup; B) = P(A) + P(B) - P(A &cap; B)<br>
+    P(A') = 1 - P(A)<br>
+    P(A &cap; B) = P(A) &middot; P(B|A) = P(B) &middot; P(A|B)
+  </div>
+
+  <h2>2. Conditional Probability and Independence</h2>
+
+  <h3>2.1 Conditional Probability</h3>
+  <div class="formula">
+    P(A|B) = P(A &cap; B) / P(B), provided P(B) > 0
+  </div>
+
+  <h3>2.2 Independence</h3>
+  <p>Events A and B are <strong>independent</strong> if and only if P(A &cap; B) = P(A) &middot; P(B), which equivalently means P(A|B) = P(A).</p>
+
+  <table>
+    <tr><th>Property</th><th>Mutually Exclusive</th><th>Independent</th></tr>
+    <tr><td>Definition</td><td>P(A &cap; B) = 0</td><td>P(A &cap; B) = P(A)P(B)</td></tr>
+    <tr><td>Can both occur?</td><td>No</td><td>Yes</td></tr>
+    <tr><td>P(A &cup; B)</td><td>P(A) + P(B)</td><td>P(A) + P(B) - P(A)P(B)</td></tr>
+    <tr><td>Relationship</td><td colspan="2">If P(A) > 0 and P(B) > 0, mutually exclusive events are NEVER independent</td></tr>
+  </table>
+
+  <h2>3. Bayes' Theorem</h2>
+  <div class="formula">
+    P(A<sub>i</sub>|B) = P(B|A<sub>i</sub>) &middot; P(A<sub>i</sub>) / &sum;<sub>j</sub> P(B|A<sub>j</sub>) &middot; P(A<sub>j</sub>)
+  </div>
+
+  <h3>3.1 Bayes' Theorem Decision Tree</h3>
+  <div class="mermaid">
+graph TD
+    A["Prior Probabilities"] --> B["P(Disease) = 0.01"]
+    A --> C["P(No Disease) = 0.99"]
+    B --> D["P(Test + | Disease) = 0.95<br/>True Positive"]
+    B --> E["P(Test - | Disease) = 0.05<br/>False Negative"]
+    C --> F["P(Test + | No Disease) = 0.05<br/>False Positive"]
+    C --> G["P(Test - | No Disease) = 0.95<br/>True Negative"]
+    D --> H["P(Disease | Test +)<br/>= (0.95 x 0.01) / P(Test +)"]
+    F --> H
+    H --> I["P(Test +) = 0.95x0.01 + 0.05x0.99<br/>= 0.0095 + 0.0495 = 0.059"]
+    I --> J["P(Disease | Test +)<br/>= 0.0095 / 0.059<br/>= 0.161 (about 16.1%)"]
+    style J fill:#c8e6c9
+  </div>
+
+  <div class="example">
+    <strong>Bayes' Theorem Example (Medical Test):</strong><br>
+    A disease affects 1% of the population. A test has 95% sensitivity (true positive rate) and 95% specificity (true negative rate).<br><br>
+    <strong>Question:</strong> If a person tests positive, what is the probability they actually have the disease?<br><br>
+    P(Disease) = 0.01, P(No Disease) = 0.99<br>
+    P(+|Disease) = 0.95, P(+|No Disease) = 0.05<br><br>
+    P(+) = P(+|Disease) &middot; P(Disease) + P(+|No Disease) &middot; P(No Disease)<br>
+    = 0.95 &times; 0.01 + 0.05 &times; 0.99 = 0.0095 + 0.0495 = 0.059<br><br>
+    P(Disease|+) = 0.0095 / 0.059 = <strong>0.161 (about 16.1%)</strong><br><br>
+    Despite the high accuracy of the test, a positive result only indicates a 16.1% chance of disease, due to the low base rate. This is a classic example of the <em>base rate fallacy</em>.
+  </div>
+
+  <h2>4. Random Variables</h2>
+  <p>A <strong>random variable</strong> X is a function that assigns a real number to each outcome in the sample space.</p>
+
+  <table>
+    <tr><th>Property</th><th>Discrete</th><th>Continuous</th></tr>
+    <tr><td>Probability</td><td>P(X = x) = p(x) (PMF)</td><td>P(a &le; X &le; b) = &int;<sub>a</sub><sup>b</sup> f(x) dx (PDF)</td></tr>
+    <tr><td>CDF</td><td>F(x) = &sum;<sub>k &le; x</sub> p(k)</td><td>F(x) = &int;<sub>-&infin;</sub><sup>x</sup> f(t) dt</td></tr>
+    <tr><td>Sum of probabilities</td><td>&sum; p(x) = 1</td><td>&int;<sub>-&infin;</sub><sup>&infin;</sup> f(x) dx = 1</td></tr>
+    <tr><td>Mean (Expected value)</td><td>E[X] = &sum; x &middot; p(x)</td><td>E[X] = &int; x &middot; f(x) dx</td></tr>
+    <tr><td>Variance</td><td colspan="2">Var(X) = E[X<sup>2</sup>] - (E[X])<sup>2</sup></td></tr>
+  </table>
+
+  <h2>5. Measures of Central Tendency and Dispersion</h2>
+  <table>
+    <tr><th>Measure</th><th>Definition</th></tr>
+    <tr><td>Mean (&mu;)</td><td>Average of all values: &sum;x<sub>i</sub>/n</td></tr>
+    <tr><td>Median</td><td>Middle value when sorted; average of two middle values if n is even</td></tr>
+    <tr><td>Mode</td><td>Most frequently occurring value</td></tr>
+    <tr><td>Variance (&sigma;<sup>2</sup>)</td><td>E[(X - &mu;)<sup>2</sup>] = E[X<sup>2</sup>] - &mu;<sup>2</sup></td></tr>
+    <tr><td>Standard Deviation (&sigma;)</td><td>sqrt(Variance)</td></tr>
+  </table>
+
+  <h3>5.1 Properties of Expectation and Variance</h3>
+  <div class="formula">
+    E[aX + b] = aE[X] + b<br>
+    Var(aX + b) = a<sup>2</sup> Var(X)<br>
+    E[X + Y] = E[X] + E[Y] (always true)<br>
+    Var(X + Y) = Var(X) + Var(Y) (only if X, Y are independent)<br>
+    E[XY] = E[X]E[Y] (only if X, Y are independent)
+  </div>
+
+  <h2>6. Common Probability Distributions</h2>
+
+  <h3>6.1 Discrete Distributions</h3>
+  <table>
+    <tr><th>Distribution</th><th>PMF / Parameters</th><th>Mean</th><th>Variance</th><th>Use Case</th></tr>
+    <tr>
+      <td><strong>Bernoulli</strong></td>
+      <td>P(X=1) = p, P(X=0) = 1-p</td>
+      <td>p</td>
+      <td>p(1-p)</td>
+      <td>Single trial, success/failure</td>
+    </tr>
+    <tr>
+      <td><strong>Binomial</strong><br/>B(n, p)</td>
+      <td>C(n,k) p<sup>k</sup>(1-p)<sup>n-k</sup></td>
+      <td>np</td>
+      <td>np(1-p)</td>
+      <td>Number of successes in n trials</td>
+    </tr>
+    <tr>
+      <td><strong>Poisson</strong><br/>Poi(&lambda;)</td>
+      <td>e<sup>-&lambda;</sup>&lambda;<sup>k</sup>/k!</td>
+      <td>&lambda;</td>
+      <td>&lambda;</td>
+      <td>Rare events per unit time/space</td>
+    </tr>
+    <tr>
+      <td><strong>Geometric</strong><br/>Geo(p)</td>
+      <td>(1-p)<sup>k-1</sup>p</td>
+      <td>1/p</td>
+      <td>(1-p)/p<sup>2</sup></td>
+      <td>Trials until first success</td>
+    </tr>
+    <tr>
+      <td><strong>Uniform (Discrete)</strong><br/>U{a,...,b}</td>
+      <td>1/(b-a+1)</td>
+      <td>(a+b)/2</td>
+      <td>((b-a+1)<sup>2</sup>-1)/12</td>
+      <td>Equal probability outcomes</td>
+    </tr>
+  </table>
+
+  <h3>6.2 Continuous Distributions</h3>
+  <table>
+    <tr><th>Distribution</th><th>PDF / Parameters</th><th>Mean</th><th>Variance</th><th>Use Case</th></tr>
+    <tr>
+      <td><strong>Uniform</strong><br/>U(a, b)</td>
+      <td>1/(b-a) for a &le; x &le; b</td>
+      <td>(a+b)/2</td>
+      <td>(b-a)<sup>2</sup>/12</td>
+      <td>Equal probability over interval</td>
+    </tr>
+    <tr>
+      <td><strong>Normal</strong><br/>N(&mu;, &sigma;<sup>2</sup>)</td>
+      <td>(1/(&sigma;sqrt(2&pi;))) e<sup>-(x-&mu;)<sup>2</sup>/(2&sigma;<sup>2</sup>)</sup></td>
+      <td>&mu;</td>
+      <td>&sigma;<sup>2</sup></td>
+      <td>Natural phenomena, CLT limit</td>
+    </tr>
+    <tr>
+      <td><strong>Exponential</strong><br/>Exp(&lambda;)</td>
+      <td>&lambda;e<sup>-&lambda;x</sup> for x &ge; 0</td>
+      <td>1/&lambda;</td>
+      <td>1/&lambda;<sup>2</sup></td>
+      <td>Time between events (memoryless)</td>
+    </tr>
+  </table>
+
+  <h3>6.3 Key Distribution Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Distributions</th></tr>
+    <tr><td>Mean = Variance</td><td>Poisson</td></tr>
+    <tr><td>Memoryless</td><td>Geometric (discrete), Exponential (continuous)</td></tr>
+    <tr><td>Sum of n Bernoulli(p)</td><td>Binomial(n, p)</td></tr>
+    <tr><td>Binomial with large n, small p</td><td>Approximated by Poisson(&lambda; = np)</td></tr>
+    <tr><td>Sum of n i.i.d. variables (large n)</td><td>Approximately Normal (Central Limit Theorem)</td></tr>
+    <tr><td>Symmetric about mean</td><td>Normal, Uniform</td></tr>
+  </table>
+
+  <h2>7. Normal Distribution: Important Values</h2>
+  <div class="formula">
+    For Z ~ N(0, 1) (standard normal):<br>
+    P(-1 &le; Z &le; 1) &approx; 68.27%<br>
+    P(-2 &le; Z &le; 2) &approx; 95.45%<br>
+    P(-3 &le; Z &le; 3) &approx; 99.73%
+  </div>
+  <p>Standardization: If X ~ N(&mu;, &sigma;<sup>2</sup>), then Z = (X - &mu;)/&sigma; ~ N(0, 1).</p>
+
+  <h2>8. Joint Distributions and Covariance</h2>
+  <div class="formula">
+    Cov(X, Y) = E[XY] - E[X]E[Y]<br>
+    Correlation: &rho;(X, Y) = Cov(X, Y) / (&sigma;<sub>X</sub> &middot; &sigma;<sub>Y</sub>), where -1 &le; &rho; &le; 1<br>
+    Var(X + Y) = Var(X) + Var(Y) + 2Cov(X, Y)<br>
+    If X, Y independent: Cov(X, Y) = 0 (converse not always true)
+  </div>
+
+  <h2>9. Law of Total Probability</h2>
+  <div class="formula">
+    P(B) = &sum;<sub>i</sub> P(B|A<sub>i</sub>) &middot; P(A<sub>i</sub>)<br>
+    where {A<sub>1</sub>, A<sub>2</sub>, ..., A<sub>n</sub>} is a partition of the sample space.
+  </div>
+  <p>This is the denominator in Bayes' theorem and is essential for computing marginal probabilities.</p>
+
+  <h2>10. Markov and Chebyshev Inequalities</h2>
+  <table>
+    <tr><th>Inequality</th><th>Statement</th><th>Condition</th></tr>
+    <tr>
+      <td>Markov's</td>
+      <td>P(X &ge; a) &le; E[X]/a</td>
+      <td>X &ge; 0, a > 0</td>
+    </tr>
+    <tr>
+      <td>Chebyshev's</td>
+      <td>P(|X - &mu;| &ge; k&sigma;) &le; 1/k<sup>2</sup></td>
+      <td>Any distribution with finite variance</td>
+    </tr>
+  </table>
+
+  <div class="example">
+    <strong>Chebyshev Example:</strong> If &mu; = 100 and &sigma; = 15, what is the upper bound for P(|X - 100| &ge; 30)?<br>
+    k = 30/15 = 2. P(|X - 100| &ge; 30) &le; 1/4 = 0.25.<br>
+    At least 75% of data lies within 2 standard deviations of the mean.
+  </div>
+
+  <h2>11. Summary for GATE</h2>
+  <div class="mermaid">
+graph LR
+    A["Probability Problem"] --> B{"Type?"}
+    B -- "Conditional" --> C["Use Bayes or<br/>P(A|B) = P(A&cap;B)/P(B)"]
+    B -- "Distribution" --> D["Identify distribution<br/>Use mean/variance formulas"]
+    B -- "Counting" --> E["Use combinatorics<br/>for sample space"]
+    B -- "Bounds" --> F["Markov or Chebyshev<br/>inequality"]
+  </div>
+
+  <ul>
+    <li>Master Bayes' theorem -- it appears in GATE almost every year.</li>
+    <li>Know the mean and variance of all standard distributions by heart.</li>
+    <li>Poisson is the only common distribution where mean equals variance.</li>
+    <li>Memoryless property: only Geometric (discrete) and Exponential (continuous).</li>
+    <li>Independent events: P(A &cap; B) = P(A)P(B). Mutually exclusive: P(A &cap; B) = 0. These are different.</li>
+    <li>Chebyshev's inequality gives distribution-free bounds on probability.</li>
+    <li>Central Limit Theorem: sum of many i.i.d. variables approaches Normal distribution.</li>
+    <li>Standardize Normal distributions to use Z-tables: Z = (X - &mu;)/&sigma;.</li>
+  </ul>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Probability and Statistics Quiz",
+      "questions": [
+        {
+          "question": "A box contains 4 red balls and 6 blue balls. Two balls are drawn without replacement. What is the probability that both are red?",
+          "options": ["2/15", "4/25", "1/5", "16/100"],
+          "answer": 0,
+          "explanation": "P(both red) = (4/10) * (3/9) = 12/90 = 2/15. Without replacement, the second draw has one fewer red ball and one fewer total."
+        },
+        {
+          "question": "If X follows a Poisson distribution with mean 3, what is P(X = 0)?",
+          "options": ["e^(-3)", "3e^(-3)", "1 - e^(-3)", "0"],
+          "answer": 0,
+          "explanation": "For Poisson with lambda = 3: P(X=0) = e^(-3) * 3^0 / 0! = e^(-3) approximately 0.0498."
+        },
+        {
+          "question": "Events A and B are independent with P(A) = 0.4 and P(B) = 0.5. What is P(A union B)?",
+          "options": ["0.9", "0.7", "0.2", "0.5"],
+          "answer": 1,
+          "explanation": "P(A union B) = P(A) + P(B) - P(A intersection B) = 0.4 + 0.5 - (0.4)(0.5) = 0.9 - 0.2 = 0.7. Since they are independent, P(A intersection B) = P(A)P(B)."
+        },
+        {
+          "question": "Let X be a random variable with E[X] = 5 and Var(X) = 4. What is E[3X + 2] and Var(3X + 2)?",
+          "options": ["E = 17, Var = 36", "E = 17, Var = 14", "E = 15, Var = 36", "E = 17, Var = 12"],
+          "answer": 0,
+          "explanation": "E[3X + 2] = 3*E[X] + 2 = 3*5 + 2 = 17. Var(3X + 2) = 3^2 * Var(X) = 9 * 4 = 36. Adding a constant does not change variance; multiplying by a constant squares the factor."
+        },
+        {
+          "question": "A fair die is thrown independently until a 6 appears. What is the expected number of throws?",
+          "options": ["5", "6", "3.6", "7.2"],
+          "answer": 1,
+          "explanation": "This follows a Geometric distribution with p = 1/6. The expected value E[X] = 1/p = 6. The geometric distribution is memoryless."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

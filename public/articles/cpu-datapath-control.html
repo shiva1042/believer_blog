@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALU, Datapath and Control Unit — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>ALU, Datapath and Control Unit</h1>
+  <p class="article-section-tag">🖥️ Section 3: Computer Organization</p>
+
+  <h2>1. Arithmetic Logic Unit (ALU)</h2>
+  <p>The ALU is the computational core of the CPU. It performs arithmetic operations (add, subtract, multiply, divide) and logical operations (AND, OR, XOR, NOT, shift) on binary data.</p>
+
+  <h3>1.1 ALU Operations</h3>
+  <table>
+    <tr><th>Category</th><th>Operations</th></tr>
+    <tr><td>Arithmetic</td><td>ADD, SUB, MUL, DIV, INC, DEC, NEG</td></tr>
+    <tr><td>Logical</td><td>AND, OR, XOR, NOT, NAND, NOR</td></tr>
+    <tr><td>Shift</td><td>Logical Shift Left/Right, Arithmetic Shift Left/Right, Rotate Left/Right</td></tr>
+    <tr><td>Comparison</td><td>CMP (sets flags based on subtraction result)</td></tr>
+  </table>
+
+  <h3>1.2 ALU Status Flags</h3>
+  <table>
+    <tr><th>Flag</th><th>Symbol</th><th>Condition</th><th>Use</th></tr>
+    <tr><td>Zero</td><td>Z</td><td>Result = 0</td><td>Equality testing</td></tr>
+    <tr><td>Carry</td><td>C</td><td>Carry/borrow out of MSB</td><td>Unsigned overflow detection</td></tr>
+    <tr><td>Overflow</td><td>V</td><td>Signed result exceeds range</td><td>Signed overflow detection</td></tr>
+    <tr><td>Sign/Negative</td><td>N or S</td><td>MSB of result = 1</td><td>Negative result indicator</td></tr>
+  </table>
+
+  <div class="note">
+    <p><strong>Overflow vs Carry:</strong> The carry flag indicates unsigned overflow. The overflow flag (V) indicates signed overflow. They are independent. V = C<sub>n</sub> XOR C<sub>n-1</sub> (carry into MSB XOR carry out of MSB).</p>
+  </div>
+
+  <h3>1.3 Shift Operations Explained</h3>
+  <table>
+    <tr><th>Operation</th><th>Action</th><th>Fill Bit</th><th>Use</th></tr>
+    <tr><td>Logical Shift Left</td><td>Shift bits left</td><td>0 fills LSB</td><td>Multiply by 2</td></tr>
+    <tr><td>Logical Shift Right</td><td>Shift bits right</td><td>0 fills MSB</td><td>Unsigned divide by 2</td></tr>
+    <tr><td>Arithmetic Shift Right</td><td>Shift bits right</td><td>Sign bit fills MSB</td><td>Signed divide by 2</td></tr>
+    <tr><td>Rotate Left</td><td>Shift left, MSB wraps to LSB</td><td>MSB wraps</td><td>Circular operations</td></tr>
+    <tr><td>Rotate Right</td><td>Shift right, LSB wraps to MSB</td><td>LSB wraps</td><td>Circular operations</td></tr>
+  </table>
+
+  <h2>2. Datapath Components</h2>
+  <p>The datapath is the hardware that performs data processing operations. It consists of functional units and interconnections.</p>
+
+  <h3>2.1 Key Components</h3>
+  <table>
+    <tr><th>Component</th><th>Function</th></tr>
+    <tr><td>Program Counter (PC)</td><td>Holds address of next instruction</td></tr>
+    <tr><td>Instruction Register (IR)</td><td>Holds current instruction being executed</td></tr>
+    <tr><td>Memory Address Register (MAR)</td><td>Holds address for memory access</td></tr>
+    <tr><td>Memory Data Register (MDR)</td><td>Holds data read from or written to memory</td></tr>
+    <tr><td>Register File</td><td>Set of general-purpose registers</td></tr>
+    <tr><td>ALU</td><td>Performs computations</td></tr>
+    <tr><td>Multiplexers</td><td>Select between multiple data sources</td></tr>
+    <tr><td>Buses</td><td>Data transfer pathways</td></tr>
+  </table>
+
+  <h3>2.2 CPU Datapath Diagram</h3>
+  <div class="mermaid">
+flowchart TD
+    PC["Program Counter (PC)"] --> MAR["MAR"]
+    MAR --> MEM["Memory"]
+    MEM --> MDR["MDR"]
+    MDR --> IR["Instruction Register"]
+    IR --> CU["Control Unit"]
+    IR --> RF["Register File"]
+    CU --> |"Control Signals"| RF
+    CU --> |"Control Signals"| ALU["ALU"]
+    CU --> |"Control Signals"| MEM
+    RF --> |"Read Data 1"| MUXA["MUX A"]
+    RF --> |"Read Data 2"| MUXB["MUX B"]
+    MDR --> MUXB
+    IR --> |"Immediate"| MUXB
+    MUXA --> ALU
+    MUXB --> ALU
+    ALU --> |"Result"| RF
+    ALU --> |"Flags"| CU
+    ALU --> |"Address"| MAR
+  </div>
+
+  <h3>2.3 Bus Organization</h3>
+  <table>
+    <tr><th>Bus Type</th><th>Description</th><th>Pros</th><th>Cons</th></tr>
+    <tr><td>Single Bus</td><td>One shared bus for all transfers</td><td>Simple, low cost</td><td>Slow (one transfer at a time)</td></tr>
+    <tr><td>Two Bus</td><td>Two buses for parallel transfers</td><td>Faster than single</td><td>More complex</td></tr>
+    <tr><td>Three Bus</td><td>Two source buses + one destination</td><td>Fast (simultaneous read/write)</td><td>Most complex, costly</td></tr>
+  </table>
+
+  <h2>3. Control Unit</h2>
+  <p>The control unit generates the sequence of control signals that orchestrate instruction execution. It uses the opcode and flags to determine what actions to take at each step.</p>
+
+  <h3>3.1 Hardwired Control Unit</h3>
+  <p>Control logic is implemented directly with combinational and sequential circuits (gates, flip-flops, decoders).</p>
+  <table>
+    <tr><th>Advantage</th><th>Disadvantage</th></tr>
+    <tr><td>Very fast execution</td><td>Complex to design</td></tr>
+    <tr><td>Optimized for specific ISA</td><td>Difficult to modify/extend</td></tr>
+    <tr><td>Used in RISC processors</td><td>Inflexible for complex instruction sets</td></tr>
+  </table>
+
+  <h3>3.2 Microprogrammed Control Unit</h3>
+  <p>Control signals are stored as microinstructions in a control memory (control store). Each machine instruction is executed by a sequence of microinstructions.</p>
+  <table>
+    <tr><th>Advantage</th><th>Disadvantage</th></tr>
+    <tr><td>Easy to design and modify</td><td>Slower than hardwired</td></tr>
+    <tr><td>Supports complex instruction sets</td><td>Requires control memory</td></tr>
+    <tr><td>Used in CISC processors</td><td>Additional fetch overhead for microinstructions</td></tr>
+  </table>
+
+  <h3>3.3 Comparison</h3>
+  <table>
+    <tr><th>Feature</th><th>Hardwired</th><th>Microprogrammed</th></tr>
+    <tr><td>Speed</td><td>Faster</td><td>Slower</td></tr>
+    <tr><td>Flexibility</td><td>Low</td><td>High</td></tr>
+    <tr><td>Cost (for complex ISA)</td><td>High</td><td>Lower</td></tr>
+    <tr><td>Design complexity</td><td>High</td><td>Lower</td></tr>
+    <tr><td>Typical use</td><td>RISC</td><td>CISC</td></tr>
+  </table>
+
+  <h3>3.4 Horizontal vs Vertical Microprogramming</h3>
+  <table>
+    <tr><th>Feature</th><th>Horizontal</th><th>Vertical</th></tr>
+    <tr><td>Microinstruction width</td><td>Wide (many bits)</td><td>Narrow (fewer bits)</td></tr>
+    <tr><td>Parallelism</td><td>High (multiple signals per word)</td><td>Low (one or few operations)</td></tr>
+    <tr><td>Encoding</td><td>Minimal (each bit = one signal)</td><td>Encoded (needs decoder)</td></tr>
+    <tr><td>Control memory size</td><td>Large (wide words)</td><td>Smaller (narrow words but more words)</td></tr>
+  </table>
+
+  <h2>4. Instruction Execution Cycle</h2>
+  <p>Every instruction goes through a series of steps called the instruction cycle.</p>
+
+  <h3>4.1 Stages</h3>
+  <div class="mermaid">
+flowchart LR
+    IF["IF: Fetch instruction from memory at PC"] --> ID["ID: Decode opcode, read registers"]
+    ID --> EX["EX: Execute ALU operation or compute address"]
+    EX --> MEM["MEM: Access memory if load/store"]
+    MEM --> WB["WB: Write result back to register"]
+    WB --> IF
+  </div>
+
+  <h3>4.2 Detailed Steps</h3>
+  <table>
+    <tr><th>Stage</th><th>Actions</th><th>Active Components</th></tr>
+    <tr><td>Instruction Fetch (IF)</td><td>MAR &larr; PC; IR &larr; M[MAR]; PC &larr; PC + 4</td><td>PC, MAR, Memory, MDR, IR</td></tr>
+    <tr><td>Instruction Decode (ID)</td><td>Decode opcode; Read source registers</td><td>IR, Control Unit, Register File</td></tr>
+    <tr><td>Execute (EX)</td><td>ALU operation or address calculation</td><td>ALU, MUXes</td></tr>
+    <tr><td>Memory Access (MEM)</td><td>Read/Write memory (for load/store)</td><td>MAR, MDR, Memory</td></tr>
+    <tr><td>Write Back (WB)</td><td>Write ALU result or memory data to register</td><td>Register File, MUX</td></tr>
+  </table>
+
+  <h3>4.3 Micro-operations Example: ADD R1, R2, R3</h3>
+  <table>
+    <tr><th>Step</th><th>Micro-operation</th></tr>
+    <tr><td>IF</td><td>MAR &larr; PC; IR &larr; M[MAR]; PC &larr; PC + 4</td></tr>
+    <tr><td>ID</td><td>A &larr; R[rs1]; B &larr; R[rs2]</td></tr>
+    <tr><td>EX</td><td>ALUOut &larr; A + B</td></tr>
+    <tr><td>WB</td><td>R[rd] &larr; ALUOut</td></tr>
+  </table>
+
+  <h3>4.4 Micro-operations Example: LOAD R1, offset(R2)</h3>
+  <table>
+    <tr><th>Step</th><th>Micro-operation</th></tr>
+    <tr><td>IF</td><td>MAR &larr; PC; IR &larr; M[MAR]; PC &larr; PC + 4</td></tr>
+    <tr><td>ID</td><td>A &larr; R[rs]; Imm &larr; sign-extend(offset)</td></tr>
+    <tr><td>EX</td><td>ALUOut &larr; A + Imm</td></tr>
+    <tr><td>MEM</td><td>MDR &larr; M[ALUOut]</td></tr>
+    <tr><td>WB</td><td>R[rd] &larr; MDR</td></tr>
+  </table>
+
+  <h2>5. Single-Cycle vs Multi-Cycle Implementation</h2>
+  <table>
+    <tr><th>Feature</th><th>Single-Cycle</th><th>Multi-Cycle</th></tr>
+    <tr><td>Clock period</td><td>Set by longest instruction</td><td>Set by longest stage</td></tr>
+    <tr><td>CPI (Cycles Per Instruction)</td><td>1</td><td>3-5 (varies)</td></tr>
+    <tr><td>Hardware utilization</td><td>Low (components idle most of cycle)</td><td>Higher (components reused)</td></tr>
+    <tr><td>Performance</td><td>Fast for uniform instructions</td><td>Better for variable-length operations</td></tr>
+  </table>
+
+  <div class="note">
+    <p><strong>Performance formula:</strong> CPU Time = Instruction Count &times; CPI &times; Clock Period. Improving any factor improves performance.</p>
+  </div>
+
+  <h2>6. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Know the difference between hardwired and microprogrammed control for comparison questions.</li>
+      <li>Be able to trace micro-operations for basic instructions (ADD, LOAD, STORE, BRANCH).</li>
+      <li>Understand that overflow flag uses signed arithmetic while carry flag uses unsigned arithmetic.</li>
+      <li>Arithmetic shift right preserves the sign bit; logical shift right fills with 0.</li>
+      <li>Single-cycle: CPI=1 but long clock period. Multi-cycle: shorter clock but variable CPI.</li>
+      <li>Horizontal microprogramming = wide word, more parallelism, no decoding needed.</li>
+    </ul>
+  </div>
+
+</article>
+</body>
+</html>

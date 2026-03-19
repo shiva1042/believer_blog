@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Revision: Compiler Design — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Quick Revision: Compiler Design</h1>
+  <p class="article-section-tag">📝 Quick Revision</p>
+
+  <h2>1. Compiler Phases</h2>
+  <table>
+    <tr><th>Phase</th><th>Input</th><th>Output</th><th>Key Tool</th></tr>
+    <tr><td>Lexical Analysis</td><td>Source code</td><td>Token stream</td><td>Finite Automata, Regular Expressions</td></tr>
+    <tr><td>Syntax Analysis (Parsing)</td><td>Token stream</td><td>Parse tree / AST</td><td>CFG, LL/LR parsers</td></tr>
+    <tr><td>Semantic Analysis</td><td>Parse tree</td><td>Annotated tree</td><td>Attribute grammars, type checking</td></tr>
+    <tr><td>Intermediate Code Gen</td><td>Annotated tree</td><td>Three-address code</td><td>Syntax-directed translation</td></tr>
+    <tr><td>Code Optimization</td><td>Intermediate code</td><td>Optimized intermediate code</td><td>Data flow analysis</td></tr>
+    <tr><td>Code Generation</td><td>Optimized code</td><td>Target machine code</td><td>Register allocation</td></tr>
+  </table>
+  <p>Additionally: <strong>Symbol Table</strong> is used across all phases. <strong>Error Handler</strong> detects errors at each phase.</p>
+
+  <h2>2. FIRST and FOLLOW Computation</h2>
+
+  <h3>FIRST(X) Rules</h3>
+  <ol>
+    <li>If X is terminal: FIRST(X) = {X}.</li>
+    <li>If X &rarr; &epsilon;: add &epsilon; to FIRST(X).</li>
+    <li>If X &rarr; Y1Y2...Yk: add FIRST(Y1) - {&epsilon;} to FIRST(X). If &epsilon; in FIRST(Y1), add FIRST(Y2) - {&epsilon;}, and so on. If all Yi can derive &epsilon;, add &epsilon;.</li>
+  </ol>
+
+  <h3>FOLLOW(A) Rules</h3>
+  <ol>
+    <li>FOLLOW(Start) includes $.</li>
+    <li>If A &rarr; &alpha;B&beta;: add FIRST(&beta;) - {&epsilon;} to FOLLOW(B).</li>
+    <li>If A &rarr; &alpha;B or A &rarr; &alpha;B&beta; where &epsilon; in FIRST(&beta;): add FOLLOW(A) to FOLLOW(B).</li>
+  </ol>
+  <div class="note"><strong>Remember:</strong> &epsilon; is NEVER in any FOLLOW set. FIRST can contain &epsilon;, FOLLOW cannot.</div>
+
+  <h2>3. Parser Comparison</h2>
+  <table>
+    <tr><th>Property</th><th>LL(1)</th><th>SLR(1)</th><th>LALR(1)</th><th>CLR(1)</th></tr>
+    <tr><td>Direction</td><td>Top-down</td><td>Bottom-up</td><td>Bottom-up</td><td>Bottom-up</td></tr>
+    <tr><td>Derivation</td><td>Leftmost</td><td>Rightmost (reverse)</td><td>Rightmost (reverse)</td><td>Rightmost (reverse)</td></tr>
+    <tr><td>Parse table</td><td>Predictive table</td><td>Action/Goto table</td><td>Action/Goto table</td><td>Action/Goto table</td></tr>
+    <tr><td>States</td><td>-</td><td>LR(0) items</td><td>LR(1) items (merged)</td><td>LR(1) items</td></tr>
+    <tr><td>Lookahead</td><td>FIRST/FOLLOW</td><td>FOLLOW for reduce</td><td>Lookahead in items</td><td>Lookahead in items</td></tr>
+    <tr><td>Power</td><td>LL(1)</td><td>SLR(1)</td><td>LALR(1)</td><td>LR(1)</td></tr>
+    <tr><td>Table size</td><td>Small</td><td>Small</td><td>Same as SLR</td><td>Largest</td></tr>
+  </table>
+  <p><strong>Power hierarchy:</strong> LL(1) &sub; LR(0) &sub; SLR(1) &sub; LALR(1) &sub; CLR(1)</p>
+
+  <h3>LL(1) Grammar Conditions</h3>
+  <ul>
+    <li>No left recursion.</li>
+    <li>Must be left-factored.</li>
+    <li>For A &rarr; &alpha; | &beta;: FIRST(&alpha;) &cap; FIRST(&beta;) = {}.</li>
+    <li>If &epsilon; in FIRST(&alpha;), then FIRST(&beta;) &cap; FOLLOW(A) = {}.</li>
+  </ul>
+
+  <h3>LR Conflicts</h3>
+  <ul>
+    <li><strong>Shift-Reduce conflict:</strong> Parser cannot decide whether to shift or reduce.</li>
+    <li><strong>Reduce-Reduce conflict:</strong> Parser cannot decide which production to reduce by.</li>
+    <li>SLR resolves using FOLLOW. LALR and CLR use more precise lookaheads.</li>
+  </ul>
+
+  <h2>4. Three-Address Code Forms</h2>
+  <table>
+    <tr><th>Form</th><th>Example</th><th>Description</th></tr>
+    <tr><td>Assignment</td><td>x = y op z</td><td>Binary operation</td></tr>
+    <tr><td>Unary</td><td>x = op y</td><td>Unary operation (e.g., negation)</td></tr>
+    <tr><td>Copy</td><td>x = y</td><td>Copy statement</td></tr>
+    <tr><td>Conditional jump</td><td>if x relop y goto L</td><td>Conditional branch</td></tr>
+    <tr><td>Unconditional jump</td><td>goto L</td><td>Unconditional branch</td></tr>
+    <tr><td>Indexed</td><td>x = y[i] or x[i] = y</td><td>Array access</td></tr>
+    <tr><td>Pointer</td><td>x = &amp;y or x = *y or *x = y</td><td>Address/dereference</td></tr>
+    <tr><td>Call</td><td>param x; call p, n</td><td>Function call with n params</td></tr>
+  </table>
+
+  <h3>Representations</h3>
+  <ul>
+    <li><strong>Quadruples:</strong> (op, arg1, arg2, result) — most common.</li>
+    <li><strong>Triples:</strong> (op, arg1, arg2) — result is the triple number.</li>
+    <li><strong>Indirect triples:</strong> Like triples with an index array for reordering.</li>
+  </ul>
+
+  <h2>5. Optimization Techniques</h2>
+
+  <h3>Machine-Independent Optimizations</h3>
+  <table>
+    <tr><th>Technique</th><th>Description</th></tr>
+    <tr><td>Constant folding</td><td>Evaluate constant expressions at compile time: x = 2+3 &rarr; x = 5</td></tr>
+    <tr><td>Constant propagation</td><td>Replace variable with its constant value</td></tr>
+    <tr><td>Common subexpression elimination</td><td>Avoid recomputing same expression: t1=a+b; t2=a+b &rarr; t2=t1</td></tr>
+    <tr><td>Dead code elimination</td><td>Remove code whose results are never used</td></tr>
+    <tr><td>Copy propagation</td><td>After x=y, replace uses of x with y</td></tr>
+    <tr><td>Loop invariant code motion</td><td>Move computations that don't change inside a loop to outside</td></tr>
+    <tr><td>Strength reduction</td><td>Replace expensive ops with cheaper ones: x*2 &rarr; x&lt;&lt;1</td></tr>
+    <tr><td>Induction variable elimination</td><td>Simplify loop counter arithmetic</td></tr>
+  </table>
+
+  <h3>Machine-Dependent Optimizations</h3>
+  <ul>
+    <li>Register allocation (graph coloring)</li>
+    <li>Instruction scheduling</li>
+    <li>Peephole optimization (pattern matching on small instruction sequences)</li>
+  </ul>
+
+  <h2>6. Syntax-Directed Translation</h2>
+  <ul>
+    <li><strong>Synthesized attributes:</strong> computed from children. S-attributed definition uses only synthesized.</li>
+    <li><strong>Inherited attributes:</strong> computed from parent/siblings. L-attributed allows both (left-to-right evaluation).</li>
+    <li>S-attributed &sub; L-attributed. S-attributed can be evaluated in bottom-up parse.</li>
+    <li>L-attributed can be evaluated in a single left-to-right depth-first traversal.</li>
+  </ul>
+
+  <div class="important"><strong>Most Tested:</strong> FIRST/FOLLOW computation, identifying LL(1)/SLR/LALR grammars, three-address code generation, and optimization technique identification.</div>
+
+</article>
+</body>
+</html>

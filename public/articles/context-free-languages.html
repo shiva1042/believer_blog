@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context-Free Languages and Pushdown Automata — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #e8eaf6; color: #1a237e; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Context-Free Languages and Pushdown Automata</h1>
+  <p class="article-section-tag">🔄 Section 6: Theory of Computation</p>
+
+  <h2>1. Context-Free Grammars (CFG)</h2>
+
+  <h3>1.1 Formal Definition</h3>
+  <p>A CFG is a 4-tuple G = (V, T, P, S) where:</p>
+  <ul>
+    <li><strong>V:</strong> Finite set of variables (non-terminals)</li>
+    <li><strong>T:</strong> Finite set of terminals (alphabet symbols)</li>
+    <li><strong>P:</strong> Finite set of production rules of the form A -> alpha, where A is in V and alpha is in (V union T)*</li>
+    <li><strong>S:</strong> Start variable (S in V)</li>
+  </ul>
+
+  <h3>1.2 Derivations</h3>
+  <p><strong>Leftmost Derivation:</strong> At each step, replace the leftmost non-terminal.</p>
+  <p><strong>Rightmost Derivation:</strong> At each step, replace the rightmost non-terminal.</p>
+
+  <pre>
+Example CFG for L = {a^n b^n | n >= 1}:
+  S -> aSb | ab
+
+Derivation of "aaabbb":
+  S => aSb => aaSbb => aaabbb  (leftmost derivation)
+  </pre>
+
+  <h3>1.3 Parse Trees</h3>
+  <p>A parse tree is a graphical representation of a derivation. The root is the start symbol, leaves are terminals, and internal nodes are non-terminals. The yield (concatenation of leaves) gives the derived string.</p>
+
+  <h2>2. Ambiguity in Grammars</h2>
+  <p>A grammar is <strong>ambiguous</strong> if there exists a string that has two or more distinct leftmost derivations (equivalently, two or more distinct parse trees).</p>
+
+  <pre>
+Ambiguous grammar for arithmetic:
+  E -> E + E | E * E | id
+
+String "id + id * id" has two parse trees:
+  (id + id) * id   and   id + (id * id)
+  </pre>
+
+  <h3>Resolving Ambiguity</h3>
+  <p>Rewrite the grammar to enforce precedence and associativity:</p>
+  <pre>
+Unambiguous grammar:
+  E -> E + T | T
+  T -> T * F | F
+  F -> id | (E)
+  </pre>
+
+  <div class="warning">
+    <strong>Important:</strong> Some context-free languages are inherently ambiguous — every grammar for them is ambiguous. Example: L = {a^i b^j c^k | i = j or j = k}.
+  </div>
+
+  <h2>3. Normal Forms</h2>
+
+  <h3>3.1 Chomsky Normal Form (CNF)</h3>
+  <p>Every production is in one of these forms:</p>
+  <ul>
+    <li>A -> BC (two non-terminals)</li>
+    <li>A -> a (single terminal)</li>
+    <li>S -> epsilon (only if epsilon is in the language, and S does not appear on any RHS)</li>
+  </ul>
+
+  <h3>Conversion to CNF</h3>
+  <ol>
+    <li>Eliminate epsilon-productions (A -> epsilon).</li>
+    <li>Eliminate unit productions (A -> B).</li>
+    <li>Eliminate useless symbols.</li>
+    <li>Replace terminals in bodies of length >= 2 with new non-terminals.</li>
+    <li>Break bodies of length > 2 into chains of binary productions.</li>
+  </ol>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> CNF is important because the CYK parsing algorithm requires the grammar to be in CNF. CYK runs in O(n3|G|) time where n is the string length.
+  </div>
+
+  <h3>3.2 Greibach Normal Form (GNF)</h3>
+  <p>Every production is of the form: A -> a alpha, where a is a terminal and alpha is a (possibly empty) string of non-terminals.</p>
+  <p>GNF ensures that exactly one terminal is generated at each derivation step. Useful for constructing PDAs — each step reads exactly one input symbol.</p>
+
+  <h2>4. Chomsky Hierarchy</h2>
+  <div class="mermaid">
+graph TD
+    A["Type 0: Recursively Enumerable Languages<br>Recognized by: Turing Machine"] --> B["Type 1: Context-Sensitive Languages<br>Recognized by: Linear Bounded Automaton"]
+    B --> C["Type 2: Context-Free Languages<br>Recognized by: Pushdown Automaton"]
+    C --> D["Type 3: Regular Languages<br>Recognized by: Finite Automaton"]
+    style A fill:#e53935,color:#fff
+    style B fill:#ff9800,color:#fff
+    style C fill:#4caf50,color:#fff
+    style D fill:#2196f3,color:#fff
+  </div>
+
+  <table>
+    <tr><th>Type</th><th>Grammar</th><th>Language</th><th>Automaton</th><th>Production Form</th></tr>
+    <tr><td>3</td><td>Regular</td><td>Regular</td><td>FA (DFA/NFA)</td><td>A -> aB | a</td></tr>
+    <tr><td>2</td><td>Context-Free</td><td>CFL</td><td>PDA</td><td>A -> any string</td></tr>
+    <tr><td>1</td><td>Context-Sensitive</td><td>CSL</td><td>LBA</td><td>|LHS| &le; |RHS|</td></tr>
+    <tr><td>0</td><td>Unrestricted</td><td>RE</td><td>TM</td><td>No restriction</td></tr>
+  </table>
+
+  <h2>5. Pushdown Automata (PDA)</h2>
+
+  <h3>5.1 Formal Definition</h3>
+  <p>A PDA is a 7-tuple M = (Q, Sigma, Gamma, delta, q0, Z0, F) where:</p>
+  <ul>
+    <li><strong>Q:</strong> Finite set of states</li>
+    <li><strong>Sigma:</strong> Input alphabet</li>
+    <li><strong>Gamma:</strong> Stack alphabet</li>
+    <li><strong>delta:</strong> Transition function, delta: Q x (Sigma union {epsilon}) x Gamma -> P(Q x Gamma*)</li>
+    <li><strong>q0:</strong> Start state</li>
+    <li><strong>Z0:</strong> Initial stack symbol</li>
+    <li><strong>F:</strong> Set of accept states</li>
+  </ul>
+
+  <h3>5.2 Acceptance Modes</h3>
+  <table>
+    <tr><th>Mode</th><th>Condition</th><th>Equivalence</th></tr>
+    <tr><td>By Final State</td><td>Input consumed and in accept state</td><td rowspan="2">Both modes are equivalent in power</td></tr>
+    <tr><td>By Empty Stack</td><td>Input consumed and stack is empty</td></tr>
+  </table>
+
+  <h3>5.3 Deterministic PDA (DPDA) vs. Non-deterministic PDA (NPDA)</h3>
+  <ul>
+    <li>DPDA: At most one move possible from any configuration.</li>
+    <li>NPDA: Multiple moves possible (more powerful than DPDA).</li>
+    <li><strong>DPDA recognizes DCFL (a proper subset of CFL).</strong></li>
+    <li>Every regular language is a DCFL. DCFL is a proper subset of CFL.</li>
+    <li>Example: {ww^R | w in {a,b}*} is CFL but not DCFL.</li>
+  </ul>
+
+  <h2>6. CFG to PDA Conversion</h2>
+  <p>Given a CFG G = (V, T, P, S), construct a PDA that simulates leftmost derivations:</p>
+  <ol>
+    <li>Push the start symbol S onto the stack.</li>
+    <li>If top of stack is a non-terminal A, non-deterministically choose a production A -> alpha and replace A with alpha on the stack.</li>
+    <li>If top of stack is a terminal a that matches the current input symbol, pop it and advance the input.</li>
+    <li>Accept if input is consumed and stack is empty.</li>
+  </ol>
+
+  <h2>7. Pumping Lemma for Context-Free Languages</h2>
+  <p>Used to prove a language is <strong>NOT context-free</strong>.</p>
+
+  <h3>Statement</h3>
+  <p>If L is context-free, then there exists a pumping length p such that for every string s in L with |s| >= p, s can be written as s = uvwxy where:</p>
+  <ol>
+    <li>|vx| > 0 (at least one of v, x is non-empty)</li>
+    <li>|vwx| &le; p</li>
+    <li>For all i >= 0, uv^i wx^i y is in L</li>
+  </ol>
+
+  <h3>Example: L = {a^n b^n c^n | n >= 0} is not context-free</h3>
+  <pre>
+Choose s = a^p b^p c^p.
+For any decomposition s = uvwxy with |vwx| &le; p and |vx| > 0:
+  vwx cannot contain all three symbols (a, b, c) since |vwx| &le; p.
+  So pumping (i=2) will increase the count of at most two of
+  the three symbols, making the string not in L.
+Contradiction. L is not context-free.
+  </pre>
+
+  <h2>8. Closure Properties of CFLs</h2>
+  <table>
+    <tr><th>Operation</th><th>Closed?</th><th>Notes</th></tr>
+    <tr><td>Union</td><td>Yes</td><td>New start S -> S1 | S2</td></tr>
+    <tr><td>Concatenation</td><td>Yes</td><td>New start S -> S1 S2</td></tr>
+    <tr><td>Kleene Star</td><td>Yes</td><td>New start S -> SS1 | epsilon</td></tr>
+    <tr><td>Intersection</td><td><strong>No</strong></td><td>{a^n b^n c^n} = {a^n b^n c*} intersect {a* b^n c^n}</td></tr>
+    <tr><td>Complement</td><td><strong>No</strong></td><td>Since not closed under intersection</td></tr>
+    <tr><td>Intersection with Regular</td><td>Yes</td><td>Product construction with DFA</td></tr>
+    <tr><td>Reversal</td><td>Yes</td><td>Reverse all productions</td></tr>
+    <tr><td>Homomorphism</td><td>Yes</td><td>Replace terminals</td></tr>
+    <tr><td>Inverse Homomorphism</td><td>Yes</td><td>Standard construction</td></tr>
+  </table>
+
+  <div class="warning">
+    <strong>Critical GATE Point:</strong> CFLs are NOT closed under intersection and complement. However, the intersection of a CFL with a regular language is always a CFL. This is a frequently tested fact.
+  </div>
+
+  <h2>9. Decidability of CFL Problems</h2>
+  <table>
+    <tr><th>Problem</th><th>Decidable?</th></tr>
+    <tr><td>Membership (is w in L(G)?)</td><td>Yes — CYK algorithm O(n3)</td></tr>
+    <tr><td>Emptiness (is L(G) = empty?)</td><td>Yes — check if start symbol generates terminals</td></tr>
+    <tr><td>Finiteness (is L(G) finite?)</td><td>Yes — check for cycles in variable dependency graph</td></tr>
+    <tr><td>Equivalence (L(G1) = L(G2)?)</td><td><strong>Undecidable</strong></td></tr>
+    <tr><td>Ambiguity (is G ambiguous?)</td><td><strong>Undecidable</strong></td></tr>
+    <tr><td>Is L(G) regular?</td><td><strong>Undecidable</strong></td></tr>
+    <tr><td>Is L(G) = Sigma*?</td><td><strong>Undecidable</strong></td></tr>
+  </table>
+
+  <h2>10. Key GATE Takeaways</h2>
+  <ul>
+    <li>CFGs are more powerful than regular grammars and can express nested structures (balanced parentheses, a^n b^n).</li>
+    <li>Ambiguity means multiple parse trees for the same string. Some CFLs are inherently ambiguous.</li>
+    <li>CNF is required for CYK parsing. Every CFG can be converted to CNF.</li>
+    <li>PDA = CFG in language recognition power. DPDA recognizes a proper subset (DCFLs).</li>
+    <li>CFLs are closed under union, concatenation, Kleene star, but NOT intersection or complement.</li>
+    <li>CFL intersect Regular = CFL. This is a powerful tool for proofs.</li>
+    <li>Pumping lemma for CFLs uses two pumpable substrings (v and x).</li>
+  </ul>
+</article>
+</body>
+</html>

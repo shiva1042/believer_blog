@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lexical Analysis — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fce4ec; color: #c62828; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Lexical Analysis</h1>
+  <p class="article-section-tag">🔧 Section 7: Compiler Design</p>
+
+  <h2>1. Compiler Phases Overview</h2>
+  <p>A compiler translates source code into target code through a series of phases. Lexical analysis is the first phase.</p>
+
+  <div class="mermaid">
+flowchart TD
+    A["Source Program"] --> B["Lexical Analyzer<br>(Scanner)"]
+    B -->|"Token Stream"| C["Syntax Analyzer<br>(Parser)"]
+    C -->|"Parse Tree"| D["Semantic Analyzer"]
+    D -->|"Annotated Parse Tree"| E["Intermediate Code Generator"]
+    E -->|"Intermediate Code"| F["Code Optimizer"]
+    F -->|"Optimized IC"| G["Code Generator"]
+    G --> H["Target Program"]
+    B <-->|"Interact"| I["Symbol Table"]
+    C <--> I
+    D <--> I
+    E <--> I
+    style B fill:#ff9800,color:#fff,stroke:#e65100,stroke-width:3px
+    style I fill:#9c27b0,color:#fff
+  </div>
+
+  <h2>2. Role of the Lexical Analyzer</h2>
+  <p>The lexical analyzer (scanner) reads the source program character by character and groups characters into meaningful sequences called <strong>lexemes</strong>, producing a stream of <strong>tokens</strong>.</p>
+
+  <h3>Primary Functions</h3>
+  <ul>
+    <li>Read input characters and produce tokens for the parser.</li>
+    <li>Strip out whitespace, comments, and other non-essential characters.</li>
+    <li>Correlate error messages with source line numbers.</li>
+    <li>Interact with the symbol table to store identifiers.</li>
+    <li>Handle macro expansion (in some implementations).</li>
+  </ul>
+
+  <h3>Why Separate Lexical Analysis?</h3>
+  <ul>
+    <li><strong>Simplicity:</strong> Separating scanning from parsing simplifies both phases.</li>
+    <li><strong>Efficiency:</strong> Specialized buffering techniques for character reading.</li>
+    <li><strong>Portability:</strong> Input-device-specific peculiarities isolated to the scanner.</li>
+  </ul>
+
+  <h2>3. Tokens, Patterns, and Lexemes</h2>
+
+  <table>
+    <tr><th>Concept</th><th>Definition</th><th>Example</th></tr>
+    <tr><td><strong>Token</strong></td><td>A category/class of lexemes</td><td>IDENTIFIER, NUMBER, IF, PLUS</td></tr>
+    <tr><td><strong>Pattern</strong></td><td>A rule describing the set of lexemes for a token</td><td>letter(letter|digit)* for IDENTIFIER</td></tr>
+    <tr><td><strong>Lexeme</strong></td><td>The actual character sequence matching a pattern</td><td>"count", "x1", "total"</td></tr>
+  </table>
+
+  <h3>Example: Tokenizing a Statement</h3>
+  <pre>
+Source: int count = 42 + x;
+
+Tokens produced:
+  &lt;KEYWORD, "int"&gt;
+  &lt;IDENTIFIER, "count"&gt;
+  &lt;ASSIGN_OP, "="&gt;
+  &lt;INTEGER_LITERAL, "42"&gt;
+  &lt;PLUS_OP, "+"&gt;
+  &lt;IDENTIFIER, "x"&gt;
+  &lt;SEMICOLON, ";"&gt;
+  </pre>
+
+  <h3>Common Token Categories</h3>
+  <table>
+    <tr><th>Token Type</th><th>Examples</th><th>Pattern</th></tr>
+    <tr><td>Keywords</td><td>if, else, while, int, return</td><td>Fixed strings (reserved words)</td></tr>
+    <tr><td>Identifiers</td><td>count, myVar, _temp</td><td>letter(letter|digit|_)*</td></tr>
+    <tr><td>Integer Literals</td><td>42, 0, 1024</td><td>digit+</td></tr>
+    <tr><td>Float Literals</td><td>3.14, 0.5, 1e10</td><td>digit+.digit+(e digit+)?</td></tr>
+    <tr><td>String Literals</td><td>"hello", "world"</td><td>"(any char except ")*"</td></tr>
+    <tr><td>Operators</td><td>+, -, *, /, ==, !=</td><td>Fixed strings</td></tr>
+    <tr><td>Delimiters</td><td>;, (, ), {, }</td><td>Fixed single characters</td></tr>
+  </table>
+
+  <h2>4. Regular Expressions for Token Specification</h2>
+  <p>Tokens are specified using regular expressions, which are then converted to finite automata for efficient recognition.</p>
+
+  <h3>Common RE Operations</h3>
+  <table>
+    <tr><th>Operation</th><th>Notation</th><th>Example</th></tr>
+    <tr><td>Union</td><td>R1 | R2</td><td>a | b matches "a" or "b"</td></tr>
+    <tr><td>Concatenation</td><td>R1 R2</td><td>ab matches "ab"</td></tr>
+    <tr><td>Kleene Closure</td><td>R*</td><td>a* matches "", "a", "aa", ...</td></tr>
+    <tr><td>Positive Closure</td><td>R+</td><td>a+ matches "a", "aa", "aaa", ...</td></tr>
+    <tr><td>Optional</td><td>R?</td><td>a? matches "" or "a"</td></tr>
+    <tr><td>Character Class</td><td>[a-z]</td><td>Any lowercase letter</td></tr>
+  </table>
+
+  <h3>Token Specification Examples</h3>
+  <pre>
+IDENTIFIER:  [a-zA-Z_][a-zA-Z0-9_]*
+INTEGER:     [0-9]+
+FLOAT:       [0-9]+\.[0-9]+(e[+-]?[0-9]+)?
+RELOP:       &lt; | &lt;= | == | != | &gt;= | &gt;
+COMMENT:     /\*([^*]|\*+[^*/])*\*+/    (C-style block comment)
+  </pre>
+
+  <h2>5. Finite Automata for Pattern Recognition</h2>
+  <p>The lexical analyzer uses finite automata to recognize tokens efficiently.</p>
+
+  <h3>5.1 From RE to NFA (Thompson's Construction)</h3>
+  <p>Each RE operator maps to a small NFA fragment. These fragments are composed to build an NFA for the entire RE.</p>
+
+  <h3>5.2 From NFA to DFA (Subset Construction)</h3>
+  <p>The NFA is converted to a DFA using subset construction for efficient (O(1) per character) scanning.</p>
+
+  <h3>5.3 Combining Multiple Token Patterns</h3>
+  <ol>
+    <li>Build an NFA for each token pattern.</li>
+    <li>Combine all NFAs with a new start state and epsilon transitions.</li>
+    <li>Convert the combined NFA to a single DFA.</li>
+    <li>Each accepting state in the DFA is labeled with the corresponding token type.</li>
+    <li>When multiple patterns match, use <strong>longest match</strong> and <strong>priority</strong> rules.</li>
+  </ol>
+
+  <div class="note">
+    <strong>Longest Match Rule:</strong> The scanner always returns the longest possible lexeme. For example, "iffy" is scanned as an identifier, not as keyword "if" followed by "fy".
+    <br><strong>Priority Rule:</strong> When two patterns match the same lexeme, the pattern listed first (higher priority) wins. Keywords are typically listed before identifiers.
+  </div>
+
+  <h2>6. Input Buffering</h2>
+  <p>The lexical analyzer uses buffering techniques to efficiently read source characters.</p>
+
+  <h3>6.1 Buffer Pairs</h3>
+  <p>Two buffers of size N (e.g., 4096 bytes) are used alternately. Two pointers are maintained:</p>
+  <ul>
+    <li><strong>lexemeBegin:</strong> Points to the start of the current lexeme.</li>
+    <li><strong>forward:</strong> Scans ahead until a match is found.</li>
+  </ul>
+
+  <h3>6.2 Sentinels</h3>
+  <p>A special sentinel character (e.g., EOF) is placed at the end of each buffer to eliminate the need for a separate end-of-buffer check at each character read, reducing the number of comparisons.</p>
+
+  <h2>7. LEX Tool Concept</h2>
+  <p>LEX (or Flex) is a lexical analyzer generator that automatically creates a scanner from token specifications.</p>
+
+  <h3>LEX Program Structure</h3>
+  <pre>
+%{
+  /* C declarations */
+%}
+
+/* Definitions (RE abbreviations) */
+digit   [0-9]
+letter  [a-zA-Z]
+
+%%
+
+/* Rules: pattern -> action */
+if          { return IF; }
+{letter}({letter}|{digit})*  { return ID; }
+{digit}+    { return NUM; }
+[ \t\n]+    { /* skip whitespace */ }
+
+%%
+
+/* User code (auxiliary functions) */
+  </pre>
+
+  <h3>LEX Processing Pipeline</h3>
+  <pre>
+LEX specification (.l file)
+    --> LEX compiler
+        --> lex.yy.c (C source)
+            --> C compiler
+                --> Lexical analyzer (a.out)
+  </pre>
+
+  <h2>8. Symbol Table Interaction</h2>
+  <p>The lexical analyzer interacts with the symbol table in several ways:</p>
+  <ul>
+    <li>When an identifier is first encountered, it is inserted into the symbol table.</li>
+    <li>On subsequent occurrences, the symbol table is looked up to return the existing entry.</li>
+    <li>Keywords can be pre-loaded into the symbol table to distinguish them from identifiers.</li>
+    <li>The token returned to the parser includes a pointer to the symbol table entry.</li>
+  </ul>
+
+  <table>
+    <tr><th>Symbol Table Entry</th><th>Fields</th></tr>
+    <tr><td>Identifier name</td><td>"count"</td></tr>
+    <tr><td>Token type</td><td>IDENTIFIER</td></tr>
+    <tr><td>Data type</td><td>int (filled later by semantic analysis)</td></tr>
+    <tr><td>Scope</td><td>local/global (filled later)</td></tr>
+    <tr><td>Memory location</td><td>Offset (filled during code generation)</td></tr>
+  </table>
+
+  <h2>9. Error Handling in Lexical Analysis</h2>
+  <p>The lexical analyzer handles a limited set of errors:</p>
+  <ul>
+    <li><strong>Illegal characters:</strong> Characters not in the language alphabet.</li>
+    <li><strong>Unterminated strings:</strong> String literals without closing quotes.</li>
+    <li><strong>Unterminated comments:</strong> Block comments without closing delimiters.</li>
+    <li><strong>Numbers with invalid format:</strong> Such as "1.2.3".</li>
+  </ul>
+
+  <h3>Panic Mode Recovery</h3>
+  <p>When an error is found, the scanner deletes characters from the remaining input until a valid token is found. This is the simplest error recovery strategy.</p>
+
+  <h2>10. Key GATE Takeaways</h2>
+  <ul>
+    <li>The lexical analyzer converts character streams to token streams — the first phase of compilation.</li>
+    <li>Tokens are specified by regular expressions and recognized by finite automata (DFA).</li>
+    <li>Longest match rule and priority rule resolve ambiguities in token recognition.</li>
+    <li>LEX automates scanner construction from RE specifications.</li>
+    <li>The symbol table is shared across compiler phases; the scanner creates initial entries for identifiers.</li>
+    <li>Lexical analysis handles regular language features; anything requiring context-free power (like nested structures) is left to the parser.</li>
+    <li>Buffer pairs with sentinels optimize character-level I/O performance.</li>
+  </ul>
+</article>
+</body>
+</html>

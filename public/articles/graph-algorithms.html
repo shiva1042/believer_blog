@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Algorithms — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Graph Algorithms</h1>
+  <p class="article-section-tag">⚡ Section 5: Algorithms</p>
+
+  <h2>1. Graph Traversals</h2>
+
+  <h3>1.1 Breadth-First Search (BFS)</h3>
+  <p>BFS explores vertices level by level using a queue. It visits all vertices at distance k before any vertex at distance k+1.</p>
+  <pre>
+BFS(G, source):
+  for each vertex u in G:
+    color[u] = WHITE, dist[u] = infinity, parent[u] = NIL
+  color[source] = GRAY, dist[source] = 0
+  Q = empty queue
+  Enqueue(Q, source)
+  while Q is not empty:
+    u = Dequeue(Q)
+    for each neighbor v of u:
+      if color[v] == WHITE:
+        color[v] = GRAY
+        dist[v] = dist[u] + 1
+        parent[v] = u
+        Enqueue(Q, v)
+    color[u] = BLACK
+  </pre>
+  <p><strong>Time:</strong> O(V + E). <strong>Space:</strong> O(V). <strong>Applications:</strong> Shortest path in unweighted graphs, connected components, bipartite checking.</p>
+
+  <h3>1.2 Depth-First Search (DFS)</h3>
+  <p>DFS explores as deep as possible before backtracking, using a stack (or recursion).</p>
+  <pre>
+DFS(G):
+  for each vertex u in G:
+    color[u] = WHITE, parent[u] = NIL
+  time = 0
+  for each vertex u in G:
+    if color[u] == WHITE:
+      DFS-Visit(G, u)
+
+DFS-Visit(G, u):
+  time++; discover[u] = time; color[u] = GRAY
+  for each neighbor v of u:
+    if color[v] == WHITE:
+      parent[v] = u
+      DFS-Visit(G, v)
+  color[u] = BLACK; time++; finish[u] = time
+  </pre>
+  <p><strong>Time:</strong> O(V + E). <strong>Space:</strong> O(V). <strong>Applications:</strong> Topological sort, cycle detection, SCCs, articulation points, bridges.</p>
+
+  <h3>Edge Classification in DFS</h3>
+  <table>
+    <tr><th>Edge Type</th><th>Condition</th><th>Present In</th></tr>
+    <tr><td>Tree Edge</td><td>v is WHITE when (u,v) explored</td><td>Both directed and undirected</td></tr>
+    <tr><td>Back Edge</td><td>v is GRAY (ancestor)</td><td>Both (indicates cycle)</td></tr>
+    <tr><td>Forward Edge</td><td>v is BLACK, discover[u] &lt; discover[v]</td><td>Directed only</td></tr>
+    <tr><td>Cross Edge</td><td>v is BLACK, discover[u] &gt; discover[v]</td><td>Directed only</td></tr>
+  </table>
+
+  <h2>2. Minimum Spanning Tree (MST)</h2>
+  <p>A minimum spanning tree of a connected, weighted, undirected graph connects all vertices with the minimum total edge weight using exactly V-1 edges.</p>
+
+  <h3>2.1 Kruskal's Algorithm</h3>
+  <ol>
+    <li>Sort all edges by weight in ascending order.</li>
+    <li>For each edge (u, v) in sorted order: if u and v are in different components, add the edge to MST.</li>
+    <li>Use Union-Find (Disjoint Set) for efficient component tracking.</li>
+  </ol>
+  <p><strong>Time:</strong> O(E log E) for sorting + O(E * alpha(V)) for union-find = O(E log E) = O(E log V).</p>
+
+  <h3>2.2 Prim's Algorithm</h3>
+  <ol>
+    <li>Start from any vertex. Add it to the MST set.</li>
+    <li>Repeatedly add the minimum-weight edge that connects a vertex in the MST to a vertex outside.</li>
+    <li>Use a min-heap (priority queue) for efficiency.</li>
+  </ol>
+  <p><strong>Time:</strong> O(E log V) with binary heap, O(E + V log V) with Fibonacci heap.</p>
+
+  <h3>MST Example</h3>
+  <div class="mermaid">
+graph LR
+    A((A)) ---|1| B((B))
+    A ---|4| C((C))
+    B ---|2| C
+    B ---|6| D((D))
+    C ---|3| D
+    C ---|5| E((E))
+    D ---|7| E
+    style A fill:#4caf50,color:#fff
+    style B fill:#4caf50,color:#fff
+    style C fill:#4caf50,color:#fff
+    style D fill:#4caf50,color:#fff
+    style E fill:#4caf50,color:#fff
+  </div>
+  <p><strong>MST edges (by Kruskal's):</strong> A-B(1), B-C(2), C-D(3), C-E(5). Total weight = 1+2+3+5 = <strong>11</strong>.</p>
+
+  <div class="mermaid">
+graph LR
+    A((A)) ===|1| B((B))
+    B ===|2| C((C))
+    C ===|3| D((D))
+    C ===|5| E((E))
+    style A fill:#ff9800,color:#fff
+    style B fill:#ff9800,color:#fff
+    style C fill:#ff9800,color:#fff
+    style D fill:#ff9800,color:#fff
+    style E fill:#ff9800,color:#fff
+  </div>
+  <p>The MST uses 4 edges (V-1 = 5-1 = 4) and connects all vertices with minimum total weight.</p>
+
+  <h3>Kruskal's vs. Prim's</h3>
+  <table>
+    <tr><th>Feature</th><th>Kruskal's</th><th>Prim's</th></tr>
+    <tr><td>Approach</td><td>Edge-based (global)</td><td>Vertex-based (local)</td></tr>
+    <tr><td>Data Structure</td><td>Union-Find</td><td>Priority Queue</td></tr>
+    <tr><td>Time (binary heap)</td><td>O(E log V)</td><td>O(E log V)</td></tr>
+    <tr><td>Better for</td><td>Sparse graphs</td><td>Dense graphs</td></tr>
+    <tr><td>Requires sorting</td><td>Yes (edges)</td><td>No</td></tr>
+  </table>
+
+  <h2>3. Shortest Path Algorithms</h2>
+
+  <h3>3.1 Dijkstra's Algorithm</h3>
+  <p>Finds shortest paths from a single source to all vertices. Works only with <strong>non-negative edge weights</strong>.</p>
+  <pre>
+Dijkstra(G, source):
+  dist[source] = 0; dist[v] = infinity for all other v
+  PQ = min-priority queue with all vertices
+  while PQ is not empty:
+    u = ExtractMin(PQ)
+    for each neighbor v of u:
+      if dist[u] + weight(u,v) &lt; dist[v]:
+        dist[v] = dist[u] + weight(u,v)
+        parent[v] = u
+        DecreaseKey(PQ, v, dist[v])
+  </pre>
+  <p><strong>Time:</strong> O(V2) with array, O((V+E) log V) with binary heap, O(V log V + E) with Fibonacci heap.</p>
+
+  <h3>Dijkstra's Example</h3>
+  <div class="mermaid">
+graph LR
+    S((S)) -->|10| A((A))
+    S -->|5| B((B))
+    A -->|1| C((C))
+    B -->|3| A
+    B -->|2| C
+    A -->|9| D((D))
+    C -->|4| D
+    B -->|8| D
+    style S fill:#ff5722,color:#fff
+    style D fill:#4caf50,color:#fff
+  </div>
+  <p>From S: dist[S]=0, dist[B]=5, dist[A]=8 (via B), dist[C]=7 (via B), dist[D]=11 (via B-&gt;C-&gt;D).</p>
+
+  <h3>3.2 Bellman-Ford Algorithm</h3>
+  <p>Handles <strong>negative edge weights</strong> and detects negative cycles.</p>
+  <pre>
+BellmanFord(G, source):
+  dist[source] = 0; dist[v] = infinity for all other v
+  for i = 1 to V-1:          // Relax all edges V-1 times
+    for each edge (u, v, w):
+      if dist[u] + w &lt; dist[v]:
+        dist[v] = dist[u] + w
+        parent[v] = u
+  // Check for negative cycles
+  for each edge (u, v, w):
+    if dist[u] + w &lt; dist[v]:
+      report "Negative cycle exists"
+  </pre>
+  <p><strong>Time:</strong> O(VE). <strong>Space:</strong> O(V).</p>
+
+  <h3>3.3 Floyd-Warshall Algorithm</h3>
+  <p>Computes all-pairs shortest paths using dynamic programming.</p>
+  <p><strong>Time:</strong> O(V3). <strong>Space:</strong> O(V2). Handles negative weights but not negative cycles.</p>
+
+  <h3>Shortest Path Algorithms Comparison</h3>
+  <table>
+    <tr><th>Algorithm</th><th>Type</th><th>Negative Weights</th><th>Neg. Cycle Detection</th><th>Time</th></tr>
+    <tr><td>Dijkstra</td><td>Single source</td><td>No</td><td>No</td><td>O((V+E) log V)</td></tr>
+    <tr><td>Bellman-Ford</td><td>Single source</td><td>Yes</td><td>Yes</td><td>O(VE)</td></tr>
+    <tr><td>Floyd-Warshall</td><td>All pairs</td><td>Yes</td><td>Yes</td><td>O(V3)</td></tr>
+    <tr><td>BFS</td><td>Single source</td><td>N/A (unweighted)</td><td>No</td><td>O(V+E)</td></tr>
+  </table>
+
+  <h2>4. Topological Sorting</h2>
+  <p>A linear ordering of vertices of a <strong>DAG</strong> (Directed Acyclic Graph) such that for every edge (u, v), u appears before v.</p>
+
+  <h3>Methods</h3>
+  <ol>
+    <li><strong>DFS-based:</strong> Run DFS and output vertices in reverse order of finish times. Time: O(V+E).</li>
+    <li><strong>Kahn's Algorithm (BFS-based):</strong> Repeatedly remove vertices with in-degree 0. Time: O(V+E).</li>
+  </ol>
+  <pre>
+Kahn's Algorithm:
+  Compute in-degree for all vertices
+  Q = queue of all vertices with in-degree 0
+  while Q is not empty:
+    u = Dequeue(Q)
+    output u
+    for each neighbor v of u:
+      in-degree[v]--
+      if in-degree[v] == 0:
+        Enqueue(Q, v)
+  if count of output vertices &lt; V:
+    "Graph has a cycle" (not a DAG)
+  </pre>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> Topological sort is only possible for DAGs. If DFS finds a back edge, the graph has a cycle and topological ordering is impossible. The number of possible topological orderings can vary.
+  </div>
+
+  <h2>5. Strongly Connected Components (SCCs)</h2>
+  <p>An SCC is a maximal set of vertices such that there is a path from every vertex to every other vertex in the set. Applies to <strong>directed graphs</strong>.</p>
+
+  <h3>Kosaraju's Algorithm</h3>
+  <ol>
+    <li>Run DFS on the original graph G. Record finish times.</li>
+    <li>Compute the transpose graph G^T (reverse all edges).</li>
+    <li>Run DFS on G^T in decreasing order of finish times from step 1.</li>
+    <li>Each DFS tree in step 3 is an SCC.</li>
+  </ol>
+  <p><strong>Time:</strong> O(V + E). <strong>Alternative:</strong> Tarjan's algorithm (single DFS pass).</p>
+
+  <h2>6. Important Properties</h2>
+  <table>
+    <tr><th>Property</th><th>Details</th></tr>
+    <tr><td>MST uniqueness</td><td>Unique if all edge weights are distinct</td></tr>
+    <tr><td>MST edge count</td><td>Always V - 1 edges</td></tr>
+    <tr><td>Cut property</td><td>Lightest edge crossing any cut must be in MST</td></tr>
+    <tr><td>Dijkstra failure</td><td>Fails with negative edge weights</td></tr>
+    <tr><td>BFS shortest path</td><td>Only for unweighted graphs (or unit weight)</td></tr>
+    <tr><td>DAG shortest path</td><td>Topological sort + relaxation: O(V+E)</td></tr>
+  </table>
+
+  <h2>7. Key GATE Takeaways</h2>
+  <ul>
+    <li>BFS and DFS both run in O(V + E) time.</li>
+    <li>BFS uses a queue and gives shortest path in unweighted graphs. DFS uses a stack (recursion).</li>
+    <li>Kruskal's is better for sparse graphs; Prim's for dense graphs. Both produce MST in O(E log V).</li>
+    <li>Dijkstra requires non-negative weights. Use Bellman-Ford for negative weights.</li>
+    <li>Floyd-Warshall is O(V3) and solves all-pairs shortest paths.</li>
+    <li>Topological sort applies only to DAGs. Back edge in DFS implies a cycle.</li>
+    <li>Kosaraju's and Tarjan's algorithms find SCCs in O(V+E).</li>
+  </ul>
+</article>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Problem Solving for GATE — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>AI Problem Solving for GATE</h1>
+  <p class="article-section-tag">🤖 Artificial Intelligence</p>
+
+  <h2>1. Constraint Satisfaction Problems (CSP)</h2>
+  <p>A CSP consists of variables, domains, and constraints. The goal is to assign values to all variables such that every constraint is satisfied.</p>
+
+  <h3>1.1 CSP Components</h3>
+  <pre>
+X = {X1, X2, ..., Xn}   -- set of variables
+D = {D1, D2, ..., Dn}   -- domains for each variable
+C = {C1, C2, ..., Cm}   -- constraints
+
+Example: Map Coloring (Australia)
+  Variables: WA, NT, SA, Q, NSW, V, T
+  Domains: {Red, Green, Blue} for each
+  Constraints: Adjacent regions must have different colors
+               WA != NT, WA != SA, NT != SA, NT != Q, ...
+  </pre>
+
+  <h3>1.2 Backtracking Search</h3>
+  <pre>
+function BACKTRACK(assignment, csp):
+    if assignment is complete: return assignment
+    var = SELECT-UNASSIGNED-VARIABLE(csp)
+    for each value in ORDER-DOMAIN-VALUES(var, assignment, csp):
+        if value is consistent with assignment:
+            add {var = value} to assignment
+            result = BACKTRACK(assignment, csp)
+            if result != failure: return result
+            remove {var = value} from assignment
+    return failure
+  </pre>
+
+  <h3>1.3 CSP Heuristics</h3>
+  <table>
+    <tr><th>Heuristic</th><th>Purpose</th><th>Strategy</th></tr>
+    <tr><td>MRV (Minimum Remaining Values)</td><td>Variable selection</td><td>Choose variable with fewest legal values</td></tr>
+    <tr><td>Degree Heuristic</td><td>Tie-breaking for MRV</td><td>Choose variable involved in most constraints</td></tr>
+    <tr><td>LCV (Least Constraining Value)</td><td>Value ordering</td><td>Choose value that rules out fewest choices for neighbors</td></tr>
+  </table>
+
+  <h3>1.4 Arc Consistency (AC-3)</h3>
+  <pre>
+An arc (Xi, Xj) is consistent if for every value in Di,
+there exists some value in Dj that satisfies the constraint.
+
+AC-3 Algorithm:
+1. Initialize queue with all arcs
+2. Remove arc (Xi, Xj) from queue
+3. If REVISE(Xi, Xj) removes any value from Di:
+   - If Di is empty: return failure
+   - Add all arcs (Xk, Xi) to queue (k != j)
+4. Repeat until queue is empty
+
+Time: O(n^2 * d^3) where n = variables, d = max domain size
+  </pre>
+
+  <h2>2. Knowledge Representation</h2>
+
+  <h3>2.1 Propositional Logic</h3>
+  <pre>
+Symbols: P, Q, R (propositions that are true or false)
+Connectives:
+  NOT    (negation):    ~P
+  AND    (conjunction): P ^ Q
+  OR     (disjunction): P v Q
+  IMPLIES (implication): P -> Q  (equivalent to ~P v Q)
+  IFF    (biconditional): P <-> Q
+
+Key equivalences:
+  P -> Q  ≡  ~P v Q
+  ~(P ^ Q) ≡ ~P v ~Q   (De Morgan's)
+  ~(P v Q) ≡ ~P ^ ~Q   (De Morgan's)
+  P -> Q  ≡  ~Q -> ~P  (Contrapositive)
+  </pre>
+
+  <h3>2.2 First-Order Logic (FOL)</h3>
+  <pre>
+Additional elements beyond propositional logic:
+  Constants:  John, 5, MIT
+  Variables:  x, y, z
+  Predicates: Loves(x, y), Greater(x, 5)
+  Functions:  father(x), age(John)
+  Quantifiers:
+    Universal:   ∀x P(x) -- "for all x, P(x) holds"
+    Existential: ∃x P(x) -- "there exists x such that P(x)"
+
+Example: "Every student loves some course"
+  ∀x (Student(x) -> ∃y (Course(y) ^ Loves(x, y)))
+
+Negation rules:
+  ~(∀x P(x)) ≡ ∃x ~P(x)
+  ~(∃x P(x)) ≡ ∀x ~P(x)
+  </pre>
+
+  <h3>2.3 Semantic Networks</h3>
+  <div class="mermaid">
+graph TD
+    Animal["Animal"] -->|"is-a"| Dog["Dog"]
+    Animal -->|"is-a"| Cat["Cat"]
+    Dog -->|"has"| Legs["4 Legs"]
+    Dog -->|"instance"| Rex["Rex"]
+    Cat -->|"instance"| Whiskers["Whiskers"]
+    Animal -->|"has"| Skin["Skin"]
+    Rex -->|"color"| Brown["Brown"]
+
+    style Animal fill:#1565c0,color:#fff
+    style Dog fill:#2e7d32,color:#fff
+    style Cat fill:#2e7d32,color:#fff
+  </div>
+  <p>Semantic networks represent knowledge as a graph with nodes (concepts) and labeled edges (relationships). They support inheritance: Rex inherits "has Skin" from Animal.</p>
+
+  <h2>3. Bayesian Networks</h2>
+  <p>A Bayesian network is a directed acyclic graph (DAG) where nodes represent random variables and edges represent conditional dependencies.</p>
+
+  <h3>3.1 Example: Alarm Network</h3>
+  <div class="mermaid">
+graph TD
+    B["Burglary<br>P(B)=0.001"] --> A["Alarm"]
+    E["Earthquake<br>P(E)=0.002"] --> A
+    A --> J["John Calls"]
+    A --> M["Mary Calls"]
+
+    style B fill:#c62828,color:#fff
+    style E fill:#e65100,color:#fff
+    style A fill:#1565c0,color:#fff
+    style J fill:#2e7d32,color:#fff
+    style M fill:#2e7d32,color:#fff
+  </div>
+
+  <h3>3.2 Conditional Probability Tables</h3>
+  <pre>
+P(B) = 0.001,  P(E) = 0.002
+
+P(A | B, E):
+  B=T, E=T: 0.95    B=T, E=F: 0.94
+  B=F, E=T: 0.29    B=F, E=F: 0.001
+
+P(J | A):              P(M | A):
+  A=T: 0.90             A=T: 0.70
+  A=F: 0.05             A=F: 0.01
+  </pre>
+
+  <h3>3.3 Joint Probability Computation</h3>
+  <pre>
+Full joint distribution:
+P(B, E, A, J, M) = P(B) * P(E) * P(A|B,E) * P(J|A) * P(M|A)
+
+Example: P(B=T, E=F, A=T, J=T, M=T)
+  = P(B=T) * P(E=F) * P(A=T|B=T,E=F) * P(J=T|A=T) * P(M=T|A=T)
+  = 0.001 * 0.998 * 0.94 * 0.90 * 0.70
+  = 0.000591
+
+Key property: Each node is conditionally independent of its
+non-descendants given its parents.
+  </pre>
+
+  <h3>3.4 Inference: Variable Elimination</h3>
+  <pre>
+To compute P(B | J=T, M=T):
+
+P(B|J=T,M=T) = P(B,J=T,M=T) / P(J=T,M=T)
+
+P(B,J=T,M=T) = SUM_E SUM_A P(B)*P(E)*P(A|B,E)*P(J=T|A)*P(M=T|A)
+
+Eliminate variables one at a time, creating intermediate factors.
+  </pre>
+
+  <h3>3.5 D-Separation</h3>
+  <table>
+    <tr><th>Structure</th><th>Pattern</th><th>X and Y independent?</th></tr>
+    <tr><td>Chain</td><td>X &rarr; Z &rarr; Y</td><td>Yes, given Z</td></tr>
+    <tr><td>Fork</td><td>X &larr; Z &rarr; Y</td><td>Yes, given Z</td></tr>
+    <tr><td>Collider</td><td>X &rarr; Z &larr; Y</td><td>Yes, unless Z (or descendant of Z) is given</td></tr>
+  </table>
+
+  <h2>4. Markov Decision Processes (MDP)</h2>
+  <p>An MDP models sequential decision making under uncertainty.</p>
+
+  <h3>4.1 MDP Components</h3>
+  <pre>
+S:  Set of states
+A:  Set of actions
+T:  Transition function T(s, a, s') = P(s' | s, a)
+R:  Reward function R(s, a, s')
+gamma: Discount factor (0 &le; gamma &le; 1)
+  </pre>
+
+  <h3>4.2 Bellman Equation</h3>
+  <pre>
+Optimal value function:
+V*(s) = max_a SUM_{s'} T(s, a, s') * [R(s, a, s') + gamma * V*(s')]
+
+Optimal policy:
+pi*(s) = argmax_a SUM_{s'} T(s, a, s') * [R(s, a, s') + gamma * V*(s')]
+  </pre>
+
+  <h3>4.3 Value Iteration</h3>
+  <pre>
+Initialize V(s) = 0 for all states
+Repeat until convergence:
+    For each state s:
+        V(s) = max_a SUM_{s'} T(s,a,s') * [R(s,a,s') + gamma * V(s')]
+
+Converges when max change in V(s) &lt; epsilon
+
+Example: Grid World (gamma = 0.9)
+  States: 4 cells, Actions: {Up, Down, Left, Right}
+  Terminal state at (2,2) with reward +1
+
+  After iteration 1: V(goal neighbors) = 0.9
+  After iteration 2: V(2-step away) = 0.81
+  </pre>
+
+  <h3>4.4 Policy Iteration</h3>
+  <pre>
+1. Initialize random policy pi
+2. Policy Evaluation: Solve V^pi(s) = SUM T(s,pi(s),s')[R + gamma*V^pi(s')]
+3. Policy Improvement: pi'(s) = argmax_a SUM T(s,a,s')[R + gamma*V^pi(s')]
+4. If pi' = pi, return pi; else pi = pi', go to step 2
+  </pre>
+
+  <h2>5. Resolution in Propositional Logic</h2>
+  <pre>
+Resolution rule:
+  From (A v B) and (~B v C), derive (A v C)
+
+To prove KB |= alpha:
+1. Convert KB ^ ~alpha to CNF
+2. Apply resolution repeatedly
+3. If empty clause {} is derived -> alpha is entailed
+4. If no new clauses can be derived -> alpha is not entailed
+
+Example: Prove P from {P v Q, ~Q}
+  Add ~P (negate what we want to prove)
+  Clauses: {P v Q}, {~Q}, {~P}
+  Resolve {P v Q} and {~Q} -> {P}
+  Resolve {P} and {~P} -> {} (empty clause!)
+  Therefore P is proved.
+  </pre>
+
+  <h2>6. Worked Example: Map Coloring CSP</h2>
+  <pre>
+Problem: Color 3 regions (A, B, C) with {R, G, B}
+Constraints: A != B, B != C, A != C
+
+Using backtracking with MRV:
+  Step 1: Assign A = R (all variables have 3 values, pick any)
+  Step 2: B has domain {G, B} (R eliminated by A!=B constraint)
+          Assign B = G
+  Step 3: C has domain {B} (R eliminated by A!=C, G by B!=C)
+          Assign C = B
+  Solution: A=R, B=G, C=B  (found with no backtracking!)
+  </pre>
+
+  <div class="note"><strong>GATE Tip:</strong> In CSP questions, always check if arc consistency can reduce domains before starting backtracking. This often simplifies the problem significantly.</div>
+
+</article>
+</body>
+</html>

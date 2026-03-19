@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 13: Full Syllabus Test 4 — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 13: Full Syllabus Test 4</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Focus:</strong> Balanced coverage across all GATE CS sections — medium to hard difficulty</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 13 — Full Syllabus Test 4",
+      "questions": [
+        {
+          "question": "Q1. The rank of the matrix [[1,2,3],[2,4,6],[1,3,5]] is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 0"],
+          "answer": 1,
+          "explanation": "R2 = 2×R1, so R2→R2-2R1 gives [0,0,0]. R3→R3-R1 gives [0,1,2]. The row echelon form has 2 non-zero rows, so rank = 2."
+        },
+        {
+          "question": "Q2. In a system with 3 processes and 4 resource types, the Banker's algorithm requires checking at most how many sequences to determine a safe state?",
+          "options": ["(A) 3! = 6", "(B) 4! = 24", "(C) 3^4 = 81", "(D) 12"],
+          "answer": 0,
+          "explanation": "The Banker's algorithm checks whether a safe sequence of processes exists. With 3 processes, there are at most 3! = 6 permutations to check. The algorithm greedily finds one safe sequence in O(n²·m) time without trying all permutations, but the maximum possible sequences to verify is n! = 6."
+        },
+        {
+          "question": "Q3. A relation R(A,B,C,D,E) with FDs {A→BC, CD→E, B→D, E→A}. The candidate keys are:",
+          "options": ["(A) {A} and {E} only", "(B) {A}, {E}, {BC}, {CD} ", "(C) {A}, {BC}, {CD}, {E}", "(D) {A} only"],
+          "answer": 2,
+          "explanation": "A→BC→D (via B→D), A→BCDE. So A is a candidate key. E→A→BCDE, so E is a key. BC: B→D, so BC→BCD→E (via CD→E)→A, so BC→ABCDE. CD→E→A→BC→D, so CD→ABCDE. All four are candidate keys."
+        },
+        {
+          "question": "Q4. The language L = {aⁿbⁿcⁿ | n ≥ 1} is:",
+          "options": ["(A) Regular", "(B) Context-free", "(C) Context-sensitive but not context-free", "(D) Recursively enumerable but not recursive"],
+          "answer": 2,
+          "explanation": "L = {aⁿbⁿcⁿ} is the classic example of a language that is context-sensitive but NOT context-free. It can be shown not context-free using the pumping lemma for CFLs. A linear bounded automaton (LBA) can recognize it, making it context-sensitive."
+        },
+        {
+          "question": "Q5. In a 5-stage pipeline (IF, ID, EX, MEM, WB), a data hazard between instruction i (ADD R1,R2,R3) and instruction i+1 (SUB R4,R1,R5) without forwarding causes a stall of how many cycles?",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 0"],
+          "answer": 1,
+          "explanation": "Without forwarding, R1 is written in WB stage of instruction i (cycle 5) and needed in ID stage of instruction i+1 (cycle 3). The result is available after cycle 5 but needed at cycle 3, causing a 2-cycle stall. With full forwarding, the result from EX can be forwarded, and the stall is 0."
+        },
+        {
+          "question": "Q6. The subnet mask 255.255.255.224 allows how many usable host addresses per subnet?",
+          "options": ["(A) 30", "(B) 32", "(C) 14", "(D) 62"],
+          "answer": 0,
+          "explanation": "255.255.255.224 = /27 (27 network bits). Host bits = 32 - 27 = 5. Total addresses = 2^5 = 32. Usable hosts = 32 - 2 = 30 (subtract network address and broadcast address)."
+        },
+        {
+          "question": "Q7. In an LR(1) parser, the '1' refers to:",
+          "options": ["(A) One symbol of input being read", "(B) One token of lookahead", "(C) One state in the automaton", "(D) One production rule"],
+          "answer": 1,
+          "explanation": "In LR(k) parsing, k is the number of lookahead tokens used to make parsing decisions. LR(1) uses 1 token of lookahead. LR(0) uses no lookahead. More lookahead increases the power of the parser but also the size of the parsing table."
+        },
+        {
+          "question": "Q8. The number of comparisons needed to merge two sorted arrays of sizes m and n in the worst case is:",
+          "options": ["(A) m + n", "(B) m + n - 1", "(C) m × n", "(D) max(m, n)"],
+          "answer": 1,
+          "explanation": "When merging two sorted arrays, in the worst case we compare until one array is exhausted. The maximum number of comparisons occurs when elements interleave, giving m + n - 1 comparisons. The last element is placed without a comparison."
+        },
+        {
+          "question": "Q9. In the TCP protocol, what is the purpose of the SYN flag?",
+          "options": ["(A) To acknowledge received data", "(B) To synchronize sequence numbers during connection establishment", "(C) To terminate a connection", "(D) To indicate urgent data"],
+          "answer": 1,
+          "explanation": "The SYN (Synchronize) flag is used during TCP's 3-way handshake to establish a connection. It synchronizes initial sequence numbers between client and server. The handshake: SYN → SYN-ACK → ACK. FIN is used to terminate, ACK to acknowledge, and URG for urgent data."
+        },
+        {
+          "question": "Q10. A process has 4 pages and a system uses LRU page replacement with 3 frames. The reference string is 1,2,3,4,1,2,5,1,2,3,4,5. The number of page faults is:",
+          "options": ["(A) 9", "(B) 10", "(C) 8", "(D) 7"],
+          "answer": 1,
+          "explanation": "Tracing LRU with 3 frames: 1(F), 2(F)[1,2], 3(F)[1,2,3], 4(F,evict 1)[2,3,4], 1(F,evict 2)[3,4,1], 2(F,evict 3)[4,1,2], 5(F,evict 4)[1,2,5], 1(H)[2,5,1], 2(H)[5,1,2], 3(F,evict 5)[1,2,3], 4(F,evict 1)[2,3,4], 5(F,evict 2)[3,4,5]. Total faults = 10."
+        },
+        {
+          "question": "Q11. The minimum number of states in a DFA that accepts all binary strings with the number of 1s divisible by 3 is:",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 6"],
+          "answer": 1,
+          "explanation": "We need to track (count of 1s) mod 3, which requires 3 states: q0 (count mod 3 = 0, accepting), q1 (count mod 3 = 1), q2 (count mod 3 = 2). On input 0, stay in same state. On input 1, move to next state. 3 states are necessary and sufficient."
+        },
+        {
+          "question": "Q12. In a system with 3 processes and resources A(10), B(5), C(7), given Max and Allocation matrices, if Available = (3,3,2), which is NOT safe?",
+          "options": ["(A) Safety algorithm can determine this in O(n²·m) time", "(B) If no process can be satisfied with Available, state is unsafe", "(C) An unsafe state always leads to deadlock", "(D) Safe state guarantees no deadlock will occur"],
+          "answer": 2,
+          "explanation": "An unsafe state does NOT always lead to deadlock — it means there is a possibility of deadlock. Processes might release resources in a favorable order. A safe state guarantees that deadlock can be avoided. The safety algorithm runs in O(n²·m) where n is processes and m is resource types."
+        },
+        {
+          "question": "Q13. The time complexity of the Knuth-Morris-Pratt (KMP) string matching algorithm is:",
+          "options": ["(A) O(n × m)", "(B) O(n + m)", "(C) O(n log m)", "(D) O(n²)"],
+          "answer": 1,
+          "explanation": "KMP preprocesses the pattern in O(m) time to build the failure function, then searches the text in O(n) time. Total: O(n + m) where n is text length and m is pattern length. This is optimal for single-pattern matching."
+        },
+        {
+          "question": "Q14. In SQL, what does the HAVING clause do?",
+          "options": ["(A) Filters rows before grouping", "(B) Filters groups after GROUP BY", "(C) Orders the result set", "(D) Joins two tables"],
+          "answer": 1,
+          "explanation": "HAVING filters groups after GROUP BY, while WHERE filters individual rows before grouping. Example: SELECT dept, COUNT(*) FROM employees GROUP BY dept HAVING COUNT(*) > 5 returns only departments with more than 5 employees."
+        },
+        {
+          "question": "Q15. A multiplexer with 3 select lines can have at most how many data inputs?",
+          "options": ["(A) 3", "(B) 6", "(C) 8", "(D) 16"],
+          "answer": 2,
+          "explanation": "A multiplexer with n select lines has 2^n data inputs. With 3 select lines: 2³ = 8 inputs. The select lines choose which of the 8 inputs to route to the output. This is an 8:1 MUX."
+        },
+        {
+          "question": "Q16. The recurrence T(n) = 2T(n/2) + n log n has the solution:",
+          "options": ["(A) O(n log n)", "(B) O(n log²n)", "(C) O(n²)", "(D) O(n²log n)"],
+          "answer": 1,
+          "explanation": "Using the Master theorem: a=2, b=2, f(n) = n log n. n^(log_b a) = n^1 = n. Since f(n) = n log n = n^1 · log n, this falls into Case 2 (extended) of the Master theorem where f(n) = Θ(n^c · log^k n) with c=1, k=1. Solution: T(n) = Θ(n · log²n)."
+        },
+        {
+          "question": "Q17. In a cache with 64 blocks and 4-way set associative mapping, how many sets are there?",
+          "options": ["(A) 4", "(B) 16", "(C) 32", "(D) 64"],
+          "answer": 1,
+          "explanation": "Number of sets = Total blocks / Associativity = 64 / 4 = 16 sets. Each set contains 4 blocks. For the address, we need log₂(16) = 4 bits for the set index."
+        },
+        {
+          "question": "Q18. The chromatic number of a complete bipartite graph K(3,3) is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 6"],
+          "answer": 1,
+          "explanation": "Any bipartite graph can be colored with 2 colors — one color for each partition. K(3,3) is bipartite, so its chromatic number is 2. The two partitions each get a different color, and no two adjacent vertices share a color since edges only go between partitions."
+        },
+        {
+          "question": "Q19. In a pipelined processor, a branch instruction causes a penalty of 2 cycles. If 20% of instructions are branches, the effective CPI is (assuming base CPI = 1):",
+          "options": ["(A) 1.2", "(B) 1.4", "(C) 1.6", "(D) 2.0"],
+          "answer": 1,
+          "explanation": "Effective CPI = Base CPI + Branch frequency × Branch penalty = 1 + 0.20 × 2 = 1 + 0.4 = 1.4. This means on average each instruction takes 1.4 cycles instead of the ideal 1 cycle."
+        },
+        {
+          "question": "Q20. A relation in BCNF is always in:",
+          "options": ["(A) 4NF", "(B) 3NF", "(C) 5NF", "(D) 1NF only"],
+          "answer": 1,
+          "explanation": "The normal form hierarchy is: 1NF ⊂ 2NF ⊂ 3NF ⊂ BCNF ⊂ 4NF ⊂ 5NF. BCNF is stronger than 3NF, so any relation in BCNF is automatically in 3NF (and also in 2NF and 1NF). But BCNF does not guarantee 4NF."
+        },
+        {
+          "question": "Q21. The hamming distance between the codewords 10110101 and 11011010 is:",
+          "options": ["(A) 4", "(B) 5", "(C) 6", "(D) 3"],
+          "answer": 2,
+          "explanation": "XOR the two: 10110101 ⊕ 11011010 = 01101111. Count the 1s: 0+1+1+0+1+1+1+1 = 6. The Hamming distance is 6, meaning 6 bit positions differ between the two codewords."
+        },
+        {
+          "question": "Q22. In the context of operating systems, thrashing occurs when:",
+          "options": ["(A) CPU utilization is very high", "(B) The system spends more time paging than executing", "(C) Too many processes are in ready queue", "(D) Disk I/O is very fast"],
+          "answer": 1,
+          "explanation": "Thrashing occurs when a system spends most of its time swapping pages in and out of memory rather than executing useful instructions. It happens when the working set of active processes exceeds available physical memory. The working set model and page fault frequency are used to detect and prevent thrashing."
+        },
+        {
+          "question": "Q23. The value of the postfix expression 5 3 + 8 2 - * is:",
+          "options": ["(A) 48", "(B) 46", "(C) 40", "(D) 16"],
+          "answer": 0,
+          "explanation": "Evaluating postfix: Push 5, push 3. '+': pop 3 and 5, push 8. Push 8, push 2. '-': pop 2 and 8, push 6. '*': pop 6 and 8, push 48. Result = 48. The equivalent infix is (5+3)*(8-2) = 8*6 = 48."
+        },
+        {
+          "question": "Q24. Which scheduling algorithm can cause starvation?",
+          "options": ["(A) Round Robin", "(B) FCFS", "(C) Shortest Job First (SJF)", "(D) Round Robin with equal quantum"],
+          "answer": 2,
+          "explanation": "SJF (Shortest Job First) can cause starvation of long processes if short processes keep arriving. FCFS and Round Robin do not cause starvation. Aging is a technique to prevent starvation by gradually increasing the priority of waiting processes."
+        },
+        {
+          "question": "Q25. The complement of a context-free language is:",
+          "options": ["(A) Always context-free", "(B) Always regular", "(C) Not necessarily context-free", "(D) Always context-sensitive"],
+          "answer": 2,
+          "explanation": "Context-free languages are NOT closed under complementation. The complement of a CFL may or may not be context-free. For example, the complement of {aⁿbⁿ | n≥0} over {a,b}* is not context-free. However, deterministic CFLs (DCFLs) are closed under complementation."
+        },
+        {
+          "question": "Q26. In the sliding window protocol with window size W and round-trip time RTT, the maximum throughput is:",
+          "options": ["(A) W / RTT", "(B) W × RTT", "(C) 1 / RTT", "(D) W² / RTT"],
+          "answer": 0,
+          "explanation": "Maximum throughput = Window size / RTT = W / RTT (in frames per second or bits per second depending on units). To fully utilize the link bandwidth B, we need W ≥ B × RTT. This is the bandwidth-delay product."
+        },
+        {
+          "question": "Q27. First and Follow sets are used in constructing which type of parser?",
+          "options": ["(A) LR parser", "(B) LL(1) parser", "(C) Operator precedence parser", "(D) Recursive descent parser without lookahead"],
+          "answer": 1,
+          "explanation": "First and Follow sets are essential for constructing LL(1) predictive parsing tables. First(α) gives the terminals that can begin strings derived from α. Follow(A) gives terminals that can appear immediately after A. Together they determine which production to use for each (non-terminal, terminal) pair."
+        },
+        {
+          "question": "Q28. The minimum number of flip-flops required to count from 0 to 9 (mod 10 counter) is:",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) 10"],
+          "answer": 1,
+          "explanation": "To count up to 9 (10 states), we need ⌈log₂10⌉ = 4 flip-flops. 4 flip-flops can represent 2⁴ = 16 states, of which we use only 10 (0-9). The counter resets after reaching 9."
+        },
+        {
+          "question": "Q29. The probability that at least one of two independent events A and B occurs, given P(A) = 0.3 and P(B) = 0.4, is:",
+          "options": ["(A) 0.70", "(B) 0.58", "(C) 0.12", "(D) 0.42"],
+          "answer": 1,
+          "explanation": "P(A ∪ B) = P(A) + P(B) - P(A ∩ B). Since A and B are independent: P(A ∩ B) = P(A) × P(B) = 0.3 × 0.4 = 0.12. So P(A ∪ B) = 0.3 + 0.4 - 0.12 = 0.58."
+        },
+        {
+          "question": "Q30. In virtual memory, a page table entry typically does NOT contain:",
+          "options": ["(A) Frame number", "(B) Valid/invalid bit", "(C) Process ID", "(D) Dirty bit"],
+          "answer": 2,
+          "explanation": "A page table entry typically contains: frame number, valid/invalid bit, dirty (modified) bit, reference bit, and protection bits. Process ID is NOT stored in the page table entry — each process has its own page table, so the PID is implicit. The PTBR (Page Table Base Register) identifies which page table to use."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

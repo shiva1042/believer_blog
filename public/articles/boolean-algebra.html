@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boolean Algebra — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Boolean Algebra</h1>
+  <p class="article-section-tag">🔲 Section 2: Digital Logic</p>
+
+  <h2>1. Introduction to Boolean Algebra</h2>
+  <p>Boolean algebra is a branch of algebra that deals with binary variables and logic operations. It forms the foundation of digital circuit design and computer science. Variables take values from the set <strong>{0, 1}</strong>, and the primary operations are AND (&middot;), OR (+), and NOT (').</p>
+
+  <h2>2. Fundamental Laws of Boolean Algebra</h2>
+
+  <h3>2.1 Basic Postulates</h3>
+  <table>
+    <tr><th>Law</th><th>AND Form</th><th>OR Form</th></tr>
+    <tr><td>Identity</td><td>A &middot; 1 = A</td><td>A + 0 = A</td></tr>
+    <tr><td>Null</td><td>A &middot; 0 = 0</td><td>A + 1 = 1</td></tr>
+    <tr><td>Complement</td><td>A &middot; A' = 0</td><td>A + A' = 1</td></tr>
+    <tr><td>Idempotent</td><td>A &middot; A = A</td><td>A + A = A</td></tr>
+    <tr><td>Involution</td><td colspan="2">(A')' = A</td></tr>
+  </table>
+
+  <h3>2.2 Commutative Law</h3>
+  <p>The order of operands does not affect the result:</p>
+  <ul>
+    <li><code>A + B = B + A</code></li>
+    <li><code>A &middot; B = B &middot; A</code></li>
+  </ul>
+
+  <h3>2.3 Associative Law</h3>
+  <p>Grouping of operands does not affect the result:</p>
+  <ul>
+    <li><code>(A + B) + C = A + (B + C)</code></li>
+    <li><code>(A &middot; B) &middot; C = A &middot; (B &middot; C)</code></li>
+  </ul>
+
+  <h3>2.4 Distributive Law</h3>
+  <ul>
+    <li><code>A &middot; (B + C) = A&middot;B + A&middot;C</code></li>
+    <li><code>A + (B &middot; C) = (A + B) &middot; (A + C)</code></li>
+  </ul>
+
+  <h3>2.5 Absorption Law</h3>
+  <ul>
+    <li><code>A + A&middot;B = A</code></li>
+    <li><code>A &middot; (A + B) = A</code></li>
+  </ul>
+
+  <h3>2.6 De Morgan's Theorems</h3>
+  <div class="important">
+    <p><strong>Theorem 1:</strong> <code>(A + B)' = A' &middot; B'</code></p>
+    <p><strong>Theorem 2:</strong> <code>(A &middot; B)' = A' + B'</code></p>
+    <p>These theorems generalize to n variables: the complement of any expression is obtained by swapping AND/OR and complementing each variable.</p>
+  </div>
+
+  <h4>Verification of De Morgan's Theorem 1</h4>
+  <table>
+    <tr><th>A</th><th>B</th><th>A+B</th><th>(A+B)'</th><th>A'</th><th>B'</th><th>A'&middot;B'</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+  </table>
+
+  <h3>2.7 Consensus Theorem</h3>
+  <p><code>AB + A'C + BC = AB + A'C</code> (the term BC is redundant).</p>
+
+  <h2>3. Boolean Expressions and Canonical Forms</h2>
+
+  <h3>3.1 Minterms and Maxterms</h3>
+  <p>A <strong>minterm</strong> is a product term containing all variables in either complemented or uncomplemented form. A <strong>maxterm</strong> is a sum term with all variables.</p>
+
+  <table>
+    <tr><th>A</th><th>B</th><th>C</th><th>Minterm</th><th>Designation</th><th>Maxterm</th><th>Designation</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>A'B'C'</td><td>m<sub>0</sub></td><td>A+B+C</td><td>M<sub>0</sub></td></tr>
+    <tr><td>0</td><td>0</td><td>1</td><td>A'B'C</td><td>m<sub>1</sub></td><td>A+B+C'</td><td>M<sub>1</sub></td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>A'BC'</td><td>m<sub>2</sub></td><td>A+B'+C</td><td>M<sub>2</sub></td></tr>
+    <tr><td>0</td><td>1</td><td>1</td><td>A'BC</td><td>m<sub>3</sub></td><td>A+B'+C'</td><td>M<sub>3</sub></td></tr>
+    <tr><td>1</td><td>0</td><td>0</td><td>AB'C'</td><td>m<sub>4</sub></td><td>A'+B+C</td><td>M<sub>4</sub></td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>AB'C</td><td>m<sub>5</sub></td><td>A'+B+C'</td><td>M<sub>5</sub></td></tr>
+    <tr><td>1</td><td>1</td><td>0</td><td>ABC'</td><td>m<sub>6</sub></td><td>A'+B'+C</td><td>M<sub>6</sub></td></tr>
+    <tr><td>1</td><td>1</td><td>1</td><td>ABC</td><td>m<sub>7</sub></td><td>A'+B'+C'</td><td>M<sub>7</sub></td></tr>
+  </table>
+
+  <h3>3.2 Sum of Products (SOP)</h3>
+  <p>A canonical SOP is an OR of minterms where the function evaluates to 1.</p>
+  <p><strong>Example:</strong> F(A,B,C) = &Sigma;m(1,3,5,7) = A'B'C + A'BC + AB'C + ABC = C</p>
+
+  <h3>3.3 Product of Sums (POS)</h3>
+  <p>A canonical POS is an AND of maxterms where the function evaluates to 0.</p>
+  <p><strong>Example:</strong> F(A,B,C) = &Pi;M(0,2,4,6) = (A+B+C)(A+B'+C)(A'+B+C)(A'+B'+C) = C</p>
+
+  <div class="note">
+    <p><strong>Relationship:</strong> If F = &Sigma;m(1,3,5,7), then F = &Pi;M(0,2,4,6). The minterm and maxterm sets are complements within the full set {0,...,2<sup>n</sup>-1}.</p>
+  </div>
+
+  <h2>4. Karnaugh Map (K-map) Minimization</h2>
+  <p>A K-map is a graphical method for simplifying Boolean expressions. Adjacent cells differ by exactly one variable (Gray code ordering).</p>
+
+  <h3>4.1 Two-Variable K-map</h3>
+  <p>Example: F(A,B) = &Sigma;m(0,1,3)</p>
+  <table>
+    <tr><th>A \ B</th><th>0</th><th>1</th></tr>
+    <tr><td><strong>0</strong></td><td>1</td><td>1</td></tr>
+    <tr><td><strong>1</strong></td><td>0</td><td>1</td></tr>
+  </table>
+  <p>Groups: {m0,m1} gives A', {m1,m3} gives B. Result: <strong>F = A' + B</strong></p>
+
+  <h3>4.2 Three-Variable K-map</h3>
+  <p>Example: F(A,B,C) = &Sigma;m(0,2,4,5,6)</p>
+  <table>
+    <tr><th>A \ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+    <tr><td><strong>0</strong></td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+    <tr><td><strong>1</strong></td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+  </table>
+  <p>Groups: {m0,m2,m4,m6} = C', {m4,m5} = AB'. Result: <strong>F = C' + AB'</strong></p>
+
+  <h3>4.3 Four-Variable K-map</h3>
+  <p>Example: F(A,B,C,D) = &Sigma;m(0,1,2,5,8,9,10)</p>
+  <table>
+    <tr><th>AB \ CD</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+    <tr><td><strong>00</strong></td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td><strong>01</strong></td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td><strong>11</strong></td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td><strong>10</strong></td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+  </table>
+  <p>Groups: {m0,m1,m8,m9} = B'C', {m0,m2,m8,m10} = B'D'. Result: <strong>F = B'C' + B'D' + A'B'C'D (with m5 covered separately as A'BC'D)</strong></p>
+
+  <h3>4.4 Don't Care Conditions</h3>
+  <p>Don't care conditions (denoted by 'X' or 'd') represent input combinations that either never occur or whose output does not matter. In K-maps, don't cares can be treated as either 0 or 1 to form larger groups and achieve better minimization.</p>
+
+  <div class="note">
+    <p><strong>Key Rule:</strong> Don't cares should be included in groups only if they help form larger groups. They must not appear in the final expression as standalone terms.</p>
+  </div>
+
+  <h3>4.5 K-map Minimization Process</h3>
+  <div class="mermaid">
+flowchart TD
+    A[Start: Plot function on K-map] --> B[Identify all prime implicants]
+    B --> C[Find essential prime implicants]
+    C --> D{All minterms covered?}
+    D -- Yes --> E[Write minimized expression]
+    D -- No --> F[Select additional prime implicants to cover remaining minterms]
+    F --> G[Use minimum cost criterion]
+    G --> E
+    E --> H[End: Minimized Boolean expression]
+  </div>
+
+  <h2>5. Quine-McCluskey Method</h2>
+  <p>The Quine-McCluskey (QM) method is a tabular method for minimizing Boolean functions, especially useful for functions with more than 4 variables where K-maps become impractical.</p>
+
+  <h3>5.1 Algorithm Steps</h3>
+  <ol>
+    <li><strong>Step 1:</strong> List all minterms in binary and group them by the number of 1s.</li>
+    <li><strong>Step 2:</strong> Compare adjacent groups and combine minterms that differ in exactly one bit, replacing the differing bit with a dash (-).</li>
+    <li><strong>Step 3:</strong> Repeat Step 2 until no further combinations are possible. Unchecked terms are <em>prime implicants</em>.</li>
+    <li><strong>Step 4:</strong> Construct a prime implicant chart and identify essential prime implicants.</li>
+    <li><strong>Step 5:</strong> Select a minimum set of prime implicants that covers all minterms.</li>
+  </ol>
+
+  <h3>5.2 Example</h3>
+  <p>Minimize F(A,B,C,D) = &Sigma;m(0,1,2,5,6,7,8,9,10,14)</p>
+
+  <h4>Step 1: Group by number of 1s</h4>
+  <table>
+    <tr><th>Group</th><th>Minterm</th><th>Binary (ABCD)</th></tr>
+    <tr><td>0</td><td>m0</td><td>0000</td></tr>
+    <tr><td>1</td><td>m1, m2, m8</td><td>0001, 0010, 1000</td></tr>
+    <tr><td>2</td><td>m5, m6, m9, m10</td><td>0101, 0110, 1001, 1010</td></tr>
+    <tr><td>3</td><td>m7, m14</td><td>0111, 1110</td></tr>
+  </table>
+
+  <h4>Step 2: Combine adjacent groups</h4>
+  <table>
+    <tr><th>Pair</th><th>Combined</th><th>Representation</th></tr>
+    <tr><td>m0, m1</td><td>000-</td><td>A'B'C'</td></tr>
+    <tr><td>m0, m2</td><td>00-0</td><td>A'B'D'</td></tr>
+    <tr><td>m0, m8</td><td>-000</td><td>B'C'D'</td></tr>
+    <tr><td>m1, m5</td><td>0-01</td><td>A'C'D</td></tr>
+    <tr><td>m1, m9</td><td>-001</td><td>B'C'D</td></tr>
+    <tr><td>m2, m6</td><td>0-10</td><td>A'CD'</td></tr>
+    <tr><td>m2, m10</td><td>-010</td><td>B'CD'</td></tr>
+    <tr><td>m8, m9</td><td>100-</td><td>AB'C'</td></tr>
+    <tr><td>m8, m10</td><td>10-0</td><td>AB'D'</td></tr>
+    <tr><td>m5, m7</td><td>01-1</td><td>A'BD</td></tr>
+    <tr><td>m6, m7</td><td>011-</td><td>A'BC</td></tr>
+    <tr><td>m6, m14</td><td>-110</td><td>BCD'</td></tr>
+    <tr><td>m10, m14</td><td>1-10</td><td>ACD'</td></tr>
+  </table>
+  <p>Further combinations continue until no more merges are possible. The remaining unchecked terms are prime implicants used to form the minimal expression.</p>
+
+  <h2>6. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>Always verify your K-map groupings wrap around edges and corners.</li>
+      <li>Groups must be powers of 2 (1, 2, 4, 8, 16).</li>
+      <li>When converting between SOP and POS, remember: SOP minterms + POS maxterms = all terms.</li>
+      <li>Quine-McCluskey is systematic but time-consuming; prefer K-maps for up to 4 variables in exams.</li>
+      <li>De Morgan's theorem is frequently tested both directly and as part of gate-level circuit simplification.</li>
+    </ul>
+  </div>
+
+  <h2>7. Practice Problems</h2>
+  <ol>
+    <li>Simplify using K-map: F(A,B,C,D) = &Sigma;m(0,1,2,4,5,6,8,9,12,13,14)</li>
+    <li>Express in canonical POS: F(A,B,C) = A'B + BC'</li>
+    <li>Apply De Morgan's theorem: [(AB)' + C]' &middot; D</li>
+    <li>Use Quine-McCluskey to minimize: F(A,B,C,D) = &Sigma;m(2,6,8,9,10,11,14,15)</li>
+  </ol>
+
+  <h2>8. Summary of Key Formulas</h2>
+  <table>
+    <tr><th>Concept</th><th>Formula / Rule</th></tr>
+    <tr><td>Duality Principle</td><td>Swap AND/OR and 0/1 to get dual</td></tr>
+    <tr><td>Number of minterms</td><td>2<sup>n</sup> for n variables</td></tr>
+    <tr><td>SOP to POS conversion</td><td>Take minterms not in SOP as maxterms</td></tr>
+    <tr><td>K-map group size</td><td>Must be 2<sup>k</sup> (k = 0,1,2,...)</td></tr>
+    <tr><td>Variables eliminated</td><td>A group of 2<sup>k</sup> eliminates k variables</td></tr>
+  </table>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Boolean Algebra Quiz",
+      "questions": [
+        {
+          "question": "Simplify using Boolean algebra: F = AB + AB'C + AB'C'",
+          "options": ["A", "AB + C", "A(B + C)", "AB'"],
+          "answer": 0,
+          "explanation": "F = AB + AB'C + AB'C' = AB + AB'(C + C') = AB + AB'(1) = AB + AB' = A(B + B') = A(1) = A. Factor A out and use the complement law."
+        },
+        {
+          "question": "A function F(A,B,C) = Sigma m(1,2,3,5,7). What is the minimized SOP expression using K-map?",
+          "options": ["A'B + C", "B + A'C", "A'B + AC", "C + A'B"],
+          "answer": 0,
+          "explanation": "Plotting on K-map: m1(001), m2(010), m3(011), m5(101), m7(111). Group {m1,m3,m5,m7} gives C. Group {m2,m3} gives A'B. But {m1,m3,m5,m7} is all cells where C=1, so C covers 4 minterms. Remaining m2 needs A'B. F = A'B + C."
+        },
+        {
+          "question": "How many prime implicants does F(A,B,C,D) = Sigma m(0,2,8,10) have?",
+          "options": ["1", "2", "3", "4"],
+          "answer": 0,
+          "explanation": "On a 4-variable K-map, m0(0000), m2(0010), m8(1000), m10(1010) form a single group of 4 (corners). This group eliminates B and D, giving B'D'. There is exactly 1 prime implicant: B'D'."
+        },
+        {
+          "question": "The dual of the Boolean expression (A + B')(C.1) is:",
+          "options": ["(A . B')(C + 0)", "(A . B')(C + 1)", "(A' + B)(C + 0)", "(A . B')(C . 0)"],
+          "answer": 0,
+          "explanation": "To find the dual, swap AND with OR and 0 with 1 (do NOT complement variables). (A + B') becomes (A . B'), (C . 1) becomes (C + 0). The dual is (A . B')(C + 0)."
+        },
+        {
+          "question": "A Boolean function of n variables has how many minterms?",
+          "options": ["n", "2n", "2^n", "n^2"],
+          "answer": 2,
+          "explanation": "Each of n variables can be 0 or 1, giving 2^n combinations. Each combination corresponds to exactly one minterm. For example, 3 variables give 2^3 = 8 minterms (m0 through m7)."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

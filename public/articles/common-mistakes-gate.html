@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Common Mistakes in GATE CS — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Common Mistakes in GATE CS &amp; How to Avoid Them</h1>
+  <p class="article-section-tag">📋 GATE Essentials</p>
+  <p>This article catalogs the most frequent mistakes students make in each GATE CS section, with clear "Mistake to Correct Approach" tables and examples.</p>
+
+  <h2>1. Engineering Mathematics Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>Confusing P(A|B) with P(B|A) in Bayes' theorem</td><td>Always write out the full formula. Label what is given and what is asked.</td></tr>
+    <tr><td>Forgetting to subtract overcounted elements in inclusion-exclusion</td><td>|A &cup; B &cup; C| = |A|+|B|+|C| - |A&cap;B| - |B&cap;C| - |A&cap;C| + |A&cap;B&cap;C|</td></tr>
+    <tr><td>Confusing eigenvalue of A with eigenvalue of A^(-1)</td><td>If &lambda; is eigenvalue of A, then 1/&lambda; is eigenvalue of A^(-1)</td></tr>
+    <tr><td>Wrong determinant sign when expanding along a row</td><td>Sign pattern: (+, -, +, -, ...). Use cofactor expansion carefully.</td></tr>
+    <tr><td>Treating dependent and independent events incorrectly</td><td>Independent: P(A&cap;B) = P(A)*P(B). Mutually exclusive: P(A&cap;B) = 0. These are different concepts.</td></tr>
+    <tr><td>Wrong limits of integration for continuous distributions</td><td>For exponential distribution, always integrate from 0 to infinity (not -infinity).</td></tr>
+  </table>
+
+  <h2>2. Digital Logic Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>2's complement overflow: adding two positive numbers getting negative</td><td>Overflow occurs when sign of both operands is same but result sign differs. Check the carry into and out of MSB.</td></tr>
+    <tr><td>K-map grouping: not making largest possible groups</td><td>Always make groups of largest power of 2. Groups can wrap around edges.</td></tr>
+    <tr><td>Confusing active-high with active-low signals</td><td>Active-low means the signal is asserted when 0. Check the bubble notation.</td></tr>
+    <tr><td>Wrong IEEE 754 bias value</td><td>Single precision: bias = 127. Double precision: bias = 1023. Exponent_stored = Exponent_actual + bias.</td></tr>
+    <tr><td>Treating don't-care conditions as 0 in K-maps</td><td>Don't-cares can be treated as 0 or 1 to make larger groups. Use them to minimize.</td></tr>
+  </table>
+
+  <h2>3. Data Structures Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>Confusing height vs depth of a tree</td><td>Height of a node = longest path to a leaf. Depth = distance from root. Height of tree = height of root.</td></tr>
+    <tr><td>Assuming BST search is always O(log n)</td><td>Only balanced BST is O(log n). Skewed BST is O(n). Specify "balanced" when answering.</td></tr>
+    <tr><td>Wrong in-order successor for BST deletion</td><td>In-order successor is the leftmost node in the right subtree, NOT just the right child.</td></tr>
+    <tr><td>Off-by-one errors in array indexing for heaps</td><td>If root at index 1: left child = 2i, right child = 2i+1. If root at index 0: left = 2i+1, right = 2i+2.</td></tr>
+    <tr><td>Confusing stack and queue behavior in BFS/DFS</td><td>BFS uses Queue (FIFO). DFS uses Stack (LIFO). Mixing them changes the traversal completely.</td></tr>
+    <tr><td>Hash table: forgetting to count probes correctly</td><td>In linear probing, count the initial hash check as the first probe.</td></tr>
+  </table>
+
+  <h2>4. Algorithms Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>Applying Master theorem when it does not apply</td><td>Master theorem requires T(n) = aT(n/b) + f(n). It does NOT work for T(n) = T(n-1) + n or unequal subproblems.</td></tr>
+    <tr><td>Confusing O, &Omega;, and &Theta; notations</td><td>O = upper bound, &Omega; = lower bound, &Theta; = tight bound. "Running time is O(n^2)" means at most n^2, not exactly.</td></tr>
+    <tr><td>Dijkstra's with negative weights</td><td>Dijkstra does NOT work with negative edge weights. Use Bellman-Ford instead.</td></tr>
+    <tr><td>Greedy vs DP confusion</td><td>Greedy: local optimal choices lead to global optimal. DP: overlapping subproblems + optimal substructure. Greedy does not always work.</td></tr>
+    <tr><td>Forgetting that Quick Sort worst case is O(n^2)</td><td>When pivot is always min or max element (sorted/reverse-sorted input), Quick Sort degrades to O(n^2).</td></tr>
+    <tr><td>Wrong recurrence for divide and conquer</td><td>Count the work at each level carefully. Merge sort: T(n) = 2T(n/2) + O(n), not O(1).</td></tr>
+  </table>
+
+  <h2>5. Theory of Computation Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>Confusing NFA vs DFA: "NFA is more powerful"</td><td>NFA and DFA have EQUAL power (both recognize regular languages). NFA just needs fewer states sometimes.</td></tr>
+    <tr><td>Wrong pumping lemma application</td><td>Pumping lemma is for DISPROVING regularity, not proving it. You cannot use it to prove a language is regular.</td></tr>
+    <tr><td>Assuming all CFL are closed under intersection</td><td>CFL is NOT closed under intersection or complement. Regular languages are closed under both.</td></tr>
+    <tr><td>Confusing decidable vs recognizable (RE)</td><td>Decidable = TM halts on all inputs (accepts or rejects). RE = TM accepts strings in L but may loop on strings not in L.</td></tr>
+    <tr><td>Epsilon transitions in NFA to DFA conversion</td><td>Compute epsilon-closure for every state before processing transitions. Missing this leads to wrong DFA.</td></tr>
+  </table>
+
+  <h2>6. Compiler Design Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>FIRST/FOLLOW computation: missing epsilon propagation</td><td>If A &rarr; BC and B can derive epsilon, then FIRST(C) is also in FIRST(A). Trace all nullable productions.</td></tr>
+    <tr><td>Confusing SLR, CLR, and LALR parser power</td><td>Power hierarchy: LR(0) &lt; SLR(1) &lt; LALR(1) &lt; CLR(1). Every SLR grammar is LALR, but not vice versa.</td></tr>
+    <tr><td>Wrong handle identification in shift-reduce parsing</td><td>Handle is the rightmost production body that matches in a rightmost derivation (bottom-up). Not just any matching substring.</td></tr>
+    <tr><td>Left recursion in LL parsers</td><td>LL parsers cannot handle left recursion. Eliminate it: A &rarr; A&alpha; | &beta; becomes A &rarr; &beta;A', A' &rarr; &alpha;A' | &epsilon;</td></tr>
+  </table>
+
+  <h2>7. Operating System Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>Banker's algorithm: confusing Need vs Allocation</td><td>Need = Max - Allocation. Available = Total - Sum(Allocation). Check Need &le; Available for safe sequence.</td></tr>
+    <tr><td>Page replacement: counting the initial page faults</td><td>When frames are empty, loading a page IS a page fault (compulsory miss). Do not skip initial loads.</td></tr>
+    <tr><td>Belady's anomaly: assuming more frames always helps</td><td>FIFO can show Belady's anomaly (more frames = more faults). LRU and Optimal do NOT exhibit this.</td></tr>
+    <tr><td>Semaphore: wrong initial value</td><td>Binary semaphore for mutex: init to 1. Counting semaphore for n resources: init to n. Signaling semaphore: init to 0.</td></tr>
+    <tr><td>Deadlock: forgetting one of the 4 conditions</td><td>All 4 must hold simultaneously: Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait.</td></tr>
+    <tr><td>Round Robin: wrong handling of arrival at same time as quantum expiry</td><td>Newly arriving process goes to the end of the queue. The preempted process also goes to the end, AFTER the new arrival.</td></tr>
+  </table>
+
+  <h2>8. Database Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>Confusing candidate key vs super key</td><td>Super key = any set of attributes that uniquely identifies a tuple. Candidate key = minimal super key (no proper subset is a super key).</td></tr>
+    <tr><td>BCNF vs 3NF confusion</td><td>BCNF: for every FD X&rarr;Y, X must be a superkey. 3NF: same, OR Y is part of a candidate key. 3NF is weaker.</td></tr>
+    <tr><td>Wrong join result estimation</td><td>Natural join of R and S: result can have 0 to |R|*|S| tuples. Do not assume it equals max(|R|, |S|).</td></tr>
+    <tr><td>SQL: GROUP BY without aggregate in SELECT</td><td>Every column in SELECT must either be in GROUP BY or inside an aggregate function (SUM, COUNT, etc.).</td></tr>
+    <tr><td>Relational algebra: confusing selection vs projection</td><td>&sigma; (sigma) = selection (rows). &pi; (pi) = projection (columns). Many students swap these.</td></tr>
+  </table>
+
+  <h2>9. Computer Networks Mistakes</h2>
+  <table>
+    <tr><th>Mistake</th><th>Correct Approach</th></tr>
+    <tr><td>Confusing transmission delay with propagation delay</td><td>Transmission delay = L/R (packet size / bandwidth). Propagation delay = d/s (distance / speed). They are independent.</td></tr>
+    <tr><td>Subnetting: forgetting to subtract 2 from host count</td><td>Usable hosts = 2^(host bits) - 2. The network address and broadcast address are not assignable to hosts.</td></tr>
+    <tr><td>TCP window size vs sequence number confusion</td><td>Window size determines how many bytes can be sent before ACK. Sequence number identifies each byte in the stream.</td></tr>
+    <tr><td>Sliding window: wrong efficiency calculation</td><td>Efficiency = W / (1 + 2a) if W &lt; 1+2a, else 1. Here a = T_prop/T_trans. Do not forget the min(1, ...) condition.</td></tr>
+    <tr><td>Subnet mask: wrong calculation of network bits</td><td>/24 means first 24 bits are network. Subnet mask = 255.255.255.0. Always convert CIDR to binary if confused.</td></tr>
+  </table>
+
+  <h2>10. Calculation Mistakes to Avoid</h2>
+  <table>
+    <tr><th>Type</th><th>Example</th><th>Prevention</th></tr>
+    <tr><td>Unit conversion errors</td><td>Mixing KB (1024) with Kb (bits) in cache problems</td><td>Always convert everything to same unit first. Write units at each step.</td></tr>
+    <tr><td>Log base confusion</td><td>log2(8) = 3, not log10(8)</td><td>GATE CS almost always uses log base 2. Assume log2 unless stated otherwise.</td></tr>
+    <tr><td>Off-by-one in counting</td><td>Fence post: n posts need n-1 gaps</td><td>Verify with a small example (n=2 or n=3).</td></tr>
+    <tr><td>Power of 2 arithmetic</td><td>2^10 = 1024, not 1000</td><td>Memorize: 2^10=1024, 2^16=65536, 2^20=1048576</td></tr>
+    <tr><td>Negative number representation</td><td>-5 in 2's complement (8-bit) = 11111011, not 10000101</td><td>Method: invert bits of +5 (00000101 &rarr; 11111010) then add 1 &rarr; 11111011</td></tr>
+  </table>
+
+  <h2>11. Time Management Pitfalls</h2>
+  <table>
+    <tr><th>Pitfall</th><th>How to Avoid</th></tr>
+    <tr><td>Spending 10+ minutes on a single 2-mark question</td><td>Set a strict 6-minute cap. Mark and move on. Return only if time permits.</td></tr>
+    <tr><td>Attempting questions in printed order (top to bottom)</td><td>First sweep: solve all easy ones. Second sweep: medium ones. Third: hard ones.</td></tr>
+    <tr><td>Rechecking already-correct answers repeatedly</td><td>Trust your first instinct if you solved it confidently. Only recheck uncertain ones.</td></tr>
+    <tr><td>Leaving NAT questions unanswered</td><td>NAT has NO negative marking. Always enter an answer, even a guess.</td></tr>
+    <tr><td>Not using the on-screen calculator</td><td>Practice with the virtual calculator before exam day. It saves time on complex arithmetic.</td></tr>
+    <tr><td>Getting stuck on the first hard question and panicking</td><td>Hard questions appear randomly. Skip them and build confidence with easier ones first.</td></tr>
+  </table>
+
+  <h2>12. Conceptual Traps — Quick Reference</h2>
+  <ul>
+    <li><strong>NFA vs DFA:</strong> Same power (both recognize regular languages). NFA is NOT more powerful.</li>
+    <li><strong>2's complement overflow:</strong> Only occurs when adding same-sign numbers. Check if result sign differs from operand signs.</li>
+    <li><strong>Deadlock vs Starvation:</strong> Deadlock = circular waiting, no progress. Starvation = process waits indefinitely but others progress.</li>
+    <li><strong>Paging vs Segmentation:</strong> Paging = fixed-size frames, no external fragmentation. Segmentation = variable-size, has external fragmentation.</li>
+    <li><strong>TCP vs UDP:</strong> TCP = reliable, connection-oriented. UDP = unreliable, connectionless. DNS uses both (UDP for queries, TCP for zone transfers).</li>
+    <li><strong>B-Tree vs B+ Tree:</strong> B-Tree stores data in all nodes. B+ Tree stores data only in leaves; internal nodes have only keys.</li>
+    <li><strong>P vs NP:</strong> P &sube; NP (every P problem is also NP). Whether P = NP is unknown. NP-hard is NOT necessarily in NP.</li>
+  </ul>
+
+  <div class="important"><strong>Final Advice:</strong> After every mock test, review your mistakes and categorize them using the tables above. Most students lose 10-15 marks to avoidable errors. Fixing these can dramatically improve your score.</div>
+
+</article>
+</body>
+</html>

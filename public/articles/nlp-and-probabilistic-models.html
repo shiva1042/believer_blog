@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NLP and Probabilistic Models | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>NLP and Probabilistic Models</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. Bayes Classifier</h2>
+  <p>The Bayes classifier is a probabilistic framework for classification based on <strong>Bayes' Theorem</strong>. It selects the class that maximizes the posterior probability given the observed features.</p>
+
+  <div class="formula">
+    Bayes' Theorem: P(C|X) = P(X|C) &middot; P(C) / P(X)<br><br>
+    Bayes Optimal Classifier: C* = argmax<sub>C</sub> P(C|X) = argmax<sub>C</sub> P(X|C) &middot; P(C)<br>
+    (P(X) can be ignored since it is constant across classes)
+  </div>
+
+  <ul>
+    <li><strong>Prior P(C):</strong> Probability of each class before observing data (estimated from training set frequencies)</li>
+    <li><strong>Likelihood P(X|C):</strong> Probability of observing features X given class C</li>
+    <li><strong>Posterior P(C|X):</strong> Probability of class C given the observed features</li>
+    <li><strong>Evidence P(X):</strong> Normalization constant, independent of the class</li>
+  </ul>
+
+  <p>The <strong>Bayes optimal classifier</strong> has the minimum possible error rate (Bayes error rate). In practice, the Naive Bayes classifier approximates this by assuming feature independence.</p>
+
+  <div class="example">
+    <strong>Example:</strong> Email classification.<br>
+    Features: word occurrences. Classes: Spam (S), Ham (H).<br>
+    P(S) = 0.3, P(H) = 0.7<br>
+    For email with word "offer": P("offer"|S) = 0.6, P("offer"|H) = 0.1<br>
+    P(S|"offer") &prop; 0.6 &times; 0.3 = 0.18<br>
+    P(H|"offer") &prop; 0.1 &times; 0.7 = 0.07<br>
+    Normalized: P(S|"offer") = 0.18/0.25 = 0.72 &rarr; Classify as Spam.
+  </div>
+
+  <h2>2. Hidden Markov Models (HMM)</h2>
+  <p>An HMM is a statistical model for sequences where the system is assumed to be a <strong>Markov process</strong> with hidden (unobservable) states that produce observable outputs.</p>
+
+  <h3>2.1 Components of an HMM</h3>
+  <table>
+    <tr><th>Component</th><th>Symbol</th><th>Description</th></tr>
+    <tr><td>States</td><td>S = {s<sub>1</sub>, ..., s<sub>N</sub>}</td><td>Hidden states (not directly observable)</td></tr>
+    <tr><td>Observations</td><td>O = {o<sub>1</sub>, ..., o<sub>M</sub>}</td><td>Observable outputs</td></tr>
+    <tr><td>Transition probabilities</td><td>A = {a<sub>ij</sub>}</td><td>a<sub>ij</sub> = P(q<sub>t+1</sub>=s<sub>j</sub> | q<sub>t</sub>=s<sub>i</sub>)</td></tr>
+    <tr><td>Emission probabilities</td><td>B = {b<sub>j</sub>(k)}</td><td>b<sub>j</sub>(k) = P(o<sub>t</sub>=v<sub>k</sub> | q<sub>t</sub>=s<sub>j</sub>)</td></tr>
+    <tr><td>Initial distribution</td><td>&pi; = {&pi;<sub>i</sub>}</td><td>&pi;<sub>i</sub> = P(q<sub>1</sub>=s<sub>i</sub>)</td></tr>
+  </table>
+
+  <p>An HMM is fully specified by <strong>&lambda; = (A, B, &pi;)</strong>.</p>
+
+  <h3>2.2 Three Fundamental HMM Problems</h3>
+  <table>
+    <tr><th>Problem</th><th>Question</th><th>Algorithm</th></tr>
+    <tr><td><strong>Evaluation</strong></td><td>What is P(O|&lambda;)? (probability of observation sequence)</td><td>Forward algorithm (or Backward algorithm)</td></tr>
+    <tr><td><strong>Decoding</strong></td><td>What is the most likely hidden state sequence?</td><td>Viterbi algorithm</td></tr>
+    <tr><td><strong>Learning</strong></td><td>What model parameters &lambda; best explain the data?</td><td>Baum-Welch algorithm (EM)</td></tr>
+  </table>
+
+  <h3>2.3 Markov Property</h3>
+  <div class="formula">
+    First-order Markov assumption:<br>
+    P(q<sub>t+1</sub> | q<sub>t</sub>, q<sub>t-1</sub>, ..., q<sub>1</sub>) = P(q<sub>t+1</sub> | q<sub>t</sub>)<br>
+    The future state depends only on the current state, not the history.
+  </div>
+
+  <div class="example">
+    <strong>Example &mdash; Weather HMM:</strong><br>
+    Hidden states: {Sunny, Rainy}<br>
+    Observations: {Walk, Shop, Clean}<br>
+    Transition: P(Sunny|Sunny) = 0.7, P(Rainy|Sunny) = 0.3, P(Sunny|Rainy) = 0.4, P(Rainy|Rainy) = 0.6<br>
+    Emission: P(Walk|Sunny) = 0.6, P(Shop|Sunny) = 0.3, P(Clean|Sunny) = 0.1<br>
+    Given observation sequence (Walk, Shop, Clean), we can use the Viterbi algorithm to find the most likely weather sequence.
+  </div>
+
+  <h2>3. Viterbi Algorithm</h2>
+  <p>The Viterbi algorithm finds the <strong>most likely sequence of hidden states</strong> given an observation sequence. It uses dynamic programming to avoid exponential computation.</p>
+
+  <h3>3.1 Algorithm Steps</h3>
+  <div class="formula">
+    Initialization (t=1):<br>
+    &delta;<sub>1</sub>(i) = &pi;<sub>i</sub> &middot; b<sub>i</sub>(o<sub>1</sub>)  for each state i<br>
+    &psi;<sub>1</sub>(i) = 0<br><br>
+    Recursion (t=2,...,T):<br>
+    &delta;<sub>t</sub>(j) = max<sub>i</sub> [&delta;<sub>t-1</sub>(i) &middot; a<sub>ij</sub>] &middot; b<sub>j</sub>(o<sub>t</sub>)<br>
+    &psi;<sub>t</sub>(j) = argmax<sub>i</sub> [&delta;<sub>t-1</sub>(i) &middot; a<sub>ij</sub>]<br><br>
+    Termination:<br>
+    P* = max<sub>i</sub> &delta;<sub>T</sub>(i)<br>
+    q*<sub>T</sub> = argmax<sub>i</sub> &delta;<sub>T</sub>(i)<br><br>
+    Backtracking (t=T-1,...,1):<br>
+    q*<sub>t</sub> = &psi;<sub>t+1</sub>(q*<sub>t+1</sub>)
+  </div>
+
+  <p><strong>Time Complexity:</strong> O(N&sup2; &middot; T) where N = number of states, T = sequence length.<br>
+  <strong>Space Complexity:</strong> O(N &middot; T) for storing &delta; and &psi; tables.</p>
+
+  <h2>4. Text Preprocessing</h2>
+  <p>Text preprocessing transforms raw text into a form suitable for NLP algorithms. Key steps include:</p>
+
+  <h3>4.1 Tokenization</h3>
+  <p>Splitting text into individual units (tokens). Tokens can be words, subwords, or characters.</p>
+  <div class="example">
+    <strong>Example:</strong><br>
+    Input: "Natural language processing is fascinating!"<br>
+    Word tokens: ["Natural", "language", "processing", "is", "fascinating", "!"]<br>
+    After lowercasing: ["natural", "language", "processing", "is", "fascinating", "!"]
+  </div>
+
+  <h3>4.2 Stop Word Removal</h3>
+  <p>Removing common words that carry little semantic meaning: "the", "is", "at", "a", "an", "in", etc.</p>
+
+  <h3>4.3 Stemming</h3>
+  <p>Reducing words to their root form by removing suffixes. Aggressive and may produce non-words.</p>
+  <div class="example">
+    <strong>Porter Stemmer examples:</strong><br>
+    "running" &rarr; "run", "flies" &rarr; "fli", "connection" &rarr; "connect"<br>
+    "studies" &rarr; "studi", "caresses" &rarr; "caress"
+  </div>
+
+  <h3>4.4 Lemmatization</h3>
+  <p>Reducing words to their dictionary form (lemma) using vocabulary and morphological analysis. More accurate than stemming but slower.</p>
+  <div class="example">
+    <strong>Lemmatization examples:</strong><br>
+    "running" &rarr; "run", "flies" &rarr; "fly", "better" &rarr; "good"<br>
+    "studies" &rarr; "study", "geese" &rarr; "goose"
+  </div>
+
+  <table>
+    <tr><th>Feature</th><th>Stemming</th><th>Lemmatization</th></tr>
+    <tr><td>Approach</td><td>Rule-based suffix stripping</td><td>Dictionary + morphological analysis</td></tr>
+    <tr><td>Output</td><td>May not be a real word</td><td>Always a valid word (lemma)</td></tr>
+    <tr><td>Speed</td><td>Fast</td><td>Slower</td></tr>
+    <tr><td>Accuracy</td><td>Lower</td><td>Higher</td></tr>
+  </table>
+
+  <h2>5. TF-IDF (Term Frequency &ndash; Inverse Document Frequency)</h2>
+  <p>TF-IDF is a numerical statistic that reflects the importance of a word to a document within a corpus. Words that are frequent in a document but rare across the corpus get higher scores.</p>
+
+  <div class="formula">
+    TF(t, d) = count of term t in document d / total terms in d<br><br>
+    IDF(t, D) = log(N / df(t))<br>
+    where N = total documents, df(t) = number of documents containing t<br><br>
+    TF-IDF(t, d, D) = TF(t, d) &times; IDF(t, D)
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> Corpus with 10,000 documents. Document d has 100 words.<br>
+    Word "algorithm" appears 5 times in d and in 50 documents total.<br>
+    TF("algorithm", d) = 5/100 = 0.05<br>
+    IDF("algorithm") = log(10000/50) = log(200) &approx; 2.301<br>
+    TF-IDF = 0.05 &times; 2.301 = 0.115<br><br>
+    Word "the" appears 8 times in d and in 9,800 documents.<br>
+    TF("the", d) = 8/100 = 0.08<br>
+    IDF("the") = log(10000/9800) &approx; 0.0088<br>
+    TF-IDF = 0.08 &times; 0.0088 = 0.0007 (very low, as expected for a stop word)
+  </div>
+
+  <p><strong>Key insight:</strong> TF-IDF assigns high weight to terms that are frequent in a specific document but rare across the corpus, effectively filtering out common words.</p>
+
+  <h2>6. Word Embeddings (Word2Vec Basics)</h2>
+  <p>Word embeddings represent words as dense, low-dimensional vectors in a continuous vector space, capturing semantic relationships.</p>
+
+  <h3>6.1 Word2Vec Architectures</h3>
+  <table>
+    <tr><th>Architecture</th><th>Task</th><th>Properties</th></tr>
+    <tr><td><strong>CBOW (Continuous Bag of Words)</strong></td><td>Predict the center word from surrounding context words</td><td>Faster training, better for frequent words</td></tr>
+    <tr><td><strong>Skip-gram</strong></td><td>Predict surrounding context words from the center word</td><td>Works better for rare words, better with small datasets</td></tr>
+  </table>
+
+  <div class="formula">
+    CBOW: maximize P(w<sub>t</sub> | w<sub>t-c</sub>, ..., w<sub>t-1</sub>, w<sub>t+1</sub>, ..., w<sub>t+c</sub>)<br>
+    Skip-gram: maximize P(w<sub>t-c</sub>, ..., w<sub>t-1</sub>, w<sub>t+1</sub>, ..., w<sub>t+c</sub> | w<sub>t</sub>)<br>
+    where c is the context window size
+  </div>
+
+  <p><strong>Key properties of word embeddings:</strong></p>
+  <ul>
+    <li>Semantically similar words have similar vectors (cosine similarity)</li>
+    <li>Analogical relationships are captured: vec("king") - vec("man") + vec("woman") &approx; vec("queen")</li>
+    <li>Typical dimensionality: 100-300 dimensions</li>
+    <li>Trained on large corpora in an unsupervised manner</li>
+  </ul>
+
+  <h2>7. Language Models (N-gram)</h2>
+  <p>A language model assigns probabilities to sequences of words. N-gram models estimate the probability of a word based on the preceding (N-1) words.</p>
+
+  <div class="formula">
+    Chain rule: P(w<sub>1</sub>, w<sub>2</sub>, ..., w<sub>n</sub>) = &prod; P(w<sub>i</sub> | w<sub>1</sub>, ..., w<sub>i-1</sub>)<br><br>
+    N-gram approximation (Markov assumption of order N-1):<br>
+    P(w<sub>i</sub> | w<sub>1</sub>, ..., w<sub>i-1</sub>) &approx; P(w<sub>i</sub> | w<sub>i-N+1</sub>, ..., w<sub>i-1</sub>)
+  </div>
+
+  <table>
+    <tr><th>Model</th><th>Context</th><th>Formula</th><th>Example</th></tr>
+    <tr><td>Unigram</td><td>None</td><td>P(w<sub>i</sub>)</td><td>P("cat") = count("cat")/total words</td></tr>
+    <tr><td>Bigram</td><td>1 word</td><td>P(w<sub>i</sub>|w<sub>i-1</sub>)</td><td>P("cat"|"the") = count("the cat")/count("the")</td></tr>
+    <tr><td>Trigram</td><td>2 words</td><td>P(w<sub>i</sub>|w<sub>i-2</sub>,w<sub>i-1</sub>)</td><td>P("cat"|"the","fat") = count("the fat cat")/count("the fat")</td></tr>
+  </table>
+
+  <h3>7.1 Smoothing Techniques</h3>
+  <p>N-gram models assign zero probability to unseen sequences. Smoothing redistributes some probability mass to unseen events.</p>
+
+  <div class="formula">
+    Laplace (Add-1) smoothing:<br>
+    P(w<sub>i</sub>|w<sub>i-1</sub>) = (count(w<sub>i-1</sub>, w<sub>i</sub>) + 1) / (count(w<sub>i-1</sub>) + V)<br>
+    where V = vocabulary size<br><br>
+    Add-k smoothing (generalization): replace 1 with k (typically 0 &lt; k &lt; 1)
+  </div>
+
+  <h3>7.2 Perplexity</h3>
+  <p>Perplexity is the standard evaluation metric for language models. Lower perplexity means the model better predicts the test data.</p>
+  <div class="formula">
+    PP(W) = P(w<sub>1</sub>, w<sub>2</sub>, ..., w<sub>N</sub>)<sup>-1/N</sup><br>
+    = exp(-(1/N) &sum; log P(w<sub>i</sub> | w<sub>1</sub>, ..., w<sub>i-1</sub>))<br><br>
+    Interpretation: average branching factor &mdash; the average number of equally likely words the model considers at each position.
+  </div>
+
+  <h2>8. Summary Comparison</h2>
+  <table>
+    <tr><th>Model/Technique</th><th>Task</th><th>Key Strength</th></tr>
+    <tr><td>Bayes Classifier</td><td>Classification</td><td>Optimal if true distributions known</td></tr>
+    <tr><td>HMM</td><td>Sequence modeling</td><td>Models hidden state sequences</td></tr>
+    <tr><td>TF-IDF</td><td>Feature extraction</td><td>Simple, effective document representation</td></tr>
+    <tr><td>Word2Vec</td><td>Word representation</td><td>Captures semantic relationships</td></tr>
+    <tr><td>N-gram</td><td>Language modeling</td><td>Simple probabilistic text generation</td></tr>
+  </table>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "NLP and Probabilistic Models - GATE Quiz",
+    "questions": [
+      {
+        "question": "In an HMM, the transition probability a_ij represents:",
+        "options": [
+          "P(observing symbol j in state i)",
+          "P(moving from state i to state j)",
+          "P(state i given observation j)",
+          "P(observation j given state i)"
+        ],
+        "answer": 1,
+        "explanation": "The transition probability a_ij = P(q_{t+1} = s_j | q_t = s_i) represents the probability of transitioning from hidden state i to hidden state j. Emission probabilities b_j(k) represent the probability of observing output k in state j."
+      },
+      {
+        "question": "The Viterbi algorithm is used to solve which HMM problem?",
+        "options": [
+          "Evaluation — computing P(O|λ)",
+          "Decoding — finding the most likely hidden state sequence",
+          "Learning — estimating model parameters",
+          "Prediction — forecasting the next observation"
+        ],
+        "answer": 1,
+        "explanation": "The Viterbi algorithm solves the decoding problem: given an observation sequence and an HMM, it finds the most probable sequence of hidden states using dynamic programming. The Forward algorithm solves the evaluation problem, and Baum-Welch solves the learning problem."
+      },
+      {
+        "question": "What is the TF-IDF score of a term that appears in every document in the corpus?",
+        "options": ["Maximum possible score", "1.0", "0 (since IDF = log(1) = 0)", "Depends on the term frequency"],
+        "answer": 2,
+        "explanation": "If a term appears in every document, df(t) = N, so IDF = log(N/N) = log(1) = 0. Therefore TF-IDF = TF × 0 = 0, regardless of the term frequency. This makes sense because a word that appears in all documents is not useful for distinguishing between them."
+      },
+      {
+        "question": "In Word2Vec, the Skip-gram model is trained to:",
+        "options": [
+          "Predict the center word from context words",
+          "Predict context words from the center word",
+          "Cluster similar words together",
+          "Predict the next word in a sequence"
+        ],
+        "answer": 1,
+        "explanation": "Skip-gram predicts the surrounding context words given the center word. CBOW (Continuous Bag of Words) does the opposite — predicting the center word from context words. Skip-gram tends to work better for rare words and smaller datasets."
+      },
+      {
+        "question": "In a bigram language model, P('learning' | 'machine') is estimated as:",
+        "options": [
+          "count('learning') / total words",
+          "count('machine learning') / count('machine')",
+          "count('machine learning') / count('learning')",
+          "count('machine') × count('learning') / total words²"
+        ],
+        "answer": 1,
+        "explanation": "In a bigram model, P(w_i | w_{i-1}) = count(w_{i-1}, w_i) / count(w_{i-1}). So P('learning' | 'machine') = count('machine learning') / count('machine'). This is the maximum likelihood estimate of the bigram probability."
+      },
+      {
+        "question": "Which of the following is true about lemmatization compared to stemming?",
+        "options": [
+          "Lemmatization is faster than stemming",
+          "Stemming always produces valid dictionary words",
+          "Lemmatization uses dictionary lookup and morphological analysis to produce valid words",
+          "Stemming is more accurate than lemmatization"
+        ],
+        "answer": 2,
+        "explanation": "Lemmatization uses vocabulary and morphological analysis to return the base dictionary form (lemma) of a word, always producing a valid word. Stemming uses rule-based suffix stripping, which is faster but may produce non-words (e.g., 'studies' → 'studi')."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

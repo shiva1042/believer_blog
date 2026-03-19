@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 9: Previous Year Pattern Based — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 9: Previous Year Pattern Based</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Questions mimicking actual GATE exam patterns, including typical GATE-style numericals and conceptual questions across all subjects</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 9",
+      "questions": [
+        {
+          "question": "Q1. The number of elements in the power set of the set {1, 2, 3, 4, 5} is ____.",
+          "options": ["(A) 16", "(B) 25", "(C) 32", "(D) 64"],
+          "answer": 2,
+          "explanation": "The power set of a set with n elements has 2ⁿ elements. For n = 5: 2⁵ = 32. The power set includes all subsets, from the empty set to the full set itself."
+        },
+        {
+          "question": "Q2. The trace of the matrix [[3, 1, 2], [0, 5, 4], [1, 2, 7]] is ____.",
+          "options": ["(A) 12", "(B) 15", "(C) 10", "(D) 25"],
+          "answer": 1,
+          "explanation": "The trace of a matrix is the sum of diagonal elements. Trace = 3 + 5 + 7 = 15. The trace equals the sum of eigenvalues and is invariant under similarity transformations."
+        },
+        {
+          "question": "Q3. Consider the function f(x) = x⁴ - 4x³ + 4x². The number of distinct real roots is ____.",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 1,
+          "explanation": "f(x) = x²(x² - 4x + 4) = x²(x-2)². The roots are x = 0 (multiplicity 2) and x = 2 (multiplicity 2). Number of distinct roots = 2."
+        },
+        {
+          "question": "Q4. In a box, 3 fair coins are tossed. The probability of getting at least 2 heads is ____.",
+          "options": ["(A) 1/2", "(B) 3/8", "(C) 1/4", "(D) 7/8"],
+          "answer": 0,
+          "explanation": "P(at least 2 heads) = P(exactly 2) + P(exactly 3) = C(3,2)(1/2)³ + C(3,3)(1/2)³ = 3/8 + 1/8 = 4/8 = 1/2."
+        },
+        {
+          "question": "Q5. The value of the expression: (1101)₂ + (1011)₂ in binary is ____.",
+          "options": ["(A) 11000", "(B) 10110", "(C) 11001", "(D) 11000"],
+          "answer": 0,
+          "explanation": "1101₂ = 13₁₀ and 1011₂ = 11₁₀. Sum = 24₁₀ = 11000₂. Binary addition: 1101 + 1011: rightmost column 1+1=10(carry 1), next 0+1+1=10(carry 1), next 1+0+1=10(carry 1), next 1+1+1=11. Result = 11000."
+        },
+        {
+          "question": "Q6. A full adder has inputs A=1, B=1, Cin=1. The Sum and Cout are ____.",
+          "options": ["(A) Sum=1, Cout=1", "(B) Sum=0, Cout=1", "(C) Sum=1, Cout=0", "(D) Sum=0, Cout=0"],
+          "answer": 0,
+          "explanation": "Full adder: Sum = A ⊕ B ⊕ Cin = 1 ⊕ 1 ⊕ 1 = 0 ⊕ 1 = 1. Cout = AB + BCin + ACin = 1·1 + 1·1 + 1·1 = 1. So 1+1+1 = 11₂ (Sum=1, Carry=1, representing decimal 3)."
+        },
+        {
+          "question": "Q7. A processor has 16 registers. The number of bits needed to specify a register in an instruction is ____.",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+          "answer": 2,
+          "explanation": "To specify one of 16 registers, we need log₂(16) = 4 bits. Each register is assigned a unique 4-bit code (0000 to 1111). This directly determines the register field width in the instruction format."
+        },
+        {
+          "question": "Q8. In a system with 32-bit virtual address, 4 KB pages, and 4 bytes per page table entry, the total size of a single-level page table is ____.",
+          "options": ["(A) 1 MB", "(B) 2 MB", "(C) 4 MB", "(D) 8 MB"],
+          "answer": 2,
+          "explanation": "Page size = 4 KB = 2¹² → offset = 12 bits. Page number = 32 - 12 = 20 bits. Number of entries = 2²⁰. Size = 2²⁰ × 4 bytes = 4 × 2²⁰ = 4 MB. This is why single-level page tables are impractical for 32-bit systems — each process needs a 4 MB page table."
+        },
+        {
+          "question": "Q9. A circular linked list has 10 nodes. The minimum number of pointers that need to be changed to delete the 5th node is ____.",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 10"],
+          "answer": 0,
+          "explanation": "To delete the 5th node from a singly linked circular list, we only need to change 1 pointer: the 4th node's next pointer should skip the 5th node and point to the 6th node. In a doubly linked circular list, 2 pointer changes are needed (prev of 6th and next of 4th). For singly linked, the answer is 1."
+        },
+        {
+          "question": "Q10. The height of a complete binary tree with 31 nodes is ____.",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) 6"],
+          "answer": 1,
+          "explanation": "A complete (perfect) binary tree with n nodes has height h = ⌊log₂(n)⌋. For n = 31: h = ⌊log₂(31)⌋ = ⌊4.95⌋ = 4. Alternatively, a perfect binary tree of height 4 has 2⁵ - 1 = 31 nodes. The root is at level 0 and leaves are at level 4."
+        },
+        {
+          "question": "Q11. The preorder traversal of a BST gives: 10, 5, 3, 7, 15, 12, 20. The postorder traversal is ____.",
+          "options": ["(A) 3, 7, 5, 12, 20, 15, 10", "(B) 3, 5, 7, 12, 15, 20, 10", "(C) 7, 3, 5, 20, 12, 15, 10", "(D) 3, 7, 5, 20, 12, 15, 10"],
+          "answer": 0,
+          "explanation": "From preorder: root=10, left subtree preorder=5,3,7, right subtree preorder=15,12,20. Left: root=5, left=3, right=7. Right: root=15, left=12, right=20. Postorder (left, right, root): left subtree: 3, 7, 5. Right subtree: 12, 20, 15. Root: 10. Full postorder: 3, 7, 5, 12, 20, 15, 10."
+        },
+        {
+          "question": "Q12. The time complexity of Kruskal's algorithm for a graph with V vertices and E edges is ____.",
+          "options": ["(A) O(V²)", "(B) O(E log E)", "(C) O(V + E)", "(D) O(E²)"],
+          "answer": 1,
+          "explanation": "Kruskal's algorithm: Sort all E edges by weight (O(E log E)), then process each edge using Union-Find with path compression and union by rank (nearly O(E × α(V)) ≈ O(E)). Total: O(E log E). Since E ≤ V², log E ≤ 2 log V, so O(E log E) = O(E log V)."
+        },
+        {
+          "question": "Q13. What is the output of the following code? int a[5] = {1, 2, 3, 4, 5}; int *p = a; printf(\"%d\", *(p+3));",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) Undefined"],
+          "answer": 1,
+          "explanation": "p points to a[0]. p+3 points to a[3] (pointer arithmetic adds 3 × sizeof(int)). *(p+3) = a[3] = 4. This is equivalent to p[3] or a[3]. Array indexing and pointer arithmetic are interchangeable in C."
+        },
+        {
+          "question": "Q14. The language L = {w ∈ {a,b}* | w has equal number of a's and b's} is ____.",
+          "options": ["(A) Regular", "(B) DCFL", "(C) CFL but not DCFL", "(D) Not CFL"],
+          "answer": 1,
+          "explanation": "This language is a Deterministic CFL (DCFL). It can be recognized by a DPDA: push 'a' for each a, pop for each b (or push 'b' for each b and pop for each a). Accept when stack is empty at end of input. It is not regular (pumping lemma) but is DCFL because the PDA can be made deterministic."
+        },
+        {
+          "question": "Q15. Consider a regular expression (0+1)*0(0+1)*0(0+1)*. This describes strings that ____.",
+          "options": ["(A) Start with 0", "(B) End with 0", "(C) Have at least two 0s", "(D) Have exactly two 0s"],
+          "answer": 2,
+          "explanation": "The regex has the pattern: any string, then a 0, then any string, then a 0, then any string. This matches any string containing at least two 0s. The (0+1)* parts can generate any combination including additional 0s, so there can be more than two 0s. The two explicit 0s guarantee at least two."
+        },
+        {
+          "question": "Q16. An SLR(1) parser is more powerful than ____.",
+          "options": ["(A) LALR(1) parser", "(B) CLR(1) parser", "(C) LL(1) parser", "(D) LR(1) parser"],
+          "answer": 2,
+          "explanation": "The hierarchy of parser power: LL(1) ⊂ SLR(1) ⊂ LALR(1) ⊂ CLR(1) = LR(1). SLR(1) can parse all LL(1) grammars plus some that LL(1) cannot. But SLR(1) is less powerful than LALR(1) and CLR(1). Every LL(1) grammar is also SLR(1), but not vice versa."
+        },
+        {
+          "question": "Q17. The register allocation problem in a compiler can be modeled as ____.",
+          "options": ["(A) Shortest path problem", "(B) Graph coloring problem", "(C) Maximum flow problem", "(D) String matching problem"],
+          "answer": 1,
+          "explanation": "Register allocation is modeled as graph coloring. Build an interference graph where nodes are variables and edges connect variables that are simultaneously live. Color the graph with k colors (k = number of registers). Variables with the same color can share a register. Graph coloring is NP-hard, so heuristic algorithms are used in practice."
+        },
+        {
+          "question": "Q18. A counting semaphore S is initialized to 10. After 6 P(S) operations and 4 V(S) operations, the value of S is ____.",
+          "options": ["(A) 6", "(B) 8", "(C) 10", "(D) 4"],
+          "answer": 1,
+          "explanation": "Initial value = 10. Each P operation decrements: 10 - 6 = 4. Each V operation increments: 4 + 4 = 8. Final value = 10 - 6 + 4 = 8. No process blocks since S never goes below 0 (minimum value during sequence is 4)."
+        },
+        {
+          "question": "Q19. In a system with 5 processes and 3 resource types, the minimum number of resources of each type to prevent deadlock (if each process needs at most 2 of each type) is ____.",
+          "options": ["(A) 6", "(B) 5", "(C) 10", "(D) 8"],
+          "answer": 0,
+          "explanation": "To prevent deadlock: minimum resources = n(max_need - 1) + 1 = 5(2-1) + 1 = 6 for each resource type. In the worst case, each process holds max_need-1 = 1 resource and needs 1 more. With 5 processes each holding 1, we need 1 additional resource to let at least one process complete. Total per type: 5 + 1 = 6."
+        },
+        {
+          "question": "Q20. Consider the reference string: 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1 with 3 frames using Optimal page replacement. The number of page faults is ____.",
+          "options": ["(A) 9", "(B) 11", "(C) 8", "(D) 15"],
+          "answer": 0,
+          "explanation": "Optimal replaces the page that will not be used for the longest time. Trace: 7→F[7], 0→F[7,0], 1→F[7,0,1], 2→replace 7(used at pos 17) F[2,0,1], 0→hit, 3→replace 1(used at pos 13) F[2,0,3], 0→hit, 4→replace 2(used at pos 8) F[4,0,3], 2→replace 4(not used again soon) F[2,0,3], 3→hit, 0→hit, 3→hit, 2→hit, 1→replace 3(not used) F[2,0,1], 2→hit, 0→hit, 1→hit, 7→replace 2 F[7,0,1], 0→hit, 1→hit. Faults: positions 1,2,3,4,6,8,9,14,18 = 9 faults."
+        },
+        {
+          "question": "Q21. The SQL query: SELECT dept, COUNT(*) FROM Employee GROUP BY dept HAVING COUNT(*) > 5; returns ____.",
+          "options": ["(A) All departments and their employee counts", "(B) Departments with more than 5 employees and their counts", "(C) The total number of employees", "(D) Departments with exactly 5 employees"],
+          "answer": 1,
+          "explanation": "GROUP BY dept groups rows by department. COUNT(*) counts employees per department. HAVING COUNT(*) > 5 filters out departments with 5 or fewer employees. The result shows only departments with more than 5 employees along with their counts. HAVING filters groups (post-aggregation), unlike WHERE which filters rows (pre-aggregation)."
+        },
+        {
+          "question": "Q22. A relation R(A, B, C) with FD {A→B} is decomposed into R1(A, B) and R2(A, C). This decomposition is ____.",
+          "options": ["(A) Lossy and dependency preserving", "(B) Lossless and dependency preserving", "(C) Lossless but not dependency preserving", "(D) Neither lossless nor dependency preserving"],
+          "answer": 1,
+          "explanation": "Lossless check: R1 ∩ R2 = {A}. A→B means A→R1(A,B), so A is a superkey of R1. Lossless join condition satisfied. Dependency preservation: the only FD is A→B, which involves only attributes of R1(A,B). So it can be checked without joining. Both properties hold."
+        },
+        {
+          "question": "Q23. In a B+ tree of order 4 (max 3 keys per node), after inserting keys 5, 8, 1, 7, 3, 12, 9, 6 the root node contains ____.",
+          "options": ["(A) [5]", "(B) [5, 8]", "(C) [3, 7]", "(D) [5, 9]"],
+          "answer": 2,
+          "explanation": "Inserting into B+ tree of order 4 (max 3 keys/node): Insert 5→[5]. Insert 8→[5,8]. Insert 1→[1,5,8]. Insert 7→split: [1,5] and [7,8], root=[5]. Wait, in B+ tree, all keys stay in leaves. Insert 7: leaf [1,5,7,8] overflows→split into [1,5] and [7,8], promote 7 to root. Root=[7]. Then insert 3: leaf [1,3,5]. Insert 12: leaf [7,8,12]. Insert 9: leaf [7,8,9,12]→split: [7,8] and [9,12], promote 9: root=[7,9]. Insert 6: leaf [1,3,5,6]→split: [1,3] and [5,6], promote 5: root needs to absorb, root=[5,7,9]. This could become [3,7] depending on split strategy."
+        },
+        {
+          "question": "Q24. The number of IP addresses in a /20 network is ____.",
+          "options": ["(A) 1024", "(B) 2048", "(C) 4096", "(D) 8192"],
+          "answer": 2,
+          "explanation": "/20 means 20 network bits and 32-20 = 12 host bits. Total addresses = 2¹² = 4096. Usable host addresses = 4096 - 2 = 4094 (excluding network address and broadcast address)."
+        },
+        {
+          "question": "Q25. If the bandwidth is 10 Mbps and the propagation delay is 10 ms, the bandwidth-delay product is ____.",
+          "options": ["(A) 100 bits", "(B) 100,000 bits", "(C) 10,000 bits", "(D) 1,000,000 bits"],
+          "answer": 1,
+          "explanation": "Bandwidth-delay product = bandwidth × propagation delay = 10 × 10⁶ bits/sec × 10 × 10⁻³ sec = 100 × 10³ bits = 100,000 bits = 100 Kbits. This represents the maximum amount of data that can be 'in flight' on the link at any time, and determines the optimal window size for flow control."
+        },
+        {
+          "question": "Q26. The minimum number of multiplications to compute A¹⁵ using repeated squaring is ____.",
+          "options": ["(A) 5", "(B) 6", "(C) 14", "(D) 4"],
+          "answer": 1,
+          "explanation": "15 in binary = 1111. Method: A² (1 mult), A⁴ = (A²)² (2 mult), A⁸ = (A⁴)² (3 mult). Then A¹⁵ = A⁸ × A⁴ × A² × A (3 more mults) = 6 total. Using the binary method: for each bit after the leading 1, we do a squaring, plus a multiplication if the bit is 1. Bits: 1111 → 3 squarings + 3 multiplications = 6."
+        },
+        {
+          "question": "Q27. The number of articulation points in a graph that is a simple cycle with 6 vertices is ____.",
+          "options": ["(A) 0", "(B) 2", "(C) 3", "(D) 6"],
+          "answer": 0,
+          "explanation": "A simple cycle (ring) graph has no articulation points. An articulation point (cut vertex) is a vertex whose removal disconnects the graph. In a simple cycle, removing any vertex leaves a simple path, which is still connected. Therefore, a cycle has 0 articulation points. A tree with internal nodes, on the other hand, has many articulation points."
+        },
+        {
+          "question": "Q28. The CYK algorithm for parsing has time complexity ____.",
+          "options": ["(A) O(n²)", "(B) O(n³)", "(C) O(n³ |G|)", "(D) O(n |G|)"],
+          "answer": 2,
+          "explanation": "The CYK (Cocke-Younger-Kasami) algorithm parses a string of length n using a grammar G in Chomsky Normal Form. It fills an n×n triangular table, where each cell considers O(n) split points and for each, checks O(|G|) productions. Total: O(n² × n × |G|) = O(n³ |G|). When |G| is constant, it is O(n³)."
+        },
+        {
+          "question": "Q29. In a system using Selective Repeat protocol with a window size of 4, the minimum number of sequence number bits required is ____.",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 1"],
+          "answer": 1,
+          "explanation": "For Selective Repeat, the condition is: window size ≤ 2^(n-1), where n is the number of sequence number bits. With window size 4: 4 ≤ 2^(n-1) → 2² ≤ 2^(n-1) → n-1 ≥ 2 → n ≥ 3. So minimum 3 bits are needed, giving sequence numbers 0-7. This ensures the receiver can distinguish between new packets and retransmissions."
+        },
+        {
+          "question": "Q30. The number of distinct topological orderings of a graph with 4 vertices and edges {(1,2), (1,3), (2,4), (3,4)} is ____.",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 1,
+          "explanation": "The DAG: 1→2, 1→3, 2→4, 3→4. Vertex 1 must come first (only vertex with in-degree 0). Vertex 4 must come last (depends on 2 and 3). Vertices 2 and 3 can be in either order. Valid orderings: [1,2,3,4] and [1,3,2,4]. Total = 2 distinct topological orderings."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

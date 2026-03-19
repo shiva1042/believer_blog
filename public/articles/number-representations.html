@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Number Representations and Computer Arithmetic — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: center; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Number Representations and Computer Arithmetic</h1>
+  <p class="article-section-tag">🔲 Section 2: Digital Logic</p>
+
+  <h2>1. Number Systems</h2>
+
+  <h3>1.1 Common Number Systems</h3>
+  <table>
+    <tr><th>System</th><th>Base (Radix)</th><th>Digits</th><th>Example</th></tr>
+    <tr><td>Binary</td><td>2</td><td>0, 1</td><td>(1011)<sub>2</sub> = 11</td></tr>
+    <tr><td>Octal</td><td>8</td><td>0-7</td><td>(13)<sub>8</sub> = 11</td></tr>
+    <tr><td>Decimal</td><td>10</td><td>0-9</td><td>(11)<sub>10</sub> = 11</td></tr>
+    <tr><td>Hexadecimal</td><td>16</td><td>0-9, A-F</td><td>(B)<sub>16</sub> = 11</td></tr>
+  </table>
+
+  <h3>1.2 Conversion Methods</h3>
+
+  <h4>Binary to Decimal</h4>
+  <p>Multiply each bit by its positional weight and sum: <code>(1011)<sub>2</sub> = 1&times;2<sup>3</sup> + 0&times;2<sup>2</sup> + 1&times;2<sup>1</sup> + 1&times;2<sup>0</sup> = 8+0+2+1 = 11</code></p>
+
+  <h4>Decimal to Binary</h4>
+  <p>Repeated division by 2, reading remainders bottom-to-top: <code>25 / 2 = 12 R1, 12 / 2 = 6 R0, 6 / 2 = 3 R0, 3 / 2 = 1 R1, 1 / 2 = 0 R1</code> giving <code>(11001)<sub>2</sub></code></p>
+
+  <h4>Binary to Octal</h4>
+  <p>Group bits in 3s from right: <code>(110 101 011)<sub>2</sub> = (653)<sub>8</sub></code></p>
+
+  <h4>Binary to Hexadecimal</h4>
+  <p>Group bits in 4s from right: <code>(0011 1010 1111)<sub>2</sub> = (3AF)<sub>16</sub></code></p>
+
+  <h3>1.3 BCD (Binary Coded Decimal)</h3>
+  <p>Each decimal digit is represented by its 4-bit binary equivalent.</p>
+  <table>
+    <tr><th>Decimal</th><th>BCD</th><th>Decimal</th><th>BCD</th></tr>
+    <tr><td>0</td><td>0000</td><td>5</td><td>0101</td></tr>
+    <tr><td>1</td><td>0001</td><td>6</td><td>0110</td></tr>
+    <tr><td>2</td><td>0010</td><td>7</td><td>0111</td></tr>
+    <tr><td>3</td><td>0011</td><td>8</td><td>1000</td></tr>
+    <tr><td>4</td><td>0100</td><td>9</td><td>1001</td></tr>
+  </table>
+  <p><strong>Example:</strong> 295 in BCD = 0010 1001 0101</p>
+
+  <div class="note">
+    <p>BCD codes 1010 through 1111 are invalid since they do not represent any decimal digit.</p>
+  </div>
+
+  <h2>2. Signed Number Representations</h2>
+
+  <h3>2.1 Sign-Magnitude</h3>
+  <p>The MSB is the sign bit (0 = positive, 1 = negative). Remaining bits represent magnitude.</p>
+  <ul>
+    <li>Range for n bits: -(2<sup>n-1</sup> - 1) to +(2<sup>n-1</sup> - 1)</li>
+    <li>Two representations of zero: +0 (0000...0) and -0 (1000...0)</li>
+  </ul>
+
+  <h3>2.2 One's Complement</h3>
+  <p>Positive numbers are same as sign-magnitude. Negative numbers are obtained by inverting all bits.</p>
+  <ul>
+    <li>Range for n bits: -(2<sup>n-1</sup> - 1) to +(2<sup>n-1</sup> - 1)</li>
+    <li>Two representations of zero: +0 (0000...0) and -0 (1111...1)</li>
+    <li>Addition requires end-around carry</li>
+  </ul>
+
+  <h3>2.3 Two's Complement</h3>
+  <p>The most widely used representation. Negative numbers are obtained by inverting all bits and adding 1.</p>
+  <ul>
+    <li>Range for n bits: -2<sup>n-1</sup> to +(2<sup>n-1</sup> - 1)</li>
+    <li>Only one representation of zero</li>
+    <li>One extra negative number: -2<sup>n-1</sup> has no positive counterpart</li>
+  </ul>
+
+  <h3>2.4 Comparison Table (8-bit)</h3>
+  <table>
+    <tr><th>Decimal</th><th>Sign-Magnitude</th><th>1's Complement</th><th>2's Complement</th></tr>
+    <tr><td>+7</td><td>0000 0111</td><td>0000 0111</td><td>0000 0111</td></tr>
+    <tr><td>+1</td><td>0000 0001</td><td>0000 0001</td><td>0000 0001</td></tr>
+    <tr><td>+0</td><td>0000 0000</td><td>0000 0000</td><td>0000 0000</td></tr>
+    <tr><td>-0</td><td>1000 0000</td><td>1111 1111</td><td>N/A (same as +0)</td></tr>
+    <tr><td>-1</td><td>1000 0001</td><td>1111 1110</td><td>1111 1111</td></tr>
+    <tr><td>-7</td><td>1000 0111</td><td>1111 1000</td><td>1111 1001</td></tr>
+    <tr><td>-128</td><td>N/A</td><td>N/A</td><td>1000 0000</td></tr>
+  </table>
+
+  <h3>2.5 Range Summary</h3>
+  <table>
+    <tr><th>Representation</th><th>Range (n bits)</th><th>Unique values</th><th>Zeros</th></tr>
+    <tr><td>Unsigned</td><td>0 to 2<sup>n</sup>-1</td><td>2<sup>n</sup></td><td>1</td></tr>
+    <tr><td>Sign-Magnitude</td><td>-(2<sup>n-1</sup>-1) to +(2<sup>n-1</sup>-1)</td><td>2<sup>n</sup>-1</td><td>2</td></tr>
+    <tr><td>1's Complement</td><td>-(2<sup>n-1</sup>-1) to +(2<sup>n-1</sup>-1)</td><td>2<sup>n</sup>-1</td><td>2</td></tr>
+    <tr><td>2's Complement</td><td>-2<sup>n-1</sup> to +(2<sup>n-1</sup>-1)</td><td>2<sup>n</sup></td><td>1</td></tr>
+  </table>
+
+  <h2>3. Fixed Point Representation</h2>
+  <p>In fixed point, the binary point is at a fixed position. For Q(m.n) format: m integer bits and n fractional bits.</p>
+  <p><strong>Example:</strong> Q(4.4) representation of 5.75:</p>
+  <p><code>5 = 0101, 0.75 = .1100</code> so 5.75 = <code>0101.1100</code></p>
+
+  <table>
+    <tr><th>Property</th><th>Value</th></tr>
+    <tr><td>Total bits</td><td>m + n (+ 1 sign bit if signed)</td></tr>
+    <tr><td>Resolution</td><td>2<sup>-n</sup></td></tr>
+    <tr><td>Range (unsigned)</td><td>0 to 2<sup>m</sup> - 2<sup>-n</sup></td></tr>
+  </table>
+
+  <h2>4. IEEE 754 Floating Point</h2>
+
+  <h3>4.1 General Format</h3>
+  <p>A floating point number is represented as: <code>(-1)<sup>S</sup> &times; 1.M &times; 2<sup>(E - Bias)</sup></code></p>
+  <p>Where S = sign bit, M = mantissa (fraction), E = biased exponent.</p>
+
+  <h3>4.2 Single Precision (32-bit)</h3>
+  <table>
+    <tr><th>Field</th><th>Bits</th><th>Position</th><th>Description</th></tr>
+    <tr><td>Sign (S)</td><td>1</td><td>Bit 31</td><td>0 = positive, 1 = negative</td></tr>
+    <tr><td>Exponent (E)</td><td>8</td><td>Bits 30-23</td><td>Biased by 127</td></tr>
+    <tr><td>Mantissa (M)</td><td>23</td><td>Bits 22-0</td><td>Fractional part (1.M implied)</td></tr>
+  </table>
+  <p><strong>Bias = 127.</strong> Actual exponent = E - 127.</p>
+
+  <h3>4.3 Double Precision (64-bit)</h3>
+  <table>
+    <tr><th>Field</th><th>Bits</th><th>Position</th><th>Description</th></tr>
+    <tr><td>Sign (S)</td><td>1</td><td>Bit 63</td><td>0 = positive, 1 = negative</td></tr>
+    <tr><td>Exponent (E)</td><td>11</td><td>Bits 62-52</td><td>Biased by 1023</td></tr>
+    <tr><td>Mantissa (M)</td><td>52</td><td>Bits 51-0</td><td>Fractional part (1.M implied)</td></tr>
+  </table>
+  <p><strong>Bias = 1023.</strong> Actual exponent = E - 1023.</p>
+
+  <h3>4.4 Special Values</h3>
+  <table>
+    <tr><th>Exponent (E)</th><th>Mantissa (M)</th><th>Represents</th></tr>
+    <tr><td>0</td><td>0</td><td>Zero (+0 or -0)</td></tr>
+    <tr><td>0</td><td>Non-zero</td><td>Denormalized number (0.M &times; 2<sup>-126</sup>)</td></tr>
+    <tr><td>1 to 254</td><td>Any</td><td>Normalized number</td></tr>
+    <tr><td>255 (all 1s)</td><td>0</td><td>Infinity (+Inf or -Inf)</td></tr>
+    <tr><td>255 (all 1s)</td><td>Non-zero</td><td>NaN (Not a Number)</td></tr>
+  </table>
+
+  <h3>4.5 Example: Converting -6.5 to IEEE 754 Single Precision</h3>
+  <ol>
+    <li>Sign: negative, so S = 1</li>
+    <li>6.5 in binary = 110.1</li>
+    <li>Normalize: 1.101 &times; 2<sup>2</sup></li>
+    <li>Exponent: 2 + 127 = 129 = 10000001</li>
+    <li>Mantissa: 10100000000000000000000 (23 bits)</li>
+    <li>Result: <code>1 10000001 10100000000000000000000</code></li>
+    <li>Hex: <code>0xC0D00000</code></li>
+  </ol>
+
+  <h3>4.6 Range and Precision Summary</h3>
+  <table>
+    <tr><th>Property</th><th>Single (32-bit)</th><th>Double (64-bit)</th></tr>
+    <tr><td>Exponent bits</td><td>8</td><td>11</td></tr>
+    <tr><td>Mantissa bits</td><td>23</td><td>52</td></tr>
+    <tr><td>Bias</td><td>127</td><td>1023</td></tr>
+    <tr><td>Min positive normalized</td><td>~1.18 &times; 10<sup>-38</sup></td><td>~2.23 &times; 10<sup>-308</sup></td></tr>
+    <tr><td>Max positive</td><td>~3.40 &times; 10<sup>38</sup></td><td>~1.80 &times; 10<sup>308</sup></td></tr>
+    <tr><td>Decimal precision</td><td>~7 digits</td><td>~15-16 digits</td></tr>
+  </table>
+
+  <h2>5. Overflow and Underflow</h2>
+
+  <h3>5.1 Integer Overflow</h3>
+  <p>In 2's complement, overflow occurs when adding two numbers of the same sign produces a result of the opposite sign.</p>
+  <div class="important">
+    <p><strong>Overflow detection rules (2's complement addition):</strong></p>
+    <ul>
+      <li>Positive + Positive = Negative: OVERFLOW</li>
+      <li>Negative + Negative = Positive: OVERFLOW</li>
+      <li>Positive + Negative: NEVER overflows</li>
+    </ul>
+    <p>Hardware detection: Overflow = C<sub>n</sub> XOR C<sub>n-1</sub> (carry into MSB XOR carry out of MSB)</p>
+  </div>
+
+  <h3>5.2 Floating Point Overflow/Underflow</h3>
+  <table>
+    <tr><th>Condition</th><th>When it Occurs</th><th>Result</th></tr>
+    <tr><td>Positive Overflow</td><td>Exponent exceeds max</td><td>+Infinity</td></tr>
+    <tr><td>Negative Overflow</td><td>Exponent exceeds max (negative value)</td><td>-Infinity</td></tr>
+    <tr><td>Positive Underflow</td><td>Exponent below min (positive value)</td><td>+0 or denormalized</td></tr>
+    <tr><td>Negative Underflow</td><td>Exponent below min (negative value)</td><td>-0 or denormalized</td></tr>
+  </table>
+
+  <h2>6. Bit Layout Visualization</h2>
+  <div class="mermaid">
+flowchart LR
+    subgraph SP["IEEE 754 Single Precision (32 bits)"]
+        S1["S (1)"] --> E1["Exponent (8)"] --> M1["Mantissa (23)"]
+    end
+    subgraph DP["IEEE 754 Double Precision (64 bits)"]
+        S2["S (1)"] --> E2["Exponent (11)"] --> M2["Mantissa (52)"]
+    end
+  </div>
+
+  <h2>7. GATE Exam Tips</h2>
+  <div class="important">
+    <ul>
+      <li>2's complement is the default representation in most GATE questions unless stated otherwise.</li>
+      <li>Negating in 2's complement: invert all bits and add 1, OR keep all bits from right up to and including the first '1', then invert the rest.</li>
+      <li>IEEE 754 single precision: remember bias = 127, exponent range 1-254 for normalized numbers.</li>
+      <li>Denormalized numbers use exponent = 0 and the implicit leading bit is 0 (not 1).</li>
+      <li>For BCD addition: if sum of two BCD digits > 9, add 6 (0110) to correct.</li>
+      <li>The smallest positive denormalized float (single): 2<sup>-149</sup>.</li>
+    </ul>
+  </div>
+
+  <h2>8. Practice Problems</h2>
+  <ol>
+    <li>Convert -43 to 8-bit 2's complement.</li>
+    <li>What is the IEEE 754 single precision representation of 0.15625?</li>
+    <li>What decimal value does 0xC1480000 represent in IEEE 754?</li>
+    <li>In 12-bit 2's complement, what is the range of representable integers?</li>
+    <li>Add (0111)<sub>BCD</sub> and (0101)<sub>BCD</sub> and show correction if needed.</li>
+  </ol>
+
+</article>
+</body>
+</html>

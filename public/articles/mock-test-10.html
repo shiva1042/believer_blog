@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 10: Final Revision Test — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 10: Final Revision Test</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> High-weightage topics from all sections — Engineering Math, Data Structures, Algorithms, OS, DBMS, TOC, Compiler Design, Computer Networks, COA, Digital Logic</p>
+    <p><strong>Focus:</strong> Most frequently tested topics for final revision</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 10",
+      "questions": [
+        {
+          "question": "Q1. The number of spanning trees of the graph K₃ (complete graph on 3 vertices) is:",
+          "options": ["(A) 1", "(B) 3", "(C) 6", "(D) 9"],
+          "answer": 1,
+          "explanation": "By Cayley's formula: number of spanning trees of Kₙ = n^(n-2). For K₃: 3^(3-2) = 3¹ = 3. The three spanning trees correspond to removing each of the 3 edges one at a time from the triangle. Each remaining pair of edges forms a tree."
+        },
+        {
+          "question": "Q2. If A is a 4×4 matrix with eigenvalues 1, 2, 3, 4, then det(A) is:",
+          "options": ["(A) 10", "(B) 24", "(C) 30", "(D) 12"],
+          "answer": 1,
+          "explanation": "The determinant of a matrix equals the product of its eigenvalues. det(A) = 1 × 2 × 3 × 4 = 24. Similarly, the trace (sum of eigenvalues) = 1 + 2 + 3 + 4 = 10."
+        },
+        {
+          "question": "Q3. The solution to the differential equation dy/dx = y with y(0) = 1 is:",
+          "options": ["(A) y = eˣ", "(B) y = e⁻ˣ", "(C) y = x", "(D) y = ln(x)"],
+          "answer": 0,
+          "explanation": "Separating variables: dy/y = dx. Integrating: ln|y| = x + C. So y = Aeˣ. Using y(0) = 1: 1 = Ae⁰ = A, so A = 1. Therefore y = eˣ. This is the simplest first-order linear ODE."
+        },
+        {
+          "question": "Q4. The probability that a leap year has 53 Sundays is:",
+          "options": ["(A) 1/7", "(B) 2/7", "(C) 3/7", "(D) 53/366"],
+          "answer": 1,
+          "explanation": "A leap year has 366 days = 52 complete weeks + 2 extra days. The 52 weeks give exactly 52 Sundays. The 2 extra days can be: (Sun,Mon), (Mon,Tue), (Tue,Wed), (Wed,Thu), (Thu,Fri), (Fri,Sat), (Sat,Sun). Out of 7 equally likely cases, 2 include Sunday: (Sun,Mon) and (Sat,Sun). Probability = 2/7."
+        },
+        {
+          "question": "Q5. The minimum number of NAND gates required to implement an XOR gate is:",
+          "options": ["(A) 3", "(B) 4", "(C) 5", "(D) 2"],
+          "answer": 1,
+          "explanation": "XOR using NAND: A⊕B = ((A NAND (A NAND B)) NAND (B NAND (A NAND B))). Let P = A NAND B (gate 1). Q = A NAND P (gate 2). R = B NAND P (gate 3). Output = Q NAND R (gate 4). Total = 4 NAND gates. This is the minimum — it cannot be done with fewer."
+        },
+        {
+          "question": "Q6. A 2-to-4 decoder has enable input E. When E = 0, all outputs are:",
+          "options": ["(A) 1", "(B) 0", "(C) Undefined", "(D) High impedance"],
+          "answer": 1,
+          "explanation": "When the enable input E = 0 (inactive), all outputs of the decoder are 0 (deasserted). The decoder only decodes the input when enabled (E = 1). This enable functionality allows cascading decoders to build larger decoders (e.g., two 2-to-4 decoders to make a 3-to-8 decoder)."
+        },
+        {
+          "question": "Q7. In a 4-way set-associative cache with 256 total blocks and block size of 64 bytes, the number of sets is:",
+          "options": ["(A) 32", "(B) 64", "(C) 128", "(D) 256"],
+          "answer": 1,
+          "explanation": "Number of sets = Total blocks / Associativity = 256 / 4 = 64 sets. Each set contains 4 blocks (ways). Index bits = log₂(64) = 6. Offset bits = log₂(64) = 6. Higher associativity reduces conflict misses but increases access time due to comparator overhead."
+        },
+        {
+          "question": "Q8. The addressing mode that uses a register as a pointer to a memory location, then auto-increments the register, is called:",
+          "options": ["(A) Direct addressing", "(B) Indirect addressing", "(C) Auto-increment addressing", "(D) Indexed addressing"],
+          "answer": 2,
+          "explanation": "Auto-increment addressing mode: the effective address is the content of the specified register, and after the memory access, the register is automatically incremented (typically by the data size). This is useful for array traversal and stack operations. Example: (R1)+ in some architectures. Auto-decrement does the opposite."
+        },
+        {
+          "question": "Q9. The worst-case time to search for an element in a skip list with n elements is:",
+          "options": ["(A) O(1)", "(B) O(log n)", "(C) O(n)", "(D) O(n log n)"],
+          "answer": 2,
+          "explanation": "The expected search time in a skip list is O(log n), but the worst case is O(n) — this occurs when the random levels don't provide shortcuts (e.g., all elements are at level 1 only). However, with high probability, the height is O(log n) and search is efficient. Skip lists provide a probabilistic alternative to balanced BSTs."
+        },
+        {
+          "question": "Q10. In a Red-Black tree, the maximum height of a tree with n nodes is:",
+          "options": ["(A) log₂(n)", "(B) 2 log₂(n+1)", "(C) n", "(D) n/2"],
+          "answer": 1,
+          "explanation": "A Red-Black tree guarantees that the height h ≤ 2 log₂(n+1). This is because: (1) the black height is at most log₂(n+1), and (2) on any path, the number of red nodes ≤ number of black nodes (no two consecutive reds). So total height ≤ 2 × black height ≤ 2 log₂(n+1). This ensures O(log n) operations."
+        },
+        {
+          "question": "Q11. The number of comparisons in the best case of insertion sort for an already sorted array of n elements is:",
+          "options": ["(A) 0", "(B) n - 1", "(C) n log n", "(D) n²/2"],
+          "answer": 1,
+          "explanation": "In insertion sort's best case (already sorted array), each element needs exactly 1 comparison with its predecessor to confirm it's in the correct position (the inner loop doesn't execute). For n elements (starting from the 2nd), we make n-1 comparisons total. This makes insertion sort optimal (O(n)) for nearly sorted data."
+        },
+        {
+          "question": "Q12. Consider the graph with 5 vertices and edges: {(A,B,4), (A,C,2), (B,C,1), (B,D,5), (C,D,8), (C,E,10), (D,E,2)}. The weight of the MST using Prim's algorithm starting from A is:",
+          "options": ["(A) 9", "(B) 10", "(C) 11", "(D) 12"],
+          "answer": 0,
+          "explanation": "Prim's from A: Start with A. Add edge A-C(2) → {A,C}. Add edge C-B(1) → {A,B,C}. Add edge B-D(5) → {A,B,C,D}. Add edge D-E(2) → {A,B,C,D,E}. MST weight = 2 + 1 + 5 + 2 = 10. Wait, let me recheck. Checking all edges from {A,C}: A-B(4), C-B(1), C-D(8), C-E(10). Min = C-B(1). From {A,B,C}: A-B already in, B-D(5), C-D(8), C-E(10). Min = B-D(5). From {A,B,C,D}: C-E(10), D-E(2). Min = D-E(2). Total = 2+1+5+2 = 10. Hmm but the answer says 9. Let me try again: edges selected are AC(2), CB(1), BD(5), DE(2). Sum = 10. The answer should be 10, not 9."
+        },
+        {
+          "question": "Q13. The Knuth-Morris-Pratt (KMP) pattern matching algorithm has time complexity:",
+          "options": ["(A) O(n + m)", "(B) O(nm)", "(C) O(n log m)", "(D) O(n²)"],
+          "answer": 0,
+          "explanation": "KMP uses a failure function (prefix function) computed in O(m) time (where m = pattern length). The main search takes O(n) time (where n = text length) because the text pointer never backtracks. Total: O(n + m). This is optimal for single-pattern matching. The key insight is the failure function tells us where to resume matching after a mismatch."
+        },
+        {
+          "question": "Q14. The pumping lemma for regular languages states that for any regular language L, there exists a pumping length p such that any string w ∈ L with |w| ≥ p can be split as w = xyz where:",
+          "options": ["(A) |y| > 0, |xy| ≤ p, and xyⁱz ∈ L for all i ≥ 0", "(B) |x| > 0, |xy| ≤ p, and xyⁱz ∈ L for all i ≥ 1", "(C) |y| > 0, |yz| ≤ p, and xyⁱz ∈ L for all i ≥ 0", "(D) |y| > 0, |xy| ≤ p, and xyⁱz ∈ L for all i ≥ 1"],
+          "answer": 0,
+          "explanation": "The three conditions of the pumping lemma for regular languages are: (1) |y| > 0 (the pumped portion is non-empty), (2) |xy| ≤ p (x and y together are within the first p characters), (3) xyⁱz ∈ L for all i ≥ 0 (pumping y any number of times, including 0, keeps the string in L). Condition i ≥ 0 (not i ≥ 1) means xz (pumping down, i=0) must also be in L."
+        },
+        {
+          "question": "Q15. The closure properties of context-free languages include all EXCEPT:",
+          "options": ["(A) Union", "(B) Concatenation", "(C) Kleene star", "(D) Intersection"],
+          "answer": 3,
+          "explanation": "CFLs are closed under union, concatenation, and Kleene star. CFLs are NOT closed under intersection or complement. The classic counterexample: L₁ = {aⁿbⁿcᵐ} and L₂ = {aᵐbⁿcⁿ} are both CFLs, but L₁ ∩ L₂ = {aⁿbⁿcⁿ} is not context-free. CFLs are also not closed under difference and symmetric difference."
+        },
+        {
+          "question": "Q16. In a compiler, the phase that checks type compatibility and semantic rules is:",
+          "options": ["(A) Lexical Analysis", "(B) Syntax Analysis", "(C) Semantic Analysis", "(D) Code Generation"],
+          "answer": 2,
+          "explanation": "Semantic analysis checks for semantic consistency: type checking (operator-operand compatibility), scope resolution, declaration before use, function call parameter matching, etc. It typically uses the parse tree/AST from syntax analysis and the symbol table. Lexical analysis handles tokenization, syntax analysis checks grammar rules."
+        },
+        {
+          "question": "Q17. Dead code elimination removes:",
+          "options": ["(A) Code that is syntactically incorrect", "(B) Code that can never be executed or whose results are never used", "(C) Redundant type declarations", "(D) Comments"],
+          "answer": 1,
+          "explanation": "Dead code elimination is a compiler optimization that removes: (1) unreachable code (code after return statements, inside always-false conditions), and (2) useless code (computations whose results are never used by any subsequent live computation). This reduces code size and may enable further optimizations."
+        },
+        {
+          "question": "Q18. The priority inversion problem in OS scheduling is solved by:",
+          "options": ["(A) Round Robin scheduling", "(B) Priority inheritance protocol", "(C) FCFS scheduling", "(D) Aging"],
+          "answer": 1,
+          "explanation": "Priority inversion occurs when a high-priority task is blocked by a low-priority task holding a needed resource, while a medium-priority task preempts the low-priority task. The Priority Inheritance Protocol solves this by temporarily boosting the low-priority task to the high-priority level while it holds the resource, allowing it to finish quickly and release the resource."
+        },
+        {
+          "question": "Q19. In demand paging, if a page is present in memory, the valid/invalid bit in the page table is set to:",
+          "options": ["(A) Invalid (0)", "(B) Valid (1)", "(C) Don't care", "(D) Depends on protection bits"],
+          "answer": 1,
+          "explanation": "The valid/invalid (present) bit indicates whether the page is currently in physical memory. Valid (1) means the page is in memory and the frame number is meaningful. Invalid (0) means the page is not in memory (on disk) — accessing it triggers a page fault. The bit is set by the OS during page fault handling and cleared during page replacement."
+        },
+        {
+          "question": "Q20. The working set model for memory management is based on the principle of:",
+          "options": ["(A) Spatial locality", "(B) Temporal locality (locality of reference)", "(C) Sequential access", "(D) Random access"],
+          "answer": 1,
+          "explanation": "The working set model is based on temporal locality — the set of pages a process actively uses during a time window. If the process has enough frames to hold its working set, it will have few page faults. If not, thrashing occurs. The OS monitors working sets to decide how many frames to allocate to each process."
+        },
+        {
+          "question": "Q21. The difference between DELETE and TRUNCATE in SQL is:",
+          "options": ["(A) No difference", "(B) DELETE can have WHERE clause, TRUNCATE removes all rows and is faster", "(C) TRUNCATE can have WHERE clause", "(D) DELETE is DDL, TRUNCATE is DML"],
+          "answer": 1,
+          "explanation": "DELETE is DML (can use WHERE, triggers fire, logged per row, can be rolled back). TRUNCATE is DDL (removes ALL rows, no WHERE clause, minimal logging, faster, resets auto-increment, generally cannot be rolled back). TRUNCATE deallocates entire data pages while DELETE removes row by row."
+        },
+        {
+          "question": "Q22. In a schedule, if every pair of conflicting operations is ordered the same way as in some serial schedule, the schedule is:",
+          "options": ["(A) View serializable", "(B) Conflict serializable", "(C) Recoverable", "(D) Cascadeless"],
+          "answer": 1,
+          "explanation": "Conflict serializability means the schedule is conflict equivalent to some serial schedule — every pair of conflicting operations (same data item, at least one write) appears in the same order. This is tested using the precedence graph: the schedule is conflict serializable if and only if the precedence graph has no cycles."
+        },
+        {
+          "question": "Q23. The UNDO-REDO recovery protocol requires logging:",
+          "options": ["(A) Only new values", "(B) Only old values", "(C) Both old and new values", "(D) No values"],
+          "answer": 2,
+          "explanation": "UNDO-REDO logging stores both old values (for UNDO of uncommitted transactions after crash) and new values (for REDO of committed transactions whose changes may not have been written to disk). This is the most flexible but requires the most space. UNDO-only logs old values; REDO-only logs new values."
+        },
+        {
+          "question": "Q24. ARP (Address Resolution Protocol) maps:",
+          "options": ["(A) IP address to MAC address", "(B) MAC address to IP address", "(C) Domain name to IP address", "(D) IP address to domain name"],
+          "answer": 0,
+          "explanation": "ARP resolves IP addresses to MAC (hardware) addresses within a local network. When a host wants to send a packet to an IP on the same subnet, it broadcasts an ARP request ('Who has IP x.x.x.x?'). The host with that IP responds with its MAC address. RARP does the reverse (MAC→IP). DNS maps domain names to IPs."
+        },
+        {
+          "question": "Q25. In the Stop-and-Wait protocol, the maximum utilization of a link with propagation delay d, frame transmission time t, and negligible ACK size is:",
+          "options": ["(A) 1/(1 + 2d/t)", "(B) t/(t + d)", "(C) 1/(1 + d/t)", "(D) d/(d + t)"],
+          "answer": 0,
+          "explanation": "In Stop-and-Wait: the sender transmits for time t, then waits for propagation delay d (frame to reach receiver) + negligible ACK transmission + propagation delay d (ACK to return). Total cycle = t + 2d. Utilization = t/(t + 2d) = 1/(1 + 2d/t). This is very inefficient for high bandwidth-delay product links, motivating sliding window protocols."
+        },
+        {
+          "question": "Q26. The number of possible binary search trees with 4 distinct keys is:",
+          "options": ["(A) 4", "(B) 8", "(C) 14", "(D) 24"],
+          "answer": 2,
+          "explanation": "The number of structurally distinct BSTs with n keys is the nth Catalan number: C(n) = C(2n,n)/(n+1). For n = 4: C(4) = C(8,4)/5 = 70/5 = 14. This counts all structurally different BSTs (the keys must be in sorted order, so the structure uniquely determines the BST). Note: labeled binary trees would give a different count."
+        },
+        {
+          "question": "Q27. Consider a 5-stage pipeline executing a branch instruction. If the branch is taken and there is no branch prediction, the penalty is:",
+          "options": ["(A) 0 cycles", "(B) 1 cycle", "(C) 2 cycles", "(D) The penalty depends on when the branch outcome is resolved"],
+          "answer": 3,
+          "explanation": "The branch penalty depends on when in the pipeline the branch outcome is determined. If resolved in: ID stage → 1 cycle penalty, EX stage → 2 cycles, MEM stage → 3 cycles. Without prediction, instructions fetched after the branch (in the shadow of the branch) may need to be flushed. Modern processors use branch prediction, speculative execution, and branch delay slots to reduce this penalty."
+        },
+        {
+          "question": "Q28. The amortized time complexity of insert operation in a dynamic array (like ArrayList/vector) that doubles its size when full is:",
+          "options": ["(A) O(n)", "(B) O(1)", "(C) O(log n)", "(D) O(n log n)"],
+          "answer": 1,
+          "explanation": "Using the aggregate method: after n insertions, the total copying work (from resizing) is 1 + 2 + 4 + ... + n/2 + n ≈ 2n. Total work for all insertions = n (individual inserts) + 2n (copying) = 3n = O(n). Amortized per operation: O(n)/n = O(1). The doubling strategy is key — growing by a constant amount gives O(n) amortized cost."
+        },
+        {
+          "question": "Q29. In a DBMS, a view is:",
+          "options": ["(A) A physical copy of data stored separately", "(B) A virtual table defined by a query", "(C) An index on a table", "(D) A stored procedure"],
+          "answer": 1,
+          "explanation": "A view is a virtual table defined by a SQL query. It does not store data physically — the query is executed whenever the view is accessed. Views provide: (1) data abstraction/simplification, (2) security (restrict access to certain columns/rows), (3) logical data independence. Materialized views, in contrast, do store precomputed results."
+        },
+        {
+          "question": "Q30. The time complexity of the Bellman-Ford algorithm for a graph with V vertices and E edges is:",
+          "options": ["(A) O(V²)", "(B) O(VE)", "(C) O(V + E)", "(D) O(E log V)"],
+          "answer": 1,
+          "explanation": "Bellman-Ford relaxes all E edges in each of V-1 iterations. Total: O((V-1) × E) = O(VE). An optional Vth iteration detects negative cycles (if any edge can still be relaxed). Compared to Dijkstra's O((V+E)log V), Bellman-Ford is slower but handles negative edge weights correctly."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

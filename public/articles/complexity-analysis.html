@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asymptotic Complexity Analysis — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; color: #333; }
+    article { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #1a237e; border-bottom: 3px solid #ff6f00; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 30px; }
+    h3 { color: #4527a0; }
+    .article-section-tag { background: #fff3e0; color: #e65100; padding: 8px 16px; border-radius: 20px; display: inline-block; font-weight: 600; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background: #283593; color: #fff; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; }
+    pre { background: #263238; color: #aed581; padding: 15px; border-radius: 6px; overflow-x: auto; }
+    .mermaid { background: #fafafa; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .note { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin: 15px 0; border-radius: 4px; }
+    .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Asymptotic Complexity Analysis</h1>
+  <p class="article-section-tag">⚡ Section 5: Algorithms</p>
+
+  <h2>1. Asymptotic Notations</h2>
+  <p>Asymptotic notations describe the growth rate of functions as input size n approaches infinity. They abstract away constant factors and lower-order terms.</p>
+
+  <h3>1.1 Big-O Notation (Upper Bound)</h3>
+  <p><strong>Definition:</strong> f(n) = O(g(n)) if there exist positive constants c and n0 such that f(n) &le; c * g(n) for all n &ge; n0.</p>
+  <p>Big-O represents the <strong>worst-case upper bound</strong> on growth rate. It tells us the function grows no faster than g(n).</p>
+  <pre>
+Example: f(n) = 3n2 + 5n + 2
+  f(n) = O(n2) because 3n2 + 5n + 2 &le; 10n2 for n &ge; 1
+  Also f(n) = O(n3), O(n4), etc. (but we prefer the tightest bound)
+  </pre>
+
+  <h3>1.2 Big-Omega Notation (Lower Bound)</h3>
+  <p><strong>Definition:</strong> f(n) = Omega(g(n)) if there exist positive constants c and n0 such that f(n) &ge; c * g(n) for all n &ge; n0.</p>
+  <p>Big-Omega represents the <strong>best-case lower bound</strong>. The function grows at least as fast as g(n).</p>
+
+  <h3>1.3 Big-Theta Notation (Tight Bound)</h3>
+  <p><strong>Definition:</strong> f(n) = Theta(g(n)) if there exist positive constants c1, c2, and n0 such that c1 * g(n) &le; f(n) &le; c2 * g(n) for all n &ge; n0.</p>
+  <p>Big-Theta gives a <strong>tight bound</strong>: the function grows at exactly the same rate as g(n). f(n) = Theta(g(n)) if and only if f(n) = O(g(n)) AND f(n) = Omega(g(n)).</p>
+
+  <h3>1.4 Little-o Notation (Strict Upper Bound)</h3>
+  <p><strong>Definition:</strong> f(n) = o(g(n)) if for every positive constant c, there exists n0 such that f(n) &lt; c * g(n) for all n &ge; n0.</p>
+  <p>Equivalently, lim (n-&gt;infinity) f(n)/g(n) = 0. This means f(n) grows <strong>strictly slower</strong> than g(n).</p>
+  <p>Example: n = o(n2), but n2 is not o(n2).</p>
+
+  <h3>1.5 Little-omega Notation (Strict Lower Bound)</h3>
+  <p><strong>Definition:</strong> f(n) = omega(g(n)) if for every positive constant c, there exists n0 such that f(n) &gt; c * g(n) for all n &ge; n0.</p>
+  <p>Equivalently, lim (n-&gt;infinity) f(n)/g(n) = infinity. The function grows <strong>strictly faster</strong> than g(n).</p>
+
+  <h3>Relationship Summary</h3>
+  <div class="mermaid">
+graph LR
+    A["f(n) = o(g(n))"] -->|implies| B["f(n) = O(g(n))"]
+    C["f(n) = omega(g(n))"] -->|implies| D["f(n) = Omega(g(n))"]
+    B -->|"and"| E["f(n) = Theta(g(n))"]
+    D -->|"and"| E
+    style E fill:#4caf50,color:#fff
+  </div>
+
+  <h2>2. Common Complexity Classes</h2>
+
+  <table>
+    <tr><th>Complexity</th><th>Name</th><th>n = 10</th><th>n = 100</th><th>n = 1000</th><th>Example</th></tr>
+    <tr><td>O(1)</td><td>Constant</td><td>1</td><td>1</td><td>1</td><td>Array access, hash lookup</td></tr>
+    <tr><td>O(log n)</td><td>Logarithmic</td><td>3.3</td><td>6.6</td><td>10</td><td>Binary search</td></tr>
+    <tr><td>O(sqrt(n))</td><td>Square root</td><td>3.2</td><td>10</td><td>31.6</td><td>Primality test (trial division)</td></tr>
+    <tr><td>O(n)</td><td>Linear</td><td>10</td><td>100</td><td>1000</td><td>Linear search, traversal</td></tr>
+    <tr><td>O(n log n)</td><td>Linearithmic</td><td>33</td><td>664</td><td>10000</td><td>Merge sort, heap sort</td></tr>
+    <tr><td>O(n2)</td><td>Quadratic</td><td>100</td><td>10000</td><td>10^6</td><td>Bubble sort, insertion sort</td></tr>
+    <tr><td>O(n3)</td><td>Cubic</td><td>1000</td><td>10^6</td><td>10^9</td><td>Floyd-Warshall, matrix multiply</td></tr>
+    <tr><td>O(2^n)</td><td>Exponential</td><td>1024</td><td>~10^30</td><td>~10^301</td><td>Subset enumeration</td></tr>
+    <tr><td>O(n!)</td><td>Factorial</td><td>3.6M</td><td>~10^158</td><td>---</td><td>Permutation generation</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Growth Rate Ordering:</strong> 1 &lt; log log n &lt; log n &lt; sqrt(n) &lt; n &lt; n log n &lt; n2 &lt; n3 &lt; 2^n &lt; n! &lt; n^n
+  </div>
+
+  <h2>3. Best, Worst, and Average Case Analysis</h2>
+
+  <h3>3.1 Best Case</h3>
+  <p>The input configuration that causes the algorithm to execute the minimum number of operations.</p>
+  <p><strong>Example:</strong> Linear search where the target is the first element: O(1).</p>
+
+  <h3>3.2 Worst Case</h3>
+  <p>The input configuration that causes the maximum number of operations. This is the most commonly analyzed case as it provides a guarantee.</p>
+  <p><strong>Example:</strong> Quick sort with the smallest (or largest) element always chosen as pivot on a sorted array: O(n2).</p>
+
+  <h3>3.3 Average Case</h3>
+  <p>Expected number of operations over all possible inputs, assuming a probability distribution (usually uniform).</p>
+  <p><strong>Example:</strong> Quick sort with random pivot selection: O(n log n) expected time.</p>
+  <pre>
+Average case of Linear Search:
+  Assuming element is present and equally likely at any position:
+  Average comparisons = (1 + 2 + 3 + ... + n) / n = (n + 1) / 2 = O(n)
+  </pre>
+
+  <h2>4. Master Theorem for Recurrences</h2>
+  <p>The Master Theorem solves recurrences of the form:</p>
+  <pre>T(n) = aT(n/b) + f(n)  where a &ge; 1, b &gt; 1</pre>
+  <p>Let c_crit = log_b(a). Then:</p>
+
+  <table>
+    <tr><th>Case</th><th>Condition</th><th>Result</th></tr>
+    <tr>
+      <td><strong>Case 1</strong></td>
+      <td>f(n) = O(n^(c_crit - epsilon)) for some epsilon &gt; 0</td>
+      <td>T(n) = Theta(n^c_crit)</td>
+    </tr>
+    <tr>
+      <td><strong>Case 2</strong></td>
+      <td>f(n) = Theta(n^c_crit * log^k(n)), k &ge; 0</td>
+      <td>T(n) = Theta(n^c_crit * log^(k+1)(n))</td>
+    </tr>
+    <tr>
+      <td><strong>Case 3</strong></td>
+      <td>f(n) = Omega(n^(c_crit + epsilon)) for some epsilon &gt; 0, and af(n/b) &le; cf(n) for c &lt; 1</td>
+      <td>T(n) = Theta(f(n))</td>
+    </tr>
+  </table>
+
+  <h3>Master Theorem Examples</h3>
+  <table>
+    <tr><th>Recurrence</th><th>a</th><th>b</th><th>f(n)</th><th>c_crit</th><th>Case</th><th>Result</th></tr>
+    <tr><td>T(n) = 2T(n/2) + n</td><td>2</td><td>2</td><td>n</td><td>1</td><td>Case 2 (k=0)</td><td>Theta(n log n)</td></tr>
+    <tr><td>T(n) = 2T(n/2) + n2</td><td>2</td><td>2</td><td>n2</td><td>1</td><td>Case 3</td><td>Theta(n2)</td></tr>
+    <tr><td>T(n) = 4T(n/2) + n</td><td>4</td><td>2</td><td>n</td><td>2</td><td>Case 1</td><td>Theta(n2)</td></tr>
+    <tr><td>T(n) = 2T(n/2) + n log n</td><td>2</td><td>2</td><td>n log n</td><td>1</td><td>Case 2 (k=1)</td><td>Theta(n log2 n)</td></tr>
+    <tr><td>T(n) = T(n/2) + 1</td><td>1</td><td>2</td><td>1</td><td>0</td><td>Case 2 (k=0)</td><td>Theta(log n)</td></tr>
+    <tr><td>T(n) = 7T(n/2) + n2</td><td>7</td><td>2</td><td>n2</td><td>2.81</td><td>Case 1</td><td>Theta(n^2.81)</td></tr>
+  </table>
+
+  <div class="warning">
+    <strong>When Master Theorem fails:</strong> The theorem does not apply when f(n) is not polynomially larger/smaller than n^c_crit (gap between cases 1 and 2, or 2 and 3), or when a &lt; 1, or when the recurrence is not in the standard form. Use the recursion tree or substitution method instead.
+  </div>
+
+  <h2>5. Other Methods for Solving Recurrences</h2>
+
+  <h3>5.1 Substitution Method</h3>
+  <p>Guess the form of the solution and prove by induction.</p>
+  <pre>
+T(n) = 2T(n/2) + n
+Guess: T(n) = O(n log n)
+Assume T(k) &le; ck log k for all k &lt; n
+T(n) = 2c(n/2)log(n/2) + n
+     = cn(log n - 1) + n
+     = cn log n - cn + n
+     &le; cn log n     (when c &ge; 1)
+  </pre>
+
+  <h3>5.2 Recursion Tree Method</h3>
+  <p>Draw the tree of recursive calls, compute the cost at each level, and sum across all levels.</p>
+
+  <h2>6. Amortized Analysis</h2>
+  <p>Amortized analysis determines the <strong>average cost per operation</strong> over a sequence of operations, even though individual operations may be expensive.</p>
+
+  <h3>6.1 Aggregate Method</h3>
+  <p>Compute the total cost of n operations and divide by n.</p>
+  <pre>
+Example: Dynamic array (vector) doubling
+  Insert n elements. Resizing occurs at sizes 1, 2, 4, 8, ...
+  Total cost = n + (1 + 2 + 4 + ... + n) &le; n + 2n = 3n
+  Amortized cost per insert = 3n/n = O(1)
+  </pre>
+
+  <h3>6.2 Accounting Method</h3>
+  <p>Assign different charges to different operations. Some operations are overcharged (credit stored), others use stored credit.</p>
+
+  <h3>6.3 Potential Method</h3>
+  <p>Define a potential function Phi that maps the state of the data structure to a real number. The amortized cost of operation i is:</p>
+  <p><code>amortized_cost_i = actual_cost_i + Phi(D_i) - Phi(D_{i-1})</code></p>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> Amortized analysis is NOT average-case analysis. It guarantees the per-operation cost over any sequence of operations, without probabilistic assumptions. Common examples: dynamic arrays, splay trees, Fibonacci heaps.
+  </div>
+
+  <h2>7. Common Recurrence Patterns</h2>
+  <table>
+    <tr><th>Recurrence</th><th>Algorithm</th><th>Solution</th></tr>
+    <tr><td>T(n) = T(n-1) + 1</td><td>Sequential processing</td><td>O(n)</td></tr>
+    <tr><td>T(n) = T(n-1) + n</td><td>Selection sort inner loop</td><td>O(n2)</td></tr>
+    <tr><td>T(n) = T(n-1) + log n</td><td>Heap insert in sequence</td><td>O(n log n)</td></tr>
+    <tr><td>T(n) = 2T(n-1) + 1</td><td>Tower of Hanoi</td><td>O(2^n)</td></tr>
+    <tr><td>T(n) = T(n/2) + 1</td><td>Binary search</td><td>O(log n)</td></tr>
+    <tr><td>T(n) = T(n/2) + n</td><td>Build heap (top-down analysis)</td><td>O(n)</td></tr>
+    <tr><td>T(n) = 2T(n/2) + 1</td><td>Tree traversal</td><td>O(n)</td></tr>
+    <tr><td>T(n) = 2T(n/2) + n</td><td>Merge sort</td><td>O(n log n)</td></tr>
+  </table>
+
+  <h2>8. Key GATE Takeaways</h2>
+  <ul>
+    <li>Big-O is an upper bound, Big-Omega is a lower bound, Big-Theta is a tight bound.</li>
+    <li>The Master Theorem is the fastest way to solve divide-and-conquer recurrences in GATE.</li>
+    <li>Amortized O(1) for dynamic array insert is a frequently tested concept.</li>
+    <li>Always simplify: drop constants and lower-order terms. O(3n2 + 5n) = O(n2).</li>
+    <li>log base does not matter in Big-O: O(log2 n) = O(log10 n) = O(ln n) since they differ by a constant.</li>
+  </ul>
+</article>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Artificial Intelligence | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Introduction to Artificial Intelligence</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. What is Artificial Intelligence?</h2>
+  <p>Artificial Intelligence (AI) is the branch of computer science concerned with building systems that can perform tasks normally requiring human intelligence. These tasks include reasoning, learning, perception, natural language understanding, and problem solving.</p>
+
+  <p>There are four classical approaches to defining AI, organized along two dimensions: <strong>thinking vs. acting</strong> and <strong>humanly vs. rationally</strong>:</p>
+
+  <table>
+    <tr><th></th><th>Humanly</th><th>Rationally</th></tr>
+    <tr><td><strong>Thinking</strong></td><td>Cognitive modeling &mdash; systems that think like humans (e.g., cognitive science)</td><td>Laws of thought &mdash; systems that think rationally (e.g., logic-based AI)</td></tr>
+    <tr><td><strong>Acting</strong></td><td>Turing Test &mdash; systems that act like humans</td><td>Rational agents &mdash; systems that act rationally (dominant modern view)</td></tr>
+  </table>
+
+  <h3>1.1 The Turing Test</h3>
+  <p>Proposed by Alan Turing in 1950, the Turing Test evaluates a machine's ability to exhibit intelligent behavior indistinguishable from a human. A machine passes the test if a human interrogator cannot reliably distinguish the machine from a human based on their responses. The total Turing Test also requires computer vision and robotics capabilities.</p>
+
+  <h2>2. History of AI</h2>
+  <p>Key milestones in AI development:</p>
+  <table>
+    <tr><th>Year</th><th>Event</th></tr>
+    <tr><td>1950</td><td>Alan Turing proposes the Turing Test</td></tr>
+    <tr><td>1956</td><td>Dartmouth Conference &mdash; birth of AI as a field</td></tr>
+    <tr><td>1966</td><td>ELIZA chatbot by Joseph Weizenbaum</td></tr>
+    <tr><td>1969&ndash;79</td><td>First AI Winter &mdash; reduced funding and interest</td></tr>
+    <tr><td>1980s</td><td>Expert Systems boom (e.g., MYCIN, DENDRAL)</td></tr>
+    <tr><td>1987&ndash;93</td><td>Second AI Winter</td></tr>
+    <tr><td>1997</td><td>IBM Deep Blue defeats Garry Kasparov at chess</td></tr>
+    <tr><td>2011</td><td>IBM Watson wins Jeopardy!</td></tr>
+    <tr><td>2016</td><td>Google DeepMind's AlphaGo defeats Go champion Lee Sedol</td></tr>
+    <tr><td>2020s</td><td>Large Language Models (GPT, etc.) and generative AI</td></tr>
+  </table>
+
+  <h2>3. Types of Artificial Intelligence</h2>
+
+  <h3>3.1 Narrow AI (Weak AI)</h3>
+  <p>Designed to perform a specific task. All current AI systems fall into this category. Examples: speech recognition, image classification, recommendation systems, game-playing AI.</p>
+
+  <h3>3.2 General AI (Strong AI / AGI)</h3>
+  <p>A hypothetical system with human-level intelligence that can understand, learn, and apply knowledge across diverse domains. AGI does not yet exist.</p>
+
+  <h3>3.3 Super AI</h3>
+  <p>A hypothetical AI that surpasses human intelligence in all domains including creativity, problem-solving, and social skills. This remains a theoretical concept.</p>
+
+  <h2>4. Intelligent Agents</h2>
+  <p>An <strong>agent</strong> is anything that perceives its environment through <strong>sensors</strong> and acts upon the environment through <strong>actuators</strong>. An agent function maps percept sequences to actions.</p>
+
+  <div class="formula">
+    Agent Function: f : P* &rarr; A<br>
+    where P* = set of all possible percept sequences, A = set of actions
+  </div>
+
+  <p>A <strong>rational agent</strong> selects actions that maximize its expected <strong>performance measure</strong>, given the percept sequence and its built-in knowledge.</p>
+
+  <h3>4.1 PEAS Framework</h3>
+  <p>To design a rational agent, we specify its PEAS description:</p>
+  <table>
+    <tr><th>Component</th><th>Description</th><th>Example (Self-Driving Car)</th></tr>
+    <tr><td><strong>P</strong>erformance Measure</td><td>How success is evaluated</td><td>Safety, reaching destination, comfort, fuel efficiency</td></tr>
+    <tr><td><strong>E</strong>nvironment</td><td>The external world the agent operates in</td><td>Roads, traffic, pedestrians, weather</td></tr>
+    <tr><td><strong>A</strong>ctuators</td><td>Mechanisms for taking actions</td><td>Steering, accelerator, brake, signals</td></tr>
+    <tr><td><strong>S</strong>ensors</td><td>Mechanisms for perceiving the environment</td><td>Cameras, LIDAR, GPS, speedometer</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Example &mdash; PEAS for a Medical Diagnosis System:</strong>
+    <ul>
+      <li><strong>Performance:</strong> Correct diagnosis rate, patient health outcomes</li>
+      <li><strong>Environment:</strong> Patient, hospital, medical records</li>
+      <li><strong>Actuators:</strong> Display diagnosis, prescribe treatment</li>
+      <li><strong>Sensors:</strong> Keyboard input of symptoms, lab reports, medical imaging</li>
+    </ul>
+  </div>
+
+  <h2>5. Types of Agents</h2>
+
+  <h3>5.1 Simple Reflex Agent</h3>
+  <p>Selects actions based solely on the <strong>current percept</strong>, ignoring percept history. Uses condition-action rules (if-then rules). Works only in <strong>fully observable</strong> environments.</p>
+  <div class="formula">
+    if condition then action<br>
+    Example: if car-in-front-brakes then apply-brakes
+  </div>
+
+  <h3>5.2 Model-Based Reflex Agent</h3>
+  <p>Maintains an <strong>internal state</strong> (model of the world) that tracks aspects of the environment not directly visible. Can handle <strong>partially observable</strong> environments. The internal state is updated using knowledge of how the world evolves and how actions affect the world.</p>
+
+  <h3>5.3 Goal-Based Agent</h3>
+  <p>Has explicit <strong>goals</strong> and selects actions that achieve those goals. Uses search and planning to determine the sequence of actions needed. More flexible than reflex agents because behavior can change by modifying goals.</p>
+
+  <h3>5.4 Utility-Based Agent</h3>
+  <p>Uses a <strong>utility function</strong> that maps states to real numbers, representing the degree of happiness/satisfaction. When multiple action sequences achieve the goal, the agent selects the one with the highest expected utility. Handles trade-offs between conflicting goals.</p>
+  <div class="formula">
+    U : S &rarr; R (utility function maps states to real-valued utility)
+  </div>
+
+  <h3>5.5 Learning Agent</h3>
+  <p>Has four conceptual components:</p>
+  <ul>
+    <li><strong>Learning element:</strong> Makes improvements by learning from experience</li>
+    <li><strong>Performance element:</strong> Selects external actions (the agent function)</li>
+    <li><strong>Critic:</strong> Provides feedback on how the agent is performing</li>
+    <li><strong>Problem generator:</strong> Suggests exploratory actions for new experiences</li>
+  </ul>
+
+  <h2>6. Environment Types</h2>
+  <p>Task environments are classified along several dimensions:</p>
+
+  <table>
+    <tr><th>Property</th><th>Type A</th><th>Type B</th><th>Explanation</th></tr>
+    <tr><td><strong>Observability</strong></td><td>Fully Observable</td><td>Partially Observable</td><td>Whether the agent's sensors give complete access to the environment state</td></tr>
+    <tr><td><strong>Agents</strong></td><td>Single Agent</td><td>Multi-Agent</td><td>Whether there are other agents (cooperative or competitive)</td></tr>
+    <tr><td><strong>Determinism</strong></td><td>Deterministic</td><td>Stochastic</td><td>Whether the next state is completely determined by current state and action</td></tr>
+    <tr><td><strong>Episodes</strong></td><td>Episodic</td><td>Sequential</td><td>Whether the agent's experience is divided into independent episodes</td></tr>
+    <tr><td><strong>Dynamism</strong></td><td>Static</td><td>Dynamic</td><td>Whether the environment changes while the agent is deliberating</td></tr>
+    <tr><td><strong>Continuity</strong></td><td>Discrete</td><td>Continuous</td><td>Whether state, time, percepts, and actions are discrete or continuous</td></tr>
+    <tr><td><strong>Knowledge</strong></td><td>Known</td><td>Unknown</td><td>Whether the agent knows the rules/outcomes of the environment</td></tr>
+  </table>
+
+  <div class="example">
+    <strong>Environment Classification Examples:</strong>
+    <ul>
+      <li><strong>Chess:</strong> Fully observable, multi-agent, deterministic, sequential, static, discrete, known</li>
+      <li><strong>Poker:</strong> Partially observable, multi-agent, stochastic, sequential, static, discrete, known</li>
+      <li><strong>Self-driving car:</strong> Partially observable, multi-agent, stochastic, sequential, dynamic, continuous, unknown</li>
+      <li><strong>Crossword puzzle:</strong> Fully observable, single agent, deterministic, sequential, static, discrete, known</li>
+    </ul>
+  </div>
+
+  <h2>7. Key Concepts for GATE</h2>
+  <ul>
+    <li>A rational agent is not omniscient &mdash; it acts based on available percepts and knowledge.</li>
+    <li>Rationality depends on: performance measure, prior knowledge, possible actions, and percept sequence to date.</li>
+    <li>The most complex environment type is: partially observable, multi-agent, stochastic, sequential, dynamic, continuous, and unknown.</li>
+    <li>Simple reflex agents fail in partially observable environments; model-based agents address this limitation.</li>
+    <li>Utility-based agents are the most general framework, subsuming goal-based agents.</li>
+  </ul>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "Introduction to AI - GATE Quiz",
+    "questions": [
+      {
+        "question": "Which of the following is the dominant modern approach to defining AI?",
+        "options": ["Systems that think like humans", "Systems that act like humans", "Systems that think rationally", "Systems that act rationally (rational agents)"],
+        "answer": 3,
+        "explanation": "The rational agent approach (acting rationally) is the dominant modern view. It focuses on building agents that take the best possible action given available information, rather than trying to replicate human thinking or behavior."
+      },
+      {
+        "question": "A simple reflex agent works correctly only in which type of environment?",
+        "options": ["Partially observable environments", "Fully observable environments", "Stochastic environments", "Dynamic environments"],
+        "answer": 1,
+        "explanation": "Simple reflex agents select actions based only on the current percept using condition-action rules. They have no internal state or memory, so they require the environment to be fully observable to function correctly."
+      },
+      {
+        "question": "In the PEAS framework for a medical diagnosis system, which of the following is an actuator?",
+        "options": ["Patient symptoms", "Correct diagnosis rate", "Display diagnosis on screen", "Medical imaging sensor"],
+        "answer": 2,
+        "explanation": "Actuators are the mechanisms through which the agent acts on the environment. Displaying a diagnosis is an action the system takes. Patient symptoms are part of the environment, diagnosis rate is a performance measure, and imaging is a sensor."
+      },
+      {
+        "question": "Which type of agent maintains an internal model of the world to handle partial observability?",
+        "options": ["Simple reflex agent", "Model-based reflex agent", "Goal-based agent", "Utility-based agent"],
+        "answer": 1,
+        "explanation": "A model-based reflex agent maintains an internal state that tracks aspects of the environment not currently visible. It uses a model of how the world evolves and how its actions affect the world to update this internal state."
+      },
+      {
+        "question": "A chess-playing environment is best classified as:",
+        "options": ["Partially observable, stochastic, dynamic", "Fully observable, deterministic, static", "Fully observable, stochastic, static", "Partially observable, deterministic, dynamic"],
+        "answer": 1,
+        "explanation": "Chess is fully observable (all pieces are visible), deterministic (the outcome of a move is fully predictable), and static (the environment does not change while the agent is thinking). It is also sequential, discrete, multi-agent, and known."
+      },
+      {
+        "question": "Which component of a learning agent is responsible for suggesting exploratory actions to gain new experiences?",
+        "options": ["Learning element", "Performance element", "Critic", "Problem generator"],
+        "answer": 3,
+        "explanation": "The problem generator suggests exploratory actions that may lead to new and informative experiences, even if they are not optimal in the short run. The learning element makes improvements, the performance element selects actions, and the critic provides feedback."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

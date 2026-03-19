@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Layer and Routing | GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad: true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0 auto; max-width: 900px; padding: 2rem; line-height: 1.7; color: #23272f; background: #f8fafc; }
+    article { background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    h1 { color: #1a237e; border-bottom: 3px solid #c5cae9; padding-bottom: 0.5rem; }
+    h2 { color: #283593; margin-top: 2rem; }
+    h3 { color: #3949ab; }
+    .article-section-tag { font-size: 1.1rem; color: #5c6bc0; font-weight: 600; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #c5cae9; padding: 0.6rem 1rem; text-align: left; }
+    th { background: #e8eaf6; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f6ff; }
+    code { background: #e8eaf6; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; }
+    pre { background: #263238; color: #eeffff; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .mermaid { margin: 1.5rem 0; text-align: center; }
+    .note { background: #e3f2fd; border-left: 4px solid #1976d2; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+    .example { background: #f1f8e9; border-left: 4px solid #689f38; padding: 0.8rem 1rem; border-radius: 4px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Network Layer and Routing</h1>
+  <p class="article-section-tag">&#127760; Section 10: Computer Networks</p>
+
+  <!-- ===================== IPv4 ADDRESSING ===================== -->
+  <h2>1. IPv4 Addressing</h2>
+  <p>An IPv4 address is a 32-bit identifier written in dotted-decimal notation (e.g., 192.168.1.1). It is divided into a <strong>network portion</strong> and a <strong>host portion</strong>.</p>
+
+  <h3>1.1 Classful Addressing</h3>
+  <table>
+    <tr><th>Class</th><th>Leading Bits</th><th>Range</th><th>Default Mask</th><th>Networks</th><th>Hosts/Network</th></tr>
+    <tr><td><strong>A</strong></td><td>0</td><td>0.0.0.0 &ndash; 127.255.255.255</td><td>/8 (255.0.0.0)</td><td>128 (2<sup>7</sup>)</td><td>16,777,214 (2<sup>24</sup>&minus;2)</td></tr>
+    <tr><td><strong>B</strong></td><td>10</td><td>128.0.0.0 &ndash; 191.255.255.255</td><td>/16 (255.255.0.0)</td><td>16,384 (2<sup>14</sup>)</td><td>65,534 (2<sup>16</sup>&minus;2)</td></tr>
+    <tr><td><strong>C</strong></td><td>110</td><td>192.0.0.0 &ndash; 223.255.255.255</td><td>/24 (255.255.255.0)</td><td>2,097,152 (2<sup>21</sup>)</td><td>254 (2<sup>8</sup>&minus;2)</td></tr>
+    <tr><td><strong>D</strong></td><td>1110</td><td>224.0.0.0 &ndash; 239.255.255.255</td><td>N/A</td><td colspan="2">Multicast</td></tr>
+    <tr><td><strong>E</strong></td><td>1111</td><td>240.0.0.0 &ndash; 255.255.255.255</td><td>N/A</td><td colspan="2">Reserved / Experimental</td></tr>
+  </table>
+
+  <h3>1.2 Subnetting</h3>
+  <p>Subnetting divides a network into smaller sub-networks by borrowing bits from the host portion for the subnet portion.</p>
+  <div class="example">
+    <strong>Example:</strong> Given 192.168.1.0/24, create 4 subnets.
+    <ul>
+      <li>Borrow 2 bits from host: /26 subnet mask (255.255.255.192)</li>
+      <li>Subnets: 192.168.1.0/26, 192.168.1.64/26, 192.168.1.128/26, 192.168.1.192/26</li>
+      <li>Each subnet: 2<sup>6</sup> &minus; 2 = 62 usable hosts</li>
+    </ul>
+  </div>
+
+  <h3>1.3 CIDR (Classless Inter-Domain Routing)</h3>
+  <p>CIDR eliminates class boundaries. The network prefix length is specified explicitly (e.g., 10.0.0.0/12). This allows more efficient address allocation and route aggregation (supernetting).</p>
+  <table>
+    <tr><th>Notation</th><th>Subnet Mask</th><th>Hosts</th></tr>
+    <tr><td>/24</td><td>255.255.255.0</td><td>254</td></tr>
+    <tr><td>/25</td><td>255.255.255.128</td><td>126</td></tr>
+    <tr><td>/26</td><td>255.255.255.192</td><td>62</td></tr>
+    <tr><td>/27</td><td>255.255.255.224</td><td>30</td></tr>
+    <tr><td>/28</td><td>255.255.255.240</td><td>14</td></tr>
+    <tr><td>/30</td><td>255.255.255.252</td><td>2</td></tr>
+  </table>
+
+  <!-- ===================== IP HEADER ===================== -->
+  <h2>2. IPv4 Header Format</h2>
+  <table>
+    <tr><th>Field</th><th>Size (bits)</th><th>Description</th></tr>
+    <tr><td>Version</td><td>4</td><td>IP version (4 for IPv4)</td></tr>
+    <tr><td>IHL (Header Length)</td><td>4</td><td>Header length in 32-bit words (min 5, max 15)</td></tr>
+    <tr><td>Type of Service (DSCP/ECN)</td><td>8</td><td>Quality of service parameters</td></tr>
+    <tr><td>Total Length</td><td>16</td><td>Total packet length in bytes (max 65,535)</td></tr>
+    <tr><td>Identification</td><td>16</td><td>Unique ID for fragment reassembly</td></tr>
+    <tr><td>Flags</td><td>3</td><td>DF (Don't Fragment), MF (More Fragments)</td></tr>
+    <tr><td>Fragment Offset</td><td>13</td><td>Position of fragment in original datagram (units of 8 bytes)</td></tr>
+    <tr><td>Time to Live (TTL)</td><td>8</td><td>Max hops before packet is discarded</td></tr>
+    <tr><td>Protocol</td><td>8</td><td>Upper layer protocol (6=TCP, 17=UDP, 1=ICMP)</td></tr>
+    <tr><td>Header Checksum</td><td>16</td><td>Error detection for header only</td></tr>
+    <tr><td>Source Address</td><td>32</td><td>Sender's IP address</td></tr>
+    <tr><td>Destination Address</td><td>32</td><td>Receiver's IP address</td></tr>
+    <tr><td>Options</td><td>0-320</td><td>Optional fields (variable length, padded to 32-bit boundary)</td></tr>
+  </table>
+
+  <!-- ===================== FRAGMENTATION ===================== -->
+  <h2>3. Fragmentation and Reassembly</h2>
+  <p>When a packet exceeds the <strong>MTU (Maximum Transmission Unit)</strong> of a link, the router fragments it into smaller packets.</p>
+
+  <div class="example">
+    <strong>Example:</strong> Original datagram: 4000 bytes (including 20-byte header), MTU = 1500 bytes.
+    <table>
+      <tr><th>Fragment</th><th>Size (bytes)</th><th>Offset</th><th>MF Flag</th></tr>
+      <tr><td>1</td><td>1500 (20 hdr + 1480 data)</td><td>0</td><td>1</td></tr>
+      <tr><td>2</td><td>1500 (20 hdr + 1480 data)</td><td>185 (1480/8)</td><td>1</td></tr>
+      <tr><td>3</td><td>1040 (20 hdr + 1020 data)</td><td>370 (2960/8)</td><td>0</td></tr>
+    </table>
+    <p>Fragment offset is in units of 8 bytes. Data in each fragment must be a multiple of 8 (except last fragment).</p>
+  </div>
+
+  <!-- ===================== ROUTING ALGORITHMS ===================== -->
+  <h2>4. Routing Algorithms</h2>
+
+  <h3>4.1 Routing Algorithm Comparison</h3>
+  <div class="mermaid">
+    flowchart TB
+      RA["Routing Algorithms"] --> ST["Static"]
+      RA --> DY["Dynamic"]
+      DY --> DV["Distance Vector\n(Bellman-Ford)\nRIP"]
+      DY --> LS["Link State\n(Dijkstra)\nOSPF"]
+      DY --> PV["Path Vector\nBGP"]
+      ST --> FL["Flooding"]
+      ST --> FR["Fixed Routing"]
+  </div>
+
+  <h3>4.2 Dijkstra's Algorithm (Link State)</h3>
+  <p>Each router has complete knowledge of the network topology (obtained via link-state broadcasts). Dijkstra's algorithm computes the shortest path from the source to all other nodes.</p>
+  <ul>
+    <li><strong>Complexity:</strong> O(n<sup>2</sup>) or O(n log n) with priority queue, where n = number of nodes</li>
+    <li><strong>Protocol:</strong> OSPF (Open Shortest Path First)</li>
+    <li><strong>Advantage:</strong> Converges quickly, loop-free</li>
+    <li><strong>Disadvantage:</strong> Requires global topology knowledge; high overhead for broadcasting link states</li>
+  </ul>
+
+  <h3>4.3 Bellman-Ford Algorithm (Distance Vector)</h3>
+  <p>Each router knows only the distances to its neighbors. Routers exchange distance vectors periodically with neighbors and update their routing tables using the Bellman-Ford equation:</p>
+  <pre><code>D(x, y) = min over all neighbors v { cost(x, v) + D(v, y) }</code></pre>
+  <ul>
+    <li><strong>Complexity:</strong> O(n &times; E) where E = number of edges</li>
+    <li><strong>Protocol:</strong> RIP (Routing Information Protocol)</li>
+    <li><strong>Problem:</strong> Count-to-infinity problem (slow convergence on bad news)</li>
+    <li><strong>Solutions:</strong> Split horizon, poison reverse, triggered updates</li>
+  </ul>
+
+  <h3>4.4 Comparison Table</h3>
+  <table>
+    <tr><th>Feature</th><th>Distance Vector</th><th>Link State</th></tr>
+    <tr><td>Knowledge</td><td>Local (neighbors only)</td><td>Global (entire topology)</td></tr>
+    <tr><td>Algorithm</td><td>Bellman-Ford</td><td>Dijkstra</td></tr>
+    <tr><td>Updates Sent To</td><td>Neighbors only</td><td>All routers (flooding)</td></tr>
+    <tr><td>Update Content</td><td>Entire routing table</td><td>Link state information</td></tr>
+    <tr><td>Convergence</td><td>Slow</td><td>Fast</td></tr>
+    <tr><td>Loop Problem</td><td>Yes (count-to-infinity)</td><td>No</td></tr>
+    <tr><td>Memory</td><td>Low</td><td>High (stores full topology)</td></tr>
+    <tr><td>Example Protocol</td><td>RIP</td><td>OSPF</td></tr>
+  </table>
+
+  <h3>4.5 Flooding</h3>
+  <p>Every incoming packet is sent out on every outgoing link except the one it arrived on. Simple but generates many duplicate packets. Controlled by TTL or sequence numbers.</p>
+
+  <!-- ===================== IP SUPPORT PROTOCOLS ===================== -->
+  <h2>5. IP Support Protocols</h2>
+
+  <table>
+    <tr><th>Protocol</th><th>Purpose</th><th>Key Details</th></tr>
+    <tr><td><strong>ARP</strong></td><td>Maps IP address to MAC address</td><td>Broadcasts ARP request; target unicasts ARP reply. ARP cache stores recent mappings. Works within a LAN.</td></tr>
+    <tr><td><strong>RARP</strong></td><td>Maps MAC address to IP address (obsolete)</td><td>Replaced by BOOTP and DHCP.</td></tr>
+    <tr><td><strong>DHCP</strong></td><td>Dynamically assigns IP addresses</td><td>DORA process: Discover, Offer, Request, Acknowledge. Uses UDP ports 67 (server) and 68 (client). Provides IP, subnet mask, gateway, DNS server.</td></tr>
+    <tr><td><strong>ICMP</strong></td><td>Error reporting and diagnostics</td><td>Types: Echo Request/Reply (ping), Destination Unreachable, Time Exceeded (traceroute), Redirect. Encapsulated in IP packets.</td></tr>
+  </table>
+
+  <!-- ===================== NAT ===================== -->
+  <h2>6. Network Address Translation (NAT)</h2>
+  <p>NAT allows multiple devices on a private network to share a single public IP address. The NAT router translates private IP addresses to the public IP (and vice versa) using a translation table.</p>
+
+  <table>
+    <tr><th>NAT Type</th><th>Description</th></tr>
+    <tr><td><strong>Static NAT</strong></td><td>One-to-one mapping between private and public IP addresses</td></tr>
+    <tr><td><strong>Dynamic NAT</strong></td><td>Maps private IPs to a pool of public IPs on demand</td></tr>
+    <tr><td><strong>PAT (Port Address Translation / NAPT)</strong></td><td>Multiple private IPs share one public IP using different port numbers. Most common type.</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Private IP Ranges (RFC 1918):</strong>
+    <ul>
+      <li>10.0.0.0/8 (Class A): 10.0.0.0 &ndash; 10.255.255.255</li>
+      <li>172.16.0.0/12 (Class B): 172.16.0.0 &ndash; 172.31.255.255</li>
+      <li>192.168.0.0/16 (Class C): 192.168.0.0 &ndash; 192.168.255.255</li>
+    </ul>
+  </div>
+
+  <!-- ===================== SUMMARY ===================== -->
+  <h2>7. Summary and GATE Key Points</h2>
+  <div class="note">
+    <strong>Key Points for GATE:</strong>
+    <ul>
+      <li>Number of usable hosts in a subnet = 2<sup>(32&minus;prefix)</sup> &minus; 2 (network address and broadcast).</li>
+      <li>Fragment offset is in units of 8 bytes. Data portion of each fragment (except last) must be a multiple of 8.</li>
+      <li>IP header minimum size = 20 bytes; maximum = 60 bytes (with options).</li>
+      <li>TTL is decremented by 1 at each router. When it reaches 0, the packet is dropped and ICMP Time Exceeded is sent.</li>
+      <li>ARP maps IP &rarr; MAC within a LAN. ARP request is broadcast; ARP reply is unicast.</li>
+      <li>DHCP uses UDP, not TCP. The DORA process enables automatic IP configuration.</li>
+      <li>Distance vector: count-to-infinity problem. Link state: no such problem but higher overhead.</li>
+      <li>Supernetting (route aggregation) combines multiple networks into one routing entry using a shorter prefix.</li>
+      <li>To find the number of subnets: 2<sup>borrowed bits</sup>. Hosts per subnet: 2<sup>remaining host bits</sup> &minus; 2.</li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Practice Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "Network Layer and Routing Quiz",
+      "questions": [
+        {
+          "question": "A network 192.168.10.0/24 is subnetted into 8 equal subnets. How many usable host addresses are in each subnet?",
+          "options": ["30", "32", "14", "62"],
+          "answer": 0,
+          "explanation": "To create 8 subnets, borrow 3 bits (2^3 = 8). New prefix = /27. Host bits = 32-27 = 5. Usable hosts = 2^5 - 2 = 30 (subtract network and broadcast addresses)."
+        },
+        {
+          "question": "An IP datagram of 4000 bytes (including 20-byte header) needs to be fragmented for a link with MTU = 1500 bytes. How many fragments are produced?",
+          "options": ["2", "3", "4", "5"],
+          "answer": 1,
+          "explanation": "Data = 4000 - 20 = 3980 bytes. Each fragment carries at most 1500 - 20 = 1480 bytes of data. Number of fragments = ceil(3980/1480) = ceil(2.689) = 3. Fragment sizes: 1480, 1480, 1020 bytes of data (plus 20-byte headers each)."
+        },
+        {
+          "question": "Which IP address range is reserved for private use in Class B?",
+          "options": ["10.0.0.0 to 10.255.255.255", "172.16.0.0 to 172.31.255.255", "192.168.0.0 to 192.168.255.255", "169.254.0.0 to 169.254.255.255"],
+          "answer": 1,
+          "explanation": "The private IP ranges per RFC 1918 are: Class A: 10.0.0.0/8, Class B: 172.16.0.0/12 (172.16.0.0 to 172.31.255.255), Class C: 192.168.0.0/16. 169.254.x.x is for link-local (APIPA), not RFC 1918 private."
+        },
+        {
+          "question": "In distance vector routing, the count-to-infinity problem is caused by:",
+          "options": ["Too many routers in the network", "Routers having global knowledge of the topology", "Routing loops where routers keep incrementing distance to an unreachable destination", "Using Dijkstra's algorithm incorrectly"],
+          "answer": 2,
+          "explanation": "Count-to-infinity occurs when a link fails and routers keep advertising routes through each other, incrementing the distance to the unreachable destination each iteration. Solutions include split horizon, poison reverse, and triggered updates."
+        },
+        {
+          "question": "A router receives a packet with TTL = 1. What action does it take?",
+          "options": ["Forwards the packet with TTL = 0", "Drops the packet and sends ICMP Time Exceeded to the source", "Drops the packet silently", "Forwards the packet with TTL = 1"],
+          "answer": 1,
+          "explanation": "When a router decrements TTL and it reaches 0, the packet is discarded and an ICMP Time Exceeded (Type 11) message is sent back to the source. This mechanism prevents packets from looping forever and is the basis for traceroute."
+        }
+      ]
+    }
+    </script>
+  </div>
+
+</article>
+</body>
+</html>

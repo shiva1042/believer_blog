@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsupervised Learning and Clustering | GATE CS</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.7; color: #222; }
+    h1 { color: #1a237e; border-bottom: 3px solid #1a237e; padding-bottom: 10px; }
+    h2 { color: #283593; margin-top: 2em; }
+    h3 { color: #3949ab; }
+    .article-section-tag { background: #e8eaf6; padding: 8px 16px; border-left: 4px solid #1a237e; font-weight: bold; font-size: 1.1em; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+    th, td { border: 1px solid #bbb; padding: 8px 12px; text-align: center; }
+    th { background: #c5cae9; color: #1a237e; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    code { background: #eceff1; padding: 2px 6px; border-radius: 3px; font-size: 0.95em; }
+    .formula { background: #fff9c4; padding: 10px 16px; border-left: 4px solid #f9a825; margin: 1em 0; font-family: monospace; font-size: 1.05em; }
+    .example { background: #e8f5e9; padding: 12px 16px; border-left: 4px solid #2e7d32; margin: 1em 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Unsupervised Learning and Clustering</h1>
+  <p class="article-section-tag">Section: Artificial Intelligence</p>
+
+  <h2>1. Introduction to Unsupervised Learning</h2>
+  <p>Unsupervised learning works with <strong>unlabeled data</strong> to discover hidden patterns, groupings, or representations. Unlike supervised learning, there are no target labels to guide the learning process. The main tasks are clustering, dimensionality reduction, and association rule mining.</p>
+
+  <h2>2. K-Means Clustering</h2>
+  <p>K-Means partitions n data points into K clusters, where each point belongs to the cluster with the nearest centroid. It minimizes the <strong>Within-Cluster Sum of Squares (WCSS)</strong>.</p>
+
+  <div class="formula">
+    Objective: Minimize J = &sum;<sub>k=1</sub><sup>K</sup> &sum;<sub>x&in;C<sub>k</sub></sub> ||x - &mu;<sub>k</sub>||&sup2;<br>
+    where &mu;<sub>k</sub> is the centroid of cluster C<sub>k</sub>
+  </div>
+
+  <h3>2.1 K-Means Algorithm</h3>
+  <ol>
+    <li><strong>Initialize:</strong> Randomly select K data points as initial centroids</li>
+    <li><strong>Assign:</strong> Assign each data point to the nearest centroid</li>
+    <li><strong>Update:</strong> Recompute centroids as the mean of all points in each cluster</li>
+    <li><strong>Repeat:</strong> Steps 2&ndash;3 until centroids converge (no change) or maximum iterations reached</li>
+  </ol>
+
+  <div class="example">
+    <strong>Example:</strong> Given points {2, 3, 6, 8, 10, 12} and K=2.<br>
+    <strong>Iteration 1:</strong> Initial centroids: &mu;<sub>1</sub>=3, &mu;<sub>2</sub>=10<br>
+    Assign: C<sub>1</sub>={2, 3, 6}, C<sub>2</sub>={8, 10, 12}<br>
+    Update: &mu;<sub>1</sub>=(2+3+6)/3=3.67, &mu;<sub>2</sub>=(8+10+12)/3=10<br>
+    <strong>Iteration 2:</strong> Assign: C<sub>1</sub>={2, 3, 6}, C<sub>2</sub>={8, 10, 12} (no change)<br>
+    Converged! Final clusters: {2, 3, 6} and {8, 10, 12}.
+  </div>
+
+  <h3>2.2 K-Means Properties</h3>
+  <table>
+    <tr><th>Property</th><th>Details</th></tr>
+    <tr><td>Time Complexity</td><td>O(n &middot; K &middot; d &middot; I) where n=points, K=clusters, d=dimensions, I=iterations</td></tr>
+    <tr><td>Convergence</td><td>Always converges (J is monotonically non-increasing), but may reach local minimum</td></tr>
+    <tr><td>Cluster Shape</td><td>Assumes spherical (convex) clusters of similar size</td></tr>
+    <tr><td>Sensitivity</td><td>Sensitive to initial centroid selection and outliers</td></tr>
+    <tr><td>K Selection</td><td>Elbow method, silhouette score, gap statistic</td></tr>
+  </table>
+
+  <h3>2.3 K-Means++ Initialization</h3>
+  <p>Improved initialization that spreads initial centroids apart: (1) Choose first centroid randomly, (2) Choose next centroid with probability proportional to D(x)&sup2; (squared distance to nearest existing centroid), (3) Repeat until K centroids are chosen. This provides O(log K) competitive approximation.</p>
+
+  <h2>3. Hierarchical Clustering</h2>
+  <p>Builds a hierarchy of clusters represented as a <strong>dendrogram</strong> (tree). No need to pre-specify K.</p>
+
+  <h3>3.1 Agglomerative (Bottom-Up)</h3>
+  <ol>
+    <li>Start with each data point as its own cluster (n clusters)</li>
+    <li>Merge the two closest clusters</li>
+    <li>Repeat until only one cluster remains</li>
+  </ol>
+
+  <h3>3.2 Divisive (Top-Down)</h3>
+  <ol>
+    <li>Start with all data points in one cluster</li>
+    <li>Split the cluster that has the most dissimilarity</li>
+    <li>Repeat until each point is its own cluster</li>
+  </ol>
+
+  <h3>3.3 Linkage Criteria</h3>
+  <table>
+    <tr><th>Linkage</th><th>Distance Between Clusters A and B</th><th>Properties</th></tr>
+    <tr><td>Single Linkage</td><td>min d(a, b) for a&in;A, b&in;B</td><td>Can handle non-convex shapes; chaining effect</td></tr>
+    <tr><td>Complete Linkage</td><td>max d(a, b) for a&in;A, b&in;B</td><td>Produces compact clusters; sensitive to outliers</td></tr>
+    <tr><td>Average Linkage</td><td>avg d(a, b) for a&in;A, b&in;B</td><td>Compromise between single and complete</td></tr>
+    <tr><td>Ward's Method</td><td>Increase in total WCSS after merging</td><td>Minimizes variance; tends to create equal-sized clusters</td></tr>
+  </table>
+
+  <p><strong>Time Complexity:</strong> O(n&sup3;) in general, O(n&sup2; log n) with efficient implementations. <strong>Space Complexity:</strong> O(n&sup2;) for the distance matrix.</p>
+
+  <h2>4. DBSCAN (Density-Based Spatial Clustering of Applications with Noise)</h2>
+  <p>A density-based clustering algorithm that can discover clusters of arbitrary shape and identify noise points (outliers).</p>
+
+  <h3>4.1 Key Parameters</h3>
+  <ul>
+    <li><strong>&epsilon; (eps):</strong> The radius of the neighborhood around a point</li>
+    <li><strong>MinPts:</strong> Minimum number of points required to form a dense region</li>
+  </ul>
+
+  <h3>4.2 Point Classification</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th></tr>
+    <tr><td><strong>Core Point</strong></td><td>Has &ge; MinPts points within its &epsilon;-neighborhood (including itself)</td></tr>
+    <tr><td><strong>Border Point</strong></td><td>Within &epsilon; of a core point but has &lt; MinPts in its neighborhood</td></tr>
+    <tr><td><strong>Noise Point</strong></td><td>Neither core nor border; not within &epsilon; of any core point</td></tr>
+  </table>
+
+  <h3>4.3 DBSCAN Algorithm</h3>
+  <ol>
+    <li>For each unvisited point, compute its &epsilon;-neighborhood</li>
+    <li>If it has &ge; MinPts neighbors, create a new cluster and expand it by recursively adding density-reachable points</li>
+    <li>If not a core point, mark as noise (may later become a border point)</li>
+  </ol>
+
+  <div class="example">
+    <strong>DBSCAN Advantages over K-Means:</strong>
+    <ul>
+      <li>Does not require specifying K in advance</li>
+      <li>Can find clusters of arbitrary shape (not just spherical)</li>
+      <li>Robust to outliers (classifies them as noise)</li>
+      <li>Deterministic (given fixed &epsilon; and MinPts)</li>
+    </ul>
+    <strong>Disadvantages:</strong>
+    <ul>
+      <li>Difficulty with varying density clusters</li>
+      <li>Sensitive to &epsilon; and MinPts parameter selection</li>
+      <li>Does not work well in very high dimensions</li>
+    </ul>
+  </div>
+
+  <h2>5. Principal Component Analysis (PCA)</h2>
+  <p>PCA is a <strong>dimensionality reduction</strong> technique that transforms data to a new coordinate system where the axes (principal components) are ordered by the amount of variance they capture.</p>
+
+  <h3>5.1 PCA Algorithm</h3>
+  <ol>
+    <li>Standardize the data (zero mean, unit variance)</li>
+    <li>Compute the covariance matrix: <code>C = (1/n) X<sup>T</sup>X</code></li>
+    <li>Compute eigenvalues and eigenvectors of C</li>
+    <li>Sort eigenvectors by decreasing eigenvalues</li>
+    <li>Select the top k eigenvectors as principal components</li>
+    <li>Project data onto the k-dimensional subspace</li>
+  </ol>
+
+  <div class="formula">
+    Variance explained by component i = &lambda;<sub>i</sub> / &sum;&lambda;<sub>j</sub><br>
+    Total variance retained with k components = &sum;<sub>i=1</sub><sup>k</sup> &lambda;<sub>i</sub> / &sum;<sub>j=1</sub><sup>d</sup> &lambda;<sub>j</sub>
+  </div>
+
+  <div class="example">
+    <strong>Example:</strong> If eigenvalues are &lambda;<sub>1</sub>=4.5, &lambda;<sub>2</sub>=2.3, &lambda;<sub>3</sub>=0.15, &lambda;<sub>4</sub>=0.05:<br>
+    Total variance = 7.0<br>
+    PC1 explains 4.5/7.0 = 64.3%<br>
+    PC1 + PC2 explain (4.5+2.3)/7.0 = 97.1%<br>
+    Retaining 2 components captures 97.1% of variance while reducing from 4D to 2D.
+  </div>
+
+  <p><strong>Key properties:</strong> Principal components are orthogonal. PCA is a linear transformation. PCA maximizes variance (equivalently, minimizes reconstruction error). It is sensitive to feature scaling.</p>
+
+  <h2>6. Association Rule Mining (Apriori Algorithm)</h2>
+  <p>Finds interesting relationships (associations) between items in transactional datasets.</p>
+
+  <h3>6.1 Key Metrics</h3>
+  <div class="formula">
+    Support(A) = count(A) / N  [frequency of itemset A]<br><br>
+    Support(A &rarr; B) = count(A &cup; B) / N<br><br>
+    Confidence(A &rarr; B) = Support(A &cup; B) / Support(A) = P(B|A)<br><br>
+    Lift(A &rarr; B) = Confidence(A &rarr; B) / Support(B) = P(B|A) / P(B)
+  </div>
+  <p>Lift > 1: positive association. Lift = 1: independent. Lift < 1: negative association.</p>
+
+  <h3>6.2 Apriori Algorithm</h3>
+  <p>Uses the <strong>Apriori property</strong> (anti-monotone): if an itemset is infrequent, all its supersets are also infrequent. This prunes the search space.</p>
+  <ol>
+    <li>Find all frequent 1-itemsets (support &ge; min_support)</li>
+    <li>Generate candidate (k+1)-itemsets from frequent k-itemsets</li>
+    <li>Prune candidates containing infrequent subsets</li>
+    <li>Scan database to count support of remaining candidates</li>
+    <li>Repeat until no more frequent itemsets are found</li>
+    <li>Generate rules from frequent itemsets that meet min_confidence</li>
+  </ol>
+
+  <div class="example">
+    <strong>Example:</strong> Market basket analysis.<br>
+    Rule: {bread, butter} &rarr; {milk}, Support=0.3, Confidence=0.8, Lift=1.6<br>
+    Interpretation: 30% of transactions contain all three items. Of those who buy bread and butter, 80% also buy milk. This is 1.6 times more likely than buying milk randomly.
+  </div>
+
+  <h2>7. Silhouette Score</h2>
+  <p>Measures how similar a point is to its own cluster compared to other clusters. Useful for evaluating clustering quality and selecting the optimal K.</p>
+
+  <div class="formula">
+    s(i) = (b(i) - a(i)) / max(a(i), b(i))<br><br>
+    a(i) = average distance of point i to all other points in the same cluster<br>
+    b(i) = minimum average distance of point i to points in any other cluster<br><br>
+    s(i) ranges from -1 to +1<br>
+    +1: well-clustered, 0: on boundary, -1: likely misclassified
+  </div>
+
+  <p>The <strong>overall silhouette score</strong> is the average s(i) across all points. Higher values indicate better-defined clusters.</p>
+
+  <h2>8. Comparison of Clustering Algorithms</h2>
+  <table>
+    <tr><th>Algorithm</th><th>K Required?</th><th>Cluster Shape</th><th>Handles Noise?</th><th>Time Complexity</th></tr>
+    <tr><td>K-Means</td><td>Yes</td><td>Spherical</td><td>No</td><td>O(nKdI)</td></tr>
+    <tr><td>Hierarchical</td><td>No (cut dendrogram)</td><td>Any</td><td>No</td><td>O(n&sup2; log n)</td></tr>
+    <tr><td>DBSCAN</td><td>No</td><td>Arbitrary</td><td>Yes</td><td>O(n log n) with index</td></tr>
+  </table>
+
+  <script class="quiz-data" type="application/json">
+  {
+    "title": "Unsupervised Learning and Clustering - GATE Quiz",
+    "questions": [
+      {
+        "question": "In K-Means clustering, the algorithm is guaranteed to:",
+        "options": ["Find the global optimum", "Converge to a local minimum", "Produce clusters of equal size", "Detect outliers"],
+        "answer": 1,
+        "explanation": "K-Means is guaranteed to converge because the objective function (WCSS) decreases monotonically with each iteration. However, it may converge to a local minimum rather than the global optimum, depending on the initial centroid selection."
+      },
+      {
+        "question": "In DBSCAN with ε=2 and MinPts=3, a point with 4 neighbors within distance 2 is classified as:",
+        "options": ["Noise point", "Border point", "Core point", "Outlier"],
+        "answer": 2,
+        "explanation": "A core point is defined as a point that has at least MinPts (3) points within its ε-neighborhood (distance 2). Since this point has 4 neighbors (plus itself = 5 points in the neighborhood ≥ 3), it is a core point."
+      },
+      {
+        "question": "In PCA, the principal components are:",
+        "options": ["The original features sorted by importance", "The eigenvectors of the covariance matrix sorted by eigenvalue", "Random projections of the data", "Cluster centroids"],
+        "answer": 1,
+        "explanation": "Principal components are the eigenvectors of the covariance matrix, sorted in decreasing order of their corresponding eigenvalues. Each eigenvalue represents the amount of variance captured by that component."
+      },
+      {
+        "question": "The Apriori property states that:",
+        "options": ["All subsets of a frequent itemset are frequent", "All supersets of a frequent itemset are frequent", "All subsets of an infrequent itemset are infrequent", "Confidence is always greater than support"],
+        "answer": 0,
+        "explanation": "The Apriori property (anti-monotone property) states that all subsets of a frequent itemset must also be frequent. Equivalently, if an itemset is infrequent, all its supersets must also be infrequent. This property enables efficient pruning of the search space."
+      },
+      {
+        "question": "A silhouette score of -0.5 for a data point indicates:",
+        "options": ["The point is well-clustered", "The point is on the cluster boundary", "The point is likely assigned to the wrong cluster", "The point is equidistant from all clusters"],
+        "answer": 2,
+        "explanation": "Silhouette scores range from -1 to +1. A negative score (like -0.5) indicates that the point is, on average, closer to points in another cluster than to points in its own cluster, suggesting it may be misclassified."
+      },
+      {
+        "question": "Which linkage criterion in hierarchical clustering can suffer from the 'chaining effect'?",
+        "options": ["Complete linkage", "Average linkage", "Single linkage", "Ward's method"],
+        "answer": 2,
+        "explanation": "Single linkage uses the minimum distance between clusters. This can cause a 'chaining effect' where clusters are merged through chains of close individual points, forming elongated, non-compact clusters. Complete linkage avoids this by using maximum distance."
+      }
+    ]
+  }
+  </script>
+</article>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CS Mock Test 15: Conceptual Questions Only — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CS Mock Test 15: Conceptual Questions Only</h1>
+  <p class="article-section-tag">📝 Test Series</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Focus:</strong> Pure conceptual and theory questions — no calculations, testing understanding of concepts, definitions, properties, and relationships</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE Mock Test 15 — Conceptual Questions Only",
+      "questions": [
+        {
+          "question": "Q1. Which of the following problems is undecidable?",
+          "options": ["(A) Whether a given DFA accepts the empty language", "(B) Whether a given CFG generates a particular string", "(C) Whether a given Turing machine halts on a given input", "(D) Whether a given regular expression generates a finite language"],
+          "answer": 2,
+          "explanation": "The Halting Problem — whether a given TM halts on a given input — is the classic undecidable problem, proved by Alan Turing via diagonalization. DFA emptiness, CFL membership (CYK algorithm), and finiteness of regular languages are all decidable."
+        },
+        {
+          "question": "Q2. In the context of database normalization, a relation is in 2NF if and only if:",
+          "options": ["(A) It is in 1NF and has no transitive dependencies", "(B) It is in 1NF and no non-prime attribute is partially dependent on any candidate key", "(C) Every determinant is a candidate key", "(D) It has no multivalued dependencies"],
+          "answer": 1,
+          "explanation": "2NF requires 1NF plus no partial dependency — every non-prime attribute must be fully functionally dependent on every candidate key (not just part of it). 3NF additionally removes transitive dependencies. BCNF requires every determinant to be a superkey."
+        },
+        {
+          "question": "Q3. The principle of locality in computer architecture refers to:",
+          "options": ["(A) Data being stored close to the processor", "(B) The tendency of programs to access data and instructions near recently accessed ones", "(C) Local variables being faster than global ones", "(D) Cache being physically located near the CPU"],
+          "answer": 1,
+          "explanation": "Locality has two forms: temporal locality (recently accessed items are likely to be accessed again soon) and spatial locality (items near recently accessed items are likely to be accessed soon). Caches exploit both types of locality to improve performance."
+        },
+        {
+          "question": "Q4. Which of the following is NOT a property of a binary search tree (BST)?",
+          "options": ["(A) Left subtree contains only nodes with keys less than the root", "(B) Right subtree contains only nodes with keys greater than the root", "(C) Both subtrees are also BSTs", "(D) The tree must be balanced"],
+          "answer": 3,
+          "explanation": "A BST does not need to be balanced. The BST property only requires that left subtree keys < root < right subtree keys, and both subtrees are BSTs. An unbalanced BST (like a skewed tree) is still a valid BST — balancing is an additional property of AVL trees and Red-Black trees."
+        },
+        {
+          "question": "Q5. In TCP, the purpose of the three-way handshake is to:",
+          "options": ["(A) Encrypt the connection", "(B) Establish connection and synchronize sequence numbers", "(C) Authenticate the sender", "(D) Determine the optimal window size"],
+          "answer": 1,
+          "explanation": "The TCP three-way handshake (SYN, SYN-ACK, ACK) establishes a reliable connection by synchronizing initial sequence numbers between client and server. Each side chooses its ISN (Initial Sequence Number) and acknowledges the other's ISN. It does not encrypt or authenticate."
+        },
+        {
+          "question": "Q6. Which of the following is true about deadlock prevention vs. deadlock avoidance?",
+          "options": ["(A) Prevention eliminates one of the four necessary conditions; avoidance dynamically checks safety", "(B) Prevention and avoidance are the same concept", "(C) Prevention is more resource-efficient than avoidance", "(D) Avoidance requires killing processes"],
+          "answer": 0,
+          "explanation": "Deadlock prevention statically ensures at least one of the four necessary conditions (mutual exclusion, hold & wait, no preemption, circular wait) cannot hold. Deadlock avoidance (e.g., Banker's algorithm) dynamically decides whether granting a request could lead to deadlock, refusing unsafe requests."
+        },
+        {
+          "question": "Q7. In the relational model, a superkey is:",
+          "options": ["(A) The primary key of the relation", "(B) Any set of attributes that uniquely identifies tuples", "(C) The minimal set of attributes that uniquely identifies tuples", "(D) A foreign key in another relation"],
+          "answer": 1,
+          "explanation": "A superkey is any set of attributes whose values uniquely determine a tuple. A candidate key is a minimal superkey (no proper subset is also a superkey). A primary key is the chosen candidate key. Every candidate key is a superkey, but not vice versa."
+        },
+        {
+          "question": "Q8. Which sorting algorithm is NOT comparison-based?",
+          "options": ["(A) Merge Sort", "(B) Quick Sort", "(C) Counting Sort", "(D) Heap Sort"],
+          "answer": 2,
+          "explanation": "Counting Sort uses the actual values of elements (not comparisons) to place them in the correct position. It runs in O(n + k) where k is the range of values. Comparison-based sorts (merge, quick, heap) have a lower bound of O(n log n). Radix Sort and Bucket Sort are also non-comparison-based."
+        },
+        {
+          "question": "Q9. The difference between a process and a thread is:",
+          "options": ["(A) Threads share the same memory space; processes have separate memory spaces", "(B) Processes are faster than threads", "(C) Threads cannot communicate with each other", "(D) Processes share the same stack"],
+          "answer": 0,
+          "explanation": "Threads within the same process share the code, data, and heap sections of memory but have separate stacks and registers. Processes have completely separate memory spaces (address spaces). Thread creation is faster than process creation, and thread context switching is lighter."
+        },
+        {
+          "question": "Q10. Which of the following is NOT a ACID property of transactions?",
+          "options": ["(A) Atomicity", "(B) Availability", "(C) Consistency", "(D) Durability"],
+          "answer": 1,
+          "explanation": "ACID stands for Atomicity, Consistency, Isolation, and Durability. Availability is part of CAP theorem (Consistency, Availability, Partition tolerance), not ACID. Atomicity means all-or-nothing, Consistency preserves invariants, Isolation prevents concurrent interference, Durability ensures committed changes persist."
+        },
+        {
+          "question": "Q11. In context-free grammars, an ambiguous grammar is one where:",
+          "options": ["(A) No string can be generated", "(B) Some string has more than one leftmost derivation (or parse tree)", "(C) The grammar generates an infinite language", "(D) The grammar has useless symbols"],
+          "answer": 1,
+          "explanation": "A CFG is ambiguous if there exists at least one string that has two or more distinct leftmost derivations (equivalently, two or more parse trees). The classic example is E → E+E | E*E | id where 'id+id*id' has two parse trees. Some ambiguous CFGs can be rewritten to be unambiguous."
+        },
+        {
+          "question": "Q12. What is the main advantage of RISC over CISC architecture?",
+          "options": ["(A) RISC has more complex instructions", "(B) RISC enables efficient pipelining due to fixed-length instructions", "(C) RISC requires less memory for programs", "(D) RISC has more addressing modes"],
+          "answer": 1,
+          "explanation": "RISC (Reduced Instruction Set Computer) uses fixed-length, simple instructions that complete in one cycle, enabling efficient pipelining. CISC has variable-length, complex instructions with many addressing modes. RISC programs are typically longer but execute faster due to better pipelining."
+        },
+        {
+          "question": "Q13. The OSI model's Transport layer (Layer 4) is responsible for:",
+          "options": ["(A) Routing packets between networks", "(B) End-to-end reliable data transfer and flow control", "(C) Physical transmission of bits", "(D) Data formatting and encryption"],
+          "answer": 1,
+          "explanation": "The Transport layer provides end-to-end communication services: reliable data transfer (TCP), error recovery, flow control, multiplexing, and segmentation. Layer 3 (Network) handles routing, Layer 1 (Physical) handles bit transmission, and Layer 6 (Presentation) handles formatting."
+        },
+        {
+          "question": "Q14. Which of the following is true about the Pumping Lemma for regular languages?",
+          "options": ["(A) It can be used to prove a language is regular", "(B) It provides a necessary condition for regularity", "(C) It provides a sufficient condition for regularity", "(D) It works only for finite languages"],
+          "answer": 1,
+          "explanation": "The Pumping Lemma provides a necessary (but not sufficient) condition for regular languages. If a language is regular, it satisfies the pumping lemma. To prove a language is NOT regular, show it violates the pumping lemma. However, some non-regular languages also satisfy the pumping lemma."
+        },
+        {
+          "question": "Q15. In compiler design, what does an intermediate representation (IR) achieve?",
+          "options": ["(A) Direct machine code generation", "(B) Machine-independent optimization and portability across target architectures", "(C) Lexical analysis of source code", "(D) Memory allocation for variables"],
+          "answer": 1,
+          "explanation": "IR decouples the front end (source language dependent) from the back end (target machine dependent). Machine-independent optimizations are performed on IR, and the same IR can be translated to different target architectures. This enables m×n language-architecture combinations with m+n modules instead of m×n."
+        },
+        {
+          "question": "Q16. What is the key difference between dynamic programming and greedy algorithms?",
+          "options": ["(A) DP is always faster than greedy", "(B) DP considers all subproblems and makes globally optimal choices; greedy makes locally optimal choices", "(C) Greedy always gives optimal solutions", "(D) DP can only solve graph problems"],
+          "answer": 1,
+          "explanation": "Dynamic programming solves all subproblems and combines them for a globally optimal solution (bottom-up or top-down with memoization). Greedy algorithms make the locally optimal choice at each step, hoping it leads to a global optimum. Greedy is faster but does not always yield optimal solutions."
+        },
+        {
+          "question": "Q17. In virtual memory, the Translation Lookaside Buffer (TLB) is:",
+          "options": ["(A) A disk cache for swap space", "(B) A fast hardware cache for page table entries", "(C) A buffer for I/O operations", "(D) A register for storing the page table base address"],
+          "answer": 1,
+          "explanation": "The TLB is a small, fast, associative cache that stores recent virtual-to-physical page number translations. It avoids the overhead of accessing the page table in memory for every memory reference. TLB hit rates of 99%+ are typical, making virtual memory practical."
+        },
+        {
+          "question": "Q18. Which of the following is true about NP-complete problems?",
+          "options": ["(A) They can all be solved in polynomial time", "(B) They are in NP and every problem in NP can be reduced to them in polynomial time", "(C) They have no known solution", "(D) They are not in NP"],
+          "answer": 1,
+          "explanation": "A problem is NP-complete if: (1) it is in NP (verifiable in polynomial time), and (2) every problem in NP can be polynomial-time reduced to it. If any NP-complete problem can be solved in polynomial time, then P = NP. Examples: SAT, 3-SAT, Vertex Cover, Hamiltonian Cycle."
+        },
+        {
+          "question": "Q19. The purpose of the ARP protocol is to:",
+          "options": ["(A) Resolve domain names to IP addresses", "(B) Map IP addresses to MAC (hardware) addresses", "(C) Route packets between networks", "(D) Establish TCP connections"],
+          "answer": 1,
+          "explanation": "ARP (Address Resolution Protocol) maps a known IP address to its corresponding MAC (Media Access Control) address on the local network. When a host wants to send a frame, it needs the destination MAC address. DNS resolves domain names to IPs (different from ARP)."
+        },
+        {
+          "question": "Q20. In database systems, a schedule is serializable if:",
+          "options": ["(A) All transactions execute sequentially", "(B) Its result is equivalent to some serial schedule", "(C) No two transactions overlap", "(D) It uses only shared locks"],
+          "answer": 1,
+          "explanation": "A schedule is serializable if its outcome (final database state and return values) is equivalent to some serial execution of the same transactions. Conflict serializability and view serializability are two forms. The precedence graph test detects conflict serializability."
+        },
+        {
+          "question": "Q21. Which of the following memory allocation strategies suffers most from external fragmentation?",
+          "options": ["(A) Paging", "(B) First-fit contiguous allocation", "(C) Segmentation with paging", "(D) Pure demand paging"],
+          "answer": 1,
+          "explanation": "Contiguous memory allocation (first-fit, best-fit, worst-fit) suffers from external fragmentation — free memory is broken into small, non-contiguous blocks. Paging eliminates external fragmentation by allocating fixed-size frames. Paging may have internal fragmentation (last page partially filled)."
+        },
+        {
+          "question": "Q22. In the context of hashing, what is the birthday paradox?",
+          "options": ["(A) Hash functions always produce unique outputs", "(B) The probability of collisions is surprisingly high even with many possible hash values", "(C) Hash tables can never be full", "(D) Perfect hashing is impossible"],
+          "answer": 1,
+          "explanation": "The birthday paradox states that in a group of just 23 people, there's a >50% chance two share a birthday (out of 365 days). For hashing: with a hash function producing n possible values, you only need about √n inputs before a collision becomes likely. This affects hash security — a 128-bit hash needs only 2^64 attempts for a collision."
+        },
+        {
+          "question": "Q23. What is the key property that distinguishes a stable sorting algorithm from an unstable one?",
+          "options": ["(A) Stable sorts are always faster", "(B) Stable sorts preserve the relative order of equal elements", "(C) Stable sorts use less memory", "(D) Stable sorts work only on integers"],
+          "answer": 1,
+          "explanation": "A stable sorting algorithm preserves the relative order of records with equal keys. For example, if two records have the same key, a stable sort keeps them in the same order as the input. Merge sort and insertion sort are stable; quicksort and heapsort are not (in typical implementations)."
+        },
+        {
+          "question": "Q24. In a relational database, a foreign key:",
+          "options": ["(A) Must be the primary key of the same table", "(B) References the primary key (or candidate key) of another table to enforce referential integrity", "(C) Cannot be NULL", "(D) Must be unique in the referencing table"],
+          "answer": 1,
+          "explanation": "A foreign key in one table references the primary key (or candidate key) of another table, enforcing referential integrity. Foreign keys CAN be NULL (unless explicitly constrained) and need NOT be unique in the referencing table (many-to-one relationships). They prevent orphan records."
+        },
+        {
+          "question": "Q25. What does the 'volatile' keyword in C signify?",
+          "options": ["(A) The variable is stored in a register", "(B) The variable's value may change unexpectedly, preventing compiler optimization on it", "(C) The variable is constant", "(D) The variable is thread-safe"],
+          "answer": 1,
+          "explanation": "The volatile keyword tells the compiler that a variable's value may change at any time (e.g., hardware registers, variables shared with ISRs). The compiler must not optimize away reads/writes to volatile variables — it must always read from memory. It does NOT provide thread safety or atomicity."
+        },
+        {
+          "question": "Q26. In graph theory, an Euler circuit exists in an undirected graph if and only if:",
+          "options": ["(A) The graph is connected and every vertex has even degree", "(B) The graph is a tree", "(C) The graph has an odd number of vertices", "(D) Every vertex has degree at most 2"],
+          "answer": 0,
+          "explanation": "Euler's theorem: an undirected graph has an Euler circuit (a closed walk visiting every edge exactly once) if and only if: (1) the graph is connected (or all edges are in one connected component), and (2) every vertex has even degree. An Euler path (not circuit) exists if exactly 2 vertices have odd degree."
+        },
+        {
+          "question": "Q27. The primary purpose of semaphores in operating systems is to:",
+          "options": ["(A) Speed up process execution", "(B) Synchronize concurrent processes and manage access to shared resources", "(C) Allocate memory to processes", "(D) Schedule CPU time"],
+          "answer": 1,
+          "explanation": "Semaphores (proposed by Dijkstra) are synchronization tools used to control access to shared resources in concurrent programming. Binary semaphores (mutex) provide mutual exclusion. Counting semaphores control access to a resource pool with multiple instances. Operations: wait (P) and signal (V)."
+        },
+        {
+          "question": "Q28. In compiler design, left factoring is used to:",
+          "options": ["(A) Remove left recursion from a grammar", "(B) Make a grammar suitable for top-down parsing by factoring common prefixes", "(C) Optimize generated code", "(D) Perform type checking"],
+          "answer": 1,
+          "explanation": "Left factoring transforms a grammar so that the parser can make the correct choice based on the next input symbol. When two productions share a common prefix (A → αβ₁ | αβ₂), left factoring rewrites them as A → αA' and A' → β₁ | β₂. This is needed for LL(1) parsing. Left recursion elimination is a separate transformation."
+        },
+        {
+          "question": "Q29. Which of the following addressing modes refers to data stored in a register?",
+          "options": ["(A) Immediate addressing", "(B) Direct addressing", "(C) Register addressing", "(D) Indirect addressing"],
+          "answer": 2,
+          "explanation": "Register addressing mode specifies a register that holds the operand. Immediate mode encodes the operand in the instruction itself. Direct mode gives the memory address of the operand. Indirect mode gives a memory address that contains the address of the operand."
+        },
+        {
+          "question": "Q30. What is the main difference between a stack and a queue?",
+          "options": ["(A) Stack allows random access; queue does not", "(B) Stack follows LIFO; queue follows FIFO", "(C) Stack can hold more elements than a queue", "(D) Queue is faster than stack"],
+          "answer": 1,
+          "explanation": "A stack follows Last-In-First-Out (LIFO) — the most recently added element is removed first (push/pop). A queue follows First-In-First-Out (FIFO) — the first added element is removed first (enqueue/dequeue). Both are abstract data types; neither inherently has more capacity or speed than the other."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

@@ -8,18 +8,22 @@ import ProgressBadge from '../components/ProgressBadge.jsx'
 import Quiz from '../components/Quiz.jsx'
 import ArticleNotes from '../components/ArticleNotes.jsx'
 import ShareButton from '../components/ShareButton.jsx'
+import SwipeDeck from '../components/SwipeDeck.jsx'
 import DOMPurify from 'dompurify'
 import { recordActivity } from '../utils/streak.js'
 import useDocumentTitle from '../utils/useDocumentTitle.js'
+import { attachMermaidZoom } from '../utils/mermaidZoom.js'
 import './Article.css'
 
 mermaid.initialize({ startOnLoad: false, theme: 'default' })
 
 // Sanitize HTML while preserving quiz data scripts (type="application/json")
 function sanitizeArticleHtml(rawHtml) {
-  // Extract quiz scripts before sanitizing
+  // Extract quiz scripts before sanitizing — handle both attribute orderings:
+  // <script class="quiz-data" type="application/json"> AND
+  // <script type="application/json" class="quiz-data">
   const quizScripts = []
-  const stripped = rawHtml.replace(/<script\s+class="quiz-data"\s+type="application\/json">([\s\S]*?)<\/script>/gi, (match, content) => {
+  const stripped = rawHtml.replace(/<script\s+(?:class="quiz-data"\s+type="application\/json"|type="application\/json"\s+class="quiz-data")>([\s\S]*?)<\/script>/gi, (match, content) => {
     const placeholder = `<div class="quiz-data-placeholder" data-quiz-index="${quizScripts.length}"></div>`
     quizScripts.push(content)
     return placeholder
@@ -50,6 +54,7 @@ export default function Article() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [articles, setArticles] = useState([])
+  const [viewMode, setViewMode] = useState(() => localStorage.getItem('articleViewMode') || 'scroll')
   const contentRef = useRef(null)
 
   // Load articles list for navigation
@@ -91,14 +96,23 @@ export default function Article() {
   useEffect(() => {
     if (!loading && !error && contentRef.current) {
       const mermaidDivs = contentRef.current.querySelectorAll('.mermaid')
-      if (mermaidDivs.length > 0) {
-        mermaidDivs.forEach((div) => {
+      if (mermaidDivs.length === 0) return
+
+      // Reset unprocessed mermaid divs
+      mermaidDivs.forEach((div) => {
+        if (!div.querySelector('svg')) {
           div.removeAttribute('data-processed')
-        })
-        mermaid.run({ nodes: mermaidDivs })
-      }
+        }
+      })
+
+      const unprocessed = Array.from(mermaidDivs).filter((d) => !d.querySelector('svg'))
+      if (unprocessed.length === 0) return
+
+      mermaid.run({ nodes: unprocessed }).then(() => {
+        if (contentRef.current) attachMermaidZoom(contentRef.current)
+      }).catch(() => {})
     }
-  }, [html, loading, error])
+  }, [html, loading, error, viewMode])
 
   const currentArticle = useMemo(() => articles.find((a) => a.slug === slug) || null, [articles, slug])
 
@@ -189,15 +203,37 @@ export default function Article() {
     )
   }
 
+  const handleViewMode = (mode) => {
+    setViewMode(mode)
+    localStorage.setItem('articleViewMode', mode)
+  }
+
   return (
     <>
       <ReadingProgress />
       <div className="article-page-wrapper">
-        <TableOfContents contentRef={contentRef} />
+        {viewMode === 'scroll' && <TableOfContents contentRef={contentRef} />}
         <div className="article-page">
           <div className="article-top-bar">
             <Link to="/" className="back-link">&larr; Back to Home</Link>
             <div className="article-top-bar-right">
+              {/* View toggle */}
+              <div className="article-view-toggle">
+                <button
+                  className={`article-view-btn ${viewMode === 'scroll' ? 'active' : ''}`}
+                  onClick={() => handleViewMode('scroll')}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+                  Scroll
+                </button>
+                <button
+                  className={`article-view-btn ${viewMode === 'swipe' ? 'active' : ''}`}
+                  onClick={() => handleViewMode('swipe')}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="3" width="20" height="18" rx="2" /><path d="M8 21h8" /><path d="M9 9l3 3-3 3" /></svg>
+                  Cards
+                </button>
+              </div>
               <ShareButton title={currentArticle?.title || slug} />
               <Link to={`/editor?edit=${slug}`} className="edit-link">Edit Article</Link>
             </div>
@@ -211,11 +247,19 @@ export default function Article() {
               {scrollPct > 0 && <span className="scroll-pct"> &middot; Read: {scrollPct}%</span>}
             </div>
           )}
+
+          {/* Hidden div for Quiz to find quiz-data scripts (always rendered) */}
           <div
             ref={contentRef}
-            className="article-content"
+            className={viewMode === 'scroll' ? 'article-content' : 'article-content-hidden'}
+            style={viewMode === 'swipe' ? { position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' } : undefined}
             dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(html) }}
           />
+
+          {viewMode === 'swipe' && (
+            <SwipeDeck htmlContent={sanitizeArticleHtml(html)} />
+          )}
+
           {!loading && !error && <Quiz contentRef={contentRef} articleSlug={slug} articleSection={currentArticle?.section} />}
           <ArticleNotes slug={slug} />
           {(prevArticle || nextArticle) && (

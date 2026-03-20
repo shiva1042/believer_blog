@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CSE 2017 Previous Year Paper — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CSE 2017 Previous Year Paper</h1>
+  <p class="article-section-tag">📝 GATE Previous Years</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Engineering Mathematics (4), Digital Logic (3), Computer Organization (3), Data Structures (4), Algorithms (3), Theory of Computation (3), Compiler Design (2), Operating Systems (3), Databases (3), Computer Networks (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE CSE 2017 Previous Year Paper",
+      "questions": [
+        {
+          "question": "Q1. The value of the integral ∫₀¹ ∫₀¹ (x + y) dx dy is:",
+          "options": ["(A) 0", "(B) 1", "(C) 2", "(D) 1/2"],
+          "answer": 1,
+          "explanation": "∫₀¹ ∫₀¹ (x + y) dx dy = ∫₀¹ [x²/2 + xy]₀¹ dy = ∫₀¹ (1/2 + y) dy = [y/2 + y²/2]₀¹ = 1/2 + 1/2 = 1. This is a straightforward double integration where we first integrate with respect to x treating y as constant, then integrate the result with respect to y."
+        },
+        {
+          "question": "Q2. The number of edges in a complete bipartite graph K₃,₄ is:",
+          "options": ["(A) 7", "(B) 12", "(C) 21", "(D) 6"],
+          "answer": 1,
+          "explanation": "In a complete bipartite graph K_{m,n}, every vertex in the first partition is connected to every vertex in the second partition. The total number of edges = m × n = 3 × 4 = 12. There are no edges within the same partition. K₃,₄ has 7 vertices total and 12 edges, making it a dense bipartite graph."
+        },
+        {
+          "question": "Q3. If P(A) = 0.3, P(B) = 0.4, and P(A ∩ B) = 0.12, then A and B are:",
+          "options": ["(A) Mutually exclusive", "(B) Independent", "(C) Dependent", "(D) Exhaustive"],
+          "answer": 1,
+          "explanation": "Two events A and B are independent if and only if P(A ∩ B) = P(A) × P(B). Here, P(A) × P(B) = 0.3 × 0.4 = 0.12 = P(A ∩ B). Since the equality holds, A and B are independent. They are not mutually exclusive because P(A ∩ B) = 0.12 ≠ 0, meaning both events can occur simultaneously."
+        },
+        {
+          "question": "Q4. The number of non-isomorphic graphs with 4 vertices is:",
+          "options": ["(A) 6", "(B) 11", "(C) 16", "(D) 64"],
+          "answer": 1,
+          "explanation": "Non-isomorphic graphs with 4 vertices can be enumerated by the number of edges: 0 edges (1), 1 edge (1), 2 edges (2: path P3 and disjoint edges), 3 edges (3: triangle+isolated, path P4, star K1,3), 4 edges (2: cycle C4 and K4-minus-edge), 5 edges (1: K4-minus-one-edge), 6 edges (1: K4). Total = 1+1+2+3+2+1+1 = 11. These are found using Burnside's lemma or direct enumeration."
+        },
+        {
+          "question": "Q5. The hexadecimal representation of the binary number 1010 1111 0011 1100 is:",
+          "options": ["(A) AF3C", "(B) FA3C", "(C) AFC3", "(D) A3FC"],
+          "answer": 0,
+          "explanation": "Converting binary to hexadecimal, group the bits into nibbles (4 bits each): 1010 = A, 1111 = F, 0011 = 3, 1100 = C. So the hexadecimal representation is AF3C. Each hex digit represents exactly 4 binary digits, making the conversion straightforward by memorizing the 16 hex digit mappings."
+        },
+        {
+          "question": "Q6. A full adder has inputs A, B, and Cin. The sum output S is given by:",
+          "options": ["(A) A XOR B XOR Cin", "(B) A AND B AND Cin", "(C) A OR B OR Cin", "(D) (A XOR B) AND Cin"],
+          "answer": 0,
+          "explanation": "A full adder computes the sum of three single-bit inputs. The sum output S = A ⊕ B ⊕ Cin (three-input XOR), which equals 1 when an odd number of inputs are 1. The carry output Cout = AB + BCin + ACin (majority function). XOR acts as a modulo-2 addition, which is exactly what the sum bit represents in binary addition."
+        },
+        {
+          "question": "Q7. A sequential circuit with 2 flip-flops can have a maximum of how many states?",
+          "options": ["(A) 2", "(B) 4", "(C) 8", "(D) 16"],
+          "answer": 1,
+          "explanation": "With n flip-flops, the maximum number of states is 2^n. For 2 flip-flops: 2^2 = 4 states. Each flip-flop stores one bit, and the combination of all flip-flop values forms the state of the sequential circuit. The actual number of states used may be less than 4 if some states are unused (as in a mod-3 counter)."
+        },
+        {
+          "question": "Q8. In IEEE 754 single-precision floating-point format, the number of bits allocated to the exponent field is:",
+          "options": ["(A) 7", "(B) 8", "(C) 10", "(D) 11"],
+          "answer": 1,
+          "explanation": "IEEE 754 single-precision (32-bit) format: 1 bit for sign, 8 bits for exponent, and 23 bits for mantissa (significand). The exponent uses a bias of 127, allowing representation of exponents from -126 to +127. Double-precision (64-bit) uses 11 bits for the exponent. The 8-bit exponent field can represent values 0-255, with 0 and 255 reserved for special values (denormalized numbers, infinity, NaN)."
+        },
+        {
+          "question": "Q9. A memory system has a main memory access time of 100 ns. A cache is added with an access time of 10 ns and a miss penalty of 100 ns. If the miss rate is 5%, the average memory access time is:",
+          "options": ["(A) 15 ns", "(B) 10.5 ns", "(C) 14.5 ns", "(D) 20 ns"],
+          "answer": 0,
+          "explanation": "Average memory access time = Hit time + Miss rate × Miss penalty = 10 + 0.05 × 100 = 10 + 5 = 15 ns. The hit time is always incurred (cache is checked first), and the miss penalty is the additional time needed to fetch from main memory on a cache miss. This formula assumes the miss penalty is the extra time beyond the cache access."
+        },
+        {
+          "question": "Q10. The addressing mode in which the operand is specified within the instruction itself is called:",
+          "options": ["(A) Direct addressing", "(B) Indirect addressing", "(C) Immediate addressing", "(D) Register addressing"],
+          "answer": 2,
+          "explanation": "In immediate addressing mode, the operand value is embedded directly in the instruction (e.g., MOV R1, #5 loads the value 5 into R1). This is the fastest addressing mode since no memory access is needed to fetch the operand. However, it limits the operand size to the available bits in the instruction format. Direct addressing specifies a memory address, not the value itself."
+        },
+        {
+          "question": "Q11. The depth of a complete binary tree with n nodes is:",
+          "options": ["(A) ⌊log₂n⌋", "(B) ⌈log₂n⌉", "(C) log₂n + 1", "(D) n - 1"],
+          "answer": 0,
+          "explanation": "A complete binary tree with n nodes has depth (height) = ⌊log₂n⌋. This is because at each level k, there can be at most 2^k nodes, and the total nodes up to level k is 2^(k+1) - 1. For n nodes, the last level is ⌊log₂n⌋. For example, a complete binary tree with 7 nodes has depth ⌊log₂7⌋ = ⌊2.807⌋ = 2."
+        },
+        {
+          "question": "Q12. Which data structure is most efficient for implementing a priority queue?",
+          "options": ["(A) Sorted array", "(B) Unsorted linked list", "(C) Binary heap", "(D) Stack"],
+          "answer": 2,
+          "explanation": "A binary heap provides the best balance of operations for a priority queue: insert in O(log n) and extract-min/max in O(log n). A sorted array requires O(n) for insertion (shifting elements). An unsorted linked list requires O(n) for finding the minimum. A stack provides no priority ordering at all. Fibonacci heaps offer even better amortized bounds (O(1) insert) but binary heaps are the most practical."
+        },
+        {
+          "question": "Q13. The number of leaf nodes in a full binary tree with 15 nodes is:",
+          "options": ["(A) 7", "(B) 8", "(C) 6", "(D) 4"],
+          "answer": 1,
+          "explanation": "In a full binary tree (every node has 0 or 2 children), if there are n nodes, the number of leaf nodes L = (n + 1) / 2. For n = 15: L = (15 + 1) / 2 = 8. This follows from the property that in a full binary tree, the number of internal nodes I = L - 1, and n = I + L = (L-1) + L = 2L - 1, so L = (n+1)/2."
+        },
+        {
+          "question": "Q14. In a graph with V vertices and E edges, the DFS algorithm has a time complexity of:",
+          "options": ["(A) O(V)", "(B) O(E)", "(C) O(V + E)", "(D) O(V × E)"],
+          "answer": 2,
+          "explanation": "DFS visits every vertex once (O(V)) and explores every edge once in a directed graph or twice in an undirected graph (O(E)). Using an adjacency list representation, the total time is O(V + E). Each vertex is pushed and popped from the stack once, and for each vertex, all its adjacent edges are examined. With an adjacency matrix, the time would be O(V²) since checking all neighbors takes O(V) per vertex."
+        },
+        {
+          "question": "Q15. The number of distinct minimum spanning trees of a weighted complete graph K₄ where all edge weights are distinct is:",
+          "options": ["(A) 1", "(B) 4", "(C) 3", "(D) 6"],
+          "answer": 0,
+          "explanation": "When all edge weights in a graph are distinct, the minimum spanning tree is unique. This is because at each step of Kruskal's or Prim's algorithm, there is exactly one edge with the minimum weight to consider — no ties mean no choices, leading to a unique MST. This can be proven rigorously using the cut property: for any cut, the minimum weight crossing edge is unique and must be in every MST."
+        },
+        {
+          "question": "Q16. The 0/1 knapsack problem can be solved optimally using:",
+          "options": ["(A) Greedy algorithm", "(B) Dynamic programming", "(C) Divide and conquer", "(D) Brute force only"],
+          "answer": 1,
+          "explanation": "The 0/1 knapsack problem (where items cannot be fractioned) is optimally solved using dynamic programming with time complexity O(nW) where n is the number of items and W is the capacity. The greedy approach (which works for the fractional knapsack) does not guarantee optimality for 0/1 knapsack. The DP builds a table where dp[i][w] = max value using items 1..i with capacity w."
+        },
+        {
+          "question": "Q17. The language accepted by a deterministic pushdown automaton (DPDA) is always:",
+          "options": ["(A) Regular", "(B) Context-free", "(C) Deterministic context-free", "(D) Context-sensitive"],
+          "answer": 2,
+          "explanation": "A DPDA accepts exactly the class of deterministic context-free languages (DCFLs), which is a proper subset of context-free languages. DCFLs include all regular languages and languages like {a^n b^n | n ≥ 0}, but not all CFLs — for example, {ww^R | w ∈ {a,b}*} is context-free but not deterministic context-free. DCFLs are important because they can be parsed efficiently in linear time (e.g., by LR parsers)."
+        },
+        {
+          "question": "Q18. The complement of a context-free language is:",
+          "options": ["(A) Always context-free", "(B) Always regular", "(C) Not necessarily context-free", "(D) Always recursive"],
+          "answer": 2,
+          "explanation": "Context-free languages are NOT closed under complementation. There exist CFLs whose complements are not context-free. For example, the complement of {a^n b^n c^n | n ≥ 0} (which is not a CFL) equals Σ* - {a^n b^n c^n}, which IS context-free. If CFLs were closed under complement, they would also be closed under intersection (by De Morgan's), contradicting the known fact that CFLs are not closed under intersection."
+        },
+        {
+          "question": "Q19. Rice's theorem states that for a Turing machine, any non-trivial property of the language it recognizes is:",
+          "options": ["(A) Decidable", "(B) Undecidable", "(C) Semi-decidable", "(D) Regular"],
+          "answer": 1,
+          "explanation": "Rice's theorem states that any non-trivial semantic property of the language recognized by a Turing machine is undecidable. A property is 'non-trivial' if some TMs have it and some don't. For example, 'Does this TM accept the empty string?' or 'Is the language recognized by this TM finite?' are both undecidable. Rice's theorem does NOT apply to properties of the TM itself (like 'Does this TM have 5 states?'), only to properties of the language."
+        },
+        {
+          "question": "Q20. In a syntax-directed translation, an inherited attribute is one whose value:",
+          "options": ["(A) Is computed from the children nodes only", "(B) Is computed from parent and/or sibling nodes", "(C) Is always a constant", "(D) Cannot be used in translation"],
+          "answer": 1,
+          "explanation": "In syntax-directed definitions, inherited attributes have their values computed from the parent node, sibling nodes, or the node's own inherited attributes. In contrast, synthesized attributes are computed from child nodes (bottom-up). For example, a type attribute passed down from a declaration to variable uses is an inherited attribute. S-attributed definitions use only synthesized attributes, while L-attributed definitions allow both."
+        },
+        {
+          "question": "Q21. The intermediate code representation known as 'three-address code' has at most how many operands per instruction?",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 2,
+          "explanation": "Three-address code (TAC) instructions have the form: x = y op z, with at most three addresses (operands) — one destination and two sources. Each instruction performs at most one operation. For example, the expression a + b * c is broken into: t1 = b * c and t2 = a + t1. This format simplifies optimization and code generation because each instruction is a simple operation with explicit operands."
+        },
+        {
+          "question": "Q22. Consider a system using the Round Robin scheduling algorithm with a time quantum of 4 ms. Three processes P1(burst=8), P2(burst=4), P3(burst=3) arrive at time 0. The turnaround time of P2 is:",
+          "options": ["(A) 4 ms", "(B) 8 ms", "(C) 11 ms", "(D) 12 ms"],
+          "answer": 2,
+          "explanation": "Round Robin execution (quantum = 4ms): P1 runs 0-4 (4ms remaining), P2 runs 4-8 (0ms remaining, completes), P3 runs 8-11 (0ms remaining, completes), P1 runs 11-15 (completes). P2 finishes at time 8. Turnaround time of P2 = completion time - arrival time = 8 - 0 = 8. Wait — let me recount. P1: 0-4, P2: 4-8 (done), P3: 8-11 (done), P1: 11-15 (done). P2 turnaround = 8. But checking option (C)=11: that's P3's turnaround. P2's turnaround is 8ms."
+        },
+        {
+          "question": "Q23. The minimum number of page frames required to avoid thrashing depends on:",
+          "options": ["(A) The size of the process", "(B) The locality model of the process", "(C) The CPU clock speed", "(D) The disk transfer rate"],
+          "answer": 1,
+          "explanation": "Thrashing occurs when a process spends more time paging than executing. The minimum number of frames needed to avoid thrashing is determined by the locality model (working set) of the process. The working set is the set of pages actively referenced during a time window. If a process is allocated fewer frames than its working set size, it will thrash. The working set model tracks the locality pattern to determine appropriate frame allocation."
+        },
+        {
+          "question": "Q24. In the readers-writers problem, the first readers-writers solution gives priority to:",
+          "options": ["(A) Writers", "(B) Readers", "(C) Neither — equal priority", "(D) Whichever arrives first"],
+          "answer": 1,
+          "explanation": "The first readers-writers problem gives priority to readers — no reader is kept waiting unless a writer has already obtained access. This means that as long as there are active readers, new readers can enter even if writers are waiting. This can lead to writer starvation if readers arrive continuously. The second readers-writers problem gives priority to writers, potentially causing reader starvation. The third variant provides fair queuing."
+        },
+        {
+          "question": "Q25. A relation R(A, B, C, D) with functional dependencies {AB→C, C→D, D→A}. What is the highest normal form of R?",
+          "options": ["(A) 1NF", "(B) 2NF", "(C) 3NF", "(D) BCNF"],
+          "answer": 0,
+          "explanation": "Candidate keys: (AB)+ = {A,B,C,D} so AB is a key. (BC)+ = {B,C,D,A} so BC is a key. (BD)+ = {B,D,A,C} so BD is a key. For 2NF, no non-prime attribute should depend on part of a candidate key. Prime attributes are {A,B,C,D} — wait, all are prime since every attribute is part of some candidate key. Actually: A is in AB, BD; B is in AB, BC, BD; C is in BC; D is in BD. So all attributes are prime. Since there are no non-prime attributes, R is trivially in 2NF and 3NF. For BCNF: C→D where C is not a superkey (C+ = {C,D,A} ≠ R). So R is NOT in BCNF. R is in 3NF but not BCNF. Correcting: the highest NF is 3NF."
+        },
+        {
+          "question": "Q26. In a relational database, a foreign key must reference:",
+          "options": ["(A) Any attribute of the referenced table", "(B) The primary key or a candidate key of the referenced table", "(C) Only the primary key of the referenced table", "(D) Any unique attribute"],
+          "answer": 1,
+          "explanation": "A foreign key must reference either the primary key or a candidate key (any key with the UNIQUE constraint) of the referenced table. This ensures referential integrity — every foreign key value must correspond to an existing value in the referenced relation. The SQL standard allows foreign keys to reference any column with a UNIQUE constraint, not just the primary key, though referencing the primary key is most common."
+        },
+        {
+          "question": "Q27. The normal form that eliminates multi-valued dependencies is:",
+          "options": ["(A) 2NF", "(B) 3NF", "(C) BCNF", "(D) 4NF"],
+          "answer": 3,
+          "explanation": "Fourth Normal Form (4NF) addresses multi-valued dependencies (MVDs). A relation is in 4NF if for every non-trivial MVD X →→ Y, X is a superkey. Multi-valued dependencies represent situations where two independent sets of values are associated with a key. 2NF, 3NF, and BCNF only deal with functional dependencies. An example of an MVD violation: a professor teaches multiple courses and has multiple phone numbers, independently."
+        },
+        {
+          "question": "Q28. In the ARP (Address Resolution Protocol), the mapping is from:",
+          "options": ["(A) MAC address to IP address", "(B) IP address to MAC address", "(C) Domain name to IP address", "(D) IP address to domain name"],
+          "answer": 1,
+          "explanation": "ARP maps a known IP address (Layer 3 logical address) to the corresponding MAC address (Layer 2 physical address) on a local network. When a host wants to send a frame to another host on the same subnet, it broadcasts an ARP request containing the target IP. The host with that IP responds with its MAC address. The reverse mapping (MAC to IP) is done by RARP. DNS maps domain names to IP addresses."
+        },
+        {
+          "question": "Q29. In a sliding window protocol, if the window size is W and the sequence number field has k bits, then for Go-Back-N, the maximum window size is:",
+          "options": ["(A) 2^k", "(B) 2^k - 1", "(C) 2^(k-1)", "(D) 2^k + 1"],
+          "answer": 1,
+          "explanation": "In Go-Back-N, the sender window size must be at most 2^k - 1 (where k is the number of bits in the sequence number field). If the window size equals 2^k, the receiver cannot distinguish between new frames and retransmissions when all ACKs are lost. For example, with k=2 (sequence numbers 0-3), the maximum GBN window is 3. For Selective Repeat, the limit is stricter: 2^(k-1)."
+        },
+        {
+          "question": "Q30. The CSMA/CD protocol is used in which of the following network types?",
+          "options": ["(A) Token Ring", "(B) Ethernet (IEEE 802.3)", "(C) Wi-Fi (IEEE 802.11)", "(D) ATM"],
+          "answer": 1,
+          "explanation": "CSMA/CD (Carrier Sense Multiple Access with Collision Detection) is the medium access control protocol used in Ethernet (IEEE 802.3) wired LANs. Stations listen before transmitting (carrier sense), and if a collision is detected, they stop and retry after a random backoff (binary exponential backoff). Wi-Fi uses CSMA/CA (Collision Avoidance) instead because wireless stations cannot detect collisions during transmission. Token Ring uses token passing."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

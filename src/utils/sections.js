@@ -14,5 +14,6 @@ export const SECTIONS = [
   'Artificial Intelligence',
   'Quick Revision',
   'Test Series',
+  'GATE Previous Years',
   'Problem Solving',
 ]

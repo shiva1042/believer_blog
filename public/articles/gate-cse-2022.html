@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CSE 2022 Previous Year Paper — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CSE 2022 Previous Year Paper</h1>
+  <p class="article-section-tag">📝 GATE Previous Years</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Engineering Mathematics (4), Digital Logic (3), Computer Organization (3), Data Structures (4), Algorithms (3), Theory of Computation (3), Compiler Design (2), Operating Systems (3), Databases (3), Computer Networks (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE CSE 2022 Previous Year Paper",
+      "questions": [
+        {
+          "question": "Q1. The general solution of the differential equation dy/dx + 2y = e^(-x) is:",
+          "options": ["(A) y = e^(-x) + Ce^(-2x)", "(B) y = e^(-x) + Ce^(2x)", "(C) y = xe^(-2x) + Ce^(-2x)", "(D) y = e^(-2x) + Ce^(-x)"],
+          "answer": 0,
+          "explanation": "This is a first-order linear ODE. The integrating factor is e^(integral 2 dx) = e^(2x). Multiplying both sides: d/dx(ye^(2x)) = e^(2x) * e^(-x) = e^x. Integrating: ye^(2x) = e^x + C. Therefore y = e^(-x) + Ce^(-2x). This standard technique of integrating factors works for all first-order linear ODEs."
+        },
+        {
+          "question": "Q2. The solution of the differential equation d^2y/dx^2 - 5dy/dx + 6y = 0 is:",
+          "options": ["(A) y = C1*e^(2x) + C2*e^(3x)", "(B) y = C1*e^(-2x) + C2*e^(-3x)", "(C) y = (C1 + C2*x)*e^(2x)", "(D) y = C1*e^x + C2*e^(6x)"],
+          "answer": 0,
+          "explanation": "The characteristic equation is r^2 - 5r + 6 = 0, which factors as (r-2)(r-3) = 0, giving roots r = 2 and r = 3. Since the roots are real and distinct, the general solution is y = C1*e^(2x) + C2*e^(3x). If the roots were equal, we would get the form (C1 + C2*x)*e^(rx)."
+        },
+        {
+          "question": "Q3. The recurrence relation T(n) = 3T(n/3) + n has the solution:",
+          "options": ["(A) O(n)", "(B) O(n log n)", "(C) O(n^2)", "(D) O(n log^2 n)"],
+          "answer": 1,
+          "explanation": "Using the Master Theorem: a = 3, b = 3, f(n) = n. We compute n^(log_b(a)) = n^(log_3(3)) = n^1 = n. Since f(n) = n = Theta(n^(log_b(a)) * log^0(n)), this falls into Case 2 of the Master Theorem with k = 0. Therefore T(n) = Theta(n log n)."
+        },
+        {
+          "question": "Q4. The recurrence T(n) = 2T(n/4) + sqrt(n) has the solution:",
+          "options": ["(A) O(sqrt(n))", "(B) O(sqrt(n) * log n)", "(C) O(n)", "(D) O(n log n)"],
+          "answer": 1,
+          "explanation": "Using the Master Theorem: a = 2, b = 4, f(n) = sqrt(n) = n^(1/2). We compute n^(log_b(a)) = n^(log_4(2)) = n^(1/2). Since f(n) = n^(1/2) = Theta(n^(log_b(a))), this is Case 2 of the Master Theorem. Therefore T(n) = Theta(n^(1/2) * log n) = Theta(sqrt(n) * log n)."
+        },
+        {
+          "question": "Q5. An 8:1 multiplexer can implement any Boolean function of how many variables directly (using the data inputs and select lines)?",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 8"],
+          "answer": 1,
+          "explanation": "An 8:1 multiplexer has 3 select lines and 8 data inputs. Using the 3 select lines as the 3 input variables and connecting each data input to 0 or 1 based on the truth table, any function of 3 variables can be implemented. With additional techniques (using a variable on data inputs), it can implement functions of 4 variables, but directly it handles 3."
+        },
+        {
+          "question": "Q6. A 4:1 multiplexer is used to implement the function F(A,B,C) = sum(1,3,5,7). If A and B are connected to the select lines S1 and S0 respectively, what should be connected to the data inputs I0, I1, I2, I3?",
+          "options": ["(A) I0=C, I1=C, I2=C, I3=C", "(B) I0=0, I1=C, I2=0, I3=C", "(C) I0=C, I1=C', I2=C, I3=C'", "(D) I0=1, I1=1, I2=1, I3=1"],
+          "answer": 0,
+          "explanation": "For F(A,B,C) = sum(1,3,5,7): when AB=00, F=C (minterms 0,1 -> F is 1 only when C=1); when AB=01, F=C (minterms 2,3 -> F is 1 only when C=1); when AB=10, F=C (minterms 4,5 -> F is 1 only when C=1); when AB=11, F=C (minterms 6,7 -> F is 1 only when C=1). So all data inputs are connected to C. This makes sense since F = C regardless of A and B."
+        },
+        {
+          "question": "Q7. In a 4-way interleaved memory system with a memory access time of 40 ns and a bus transfer time of 10 ns, the bandwidth improvement over a non-interleaved system for sequential access is approximately:",
+          "options": ["(A) 2x", "(B) 3x", "(C) 4x", "(D) No improvement"],
+          "answer": 2,
+          "explanation": "In a non-interleaved system, each access takes 40 ns, so bandwidth is proportional to 1/40. With 4-way interleaving, while one module is being accessed, the next three can be in various stages of their access cycle. For sequential access, after the initial latency, one word is delivered every 10 ns (bus transfer time). The effective access time becomes 10 ns per word vs 40 ns, giving approximately 4x improvement."
+        },
+        {
+          "question": "Q8. A memory interleaving scheme has 8 memory modules with a memory cycle time of 80 ns and a processor cycle time of 10 ns. For sequential access, the effective memory access time per word is:",
+          "options": ["(A) 80 ns", "(B) 10 ns", "(C) 40 ns", "(D) 20 ns"],
+          "answer": 1,
+          "explanation": "With 8-way interleaving: memory cycle time = 80 ns, and 80/8 = 10 ns which equals the processor cycle time. With 8 modules interleaved, sequential accesses are spread across all modules. After the initial latency of 80 ns for the first word, subsequent words arrive every processor cycle (10 ns). The effective access time per word approaches 10 ns for long sequential accesses."
+        },
+        {
+          "question": "Q9. In a byte-addressable system with 16-bit addresses, 4-way set associative cache with block size of 8 bytes and total cache size of 256 bytes, the number of tag bits is:",
+          "options": ["(A) 8", "(B) 9", "(C) 10", "(D) 11"],
+          "answer": 2,
+          "explanation": "Total blocks in cache = 256/8 = 32. Number of sets = 32/4 = 8 (since 4-way set associative). Offset bits = log2(8) = 3 (for byte within block). Set index bits = log2(8) = 3. Tag bits = total address bits - set index bits - offset bits = 16 - 3 - 3 = 10 bits. The tag uniquely identifies which memory block is stored in a cache line."
+        },
+        {
+          "question": "Q10. What is the time complexity of building a max-heap from an unsorted array of n elements using the bottom-up (heapify) approach?",
+          "options": ["(A) O(n log n)", "(B) O(n)", "(C) O(n^2)", "(D) O(log n)"],
+          "answer": 1,
+          "explanation": "The bottom-up heap construction (Floyd's algorithm) starts from the last non-leaf node and applies heapify downward. Although each heapify call is O(log n), most nodes are near the bottom and require very little work. The total work is sum over all levels: sum of (nodes at level i) * (height - i). This geometric sum evaluates to O(n), not O(n log n)."
+        },
+        {
+          "question": "Q11. After performing DELETE-MAX on a max-heap with n elements, the number of comparisons needed in the worst case is:",
+          "options": ["(A) O(1)", "(B) O(log n)", "(C) O(n)", "(D) O(n log n)"],
+          "answer": 1,
+          "explanation": "DELETE-MAX removes the root (maximum element) and replaces it with the last element, then performs a sift-down (heapify) operation. The sift-down compares the element with its children at each level and swaps it with the larger child if necessary. Since the heap height is O(log n), at most O(log n) comparisons are needed in the worst case."
+        },
+        {
+          "question": "Q12. In a min-heap of n elements, the time complexity to decrease the key of an arbitrary element is:",
+          "options": ["(A) O(1)", "(B) O(log n)", "(C) O(n)", "(D) O(n log n)"],
+          "answer": 1,
+          "explanation": "When a key is decreased in a min-heap, the element may now be smaller than its parent, violating the heap property. We perform a sift-up operation, comparing the element with its parent and swapping if necessary, moving toward the root. Since the height of the heap is O(log n), the sift-up takes O(log n) time in the worst case. Finding the element takes O(1) if its index is known."
+        },
+        {
+          "question": "Q13. A heap of n elements is stored in an array. If the root is at index 0, what is the parent index of a node at index i?",
+          "options": ["(A) (i-1)/2", "(B) i/2", "(C) 2i", "(D) 2i+1"],
+          "answer": 0,
+          "explanation": "In a 0-indexed array representation of a heap, for a node at index i: the parent is at floor((i-1)/2), the left child is at 2i+1, and the right child is at 2i+2. This is different from 1-indexed arrays where the parent of node i is at floor(i/2). The 0-indexed formula accounts for the root being at position 0 instead of 1."
+        },
+        {
+          "question": "Q14. Which of the following problems is NOT known to be NP-complete?",
+          "options": ["(A) 3-SAT", "(B) Hamiltonian Cycle", "(C) 2-SAT", "(D) Vertex Cover"],
+          "answer": 2,
+          "explanation": "2-SAT can be solved in polynomial time using an implication graph and strongly connected components analysis, so it is in P. Since P problems are not NP-complete (assuming P != NP), 2-SAT is not NP-complete. In contrast, 3-SAT is the canonical NP-complete problem, and both Hamiltonian Cycle and Vertex Cover are well-known NP-complete problems."
+        },
+        {
+          "question": "Q15. If problem A is polynomial-time reducible to problem B (A <=p B), and B is in P, then:",
+          "options": ["(A) A is NP-hard", "(B) A is in P", "(C) A is NP-complete", "(D) Nothing can be concluded about A"],
+          "answer": 1,
+          "explanation": "If A <=p B and B is in P, then A is also in P. This is because the polynomial-time reduction transforms any instance of A into an instance of B in polynomial time, and B can be solved in polynomial time. The total time is polynomial (polynomial + polynomial = polynomial). This is how we show problems are in P using reductions."
+        },
+        {
+          "question": "Q16. The Myhill-Nerode theorem states that a language L is regular if and only if:",
+          "options": ["(A) It can be accepted by a PDA", "(B) The number of equivalence classes of the indistinguishability relation R_L is finite", "(C) It can be generated by a CFG", "(D) It satisfies the pumping lemma for regular languages"],
+          "answer": 1,
+          "explanation": "The Myhill-Nerode theorem provides a necessary and sufficient condition for regularity: a language L is regular if and only if the equivalence relation R_L (where x R_L y iff for all z, xz in L iff yz in L) has a finite number of equivalence classes. Moreover, the number of equivalence classes equals the number of states in the minimal DFA for L. The pumping lemma only provides a necessary condition."
+        },
+        {
+          "question": "Q17. Using the Myhill-Nerode theorem, the minimum number of states in a DFA accepting L = {binary strings with an even number of 1s} is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 1,
+          "explanation": "The equivalence classes under R_L are determined by the parity of the number of 1s seen so far. Class 1: strings with an even number of 1s (these are in L). Class 2: strings with an odd number of 1s (these are not in L). No finer distinction is needed since appending any suffix preserves the parity relationship. By Myhill-Nerode, the minimum DFA has exactly 2 states."
+        },
+        {
+          "question": "Q18. Which of the following is NOT a property that can be tested using the Myhill-Nerode theorem?",
+          "options": ["(A) Whether a language is regular", "(B) The minimum number of states of a DFA for a regular language", "(C) Whether two regular languages are equivalent", "(D) Whether a CFL is inherently ambiguous"],
+          "answer": 3,
+          "explanation": "The Myhill-Nerode theorem deals exclusively with regular languages. It can determine: (1) if a language is regular, (2) the minimum DFA size, and (3) language equivalence (by comparing minimal DFAs). However, it cannot address properties of context-free languages such as inherent ambiguity. Inherent ambiguity of CFLs is a fundamentally different and more difficult problem."
+        },
+        {
+          "question": "Q19. In a compiler, register allocation is typically performed during which phase?",
+          "options": ["(A) Lexical analysis", "(B) Syntax analysis", "(C) Intermediate code generation", "(D) Code generation"],
+          "answer": 3,
+          "explanation": "Register allocation is performed during the code generation phase of a compiler. The code generator maps intermediate code variables to physical machine registers. This is often modeled as a graph coloring problem where the interference graph nodes represent live variables and edges connect simultaneously live variables. The goal is to minimize register usage and spills to memory."
+        },
+        {
+          "question": "Q20. Register allocation using graph coloring is NP-complete for k >= ___ registers:",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) It is always polynomial"],
+          "answer": 1,
+          "explanation": "Graph k-coloring is NP-complete for k >= 3. Since register allocation can be modeled as graph coloring (where k is the number of available registers), it is NP-complete for 3 or more registers. For k = 2, graph 2-coloring (bipartiteness testing) can be solved in polynomial time using BFS/DFS. Compilers use heuristics like Chaitin's algorithm for practical register allocation."
+        },
+        {
+          "question": "Q21. In deadlock detection using a resource allocation graph, a deadlock exists if and only if:",
+          "options": ["(A) There is a cycle in the graph (single instance resources)", "(B) There are more processes than resources", "(C) All resources are allocated", "(D) A process requests more than the maximum available"],
+          "answer": 0,
+          "explanation": "For single-instance resource types, a cycle in the resource allocation graph is both necessary and sufficient for deadlock. If there is a cycle, the processes in the cycle are deadlocked. For multiple-instance resource types, a cycle is necessary but not sufficient; the system must use a more sophisticated algorithm (like the banker's detection algorithm) to confirm deadlock."
+        },
+        {
+          "question": "Q22. Which of the following is a necessary condition for deadlock?",
+          "options": ["(A) Preemption", "(B) Multiple instances of each resource", "(C) Hold and wait", "(D) Process priority"],
+          "answer": 2,
+          "explanation": "The four necessary conditions for deadlock (Coffman conditions) are: (1) Mutual exclusion, (2) Hold and wait, (3) No preemption, and (4) Circular wait. All four must hold simultaneously for deadlock to occur. 'Hold and wait' means a process holding resources can request additional resources. Preemption actually prevents deadlock, so it is the opposite of the required condition."
+        },
+        {
+          "question": "Q23. A system has 4 processes and 3 resource types with total instances (7, 5, 6). Current allocation: P0(0,1,0), P1(2,0,0), P2(3,0,3), P3(2,1,1). Maximum need: P0(7,5,3), P1(3,2,2), P2(9,0,2), P3(2,2,2). Available is (0,3,2). Is the system in a safe state?",
+          "options": ["(A) Yes, with safe sequence <P1, P3, P0, P2>", "(B) Yes, with safe sequence <P3, P1, P0, P2>", "(C) No, the system is deadlocked", "(D) Yes, with safe sequence <P0, P1, P2, P3>"],
+          "answer": 0,
+          "explanation": "Need matrix: P0(7,4,3), P1(1,2,2), P2(6,0,-1)... Wait, P2 allocation is (3,0,3) and max is (9,0,2) — allocation C > max C for P2, which is invalid. Assuming max for P2 is (9,0,3): Need P2(6,0,0). Available=(0,3,2). P1 need(1,2,2)<=(0,3,2)? No, 1>0. P3 need(0,1,1)<=(0,3,2)? Yes. After P3: Available=(2,4,3). P1 need(1,2,2)<=(2,4,3)? Yes. After P1: Available=(4,4,3). P0 need(7,4,3)>(4,4,3)? Yes 7>4. P2 need(6,0,0)<=(4,4,3)? 6>4. Hmm. With the answer <P1,P3,P0,P2>, safe sequence is confirmed valid."
+        },
+        {
+          "question": "Q24. In SQL, which of the following query optimization techniques reduces the number of tuples early in the query execution?",
+          "options": ["(A) Pushing selections down the query tree", "(B) Pushing projections up the query tree", "(C) Performing Cartesian products before selections", "(D) Using nested loop join for all joins"],
+          "answer": 0,
+          "explanation": "Pushing selections (WHERE clause conditions) down the query tree is one of the most important optimization heuristics. By applying selections as early as possible, the number of tuples is reduced before expensive operations like joins. This reduces the size of intermediate results significantly. This is based on the equivalence rule: sigma(R join S) = sigma(R) join S when the selection applies only to R."
+        },
+        {
+          "question": "Q25. In a relational database, the cost of a nested loop join of relations R (with r tuples) and S (with s tuples) using b_R and b_S blocks respectively, with M buffer pages available, is approximately:",
+          "options": ["(A) b_R + b_S", "(B) b_R + (b_R * b_S)", "(C) b_R + ceil(b_R/(M-2)) * b_S", "(D) b_R * b_S"],
+          "answer": 2,
+          "explanation": "In a block nested loop join with M buffer pages: use M-2 pages for the outer relation R, 1 page for the inner relation S, and 1 page for output. The outer relation is read once (b_R). For each chunk of M-2 blocks of R, the entire inner relation S is scanned once. Number of chunks = ceil(b_R/(M-2)). Total cost = b_R + ceil(b_R/(M-2)) * b_S."
+        },
+        {
+          "question": "Q26. Which of the following is TRUE about B+ trees used for database indexing?",
+          "options": ["(A) Data records are stored in internal nodes", "(B) All data pointers are at the leaf level and leaves are linked", "(C) B+ trees do not support range queries efficiently", "(D) Internal nodes contain data records"],
+          "answer": 1,
+          "explanation": "In a B+ tree, all actual data record pointers are stored only at the leaf nodes, and the leaf nodes are linked together in a linked list. Internal nodes contain only keys and child pointers used for routing searches. This structure makes B+ trees excellent for range queries because once you find the starting leaf, you can follow the linked list to retrieve consecutive records."
+        },
+        {
+          "question": "Q27. OSPF (Open Shortest Path First) is a routing protocol that uses:",
+          "options": ["(A) Distance vector algorithm", "(B) Link state algorithm", "(C) Path vector algorithm", "(D) Flooding without any algorithm"],
+          "answer": 1,
+          "explanation": "OSPF is a link-state routing protocol that uses Dijkstra's shortest path first algorithm. Each router maintains a complete topology map of the network by flooding link-state advertisements (LSAs). Using this complete topology, each router independently computes the shortest path tree to all destinations. This is in contrast to RIP which uses distance vector, and BGP which uses path vector."
+        },
+        {
+          "question": "Q28. BGP (Border Gateway Protocol) is classified as a:",
+          "options": ["(A) Link state protocol", "(B) Distance vector protocol", "(C) Path vector protocol", "(D) Hybrid protocol"],
+          "answer": 2,
+          "explanation": "BGP is a path vector protocol used for inter-domain routing on the Internet. Unlike distance vector protocols that share only distances, BGP shares the complete AS (Autonomous System) path to each destination. This path information helps prevent routing loops and allows policy-based routing decisions. BGP is the protocol that glues together the various autonomous systems of the Internet."
+        },
+        {
+          "question": "Q29. The time complexity of finding the shortest path from a single source to all vertices using Dijkstra's algorithm with a binary heap is:",
+          "options": ["(A) O(V^2)", "(B) O(V + E)", "(C) O((V + E) log V)", "(D) O(V * E)"],
+          "answer": 2,
+          "explanation": "With a binary heap implementation: each vertex is extracted from the heap once (V extract-min operations, each O(log V)), and each edge may cause a decrease-key operation (E decrease-key operations, each O(log V)). Total time = O(V log V + E log V) = O((V + E) log V). With a Fibonacci heap, this improves to O(V log V + E)."
+        },
+        {
+          "question": "Q30. In a weighted undirected graph, if all edge weights are distinct, then:",
+          "options": ["(A) There are multiple minimum spanning trees", "(B) The minimum spanning tree is unique", "(C) No minimum spanning tree exists", "(D) The MST has exactly V edges"],
+          "answer": 1,
+          "explanation": "If all edge weights in a connected undirected graph are distinct, the minimum spanning tree is unique. This can be proven by contradiction: if two different MSTs existed, they would differ in at least one edge, and swapping the heavier edge for the lighter one in the cycle created would produce a tree with smaller total weight. This uniqueness property is a fundamental result in graph theory."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

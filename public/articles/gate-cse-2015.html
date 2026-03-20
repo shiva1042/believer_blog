@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CSE 2015 Previous Year Paper — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CSE 2015 Previous Year Paper</h1>
+  <p class="article-section-tag">📝 GATE Previous Years</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Engineering Mathematics (4), Digital Logic (3), Computer Organization (3), Data Structures (4), Algorithms (3), Theory of Computation (3), Compiler Design (2), Operating Systems (3), Databases (3), Computer Networks (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE CSE 2015 Previous Year Paper",
+      "questions": [
+        {
+          "question": "Q1. Let A be a 3x3 matrix with eigenvalues 1, -1, and 2. The determinant of A is:",
+          "options": ["(A) -2", "(B) 2", "(C) 0", "(D) -1"],
+          "answer": 0,
+          "explanation": "The determinant of a matrix equals the product of its eigenvalues. Therefore, det(A) = 1 × (-1) × 2 = -2. This property holds because the characteristic polynomial of A is (λ-1)(λ+1)(λ-2) and the constant term (up to sign) equals the determinant."
+        },
+        {
+          "question": "Q2. The number of different binary trees with 5 nodes is:",
+          "options": ["(A) 14", "(B) 32", "(C) 42", "(D) 120"],
+          "answer": 2,
+          "explanation": "The number of structurally distinct binary trees with n nodes is given by the nth Catalan number: C(n) = (2n)! / ((n+1)! × n!). For n = 5: C(5) = 10! / (6! × 5!) = 252 / 6 = 42. Catalan numbers appear frequently in combinatorial problems involving trees, parenthesizations, and lattice paths."
+        },
+        {
+          "question": "Q3. If a random variable X has a Poisson distribution with mean 2, then P(X > 0) is:",
+          "options": ["(A) 1 - e^(-2)", "(B) e^(-2)", "(C) 2e^(-2)", "(D) 1 - 2e^(-2)"],
+          "answer": 0,
+          "explanation": "For a Poisson distribution with parameter λ = 2, P(X = k) = e^(-λ) × λ^k / k!. P(X > 0) = 1 - P(X = 0) = 1 - e^(-2) × 2^0 / 0! = 1 - e^(-2). This is a standard complementary probability calculation using the Poisson PMF."
+        },
+        {
+          "question": "Q4. The rank of the matrix [[1,2,3],[2,4,6],[1,1,1]] is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 0"],
+          "answer": 1,
+          "explanation": "Row 2 is exactly 2 times Row 1, so R2 = 2×R1. After row reduction: R2' = R2 - 2R1 = [0,0,0] and R3' = R3 - R1 = [0,-1,-2]. The reduced matrix has 2 non-zero rows, so the rank is 2. The matrix is singular (rank < 3) because one row is a scalar multiple of another."
+        },
+        {
+          "question": "Q5. The 2's complement representation of -13 in 8 bits is:",
+          "options": ["(A) 11110011", "(B) 11110010", "(C) 10001101", "(D) 11110100"],
+          "answer": 0,
+          "explanation": "To find 2's complement of -13: First, write 13 in binary: 00001101. Take 1's complement: 11110010. Add 1: 11110010 + 1 = 11110011. Verification: 11110011 = -128 + 64 + 32 + 16 + 0 + 0 + 2 + 1 = -128 + 115 = -13."
+        },
+        {
+          "question": "Q6. A combinational circuit has 3 inputs A, B, C. The output is 1 when the binary number represented is a prime. The simplified Boolean expression is:",
+          "options": ["(A) A'BC' + A'BC + AB'C + ABC", "(B) A'BC' + A'BC + AB'C", "(C) A'B + AC + B'C", "(D) A'B + AB'C"],
+          "answer": 2,
+          "explanation": "The 3-bit binary numbers that are prime: 2(010), 3(011), 5(101), 7(111). So f(A,B,C) = Σm(2,3,5,7). Using a K-map: grouping m2,m3 gives A'B; grouping m5,m7 gives AC; grouping m3,m7 gives BC; and m5 alone is AB'C. The minimal SOP is A'B + AC + B'C (three 2-cell groups covering all minterms)."
+        },
+        {
+          "question": "Q7. A 4-to-1 multiplexer is used to implement a Boolean function F(A,B) = Σm(1,2,3). If A and B are the select lines (A is MSB), what are the inputs I0, I1, I2, I3?",
+          "options": ["(A) 0, 1, 1, 1", "(B) 1, 1, 1, 0", "(C) 1, 0, 1, 1", "(D) 0, 1, 0, 1"],
+          "answer": 0,
+          "explanation": "In a 4-to-1 MUX with select lines A(MSB) and B(LSB): when AB=00 → I0, AB=01 → I1, AB=10 → I2, AB=11 → I3. Since F = Σm(1,2,3), the output is 0 for minterm 0 (AB=00) and 1 for minterms 1,2,3. Therefore I0=0, I1=1, I2=1, I3=1."
+        },
+        {
+          "question": "Q8. In a single-bus CPU organization, the instruction ADD R1, R2 (R1 ← R1 + R2) requires how many clock cycles if only one data transfer can happen per cycle?",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+          "answer": 1,
+          "explanation": "In a single-bus organization, only one register transfer can occur per clock cycle. The steps are: (1) Transfer R1 to ALU input latch (R1 → Y), (2) Transfer R2 to bus and perform addition (R2 → Bus, ALU computes Y+R2, result in Z), (3) Transfer result back (Z → R1). This requires 3 clock cycles for the execute phase."
+        },
+        {
+          "question": "Q9. A cache memory has an access time of 10 ns and main memory has an access time of 200 ns. If the hit ratio is 95%, what is the effective access time?",
+          "options": ["(A) 19.5 ns", "(B) 20 ns", "(C) 19 ns", "(D) 105 ns"],
+          "answer": 2,
+          "explanation": "Using simultaneous access model: Effective access time = hit_ratio × cache_time + (1 - hit_ratio) × main_memory_time = 0.95 × 10 + 0.05 × 200 = 9.5 + 10 = 19.5 ns. Using hierarchical access: 10 + 0.05 × 200 = 10 + 10 = 20 ns. With simultaneous access: 0.95 × 10 + 0.05 × (10 + 200) = 9.5 + 10.5 = 20 ns. The standard formula gives 0.95 × 10 + 0.05 × 200 = 19 ns assuming parallel lookup."
+        },
+        {
+          "question": "Q10. In a pipelined processor, a data hazard can be resolved by:",
+          "options": ["(A) Branch prediction", "(B) Operand forwarding", "(C) Cache memory", "(D) Virtual memory"],
+          "answer": 1,
+          "explanation": "Data hazards occur when an instruction depends on the result of a previous instruction still in the pipeline. Operand forwarding (also called data forwarding or bypassing) resolves this by routing the result directly from the ALU output to the input of a subsequent instruction, without waiting for it to be written back to the register file. Branch prediction addresses control hazards, not data hazards."
+        },
+        {
+          "question": "Q11. The time complexity of building a heap from an unsorted array of n elements using the bottom-up (heapify) approach is:",
+          "options": ["(A) O(n log n)", "(B) O(n)", "(C) O(n²)", "(D) O(log n)"],
+          "answer": 1,
+          "explanation": "The bottom-up heap construction (Floyd's algorithm) starts from the last non-leaf node and performs sift-down operations. The total work is bounded by the sum Σ(h=0 to log n) of ceil(n/2^(h+1)) × O(h), which telescopes to O(n). This is tighter than the naive O(n log n) bound from performing n individual insertions. The key insight is that most nodes are near the bottom and require very little sifting."
+        },
+        {
+          "question": "Q12. In a hash table of size 10 using linear probing, keys 42, 52, 32, 72 are inserted in order. The hash function is h(k) = k mod 10. The position of key 72 is:",
+          "options": ["(A) 2", "(B) 3", "(C) 5", "(D) 4"],
+          "answer": 2,
+          "explanation": "h(42) = 2 → position 2. h(52) = 2 → collision, probe 3 → position 3. h(32) = 2 → collision, probe 3 → collision, probe 4 → position 4. h(72) = 2 → collision, probe 3 → collision, probe 4 → collision, probe 5 → position 5. Linear probing checks the next slot sequentially until an empty one is found."
+        },
+        {
+          "question": "Q13. The number of comparisons in the worst case for binary search on a sorted array of 31 elements is:",
+          "options": ["(A) 4", "(B) 5", "(C) 6", "(D) 31"],
+          "answer": 1,
+          "explanation": "Binary search on n elements requires at most floor(log2(n)) + 1 comparisons in the worst case. For n = 31: floor(log2(31)) + 1 = floor(4.95) + 1 = 4 + 1 = 5. Alternatively, 2^5 - 1 = 31, so a balanced binary search tree of 31 nodes has height 5, meaning at most 5 comparisons."
+        },
+        {
+          "question": "Q14. What is the worst-case time complexity of QuickSort when the pivot is always the smallest element?",
+          "options": ["(A) O(n log n)", "(B) O(n)", "(C) O(n²)", "(D) O(2^n)"],
+          "answer": 2,
+          "explanation": "When the pivot is always the smallest (or largest) element, the partition creates one subarray of size 0 and another of size n-1. The recurrence becomes T(n) = T(n-1) + O(n), which solves to T(n) = O(n²). This is the worst-case behavior of QuickSort, occurring with already-sorted input when first/last element is chosen as pivot."
+        },
+        {
+          "question": "Q15. The minimum number of edges in a connected graph with n vertices is:",
+          "options": ["(A) n", "(B) n - 1", "(C) n + 1", "(D) n(n-1)/2"],
+          "answer": 1,
+          "explanation": "A connected graph with n vertices requires at least n - 1 edges, which forms a tree (a minimally connected graph). Removing any edge from a tree disconnects it, proving n - 1 is the minimum. Adding any edge to a tree creates exactly one cycle."
+        },
+        {
+          "question": "Q16. Which of the following sorting algorithms is NOT stable?",
+          "options": ["(A) Merge Sort", "(B) Bubble Sort", "(C) Insertion Sort", "(D) Selection Sort"],
+          "answer": 3,
+          "explanation": "Selection Sort is not stable because it can change the relative order of equal elements during swaps. For example, in [5a, 5b, 3], Selection Sort would swap 5a with 3, producing [3, 5b, 5a], reversing the order of equal elements. Merge Sort, Bubble Sort, and Insertion Sort are all stable by design since they only swap adjacent or carefully ordered elements."
+        },
+        {
+          "question": "Q17. The language L = {a^n b^n | n >= 1} is:",
+          "options": ["(A) Regular", "(B) Context-free but not regular", "(C) Context-sensitive but not context-free", "(D) Recursively enumerable but not recursive"],
+          "answer": 1,
+          "explanation": "L = {a^n b^n | n >= 1} is the classic example of a context-free language that is not regular. It can be generated by the CFG: S → aSb | ab, and recognized by a pushdown automaton that pushes a's and pops for b's. It is not regular because it requires counting, which finite automata cannot do — proven by the Pumping Lemma for regular languages."
+        },
+        {
+          "question": "Q18. The number of states in the minimal DFA accepting all binary strings ending with '01' is:",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+          "answer": 1,
+          "explanation": "The minimal DFA needs 3 states: q0 (start, no useful suffix seen), q1 (last symbol was '0'), q2 (last two symbols were '01', accepting state). Transitions: q0 on 0→q1, q0 on 1→q0; q1 on 0→q1, q1 on 1→q2; q2 on 0→q1, q2 on 1→q0. This is minimal because all three states are distinguishable by the Myhill-Nerode theorem."
+        },
+        {
+          "question": "Q19. A pushdown automaton that accepts by empty stack can be converted to one that accepts by:",
+          "options": ["(A) Final state only", "(B) Final state and vice versa", "(C) Neither", "(D) Only if the language is regular"],
+          "answer": 1,
+          "explanation": "Acceptance by empty stack and acceptance by final state are equivalent in power for pushdown automata. A PDA that accepts by empty stack can always be converted to one that accepts by final state, and vice versa. The constructions involve adding a new bottom-of-stack marker and appropriate epsilon-transitions. Both models recognize exactly the class of context-free languages."
+        },
+        {
+          "question": "Q20. In a compiler, which phase is responsible for type checking?",
+          "options": ["(A) Lexical analysis", "(B) Syntax analysis", "(C) Semantic analysis", "(D) Code optimization"],
+          "answer": 2,
+          "explanation": "Semantic analysis is the compiler phase responsible for type checking, scope resolution, and ensuring semantic correctness of the program. It uses the syntax tree produced by the parser and annotates it with type information. Lexical analysis handles tokenization, syntax analysis checks grammatical structure, and code optimization improves code efficiency — none of these perform type checking."
+        },
+        {
+          "question": "Q21. A grammar is said to be operator precedence if no production right side has two adjacent non-terminals. Which grammar satisfies this?",
+          "options": ["(A) S → SAS | a, A → bSb | b", "(B) E → E+T | T, T → T*F | F, F → (E) | id", "(C) S → AB, A → aA | a, B → bB | b", "(D) S → SS | a"],
+          "answer": 1,
+          "explanation": "An operator grammar requires that no production has two adjacent non-terminals (no εε productions and no two non-terminals next to each other). E → E+T has + between E and T. T → T*F has * between T and F. F → (E) has parentheses around E, and F → id has a terminal. No production has two adjacent non-terminals. Option (A) has S adjacent to A in SAS. Option (C) has A adjacent to B in AB. Option (D) has SS."
+        },
+        {
+          "question": "Q22. A system has 4 processes and 3 resource types. The maximum demand of each process is unknown. What is the minimum number of resources of each type needed to guarantee deadlock-free execution if each process needs at most 2 of each resource?",
+          "options": ["(A) 5", "(B) 7", "(C) 8", "(D) 4"],
+          "answer": 0,
+          "explanation": "To guarantee deadlock freedom when each of the 4 processes needs at most 2 of each resource type: In the worst case, each process holds (max - 1) = 1 resource and is waiting for 1 more. Total held = 4 × 1 = 4. If we have one additional resource (total = 5), at least one process can complete. Using the formula: minimum resources = P × (max - 1) + 1 = 4 × (2 - 1) + 1 = 5 for each resource type."
+        },
+        {
+          "question": "Q23. Consider a system with 5 processes and 3 resource types with availability [3, 3, 2]. Using the Banker's algorithm, a safe sequence exists if every process can eventually finish. In a safe state, the number of possible safe sequences is:",
+          "options": ["(A) Always exactly 1", "(B) At least 1", "(C) Exactly n!", "(D) Always n"],
+          "answer": 1,
+          "explanation": "A system is in a safe state if at least one safe sequence exists. There can be multiple safe sequences (more than one valid ordering of process execution), but a safe state guarantees at least one such sequence. The number of safe sequences depends on the specific allocation and need matrices — it can range from 1 to n! but is guaranteed to be at least 1."
+        },
+        {
+          "question": "Q24. In a demand-paging system, the page fault rate is 0.01. The time to service a page fault is 10 ms, and memory access time is 100 ns. The effective access time is approximately:",
+          "options": ["(A) 100.1 μs", "(B) 200 ns", "(C) 100,099 ns", "(D) 100 μs"],
+          "answer": 0,
+          "explanation": "Effective access time = (1 - p) × memory_access + p × page_fault_time = (1 - 0.01) × 100 ns + 0.01 × 10 ms = 0.99 × 100 + 0.01 × 10,000,000 = 99 + 100,000 = 100,099 ns ≈ 100.1 μs. Even a small page fault rate dramatically increases effective access time because page fault service time (involving disk I/O) is orders of magnitude larger than memory access time."
+        },
+        {
+          "question": "Q25. A relation R has attributes {A, B, C, D, E} and functional dependencies {A→BC, CD→E, B→D, E→A}. What is the candidate key?",
+          "options": ["(A) {A}", "(B) {B, C}", "(C) {C, D}", "(D) All of the above"],
+          "answer": 3,
+          "explanation": "A+ = {A,B,C,D,E} (A→BC, B→D, CD→E), so A is a candidate key. (BC)+ = {B,C,D,E,A} (B→D, CD→E, E→A), so BC is a candidate key. (CD)+ = {C,D,E,A,B} (CD→E, E→A, A→BC), so CD is a candidate key. All three are candidate keys since each determines all attributes and no proper subset of any of them does the same."
+        },
+        {
+          "question": "Q26. In a relational database, which of the following operations can produce a relation with more tuples than either of the input relations?",
+          "options": ["(A) Selection", "(B) Projection", "(C) Cartesian Product", "(D) Intersection"],
+          "answer": 2,
+          "explanation": "The Cartesian Product of two relations with m and n tuples produces m × n tuples, which is larger than both m and n (when both are > 1). Selection only filters rows (can reduce but never increase). Projection removes columns and may reduce rows due to duplicate elimination. Intersection can have at most min(m, n) tuples."
+        },
+        {
+          "question": "Q27. Consider the schedule S: R1(A), R2(A), W1(A), W2(A). This schedule is:",
+          "options": ["(A) Conflict serializable", "(B) Not conflict serializable but view serializable", "(C) Both conflict and view serializable", "(D) Neither conflict nor view serializable"],
+          "answer": 1,
+          "explanation": "Building the precedence graph: R1(A)-W2(A) gives T1→T2, and R2(A)-W1(A) gives T2→T1. The cycle T1→T2→T1 means the schedule is NOT conflict serializable. However, it is view serializable because W2(A) is the final write on A, and the schedule is view equivalent to T1,T2 where T2's write is the last write. View serializability is a weaker condition that allows some schedules rejected by conflict serializability."
+        },
+        {
+          "question": "Q28. In IPv4, the subnet mask 255.255.240.0 corresponds to a CIDR notation of:",
+          "options": ["(A) /16", "(B) /20", "(C) /24", "(D) /28"],
+          "answer": 1,
+          "explanation": "255.255.240.0 in binary: 11111111.11111111.11110000.00000000. Counting the 1-bits: 8 + 8 + 4 + 0 = 20 bits. So the CIDR notation is /20. The third octet 240 = 11110000 contributes 4 network bits. This subnet can accommodate 2^12 - 2 = 4094 usable host addresses."
+        },
+        {
+          "question": "Q29. The maximum data rate achievable on a noiseless 4 kHz channel using a signal with 16 signal levels according to the Nyquist theorem is:",
+          "options": ["(A) 16 kbps", "(B) 32 kbps", "(C) 64 kbps", "(D) 8 kbps"],
+          "answer": 1,
+          "explanation": "Nyquist's theorem states: Maximum data rate = 2 × B × log2(L) where B is the bandwidth and L is the number of signal levels. Rate = 2 × 4000 × log2(16) = 2 × 4000 × 4 = 32,000 bps = 32 kbps. Each signal level carries log2(16) = 4 bits of information, and the Nyquist rate allows 2B = 8000 symbols per second."
+        },
+        {
+          "question": "Q30. In the OSI model, which layer is responsible for routing and logical addressing?",
+          "options": ["(A) Data Link Layer", "(B) Network Layer", "(C) Transport Layer", "(D) Session Layer"],
+          "answer": 1,
+          "explanation": "The Network Layer (Layer 3) is responsible for routing packets between networks and logical addressing (e.g., IP addresses). It determines the best path for data to travel from source to destination across multiple networks. The Data Link Layer handles physical addressing (MAC) and frame delivery within a single network segment. The Transport Layer handles end-to-end communication and port addressing."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

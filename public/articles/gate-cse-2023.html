@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CSE 2023 Previous Year Paper — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CSE 2023 Previous Year Paper</h1>
+  <p class="article-section-tag">📝 GATE Previous Years</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Engineering Mathematics (4), Digital Logic (3), Computer Organization (3), Data Structures (4), Algorithms (3), Theory of Computation (3), Compiler Design (2), Operating Systems (3), Databases (3), Computer Networks (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE CSE 2023 Previous Year Paper",
+      "questions": [
+        {
+          "question": "Q1. A continuous random variable X follows an exponential distribution with parameter λ = 2. What is P(X > 1)?",
+          "options": ["(A) e^(-2)", "(B) 1 - e^(-2)", "(C) 2e^(-2)", "(D) e^(-1)"],
+          "answer": 0,
+          "explanation": "For an exponential distribution with parameter λ, P(X > x) = e^(-λx). Substituting λ = 2 and x = 1, we get P(X > 1) = e^(-2). The exponential distribution is memoryless, meaning P(X > s+t | X > s) = P(X > t)."
+        },
+        {
+          "question": "Q2. Let X be a discrete random variable following a Poisson distribution with mean 3. The probability P(X = 0) is:",
+          "options": ["(A) e^(-3)", "(B) 3e^(-3)", "(C) 1 - e^(-3)", "(D) e^(-1)"],
+          "answer": 0,
+          "explanation": "For a Poisson distribution with parameter λ, P(X = k) = (λ^k × e^(-λ)) / k!. For k = 0 and λ = 3: P(X = 0) = (3^0 × e^(-3)) / 0! = e^(-3). The Poisson distribution models the number of events in a fixed interval when events occur at a constant average rate."
+        },
+        {
+          "question": "Q3. The variance of the sum of two independent random variables X and Y, where Var(X) = 4 and Var(Y) = 9, is:",
+          "options": ["(A) 5", "(B) 13", "(C) 36", "(D) 6"],
+          "answer": 1,
+          "explanation": "For independent random variables, Var(X + Y) = Var(X) + Var(Y) = 4 + 9 = 13. This property holds because independence implies Cov(X, Y) = 0. If the variables were not independent, we would need to account for the covariance term: Var(X + Y) = Var(X) + Var(Y) + 2Cov(X, Y)."
+        },
+        {
+          "question": "Q4. In a binomial distribution B(n=10, p=0.5), the expected number of successes is:",
+          "options": ["(A) 2.5", "(B) 5", "(C) 10", "(D) 0.5"],
+          "answer": 1,
+          "explanation": "For a binomial distribution B(n, p), the expected value E(X) = np. Here, E(X) = 10 × 0.5 = 5. The variance would be np(1-p) = 10 × 0.5 × 0.5 = 2.5. The binomial distribution models the number of successes in n independent Bernoulli trials."
+        },
+        {
+          "question": "Q5. In a 16-bit ALU, the carry lookahead adder reduces the addition time compared to a ripple carry adder because:",
+          "options": ["(A) It uses fewer gates", "(B) It computes all carry bits simultaneously using generate and propagate signals", "(C) It does not require carry bits", "(D) It uses sequential carry propagation with buffers"],
+          "answer": 1,
+          "explanation": "A carry lookahead adder (CLA) computes carry bits in parallel using generate (G_i = A_i AND B_i) and propagate (P_i = A_i XOR B_i) signals. This allows all carries to be computed in O(log n) time rather than O(n) for a ripple carry adder. The tradeoff is increased hardware complexity for faster computation."
+        },
+        {
+          "question": "Q6. In a 4-bit ALU that supports both addition and subtraction, the subtraction A - B is typically performed by:",
+          "options": ["(A) Using a separate subtraction circuit", "(B) Computing A + (2's complement of B)", "(C) Reversing the bit order of B and adding", "(D) Using a lookup table"],
+          "answer": 1,
+          "explanation": "In most ALU designs, subtraction is implemented by taking the 2's complement of B (inverting all bits and adding 1) and then adding it to A. This is achieved by XORing B with a control signal and setting the carry-in to 1. This approach reuses the addition hardware, reducing circuit complexity."
+        },
+        {
+          "question": "Q7. The condition code flags set by an ALU after computing A - B, where A = 5 and B = 5 (using 8-bit signed representation), are:",
+          "options": ["(A) Z=1, N=0, C=1, V=0", "(B) Z=0, N=0, C=1, V=0", "(C) Z=1, N=1, C=0, V=0", "(D) Z=1, N=0, C=0, V=1"],
+          "answer": 0,
+          "explanation": "Computing 5 - 5 = 0. Zero flag Z = 1 (result is zero). Negative flag N = 0 (result is non-negative). Carry flag C = 1 (no borrow occurred in unsigned subtraction, since A >= B). Overflow flag V = 0 (no signed overflow since both operands have same sign and result is valid)."
+        },
+        {
+          "question": "Q8. In IEEE 754 single-precision floating point, the representation of -0.75 is:",
+          "options": ["(A) 1 01111110 10000000000000000000000", "(B) 0 01111110 10000000000000000000000", "(C) 1 01111111 10000000000000000000000", "(D) 1 01111110 11000000000000000000000"],
+          "answer": 0,
+          "explanation": "Converting -0.75: Sign bit = 1 (negative). 0.75 in binary = 0.11 = 1.1 × 2^(-1). Exponent = -1 + 127 (bias) = 126 = 01111110. Mantissa (stored without leading 1) = 10000000000000000000000. So the representation is 1 01111110 10000000000000000000000."
+        },
+        {
+          "question": "Q9. Adding the IEEE 754 single-precision numbers 1.0 × 2^3 and 1.0 × 2^1 results in:",
+          "options": ["(A) 1.01 × 2^3", "(B) 1.1 × 2^3", "(C) 1.0 × 2^4", "(D) 1.01 × 2^4"],
+          "answer": 0,
+          "explanation": "First align exponents: 1.0 × 2^3 = 1.000 × 2^3 and 1.0 × 2^1 = 0.01 × 2^3 (shift right by 2). Adding: 1.000 + 0.010 = 1.010 × 2^3. No normalization is needed since the result is already in normalized form. The result is 1.01 × 2^3 which equals 10.0 in decimal (8 + 2 = 10)."
+        },
+        {
+          "question": "Q10. In a skip list with n elements, the expected time complexity for search, insert, and delete operations is:",
+          "options": ["(A) O(n)", "(B) O(log n)", "(C) O(n log n)", "(D) O(1)"],
+          "answer": 1,
+          "explanation": "A skip list is a probabilistic data structure that uses multiple levels of linked lists. Each element is promoted to the next level with probability 1/2. The expected number of levels is O(log n), and at each level, we traverse O(1) expected nodes. Thus, all three operations have an expected time complexity of O(log n)."
+        },
+        {
+          "question": "Q11. The maximum number of levels in a skip list with n elements is typically bounded by:",
+          "options": ["(A) O(n)", "(B) O(log n)", "(C) O(sqrt(n))", "(D) O(n^2)"],
+          "answer": 1,
+          "explanation": "In a skip list, each element is promoted with probability p (usually 1/2). The expected maximum level is O(log_{1/p} n) = O(log n). With high probability, the number of levels does not exceed c × log n for a constant c. This logarithmic height is what gives skip lists their efficient O(log n) expected performance."
+        },
+        {
+          "question": "Q12. In a skip list, compared to a balanced BST, which statement is TRUE?",
+          "options": ["(A) Skip lists have better worst-case guarantees", "(B) Skip lists are simpler to implement and use randomization instead of rotations", "(C) Skip lists always use less memory", "(D) Skip lists cannot support range queries"],
+          "answer": 1,
+          "explanation": "Skip lists use randomization (coin flips for level promotion) instead of complex rotation operations used by AVL or Red-Black trees. This makes them significantly simpler to implement. However, their worst case is O(n) though this is extremely unlikely. They use more memory on average due to forward pointers at multiple levels."
+        },
+        {
+          "question": "Q13. A skip list is constructed by inserting elements 3, 6, 7, 9, 12 (in that order) into an initially empty skip list. If element 7 is promoted to level 2 and element 12 is promoted to level 3, how many pointers does the header node have?",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 5"],
+          "answer": 2,
+          "explanation": "The header node must have pointers for every level that exists in the skip list. Since the maximum level is 3 (element 12 is at level 3), the header node needs 3 pointers: one for level 1 (base level), one for level 2, and one for level 3. The header always spans all levels to serve as the entry point for searches."
+        },
+        {
+          "question": "Q14. The N-Queens problem is most efficiently solved using which algorithmic paradigm?",
+          "options": ["(A) Dynamic Programming", "(B) Greedy", "(C) Backtracking", "(D) Divide and Conquer"],
+          "answer": 2,
+          "explanation": "The N-Queens problem is a classic application of backtracking. We place queens column by column, and for each placement, we check if it conflicts with previously placed queens. If a conflict is found, we backtrack and try the next position. Backtracking prunes large portions of the search space, making it much more efficient than brute force."
+        },
+        {
+          "question": "Q15. In the backtracking solution for the subset sum problem, if the current sum exceeds the target, the algorithm:",
+          "options": ["(A) Continues adding elements", "(B) Returns the current subset as the answer", "(C) Prunes the branch and backtracks", "(D) Restarts from the beginning"],
+          "answer": 2,
+          "explanation": "When the current partial sum exceeds the target in the subset sum problem, there is no point exploring further elements (assuming all elements are positive) since adding more will only increase the sum. The algorithm prunes this branch and backtracks to explore other possibilities. This pruning is the key optimization that makes backtracking efficient."
+        },
+        {
+          "question": "Q16. A graph coloring problem is solved using backtracking. For a graph with n vertices and m colors, the worst-case time complexity is:",
+          "options": ["(A) O(n^m)", "(B) O(m^n)", "(C) O(n × m)", "(D) O(2^n)"],
+          "answer": 1,
+          "explanation": "In the graph coloring backtracking algorithm, at each of the n vertices, we try all m possible colors. In the worst case (no pruning), this creates a search tree of depth n with branching factor m, giving O(m^n) time complexity. In practice, constraint checking prunes many branches significantly."
+        },
+        {
+          "question": "Q17. The problem of deciding whether the intersection of two context-free languages is empty is:",
+          "options": ["(A) Decidable", "(B) Undecidable", "(C) Decidable only for deterministic CFLs", "(D) Decidable only for regular languages"],
+          "answer": 1,
+          "explanation": "The emptiness of intersection of two CFLs is undecidable. This can be shown by reduction from the Post Correspondence Problem (PCP). Given a PCP instance, we can construct two CFLs whose intersection is non-empty if and only if the PCP instance has a solution. Since PCP is undecidable, so is this problem."
+        },
+        {
+          "question": "Q18. Whether a context-free grammar generates all strings over its terminal alphabet (universality) is:",
+          "options": ["(A) Decidable", "(B) Undecidable", "(C) Decidable for unambiguous grammars", "(D) Decidable for linear grammars"],
+          "answer": 1,
+          "explanation": "The universality problem for CFGs (does L(G) = Sigma*?) is undecidable. This follows from the fact that the complement of a CFL is not necessarily a CFL, and universality can be reduced to the complement emptiness problem. It can also be proven by reduction from the halting problem of Turing machines."
+        },
+        {
+          "question": "Q19. Which of the following problems is decidable for context-free languages?",
+          "options": ["(A) Is the CFL equal to a given regular language?", "(B) Is the CFL inherently ambiguous?", "(C) Is a given string a member of the CFL?", "(D) Is the complement of the CFL also a CFL?"],
+          "answer": 2,
+          "explanation": "Membership testing for CFLs is decidable. Given a CFG G and a string w, we can decide whether w belongs to L(G) using the CYK algorithm in O(n^3) time where n = |w|. The other three problems are all undecidable for context-free languages: equivalence with a regular language, inherent ambiguity, and closure under complement."
+        },
+        {
+          "question": "Q20. Peephole optimization in a compiler operates on:",
+          "options": ["(A) The abstract syntax tree", "(B) A small sliding window of target machine instructions", "(C) The entire intermediate code at once", "(D) The source code directly"],
+          "answer": 1,
+          "explanation": "Peephole optimization examines a small sliding window (the 'peephole') of consecutive target machine instructions and replaces them with a shorter or faster sequence. Common peephole optimizations include redundant instruction elimination, algebraic simplifications (e.g., x = x + 0), and strength reduction. It is a local optimization technique applied during or after code generation."
+        },
+        {
+          "question": "Q21. Which of the following is NOT a typical peephole optimization?",
+          "options": ["(A) Replacing a multiplication by a power of 2 with a left shift", "(B) Eliminating unreachable code after an unconditional jump", "(C) Loop unrolling across function boundaries", "(D) Removing redundant load/store pairs"],
+          "answer": 2,
+          "explanation": "Loop unrolling across function boundaries is a global optimization technique, not a peephole optimization. Peephole optimizations are strictly local, operating on a small window of consecutive instructions. Replacing multiplication with shifts (strength reduction), removing unreachable code, and eliminating redundant load/store pairs are all classic peephole optimizations."
+        },
+        {
+          "question": "Q22. Thrashing in an operating system occurs when:",
+          "options": ["(A) The CPU utilization is at 100%", "(B) A process spends more time paging than executing", "(C) The disk is full", "(D) Too many processes are in the ready queue"],
+          "answer": 1,
+          "explanation": "Thrashing occurs when a system spends the majority of its time swapping pages in and out of memory rather than executing useful instructions. This happens when processes do not have enough frames to hold their working set, causing continuous page faults. The symptom is high disk I/O with very low CPU utilization."
+        },
+        {
+          "question": "Q23. Which of the following techniques is used to prevent thrashing?",
+          "options": ["(A) Increasing the page size indefinitely", "(B) Working set model", "(C) Using FIFO page replacement", "(D) Disabling virtual memory"],
+          "answer": 1,
+          "explanation": "The working set model tracks the set of pages a process has referenced in its recent window of execution. By ensuring each process has enough frames to hold its working set, the system prevents thrashing. If the sum of all working sets exceeds available memory, processes are suspended. Other approaches include the page fault frequency (PFF) scheme."
+        },
+        {
+          "question": "Q24. In a system experiencing thrashing, which metric best indicates the problem?",
+          "options": ["(A) High CPU utilization with low disk I/O", "(B) Low page fault rate with high CPU utilization", "(C) High page fault rate with low CPU utilization", "(D) Low memory usage with high CPU utilization"],
+          "answer": 2,
+          "explanation": "Thrashing is characterized by an extremely high page fault rate coupled with low CPU utilization. The CPU is idle most of the time waiting for pages to be brought in from disk. The disk is constantly busy handling page faults. This creates a vicious cycle: more page faults lead to more I/O wait, which leads to lower CPU utilization."
+        },
+        {
+          "question": "Q25. In the Two-Phase Locking (2PL) protocol, a transaction:",
+          "options": ["(A) Can acquire and release locks in any order", "(B) Must acquire all locks before releasing any lock", "(C) Has a growing phase where it acquires locks and a shrinking phase where it releases locks", "(D) Does not need locks for read operations"],
+          "answer": 2,
+          "explanation": "In 2PL, a transaction has two phases: a growing phase (where it can acquire but not release locks) and a shrinking phase (where it can release but not acquire locks). The lock point is the moment when the transaction has acquired all its locks. 2PL guarantees serializability but does not prevent deadlocks."
+        },
+        {
+          "question": "Q26. Strict 2PL differs from basic 2PL in that:",
+          "options": ["(A) It does not allow shared locks", "(B) All exclusive locks are held until the transaction commits or aborts", "(C) It prevents starvation", "(D) It does not have a growing phase"],
+          "answer": 1,
+          "explanation": "In Strict 2PL, a transaction holds all its exclusive (write) locks until it commits or aborts, rather than releasing them during a shrinking phase. This prevents cascading rollbacks because no other transaction can read uncommitted data. Strict 2PL is more restrictive than basic 2PL but provides recoverability in addition to serializability."
+        },
+        {
+          "question": "Q27. Under the 2PL protocol, which of the following schedules is NOT possible?",
+          "options": ["(A) A serializable schedule with a deadlock", "(B) A non-serializable schedule", "(C) A schedule with cascading rollbacks (in basic 2PL)", "(D) A schedule where all transactions commit successfully"],
+          "answer": 1,
+          "explanation": "2PL guarantees conflict serializability, so a non-serializable schedule is impossible under 2PL. However, 2PL can still lead to deadlocks (transactions waiting for each other's locks), cascading rollbacks (in basic 2PL, not strict 2PL), and schedules where all transactions commit. The key guarantee of 2PL is serializability."
+        },
+        {
+          "question": "Q28. In the sliding window protocol, if the window size is W and the sequence number space is S, the condition for correctness in Go-Back-N is:",
+          "options": ["(A) W ≤ S", "(B) W ≤ S - 1", "(C) W ≤ S/2", "(D) W = S"],
+          "answer": 1,
+          "explanation": "In Go-Back-N, the sender window size W must satisfy W ≤ S - 1 where S is the total number of sequence numbers. This prevents the receiver from confusing new packets with retransmissions. For example, with 3-bit sequence numbers (S = 8), the maximum window size is 7. In Selective Repeat, the constraint is stricter: W ≤ S/2."
+        },
+        {
+          "question": "Q29. In a sliding window protocol with a window size of 4 and link bandwidth of 1 Mbps, if the propagation delay is 10 ms and frame size is 1000 bits, the link utilization is:",
+          "options": ["(A) 4/21", "(B) 4/20", "(C) 1/21", "(D) 4/41"],
+          "answer": 0,
+          "explanation": "Transmission time T_t = 1000 / 10^6 = 1 ms. Round trip time RTT = 2 × propagation delay = 20 ms. Utilization = W × T_t / (T_t + RTT) = 4 × 1 / (1 + 20) = 4/21. The window size of 4 means the sender can transmit 4 frames before waiting for an acknowledgment, improving utilization over stop-and-wait."
+        },
+        {
+          "question": "Q30. The number of ways to distribute 10 identical balls into 3 distinct boxes such that no box is empty is:",
+          "options": ["(A) C(9,2)", "(B) C(12,2)", "(C) C(10,2)", "(D) 3^10"],
+          "answer": 0,
+          "explanation": "This is a stars and bars problem with the constraint that each box has at least one ball. First place 1 ball in each box (using 3 balls), then distribute the remaining 7 balls into 3 boxes without restriction. The answer is C(7 + 3 - 1, 3 - 1) = C(9, 2) = 36. Alternatively, using the direct formula for positive integer solutions of x1 + x2 + x3 = 10: C(10-1, 3-1) = C(9, 2)."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CSE 2024 Previous Year Paper — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CSE 2024 Previous Year Paper</h1>
+  <p class="article-section-tag">📝 GATE Previous Years</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Engineering Mathematics (4), Digital Logic (3), Computer Organization (3), Data Structures (4), Algorithms (3), Theory of Computation (3), Compiler Design (2), Operating Systems (3), Databases (3), Computer Networks (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE CSE 2024 Previous Year Paper",
+      "questions": [
+        {
+          "question": "Q1. The GCD of 252 and 105 computed using the Euclidean algorithm is:",
+          "options": ["(A) 7", "(B) 21", "(C) 42", "(D) 3"],
+          "answer": 1,
+          "explanation": "Using the Euclidean algorithm: GCD(252, 105) = GCD(105, 252 mod 105) = GCD(105, 42) = GCD(42, 105 mod 42) = GCD(42, 21) = GCD(21, 42 mod 21) = GCD(21, 0) = 21. The algorithm repeatedly replaces the larger number with the remainder until one becomes zero."
+        },
+        {
+          "question": "Q2. If gcd(a, b) = d, then gcd(a/d, b/d) is:",
+          "options": ["(A) d", "(B) 1", "(C) a/d", "(D) b/d"],
+          "answer": 1,
+          "explanation": "If gcd(a, b) = d, then a = d×m and b = d×n where gcd(m, n) = 1. Therefore a/d = m and b/d = n, and gcd(a/d, b/d) = gcd(m, n) = 1. This is a fundamental property of the GCD: dividing both numbers by their GCD always produces two coprime numbers."
+        },
+        {
+          "question": "Q3. The number of positive integers less than or equal to 60 that are coprime to 60 is:",
+          "options": ["(A) 12", "(B) 16", "(C) 20", "(D) 24"],
+          "answer": 1,
+          "explanation": "This is Euler's totient function φ(60). Since 60 = 2^2 × 3 × 5, we get φ(60) = 60 × (1 - 1/2) × (1 - 1/3) × (1 - 1/5) = 60 × 1/2 × 2/3 × 4/5 = 16. Euler's totient function counts integers from 1 to n that share no common factor with n other than 1."
+        },
+        {
+          "question": "Q4. The coefficient of x^5 in the generating function (1 + x + x^2 + x^3 + ...)^3 is:",
+          "options": ["(A) 10", "(B) 15", "(C) 21", "(D) 6"],
+          "answer": 2,
+          "explanation": "The generating function (1 + x + x^2 + ...)^3 = (1/(1-x))^3. The coefficient of x^n in (1/(1-x))^k is C(n+k-1, k-1). For n=5, k=3: C(5+3-1, 3-1) = C(7, 2) = 21. This is equivalent to counting the number of non-negative integer solutions to a + b + c = 5."
+        },
+        {
+          "question": "Q5. A 4-bit magnitude comparator compares two numbers A and B. The output A > B is HIGH when:",
+          "options": ["(A) The most significant differing bit is 1 in A and 0 in B", "(B) All bits of A are 1", "(C) A and B have the same number of 1-bits", "(D) The least significant bit of A is 1"],
+          "answer": 0,
+          "explanation": "A magnitude comparator works by scanning bits from the most significant to least significant. The comparison result is determined by the first (most significant) bit position where A and B differ. If A has a 1 and B has a 0 at that position, then A > B. This is the same principle used in lexicographic ordering of binary strings."
+        },
+        {
+          "question": "Q6. A 4-bit comparator circuit that checks equality A = B can be implemented using:",
+          "options": ["(A) 4 AND gates", "(B) 4 XNOR gates and a 4-input AND gate", "(C) 4 OR gates", "(D) 4 XOR gates and a 4-input OR gate"],
+          "answer": 1,
+          "explanation": "To check A = B, we need each corresponding bit pair to be equal. An XNOR gate outputs 1 when both inputs are the same. Using 4 XNOR gates (one per bit position) and ANDing all outputs gives a 1 only when all bit pairs match. This requires 4 XNOR gates and one 4-input AND gate, totaling 5 gates."
+        },
+        {
+          "question": "Q7. In a cascaded comparator design, two 4-bit comparators are connected to compare 8-bit numbers. The cascade inputs of the less significant comparator should be set to:",
+          "options": ["(A) A>B=1, A=B=0, A<B=0", "(B) A>B=0, A=B=1, A<B=0", "(C) A>B=0, A=B=0, A<B=1", "(D) A>B=1, A=B=1, A<B=1"],
+          "answer": 1,
+          "explanation": "When cascading comparators, the less significant comparator's cascade inputs should be set to A>B=0, A=B=1, A<B=0. This means that when the lower bits are being compared with no prior context, equality is assumed as the default. The higher-order comparator's result takes priority, and only when the upper bits are equal does the lower comparator's result matter."
+        },
+        {
+          "question": "Q8. Which of the following is a key difference between RISC and CISC architectures?",
+          "options": ["(A) RISC uses microprogrammed control, CISC uses hardwired control", "(B) RISC has fixed-length instructions and emphasizes pipelining, CISC has variable-length instructions", "(C) RISC has more addressing modes than CISC", "(D) CISC has fewer instructions than RISC"],
+          "answer": 1,
+          "explanation": "RISC architectures feature fixed-length instructions, a load-store architecture, and are designed to be easily pipelined. CISC architectures have variable-length instructions with complex addressing modes and operations that can access memory directly. RISC uses hardwired control (not microprogrammed), while CISC typically uses microprogrammed control."
+        },
+        {
+          "question": "Q9. In a RISC pipeline, data hazards are commonly resolved using:",
+          "options": ["(A) Microprogramming", "(B) Forwarding (bypassing) and pipeline stalls", "(C) Complex instruction decoding", "(D) Variable-length pipeline stages"],
+          "answer": 1,
+          "explanation": "Data hazards in RISC pipelines occur when an instruction depends on the result of a previous instruction still in the pipeline. Forwarding (also called bypassing) routes the result directly from the ALU output to the input of the next instruction, avoiding stalls in many cases. When forwarding cannot resolve the hazard (e.g., load-use hazard), a pipeline stall (bubble) is inserted."
+        },
+        {
+          "question": "Q10. In a CISC processor, a single instruction MOV [BX+SI+8], AX performs:",
+          "options": ["(A) Register-to-register transfer only", "(B) Based-indexed addressing with displacement to store a register value to memory", "(C) Immediate value loading", "(D) Stack push operation"],
+          "answer": 1,
+          "explanation": "The instruction MOV [BX+SI+8], AX uses based-indexed addressing with displacement. The effective address is computed as BX + SI + 8, and the contents of register AX are stored at that memory location. This complex addressing mode is typical of CISC architectures, combining a base register (BX), an index register (SI), and a displacement (8) in a single instruction."
+        },
+        {
+          "question": "Q11. A segment tree built on an array of n elements supports range sum queries and point updates in:",
+          "options": ["(A) O(n) query, O(1) update", "(B) O(log n) query, O(log n) update", "(C) O(1) query, O(n) update", "(D) O(n log n) query, O(log n) update"],
+          "answer": 1,
+          "explanation": "A segment tree divides the array into segments represented by a binary tree of height O(log n). Each node stores the sum of its range. A point update modifies O(log n) nodes along the path from the leaf to the root. A range sum query combines O(log n) node values by traversing relevant segments. Both operations take O(log n) time."
+        },
+        {
+          "question": "Q12. The space complexity of a segment tree for an array of n elements is:",
+          "options": ["(A) O(n)", "(B) O(2n)", "(C) O(4n)", "(D) O(n log n)"],
+          "answer": 2,
+          "explanation": "A segment tree requires at most 4n nodes in the worst case. The tree has at most 2n - 1 internal and leaf nodes for a perfectly balanced tree, but since n may not be a power of 2, the array representation may need up to 4n slots. In practice, the tree is often allocated as an array of size 4n to be safe."
+        },
+        {
+          "question": "Q13. Lazy propagation in a segment tree is used to:",
+          "options": ["(A) Reduce space complexity to O(n)", "(B) Support efficient range updates in O(log n) time", "(C) Convert the segment tree into a balanced BST", "(D) Eliminate the need for a build step"],
+          "answer": 1,
+          "explanation": "Without lazy propagation, a range update would require updating each element individually in O(n log n) time. Lazy propagation defers updates by storing pending modifications at internal nodes and only propagating them to children when those children are accessed. This enables both range updates and range queries to run in O(log n) time."
+        },
+        {
+          "question": "Q14. In a segment tree, updating a range [l, r] with lazy propagation, how many nodes are visited in the worst case?",
+          "options": ["(A) O(n)", "(B) O(log n)", "(C) O(r - l + 1)", "(D) O(n log n)"],
+          "answer": 1,
+          "explanation": "With lazy propagation, a range update visits O(log n) nodes. The key insight is that any range [l, r] can be decomposed into at most O(log n) segments in the segment tree. Updates are applied to these segment nodes, and lazy tags are stored for deferred propagation to children. This is the same asymptotic cost as a point update."
+        },
+        {
+          "question": "Q15. The Knuth-Morris-Pratt (KMP) string matching algorithm preprocesses the pattern to build:",
+          "options": ["(A) A suffix tree", "(B) A failure function (prefix table)", "(C) A hash table of substrings", "(D) A DFA for the text"],
+          "answer": 1,
+          "explanation": "KMP preprocesses the pattern P of length m to compute the failure function (also called the prefix table or partial match table). For each position i in P, the failure function gives the length of the longest proper prefix of P[0..i] that is also a suffix. This allows the algorithm to skip unnecessary comparisons, achieving O(n + m) time complexity."
+        },
+        {
+          "question": "Q16. The time complexity of the Rabin-Karp string matching algorithm in the worst case is:",
+          "options": ["(A) O(n + m)", "(B) O(n × m)", "(C) O(n log m)", "(D) O(m log n)"],
+          "answer": 1,
+          "explanation": "Rabin-Karp uses rolling hash to find potential matches. In the average case, it runs in O(n + m) time. However, in the worst case (many hash collisions), every position triggers a character-by-character verification, leading to O(n × m) time. The algorithm's practical efficiency depends heavily on the hash function's collision resistance."
+        },
+        {
+          "question": "Q17. The Boyer-Moore string matching algorithm achieves its best-case performance by:",
+          "options": ["(A) Comparing characters from left to right", "(B) Comparing characters from right to left and using bad character and good suffix heuristics", "(C) Using dynamic programming", "(D) Building a suffix array"],
+          "answer": 1,
+          "explanation": "Boyer-Moore compares the pattern against the text from right to left. When a mismatch occurs, it uses two heuristics: the bad character rule (shifts based on the mismatched text character) and the good suffix rule (shifts based on the matched suffix). In the best case, it achieves O(n/m) time by skipping large portions of the text."
+        },
+        {
+          "question": "Q18. The class of context-free languages is closed under:",
+          "options": ["(A) Intersection", "(B) Complementation", "(C) Union", "(D) Intersection with regular languages and complementation"],
+          "answer": 2,
+          "explanation": "Context-free languages are closed under union, concatenation, and Kleene star, but NOT under intersection or complementation. The closure under union is proven by creating a new start symbol S with productions S -> S1 | S2 where S1 and S2 are start symbols of the two CFGs. The non-closure under intersection is shown by the classic example {a^n b^n c^n}."
+        },
+        {
+          "question": "Q19. If L1 is a CFL and L2 is a regular language, then L1 ∩ L2 is:",
+          "options": ["(A) Always regular", "(B) Always context-free", "(C) Always context-sensitive but not context-free", "(D) Undecidable"],
+          "answer": 1,
+          "explanation": "The intersection of a CFL with a regular language is always a CFL. This is proven using the cross-product construction: combine the PDA for L1 with the DFA for L2 to create a new PDA that accepts exactly L1 ∩ L2. This property is frequently used in proofs to show that certain languages are not context-free."
+        },
+        {
+          "question": "Q20. Which of the following is NOT a closure property of context-free languages?",
+          "options": ["(A) Union", "(B) Concatenation", "(C) Intersection", "(D) Kleene star"],
+          "answer": 2,
+          "explanation": "CFLs are NOT closed under intersection. The classic counterexample: L1 = {a^n b^n c^m | n,m >= 0} and L2 = {a^m b^n c^n | m,n >= 0} are both CFLs, but L1 ∩ L2 = {a^n b^n c^n | n >= 0} is not a CFL. CFLs are closed under union, concatenation, Kleene star, reversal, and intersection with regular languages."
+        },
+        {
+          "question": "Q21. In a compiler, type checking is performed during:",
+          "options": ["(A) Lexical analysis", "(B) Syntax analysis", "(C) Semantic analysis", "(D) Code optimization"],
+          "answer": 2,
+          "explanation": "Type checking is a key task of semantic analysis. During this phase, the compiler verifies that operations are applied to compatible types, function arguments match parameter types, and type conversions are valid. The type checker uses information from the symbol table and type rules defined by the language specification to ensure type safety."
+        },
+        {
+          "question": "Q22. In type checking, the expression 3 + 4.5 in a language with implicit type coercion would be handled by:",
+          "options": ["(A) Rejecting the expression as a type error", "(B) Converting 3 to 3.0 and performing floating-point addition (widening)", "(C) Converting 4.5 to 4 and performing integer addition (narrowing)", "(D) Performing both integer and floating-point addition and choosing the result"],
+          "answer": 1,
+          "explanation": "In languages with implicit type coercion (like C and Java), when an integer and a float are combined, the integer is widened (promoted) to a float. This is because widening preserves value without loss of information (3 becomes 3.0 exactly). Narrowing (float to int) is avoided implicitly because it may lose information (the fractional part)."
+        },
+        {
+          "question": "Q23. In the buddy system of memory management, when a block of size 64 KB is requested from a 256 KB memory, the number of splits required is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 1,
+          "explanation": "Starting with a 256 KB block: First split produces two 128 KB buddies. Second split on one 128 KB block produces two 64 KB buddies. One 64 KB block is allocated. Total splits = 2. The buddy system always splits into two equal halves, and block sizes are powers of 2, making it simple to merge blocks when freed."
+        },
+        {
+          "question": "Q24. In the buddy system, if a 32 KB block is freed and its buddy is also free, the coalesced block size is:",
+          "options": ["(A) 32 KB", "(B) 64 KB", "(C) 96 KB", "(D) 128 KB"],
+          "answer": 1,
+          "explanation": "In the buddy system, when a block is freed, it checks if its buddy (the other half from the same split) is also free. If so, they are coalesced (merged) back into a single block of double the size: 32 KB + 32 KB = 64 KB. This coalescing may cascade if the merged block's buddy is also free, potentially rebuilding larger blocks."
+        },
+        {
+          "question": "Q25. In the buddy system, internal fragmentation occurs when:",
+          "options": ["(A) Two buddies cannot be merged", "(B) The requested size is not a power of 2, so a larger block is allocated", "(C) Memory is completely exhausted", "(D) External fragmentation exceeds 50%"],
+          "answer": 1,
+          "explanation": "Since the buddy system only allocates blocks whose sizes are powers of 2, a request for a non-power-of-2 size (e.g., 70 KB) is rounded up to the next power of 2 (128 KB). The difference (128 - 70 = 58 KB) is wasted as internal fragmentation. In the worst case, nearly 50% of the allocated block can be wasted."
+        },
+        {
+          "question": "Q26. In a distributed database, the Two-Phase Commit (2PC) protocol ensures:",
+          "options": ["(A) Data is replicated across all nodes", "(B) All participating nodes either commit or abort a transaction atomically", "(C) Queries are load-balanced across nodes", "(D) Network partitions are automatically resolved"],
+          "answer": 1,
+          "explanation": "The Two-Phase Commit protocol is a distributed consensus protocol that ensures atomicity across multiple database nodes. In phase 1 (prepare/vote), the coordinator asks all participants to vote commit or abort. In phase 2 (commit/abort), if all voted commit, the coordinator sends a commit decision; otherwise, it sends an abort. This ensures all-or-nothing semantics."
+        },
+        {
+          "question": "Q27. The main drawback of the Two-Phase Commit (2PC) protocol is:",
+          "options": ["(A) It cannot handle more than two participants", "(B) It is a blocking protocol — participants may block if the coordinator fails", "(C) It does not guarantee atomicity", "(D) It requires all participants to be on the same network"],
+          "answer": 1,
+          "explanation": "2PC is a blocking protocol. If the coordinator crashes after sending prepare messages but before sending the final decision, participants that voted 'yes' are stuck in an uncertain state and must block until the coordinator recovers. They cannot independently decide to commit or abort. The Three-Phase Commit (3PC) protocol was designed to address this blocking issue."
+        },
+        {
+          "question": "Q28. In a distributed database using horizontal fragmentation, a relation R is split based on:",
+          "options": ["(A) Columns (attributes) of R", "(B) Rows (tuples) of R based on a selection predicate", "(C) Random distribution across nodes", "(D) Hash values of the primary key only"],
+          "answer": 1,
+          "explanation": "Horizontal fragmentation divides a relation by rows based on selection predicates. For example, an Employee relation might be split so that employees in department A are stored at site 1 and department B employees at site 2. Each fragment is a subset of tuples satisfying certain conditions. Vertical fragmentation, in contrast, splits by columns."
+        },
+        {
+          "question": "Q29. TCP congestion control uses the Additive Increase Multiplicative Decrease (AIMD) strategy. In this scheme, when a timeout occurs:",
+          "options": ["(A) The congestion window is halved", "(B) The congestion window is set to 1 MSS and slow start threshold is set to half the current window", "(C) The congestion window doubles", "(D) The connection is terminated"],
+          "answer": 1,
+          "explanation": "When a timeout occurs in TCP Reno, the slow start threshold (ssthresh) is set to half the current congestion window (cwnd), and cwnd is reset to 1 MSS (Maximum Segment Size). The sender then re-enters the slow start phase, doubling cwnd each RTT until reaching ssthresh, then switching to congestion avoidance (additive increase). This aggressive reduction prevents network collapse."
+        },
+        {
+          "question": "Q30. In TCP congestion control, the difference between the response to a triple duplicate ACK and a timeout is:",
+          "options": ["(A) There is no difference; both trigger slow start", "(B) Triple duplicate ACK triggers fast recovery (cwnd halved), timeout triggers slow start (cwnd = 1 MSS)", "(C) Timeout triggers fast recovery, triple duplicate ACK triggers slow start", "(D) Both events cause the connection to reset"],
+          "answer": 1,
+          "explanation": "In TCP Reno, a triple duplicate ACK indicates mild congestion (the network can still deliver some segments), so fast retransmit is used followed by fast recovery: ssthresh = cwnd/2, cwnd = ssthresh + 3 MSS. A timeout indicates severe congestion, so the response is more drastic: ssthresh = cwnd/2, cwnd = 1 MSS, and slow start begins. This distinction allows TCP to recover more quickly from mild congestion."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

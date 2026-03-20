@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GATE CSE 2019 Previous Year Paper — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .test-info { background: #eaf2f8; border: 2px solid #2980b9; border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+    .test-info p { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>GATE CSE 2019 Previous Year Paper</h1>
+  <p class="article-section-tag">📝 GATE Previous Years</p>
+
+  <div class="test-info">
+    <p><strong>Total Questions:</strong> 30 | <strong>Total Marks:</strong> 50 | <strong>Time:</strong> 60 minutes</p>
+    <p><strong>Sections Covered:</strong> Engineering Mathematics (4), Digital Logic (3), Computer Organization (3), Data Structures (4), Algorithms (3), Theory of Computation (3), Compiler Design (2), Operating Systems (3), Databases (3), Computer Networks (2)</p>
+  </div>
+
+  <div class="quiz-section">
+    <h2>Test Questions</h2>
+    <script type="application/json" class="quiz-data">
+    {
+      "title": "GATE CSE 2019 Previous Year Paper",
+      "questions": [
+        {
+          "question": "Q1. Two fair dice are thrown. The probability that the sum of the outcomes is at least 10 is:",
+          "options": ["(A) 1/12", "(B) 1/6", "(C) 5/36", "(D) 1/4"],
+          "answer": 1,
+          "explanation": "Total outcomes = 36. Favorable outcomes (sum ≥ 10): Sum=10: (4,6),(5,5),(6,4)=3 ways. Sum=11: (5,6),(6,5)=2 ways. Sum=12: (6,6)=1 way. Total favorable = 6. Probability = 6/36 = 1/6."
+        },
+        {
+          "question": "Q2. The rank of the matrix [[1, 2, 3], [2, 4, 6], [1, 3, 5]] is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 0"],
+          "answer": 1,
+          "explanation": "Row 2 = 2 × Row 1, so rows 1 and 2 are linearly dependent. After eliminating: R2 = R2 - 2*R1 gives [0,0,0]. R3 = R3 - R1 gives [0,1,2]. The resulting matrix has 2 non-zero rows, so rank = 2. The determinant of the 3×3 matrix is 0 (since R2 = 2*R1), confirming rank < 3."
+        },
+        {
+          "question": "Q3. The solution to the recurrence relation T(n) = T(n-1) + n with T(1) = 1 is:",
+          "options": ["(A) n(n+1)/2", "(B) n²", "(C) 2^n - 1", "(D) n!"],
+          "answer": 0,
+          "explanation": "Expanding: T(n) = T(n-1) + n = T(n-2) + (n-1) + n = ... = T(1) + 2 + 3 + ... + n = 1 + 2 + 3 + ... + n = n(n+1)/2. This is the sum of the first n natural numbers. We can verify: T(1) = 1(2)/2 = 1 ✓, T(2) = 2(3)/2 = 3 = T(1)+2 = 1+2 = 3 ✓."
+        },
+        {
+          "question": "Q4. In a group of 100 students, 60 study Mathematics, 50 study Physics, and 20 study both. The number of students studying neither subject is:",
+          "options": ["(A) 10", "(B) 20", "(C) 30", "(D) 40"],
+          "answer": 0,
+          "explanation": "By the inclusion-exclusion principle: |M ∪ P| = |M| + |P| - |M ∩ P| = 60 + 50 - 20 = 90. Students studying neither = Total - |M ∪ P| = 100 - 90 = 10. The inclusion-exclusion principle corrects for the double-counting of students in both subjects."
+        },
+        {
+          "question": "Q5. The number of 1's in the binary representation of the decimal number 2^10 - 1 is:",
+          "options": ["(A) 1", "(B) 10", "(C) 11", "(D) 9"],
+          "answer": 1,
+          "explanation": "2^10 - 1 = 1023 in decimal. In binary, 2^10 = 10000000000 (1 followed by 10 zeros). Subtracting 1 gives 1111111111 (10 ones). This is a well-known property: 2^n - 1 in binary is always n consecutive 1's. So 2^10 - 1 has exactly 10 ones."
+        },
+        {
+          "question": "Q6. A 3-bit ripple carry adder has a gate delay of 2 ns per gate. If each full adder uses 2 gate levels for sum and 2 gate levels for carry, the worst-case delay for the 3-bit addition is:",
+          "options": ["(A) 8 ns", "(B) 12 ns", "(C) 16 ns", "(D) 10 ns"],
+          "answer": 2,
+          "explanation": "In a 3-bit ripple carry adder, the carry must propagate through all 3 full adders. Carry propagation: 2 gate levels per full adder × 3 stages = 6 gate levels for carry. The final sum bit needs the carry from the previous stage plus 2 gate levels for sum computation. Total worst-case = 2 gate levels (carry from FA0) + 2 (carry from FA1) + 2 (carry from FA2) + 2 (sum of FA2) = 8 gate levels × 2 ns = 16 ns."
+        },
+        {
+          "question": "Q7. In a 2's complement representation using 8 bits, the range of representable integers is:",
+          "options": ["(A) -127 to 127", "(B) -128 to 127", "(C) -128 to 128", "(D) -256 to 255"],
+          "answer": 1,
+          "explanation": "In n-bit 2's complement, the range is -2^(n-1) to 2^(n-1) - 1. For 8 bits: -2^7 to 2^7 - 1 = -128 to 127. The most negative number -128 is represented as 10000000, and the most positive 127 is 01111111. The range is asymmetric because there is one more negative number than positive numbers due to the representation of zero."
+        },
+        {
+          "question": "Q8. In cache coherence, the MESI protocol uses how many states per cache line?",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+          "answer": 2,
+          "explanation": "The MESI protocol uses 4 states: Modified (dirty, exclusive), Exclusive (clean, exclusive), Shared (clean, possibly in other caches), and Invalid (not valid). MESI stands for these four states. It is an improvement over the simpler MSI protocol by adding the Exclusive state, which reduces bus traffic when a cache line is read by only one processor and later modified."
+        },
+        {
+          "question": "Q9. A direct-mapped cache with 8 cache lines and a block size of 16 bytes serves a processor with 16-bit addresses. The number of tag bits is:",
+          "options": ["(A) 7", "(B) 8", "(C) 9", "(D) 6"],
+          "answer": 2,
+          "explanation": "Block offset = log2(16) = 4 bits. Number of cache lines = 8, so index bits = log2(8) = 3 bits. Total address bits = 16. Tag bits = 16 - 3 - 4 = 9 bits. The tag uniquely identifies which memory block is currently stored in a particular cache line."
+        },
+        {
+          "question": "Q10. In the SCAN (elevator) disk scheduling algorithm, if the disk arm is currently at track 53 moving toward track 0, and the request queue is {98, 183, 37, 122, 14, 124, 65, 67}, the total head movement is:",
+          "options": ["(A) 236", "(B) 208", "(C) 299", "(D) 331"],
+          "answer": 0,
+          "explanation": "SCAN moves toward 0 first: 53→37→14→0 (then reverses)→65→67→98→122→124→183. Head movement: |53-37| + |37-14| + |14-0| + |0-65| + |65-67| + |67-98| + |98-122| + |122-124| + |124-183| = 16 + 23 + 14 + 65 + 2 + 31 + 24 + 2 + 59 = 236."
+        },
+        {
+          "question": "Q11. The time complexity of building a min-heap from an unsorted array of n elements using the bottom-up approach is:",
+          "options": ["(A) O(n log n)", "(B) O(n)", "(C) O(n²)", "(D) O(log n)"],
+          "answer": 1,
+          "explanation": "The bottom-up heap construction (heapify) runs in O(n) time, not O(n log n). This is because most nodes are near the bottom of the tree and require little work. Formally, the sum of work at each level is: Σ(h=0 to log n) ⌈n/2^(h+1)⌉ × O(h) = O(n × Σ(h/2^h)) = O(n). The series Σ(h/2^h) converges to 2."
+        },
+        {
+          "question": "Q12. An AVL tree with 7 nodes can have a maximum height of:",
+          "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+          "answer": 1,
+          "explanation": "The minimum number of nodes in an AVL tree of height h follows: N(0)=1, N(1)=2, N(2)=4, N(3)=7, N(4)=12. Since N(3) = 7 and N(4) = 12 > 7, an AVL tree with 7 nodes can have a maximum height of 3. The worst-case height of an AVL tree is approximately 1.44 × log2(n), and for n=7: the tree can be as tall as 3 levels (root at level 0)."
+        },
+        {
+          "question": "Q13. The number of different topological orderings of a DAG with vertices {1, 2, 3, 4} and edges {1→2, 1→3, 2→4, 3→4} is:",
+          "options": ["(A) 1", "(B) 2", "(C) 3", "(D) 4"],
+          "answer": 1,
+          "explanation": "Vertex 1 must come first (no incoming edges). Vertex 4 must come last (depends on 2 and 3). Vertices 2 and 3 can be in any order between 1 and 4, giving: 1,2,3,4 and 1,3,2,4. So there are exactly 2 valid topological orderings. The constraint is: 1 before {2,3}, and {2,3} before 4."
+        },
+        {
+          "question": "Q14. In a hash table of size 10 using linear probing, keys 25, 35, 45, 55, 65 are inserted in order. The hash function is h(k) = k mod 10. The position of key 65 is:",
+          "options": ["(A) 5", "(B) 6", "(C) 7", "(D) 9"],
+          "answer": 3,
+          "explanation": "h(25) = 5 → position 5. h(35) = 5 → collision → probe 6 → position 6. h(45) = 5 → collision → probe 6 → collision → probe 7 → position 7. h(55) = 5 → collision → probe 6,7 → collision → probe 8 → position 8. h(65) = 5 → collision → probe 6,7,8 → collision → probe 9 → position 9. This demonstrates clustering, a major disadvantage of linear probing."
+        },
+        {
+          "question": "Q15. The 0/1 knapsack problem with n items and capacity W has a dynamic programming solution with time complexity:",
+          "options": ["(A) O(nW)", "(B) O(n²W)", "(C) O(2^n)", "(D) O(n log n)"],
+          "answer": 0,
+          "explanation": "The DP solution creates a table of size n × W, filling each cell in O(1) time. For each item i and capacity w, we decide whether to include item i: DP[i][w] = max(DP[i-1][w], DP[i-1][w-w_i] + v_i). This gives O(nW) time complexity. Note this is pseudo-polynomial because W appears in the complexity as a numeric value, not as its bit-length."
+        },
+        {
+          "question": "Q16. Which of the following problems can be solved using dynamic programming?",
+          "options": ["(A) Halting problem", "(B) Longest common subsequence", "(C) Graph coloring (chromatic number)", "(D) Boolean satisfiability (general case)"],
+          "answer": 1,
+          "explanation": "The Longest Common Subsequence (LCS) problem has optimal substructure and overlapping subproblems, making it ideal for dynamic programming. The DP solution runs in O(mn) time for sequences of lengths m and n. The halting problem is undecidable. Graph coloring and general SAT are NP-complete and don't have known polynomial-time DP solutions."
+        },
+        {
+          "question": "Q17. The amortized time complexity of insert and delete-min operations in a Fibonacci heap is:",
+          "options": ["(A) O(1) for insert, O(log n) for delete-min", "(B) O(log n) for both", "(C) O(1) for both", "(D) O(n) for insert, O(1) for delete-min"],
+          "answer": 0,
+          "explanation": "In a Fibonacci heap, insertion is O(1) amortized because we simply add the new node to the root list. Delete-min is O(log n) amortized: we remove the minimum, add its children to the root list, then consolidate trees so that no two roots have the same degree. The consolidation ensures the root list has at most O(log n) trees after the operation."
+        },
+        {
+          "question": "Q18. The pumping lemma for regular languages states that for any regular language L, there exists a pumping length p such that any string s in L with |s| ≥ p can be divided into s = xyz where:",
+          "options": ["(A) |xy| ≤ p, |y| > 0, and xy^iz ∈ L for all i ≥ 0", "(B) |xz| ≤ p, |y| > 0, and xy^iz ∈ L for all i ≥ 1", "(C) |y| ≤ p, |x| > 0, and xy^iz ∈ L for all i ≥ 0", "(D) |xyz| = p, |y| > 0, and xy^iz ∈ L for all i ≥ 0"],
+          "answer": 0,
+          "explanation": "The pumping lemma for regular languages requires three conditions: (1) |xy| ≤ p — the pump occurs within the first p characters, (2) |y| > 0 — the pumped portion is non-empty, and (3) xy^iz ∈ L for all i ≥ 0 — pumping y any number of times (including 0) keeps the string in the language. This follows from the pigeonhole principle applied to DFA states."
+        },
+        {
+          "question": "Q19. Which of the following is true about the class of context-free languages?",
+          "options": ["(A) It is closed under intersection", "(B) It is closed under complementation", "(C) It is closed under union", "(D) It is closed under intersection with regular languages"],
+          "answer": 3,
+          "explanation": "Context-free languages are NOT closed under intersection or complementation. They ARE closed under union, concatenation, Kleene star, and intersection with regular languages. The intersection of a CFL with a regular language is always context-free — this can be proved by constructing a PDA that simultaneously simulates the PDA for the CFL and the DFA for the regular language."
+        },
+        {
+          "question": "Q20. A pushdown automaton (PDA) can be deterministic or non-deterministic. Which statement is correct?",
+          "options": ["(A) Every DPDA can be converted to an equivalent NPDA and vice versa", "(B) NPDAs are strictly more powerful than DPDAs", "(C) DPDAs are more powerful than NPDAs", "(D) DPDAs and NPDAs accept exactly the same class of languages"],
+          "answer": 1,
+          "explanation": "Non-deterministic PDAs are strictly more powerful than deterministic PDAs. The language of even-length palindromes {ww^R | w ∈ {a,b}*} is accepted by an NPDA but not by any DPDA. Every DPDA can be simulated by an NPDA, but not vice versa. This is unlike finite automata, where DFAs and NFAs have equal power."
+        },
+        {
+          "question": "Q21. In an LL(1) grammar, the FIRST sets of two alternatives for the same non-terminal must be:",
+          "options": ["(A) Equal", "(B) Disjoint", "(C) Subsets of each other", "(D) Non-empty"],
+          "answer": 1,
+          "explanation": "For a grammar to be LL(1), the FIRST sets of different alternatives for the same non-terminal must be disjoint (no common terminals). If FIRST sets overlap, the parser cannot determine which alternative to use based on a single lookahead symbol. Additionally, if one alternative can derive ε, its FIRST set must not intersect with the FOLLOW set of the non-terminal."
+        },
+        {
+          "question": "Q22. Syntax-directed translation associates semantic rules with:",
+          "options": ["(A) Tokens", "(B) Grammar productions", "(C) Parse tree nodes", "(D) Symbol table entries"],
+          "answer": 1,
+          "explanation": "In syntax-directed translation (SDT), semantic rules (or actions) are associated with grammar productions. Each production can have associated attributes and rules that compute attribute values. These rules define how to translate the construct described by the production. The rules are evaluated as the parse tree is constructed or traversed, with attributes flowing either up (synthesized) or down (inherited) the tree."
+        },
+        {
+          "question": "Q23. The maximum number of processes that can be in the 'running' state simultaneously on a single-core uniprocessor system is:",
+          "options": ["(A) 0", "(B) 1", "(C) Depends on the OS", "(D) Unlimited"],
+          "answer": 1,
+          "explanation": "On a single-core uniprocessor system, exactly one process can be in the 'running' state at any given time, because there is only one CPU to execute instructions. Other processes may be in 'ready' or 'waiting' states. Time-sharing creates the illusion of concurrent execution by rapidly switching between processes, but at any instant, only one process occupies the CPU."
+        },
+        {
+          "question": "Q24. In the readers-writers problem, if writers have priority, a reader must wait when:",
+          "options": ["(A) Another reader is reading", "(B) A writer is writing or waiting to write", "(C) Only when a writer is writing", "(D) The buffer is empty"],
+          "answer": 1,
+          "explanation": "In the writers-priority variant of the readers-writers problem, a reader must wait not only when a writer is currently writing but also when a writer is waiting to write. This prevents writer starvation by ensuring that once a writer requests access, no new readers are admitted. The trade-off is that readers may experience starvation if writers continuously arrive."
+        },
+        {
+          "question": "Q25. The dining philosophers problem illustrates which concurrency issue?",
+          "options": ["(A) Race condition only", "(B) Deadlock and starvation", "(C) Priority inversion only", "(D) Buffer overflow"],
+          "answer": 1,
+          "explanation": "The dining philosophers problem is a classic illustration of both deadlock and starvation in concurrent systems. Deadlock occurs when all philosophers simultaneously pick up their left fork and wait for the right fork. Starvation can occur when a philosopher is perpetually denied access to both forks due to timing. Solutions include resource ordering, using a mutex, or limiting the number of simultaneous diners."
+        },
+        {
+          "question": "Q26. In relational algebra, the operation that selects tuples satisfying a given predicate is:",
+          "options": ["(A) Projection (π)", "(B) Selection (σ)", "(C) Natural Join (⋈)", "(D) Division (÷)"],
+          "answer": 1,
+          "explanation": "The selection operation (σ) filters tuples from a relation based on a given predicate (condition). It operates on rows. Projection (π) operates on columns by selecting specific attributes. Natural join combines tuples from two relations based on common attributes. Division finds tuples in one relation that are associated with all tuples in another."
+        },
+        {
+          "question": "Q27. A relation R(A, B, C, D) with functional dependencies {A→B, C→D, AB→C}. The closure of {A} is:",
+          "options": ["(A) {A}", "(B) {A, B}", "(C) {A, B, C, D}", "(D) {A, B, C}"],
+          "answer": 2,
+          "explanation": "Computing A+: Start with {A}. A→B: add B, now {A, B}. AB→C: A and B are both present, add C, now {A, B, C}. C→D: C is present, add D, now {A, B, C, D}. Since A+ = {A, B, C, D} = R, A is a candidate key. The closure computation is transitive — we keep applying FDs until no new attributes can be added."
+        },
+        {
+          "question": "Q28. A relation is in 3NF but not in BCNF. This can happen when:",
+          "options": ["(A) There are no functional dependencies", "(B) Every determinant is a candidate key", "(C) A non-trivial FD has a non-superkey determinant but the dependent attribute is part of a candidate key", "(D) The relation has only one candidate key"],
+          "answer": 2,
+          "explanation": "A relation is in 3NF if for every non-trivial FD X→A, either X is a superkey or A is part of a candidate key (prime attribute). BCNF requires X to be a superkey for every non-trivial FD. The gap between 3NF and BCNF occurs when a non-superkey determines a prime attribute — this satisfies 3NF (A is prime) but violates BCNF (X is not a superkey)."
+        },
+        {
+          "question": "Q29. In IP subnetting, a Class C network 192.168.1.0 is divided into 4 equal subnets. The subnet mask is:",
+          "options": ["(A) 255.255.255.192", "(B) 255.255.255.224", "(C) 255.255.255.128", "(D) 255.255.255.240"],
+          "answer": 0,
+          "explanation": "A Class C network has a default mask of /24. To create 4 subnets, we need 2 additional bits (2^2 = 4). New prefix = /26. The subnet mask is 255.255.255.11000000 = 255.255.255.192. Each subnet has 2^6 - 2 = 62 usable host addresses. The four subnets are: 192.168.1.0/26, 192.168.1.64/26, 192.168.1.128/26, and 192.168.1.192/26."
+        },
+        {
+          "question": "Q30. In the OSI model, which layer is responsible for end-to-end error recovery and flow control?",
+          "options": ["(A) Network layer", "(B) Data Link layer", "(C) Transport layer", "(D) Session layer"],
+          "answer": 2,
+          "explanation": "The Transport layer (Layer 4) provides end-to-end error recovery and flow control between source and destination hosts. The Data Link layer provides hop-to-hop error detection and flow control between adjacent nodes. TCP at the transport layer provides reliable delivery with mechanisms like sequence numbers, acknowledgments, checksums, and sliding window flow control."
+        }
+      ]
+    }
+    </script>
+  </div>
+</article>
+</body>
+</html>

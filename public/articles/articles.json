@@ -698,5 +698,75 @@
     "description": "Bayes classifier, HMM, Viterbi, TF-IDF, word embeddings, and n-gram language models.",
     "date": "2026-03-19",
     "section": "Artificial Intelligence"
+  },
+  {
+    "slug": "gate-cse-2015",
+    "title": "GATE CSE 2015 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2015 covering all subjects with detailed solutions.",
+    "date": "2015-02-08",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2016",
+    "title": "GATE CSE 2016 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2016 covering all subjects with detailed solutions.",
+    "date": "2016-01-30",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2017",
+    "title": "GATE CSE 2017 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2017 covering all subjects with detailed solutions.",
+    "date": "2017-02-05",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2018",
+    "title": "GATE CSE 2018 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2018 covering all subjects with detailed solutions.",
+    "date": "2018-02-04",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2019",
+    "title": "GATE CSE 2019 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2019 covering all subjects with detailed solutions.",
+    "date": "2019-02-02",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2020",
+    "title": "GATE CSE 2020 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2020 covering all subjects with detailed solutions.",
+    "date": "2020-02-01",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2021",
+    "title": "GATE CSE 2021 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2021 covering all subjects with detailed solutions.",
+    "date": "2021-02-13",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2022",
+    "title": "GATE CSE 2022 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2022 covering all subjects with detailed solutions.",
+    "date": "2022-02-05",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2023",
+    "title": "GATE CSE 2023 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2023 covering all subjects with detailed solutions.",
+    "date": "2023-02-11",
+    "section": "GATE Previous Years"
+  },
+  {
+    "slug": "gate-cse-2024",
+    "title": "GATE CSE 2024 Previous Year Paper",
+    "description": "30 MCQs from GATE CSE 2024 covering all subjects with detailed solutions.",
+    "date": "2024-02-03",
+    "section": "GATE Previous Years"
   }
 ]

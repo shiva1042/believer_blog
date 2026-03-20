@@ -768,5 +768,124 @@
     "description": "30 MCQs from GATE CSE 2024 covering all subjects with detailed solutions.",
     "date": "2024-02-03",
     "section": "GATE Previous Years"
+  },
+  {
+    "slug": "proof-techniques",
+    "title": "Mathematical Induction and Proof Techniques",
+    "description": "Direct proof, contrapositive, contradiction, mathematical induction, strong induction, and structural induction with worked examples.",
+    "date": "2026-03-20",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "lattices-partial-orders",
+    "title": "Lattices, Partial Orders, and Boolean Algebra",
+    "description": "Posets, Hasse diagrams, lattice types, distributive and complemented lattices, and Boolean algebra as a lattice.",
+    "date": "2026-03-20",
+    "section": "Engineering Mathematics"
+  },
+  {
+    "slug": "pld-memory-systems",
+    "title": "PLDs, ROM, RAM, and Memory Types",
+    "description": "ROM, PLA, PAL, FPGA structures, SRAM vs DRAM, memory expansion, and address decoding.",
+    "date": "2026-03-20",
+    "section": "Digital Logic"
+  },
+  {
+    "slug": "microprogrammed-control",
+    "title": "Microprogrammed Control Unit Design",
+    "description": "Hardwired vs microprogrammed control, horizontal/vertical microinstructions, sequencing, and nano-programming.",
+    "date": "2026-03-20",
+    "section": "Computer Organization"
+  },
+  {
+    "slug": "parallel-processing",
+    "title": "Parallel Processing and Multiprocessor Systems",
+    "description": "Flynn's taxonomy, cache coherence (MESI), Amdahl's Law, interconnection networks, and SMP architecture.",
+    "date": "2026-03-20",
+    "section": "Computer Organization"
+  },
+  {
+    "slug": "os-structure-system-calls",
+    "title": "OS Structure, System Calls, and Kernel Design",
+    "description": "System call types, monolithic vs microkernel vs modular OS, user/kernel mode, and virtual machines.",
+    "date": "2026-03-20",
+    "section": "Operating System"
+  },
+  {
+    "slug": "real-time-multiprocessor-scheduling",
+    "title": "Real-Time Scheduling and Advanced CPU Scheduling",
+    "description": "RMS, EDF, multiprocessor scheduling, Linux CFS, priority inversion, and priority inheritance.",
+    "date": "2026-03-20",
+    "section": "Operating System"
+  },
+  {
+    "slug": "query-processing-optimization",
+    "title": "Query Processing and Optimization",
+    "description": "Join algorithms, external sorting, cost estimation, heuristic and cost-based query optimization.",
+    "date": "2026-03-20",
+    "section": "Databases"
+  },
+  {
+    "slug": "recovery-systems",
+    "title": "Recovery Systems and Log-Based Recovery",
+    "description": "WAL protocol, undo/redo operations, checkpointing, ARIES recovery, and shadow paging.",
+    "date": "2026-03-20",
+    "section": "Databases"
+  },
+  {
+    "slug": "concurrency-control-advanced",
+    "title": "Advanced Concurrency Control in DBMS",
+    "description": "2PL variants, timestamp ordering, MVCC, multiple granularity locking, and deadlock handling schemes.",
+    "date": "2026-03-20",
+    "section": "Databases"
+  },
+  {
+    "slug": "network-security-basics",
+    "title": "Network Security Fundamentals",
+    "description": "RSA, Diffie-Hellman, digital signatures, SSL/TLS handshake, firewalls, and IPSec protocols.",
+    "date": "2026-03-20",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "congestion-control-deep-dive",
+    "title": "TCP Congestion Control — Deep Dive",
+    "description": "Slow start, congestion avoidance, fast retransmit/recovery, TCP Tahoe vs Reno vs CUBIC with numerical examples.",
+    "date": "2026-03-20",
+    "section": "Computer Networks"
+  },
+  {
+    "slug": "np-completeness",
+    "title": "NP-Completeness and Computational Complexity",
+    "description": "P, NP, NP-hard, NP-complete classes, Cook-Levin theorem, reductions, and key NPC problems.",
+    "date": "2026-03-20",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "string-matching-algorithms",
+    "title": "String Matching Algorithms",
+    "description": "Naive, Rabin-Karp, KMP prefix table, Boyer-Moore, and finite automaton matchers with worked examples.",
+    "date": "2026-03-20",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "backtracking-branch-bound",
+    "title": "Backtracking and Branch & Bound",
+    "description": "N-Queens, graph coloring, 0/1 knapsack, TSP with state space trees and bounding functions.",
+    "date": "2026-03-20",
+    "section": "Algorithms"
+  },
+  {
+    "slug": "closure-decision-properties",
+    "title": "Closure Properties and Decision Problems",
+    "description": "Closure under operations for Regular, CFL, Recursive, RE languages and decidability of key problems.",
+    "date": "2026-03-20",
+    "section": "Theory of Computation"
+  },
+  {
+    "slug": "complexity-classes",
+    "title": "Complexity Classes — P, NP, PSPACE, and Beyond",
+    "description": "P, NP, co-NP, PSPACE, Savitch's theorem, hierarchy theorems, and Karp vs Turing reductions.",
+    "date": "2026-03-20",
+    "section": "Theory of Computation"
   }
 ]

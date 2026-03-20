@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Scheduling and Advanced CPU Scheduling — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Operating System</span>
+<h1>Real-Time Scheduling and Advanced CPU Scheduling</h1>
+<p><em>Reference: Silberschatz, Galvin, Gagne &mdash; Operating System Concepts (Chapters 5&ndash;6)</em></p>
+
+<p>
+This article covers advanced CPU scheduling topics that are heavily tested in GATE CS: real-time scheduling algorithms (Rate Monotonic and Earliest Deadline First), multiprocessor scheduling strategies, thread scheduling, the Linux CFS scheduler, and the critical problem of priority inversion. Each concept is explained with rigorous detail, formulas, diagrams, and worked numerical problems.
+</p>
+
+<!-- ============================================================ -->
+<h2>1. Real-Time Systems: Overview</h2>
+<!-- ============================================================ -->
+
+<p>
+A <strong>real-time system</strong> is one in which the correctness of a computation depends not only on its logical result but also on the <strong>time at which the result is produced</strong>. Missing a deadline can range from inconvenient to catastrophic.
+</p>
+
+<h3>1.1 Hard Real-Time vs Soft Real-Time</h3>
+
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Hard Real-Time</th>
+    <th>Soft Real-Time</th>
+  </tr>
+  <tr>
+    <td>Deadline</td>
+    <td>Must ALWAYS be met; missing a deadline = system failure</td>
+    <td>Deadlines are desirable but not critical; occasional misses are tolerable</td>
+  </tr>
+  <tr>
+    <td>Consequence of miss</td>
+    <td>Catastrophic (e.g., aircraft control, pacemaker)</td>
+    <td>Degraded quality (e.g., video buffering, audio glitch)</td>
+  </tr>
+  <tr>
+    <td>Examples</td>
+    <td>Anti-lock braking (ABS), nuclear reactor control, airbag deployment</td>
+    <td>Multimedia streaming, VoIP, online gaming</td>
+  </tr>
+  <tr>
+    <td>OS Support</td>
+    <td>Specialized RTOS (VxWorks, QNX, FreeRTOS)</td>
+    <td>General-purpose OS with priority scheduling (Linux with PREEMPT_RT)</td>
+  </tr>
+  <tr>
+    <td>Scheduling guarantee</td>
+    <td>Must provide schedulability guarantee before task admission</td>
+    <td>Best-effort scheduling with priority over non-real-time tasks</td>
+  </tr>
+</table>
+
+<h3>1.2 Real-Time Task Model</h3>
+
+<p>A periodic real-time task <em>T<sub>i</sub></em> is characterized by:</p>
+<ul>
+  <li><strong>Period (p<sub>i</sub>):</strong> The task repeats every p<sub>i</sub> time units.</li>
+  <li><strong>Computation time / Execution time (C<sub>i</sub>):</strong> Worst-case execution time (WCET) per invocation.</li>
+  <li><strong>Deadline (d<sub>i</sub>):</strong> The task must complete within d<sub>i</sub> time units of its release. Often d<sub>i</sub> = p<sub>i</sub> (implicit deadline).</li>
+  <li><strong>Utilization (U<sub>i</sub>):</strong> U<sub>i</sub> = C<sub>i</sub> / p<sub>i</sub> &mdash; the fraction of CPU time consumed by task <em>T<sub>i</sub></em>.</li>
+</ul>
+
+<p>The <strong>total CPU utilization</strong> is:</p>
+<pre><code>U = sum(C_i / p_i) for all tasks i = 1 to n</code></pre>
+
+<div class="important">
+<strong>Necessary Condition for Schedulability:</strong> For any scheduling algorithm, U &le; 1 is necessary (you cannot use more than 100% of the CPU). If U &gt; 1, no scheduling algorithm can meet all deadlines.
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Rate Monotonic Scheduling (RMS)</h2>
+<!-- ============================================================ -->
+
+<p>
+Rate Monotonic Scheduling is a <strong>static-priority, preemptive</strong> scheduling algorithm for periodic real-time tasks, proposed by Liu and Layland (1973).
+</p>
+
+<h3>2.1 Priority Assignment Rule</h3>
+
+<div class="important">
+<strong>RMS Rule:</strong> Tasks with <strong>shorter periods</strong> get <strong>higher priority</strong>. Priority is inversely proportional to the period.
+<br/><br/>
+If p<sub>1</sub> &lt; p<sub>2</sub> &lt; p<sub>3</sub>, then Priority(T<sub>1</sub>) &gt; Priority(T<sub>2</sub>) &gt; Priority(T<sub>3</sub>).
+<br/><br/>
+Priorities are <strong>fixed</strong> (static) and assigned at design time. They do not change during execution.
+</div>
+
+<h3>2.2 Schedulability Test (Liu-Layland Bound)</h3>
+
+<p>RMS can guarantee that all tasks meet their deadlines if:</p>
+
+<pre><code>U = sum(C_i / p_i) &le; n * (2^(1/n) - 1)</code></pre>
+
+<p>where <em>n</em> is the number of tasks. This is a <strong>sufficient condition</strong> (not necessary). If the condition holds, the task set is definitely schedulable. If it does not hold, the task set <em>may or may not</em> be schedulable (further analysis needed).</p>
+
+<table>
+  <tr>
+    <th>n (tasks)</th>
+    <th>Utilization Bound: n(2<sup>1/n</sup> - 1)</th>
+    <th>Approximate Value</th>
+  </tr>
+  <tr><td>1</td><td>1 * (2<sup>1</sup> - 1) = 1.000</td><td>100.0%</td></tr>
+  <tr><td>2</td><td>2 * (2<sup>1/2</sup> - 1) = 2(1.414 - 1)</td><td>82.8%</td></tr>
+  <tr><td>3</td><td>3 * (2<sup>1/3</sup> - 1) = 3(1.260 - 1)</td><td>78.0%</td></tr>
+  <tr><td>4</td><td>4 * (2<sup>1/4</sup> - 1) = 4(1.189 - 1)</td><td>75.7%</td></tr>
+  <tr><td>5</td><td>5 * (2<sup>1/5</sup> - 1) = 5(1.149 - 1)</td><td>74.3%</td></tr>
+  <tr><td>&infin;</td><td>ln(2)</td><td>69.3%</td></tr>
+</table>
+
+<div class="note">
+<strong>GATE Tip:</strong> As n &rarr; &infin;, the utilization bound converges to <strong>ln(2) &asymp; 0.693</strong> (about 69.3%). This means RMS can always guarantee schedulability if total utilization is at most 69.3%, regardless of the number of tasks.
+</div>
+
+<h3>2.3 Worked Example 1: Two Tasks under RMS</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>Task T<sub>1</sub>: C<sub>1</sub> = 1, p<sub>1</sub> = 4</li>
+  <li>Task T<sub>2</sub>: C<sub>2</sub> = 2, p<sub>2</sub> = 6</li>
+</ul>
+
+<p><strong>Step 1: Compute utilization</strong></p>
+<pre><code>U = C1/p1 + C2/p2 = 1/4 + 2/6 = 0.25 + 0.333 = 0.583</code></pre>
+
+<p><strong>Step 2: Check Liu-Layland bound for n = 2</strong></p>
+<pre><code>Bound = 2 * (2^(1/2) - 1) = 2 * 0.414 = 0.828</code></pre>
+
+<p>Since 0.583 &le; 0.828, the task set is <strong>schedulable under RMS</strong>.</p>
+
+<p><strong>Step 3: Assign priorities</strong></p>
+<ul>
+  <li>T<sub>1</sub> has shorter period (4 &lt; 6), so T<sub>1</sub> gets higher priority.</li>
+</ul>
+
+<p><strong>Step 4: Draw the schedule (LCM of periods = 12)</strong></p>
+
+<div class="mermaid">
+gantt
+    title RMS Schedule for T1(C=1,p=4) and T2(C=2,p=6) over LCM=12
+    dateFormat X
+    axisFormat %s
+
+    section T1 (High Priority)
+    T1 instance 1    :a1, 0, 1
+    T1 instance 2    :a2, 4, 5
+    T1 instance 3    :a3, 8, 9
+
+    section T2 (Low Priority)
+    T2 instance 1    :b1, 1, 3
+    T2 instance 2    :b2, 5, 7
+</div>
+
+<p><strong>Timeline Analysis:</strong></p>
+<table>
+  <tr><th>Time</th><th>Running</th><th>Notes</th></tr>
+  <tr><td>0-1</td><td>T1</td><td>T1 released at t=0, runs immediately (higher priority)</td></tr>
+  <tr><td>1-3</td><td>T2</td><td>T2 released at t=0, runs after T1 finishes. Needs 2 units.</td></tr>
+  <tr><td>3-4</td><td>Idle</td><td>Both tasks completed their current instances</td></tr>
+  <tr><td>4-5</td><td>T1</td><td>T1 released again at t=4</td></tr>
+  <tr><td>5-7</td><td>T2</td><td>T2 released at t=6, but T1 finished at t=5. T2 starts at 5 (released at 6? No, wait...)</td></tr>
+</table>
+
+<p>Let us be more careful with the timeline:</p>
+<ul>
+  <li><strong>t=0:</strong> T1 and T2 both released. T1 runs (higher priority).</li>
+  <li><strong>t=1:</strong> T1 completes. T2 starts.</li>
+  <li><strong>t=3:</strong> T2 completes. CPU idle.</li>
+  <li><strong>t=4:</strong> T1 released. T1 runs.</li>
+  <li><strong>t=5:</strong> T1 completes. CPU idle.</li>
+  <li><strong>t=6:</strong> T2 released. T2 starts.</li>
+  <li><strong>t=8:</strong> T1 released. T2 has been running from t=6 and needs 2 units, so T2 completes at t=8. T1 preempts... but T2 finishes exactly at t=8. T1 starts.</li>
+  <li><strong>t=9:</strong> T1 completes. CPU idle.</li>
+  <li><strong>t=12:</strong> Cycle repeats (LCM).</li>
+</ul>
+<p>All deadlines are met. T1 always finishes within its period of 4. T2 always finishes within its period of 6.</p>
+
+<h3>2.4 Worked Example 2: Three Tasks under RMS (Fails Bound but Still Schedulable)</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>T<sub>1</sub>: C<sub>1</sub> = 1, p<sub>1</sub> = 3</li>
+  <li>T<sub>2</sub>: C<sub>2</sub> = 1, p<sub>2</sub> = 5</li>
+  <li>T<sub>3</sub>: C<sub>3</sub> = 1, p<sub>3</sub> = 7</li>
+</ul>
+
+<p><strong>Step 1: Compute utilization</strong></p>
+<pre><code>U = 1/3 + 1/5 + 1/7 = 0.333 + 0.200 + 0.143 = 0.676</code></pre>
+
+<p><strong>Step 2: Check Liu-Layland bound for n = 3</strong></p>
+<pre><code>Bound = 3 * (2^(1/3) - 1) = 3 * 0.2599 = 0.780</code></pre>
+
+<p>Since 0.676 &le; 0.780, the task set <strong>passes</strong> the utilization bound test and is <strong>guaranteed schedulable under RMS</strong>.</p>
+
+<h3>2.5 Worked Example 3: RMS Failure Case</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>T<sub>1</sub>: C<sub>1</sub> = 1, p<sub>1</sub> = 2</li>
+  <li>T<sub>2</sub>: C<sub>2</sub> = 2, p<sub>2</sub> = 5</li>
+</ul>
+
+<p><strong>Step 1: Compute utilization</strong></p>
+<pre><code>U = 1/2 + 2/5 = 0.5 + 0.4 = 0.9</code></pre>
+
+<p><strong>Step 2: Check Liu-Layland bound for n = 2</strong></p>
+<pre><code>Bound = 2 * (2^(1/2) - 1) = 0.828</code></pre>
+
+<p>Since 0.9 > 0.828, the bound test <strong>fails</strong>. But remember, the bound is only a sufficient condition. We need to check the actual schedule.</p>
+
+<p><strong>Step 3: Construct the schedule (LCM = 10)</strong></p>
+<ul>
+  <li><strong>t=0:</strong> T1 released, T2 released. T1 runs (higher priority, shorter period).</li>
+  <li><strong>t=1:</strong> T1 completes. T2 starts.</li>
+  <li><strong>t=2:</strong> T1 released again. T2 has run 1 unit (needs 1 more). T1 preempts T2.</li>
+  <li><strong>t=3:</strong> T1 completes. T2 resumes (1 unit remaining).</li>
+  <li><strong>t=4:</strong> T2 completes. (Deadline was t=5. Met!)</li>
+  <li><strong>t=4-5:</strong> CPU idle.</li>
+  <li><strong>t=5:</strong> T2 released again. T2 starts.</li>
+  <li><strong>t=6:</strong> T1 released. T2 has run 1 unit. T1 preempts.</li>
+  <li><strong>t=7:</strong> T1 completes. T2 resumes (1 unit remaining).</li>
+  <li><strong>t=8:</strong> T1 released. T2 completes at t=8. T1 starts.</li>
+  <li><strong>t=9:</strong> T1 completes. Idle.</li>
+  <li><strong>t=10:</strong> T2 deadline at t=10. T2 completed at t=8. Met!</li>
+</ul>
+
+<div class="note">
+<strong>Result:</strong> Despite failing the utilization bound test, this task set IS schedulable under RMS. This illustrates that the Liu-Layland bound is <strong>sufficient but not necessary</strong>. To definitively determine schedulability when the bound fails, construct the actual schedule over the hyperperiod (LCM of all periods).
+</div>
+
+<!-- ============================================================ -->
+<h2>3. Earliest Deadline First (EDF)</h2>
+<!-- ============================================================ -->
+
+<p>
+EDF is a <strong>dynamic-priority, preemptive</strong> scheduling algorithm. It assigns priorities based on absolute deadlines: the task with the <strong>nearest (earliest) deadline</strong> gets the highest priority.
+</p>
+
+<h3>3.1 Key Properties</h3>
+<ul>
+  <li><strong>Dynamic priorities:</strong> A task's priority changes over time as new instances arrive with new deadlines.</li>
+  <li><strong>Optimal:</strong> EDF is optimal among all preemptive scheduling algorithms for uniprocessor systems. If any algorithm can schedule a task set, EDF can too.</li>
+  <li><strong>Preemptive:</strong> When a new task arrives with an earlier deadline than the currently running task, it preempts immediately.</li>
+</ul>
+
+<h3>3.2 Schedulability Condition</h3>
+
+<div class="important">
+<strong>EDF Schedulability (Necessary and Sufficient for Implicit-Deadline Tasks):</strong>
+<pre><code>U = sum(C_i / p_i) &le; 1</code></pre>
+A task set with implicit deadlines (d<sub>i</sub> = p<sub>i</sub>) is schedulable under EDF <strong>if and only if</strong> the total utilization U &le; 1.
+<br/><br/>
+This is a much better bound than RMS (which converges to 69.3%). EDF can fully utilize the CPU (100%).
+</div>
+
+<h3>3.3 Worked Example 1: Two Tasks under EDF</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>T<sub>1</sub>: C<sub>1</sub> = 1, p<sub>1</sub> = 2</li>
+  <li>T<sub>2</sub>: C<sub>2</sub> = 3, p<sub>2</sub> = 5</li>
+</ul>
+
+<p><strong>Utilization:</strong></p>
+<pre><code>U = 1/2 + 3/5 = 0.5 + 0.6 = 1.1 > 1</code></pre>
+
+<p>Since U > 1, this task set is <strong>NOT schedulable under any algorithm</strong>, including EDF.</p>
+
+<h3>3.4 Worked Example 2: EDF Succeeds Where RMS Fails</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>T<sub>1</sub>: C<sub>1</sub> = 2, p<sub>1</sub> = 5</li>
+  <li>T<sub>2</sub>: C<sub>2</sub> = 4, p<sub>2</sub> = 7</li>
+</ul>
+
+<p><strong>Step 1: Utilization</strong></p>
+<pre><code>U = 2/5 + 4/7 = 0.400 + 0.571 = 0.971</code></pre>
+
+<p><strong>RMS bound check (n=2):</strong> 0.971 > 0.828, so RMS bound fails.</p>
+<p><strong>EDF check:</strong> 0.971 &le; 1.0, so EDF <strong>guarantees schedulability</strong>.</p>
+
+<p><strong>Step 2: Construct EDF Schedule (LCM = 35)</strong></p>
+
+<p>Let us trace the first few time units. At each scheduling decision, the task with the nearest absolute deadline runs.</p>
+
+<table>
+  <tr><th>Time</th><th>Ready Tasks (deadline)</th><th>Running</th><th>Notes</th></tr>
+  <tr><td>0</td><td>T1(d=5), T2(d=7)</td><td>T1</td><td>T1 has earlier deadline</td></tr>
+  <tr><td>2</td><td>T2(d=7)</td><td>T2</td><td>T1 done, T2 runs</td></tr>
+  <tr><td>5</td><td>T1(d=10), T2(d=7, remaining=1)</td><td>T2</td><td>T1 arrives, but T2 deadline (7) < T1 deadline (10)</td></tr>
+  <tr><td>6</td><td>T1(d=10)</td><td>T1</td><td>T2 done, T1 runs</td></tr>
+  <tr><td>7</td><td>T1(d=10, remaining=1), T2(d=14)</td><td>T1</td><td>T2 arrives, but T1 deadline (10) < T2 deadline (14)</td></tr>
+  <tr><td>8</td><td>T2(d=14)</td><td>T2</td><td>T1 done, T2 runs</td></tr>
+  <tr><td>10</td><td>T1(d=15), T2(d=14, remaining=2)</td><td>T2</td><td>T1 arrives, T2 deadline (14) < T1 deadline (15)</td></tr>
+  <tr><td>12</td><td>T1(d=15)</td><td>T1</td><td>T2 done, T1 runs</td></tr>
+  <tr><td>14</td><td>T1(d=15, remaining=0), T2(d=21)</td><td>T2</td><td>T1 completed at 14, T2 starts</td></tr>
+</table>
+
+<p>All deadlines are met. EDF achieves near-100% utilization.</p>
+
+<h3>3.5 Worked Example 3: Detailed EDF vs RMS Comparison</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>T<sub>1</sub>: C<sub>1</sub> = 1, p<sub>1</sub> = 3</li>
+  <li>T<sub>2</sub>: C<sub>2</sub> = 3, p<sub>2</sub> = 8</li>
+</ul>
+
+<p><strong>Utilization:</strong> U = 1/3 + 3/8 = 0.333 + 0.375 = <strong>0.708</strong></p>
+
+<p><strong>RMS check (n=2):</strong> 0.708 &le; 0.828 &rArr; <strong>Schedulable under RMS</strong>.</p>
+<p><strong>EDF check:</strong> 0.708 &le; 1.0 &rArr; <strong>Schedulable under EDF</strong>.</p>
+
+<p>Both algorithms work here. Under RMS, T<sub>1</sub> always has higher priority (period 3 < 8). Under EDF, priorities shift dynamically based on nearest deadline.</p>
+
+<!-- ============================================================ -->
+<h2>4. RMS vs EDF: Comprehensive Comparison</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Property</th>
+    <th>RMS (Rate Monotonic)</th>
+    <th>EDF (Earliest Deadline First)</th>
+  </tr>
+  <tr>
+    <td>Priority Type</td>
+    <td>Static (fixed at design time)</td>
+    <td>Dynamic (changes at runtime)</td>
+  </tr>
+  <tr>
+    <td>Priority Rule</td>
+    <td>Shorter period = higher priority</td>
+    <td>Earlier absolute deadline = higher priority</td>
+  </tr>
+  <tr>
+    <td>Optimality</td>
+    <td>Optimal among <strong>static-priority</strong> algorithms</td>
+    <td>Optimal among <strong>all preemptive</strong> algorithms (uniprocessor)</td>
+  </tr>
+  <tr>
+    <td>Schedulability Bound</td>
+    <td>n(2<sup>1/n</sup> - 1); converges to ~69.3%</td>
+    <td>100% (U &le; 1 is both necessary and sufficient)</td>
+  </tr>
+  <tr>
+    <td>CPU Utilization</td>
+    <td>Leaves up to ~30.7% CPU unused in worst case</td>
+    <td>Can fully utilize the CPU</td>
+  </tr>
+  <tr>
+    <td>Implementation Complexity</td>
+    <td>Simple &mdash; priorities never change</td>
+    <td>More complex &mdash; must track absolute deadlines, recompute priorities</td>
+  </tr>
+  <tr>
+    <td>Overload Behavior</td>
+    <td>Low-priority tasks miss deadlines first (predictable)</td>
+    <td>Unpredictable domino effect &mdash; multiple tasks can miss deadlines</td>
+  </tr>
+  <tr>
+    <td>Context Switches</td>
+    <td>Fewer (static priorities, less preemption)</td>
+    <td>More (priorities change, more preemptions)</td>
+  </tr>
+  <tr>
+    <td>Practical Usage</td>
+    <td>Widely used in RTOS (safety-critical systems)</td>
+    <td>Used when high utilization is needed</td>
+  </tr>
+</table>
+
+<div class="note">
+<strong>GATE Tip:</strong> If the question asks "which algorithm can schedule this task set?" &mdash; check EDF first (U &le; 1). If yes, EDF can schedule it. For RMS, you need the tighter bound. RMS is optimal among static-priority algorithms, meaning no other fixed-priority scheme can do better.
+</div>
+
+<!-- ============================================================ -->
+<h2>5. Proportional Share Scheduling</h2>
+<!-- ============================================================ -->
+
+<p>
+In proportional share (or fair share) scheduling, each process receives a guaranteed share of the CPU proportional to assigned <em>shares</em> or <em>tickets</em>.
+</p>
+
+<p><strong>Example:</strong> If process A has 50 shares and process B has 150 shares out of a total of 200 shares:</p>
+<ul>
+  <li>A gets 50/200 = 25% of CPU time</li>
+  <li>B gets 150/200 = 75% of CPU time</li>
+</ul>
+
+<p><strong>Lottery Scheduling</strong> is a probabilistic implementation: each process holds lottery tickets, and at each scheduling decision, a ticket is drawn randomly. Over time, the proportion converges to the share ratio.</p>
+
+<p><strong>Admission Control:</strong> A new process requesting <em>t</em> shares is admitted only if the total shares including <em>t</em> do not exceed the CPU capacity.</p>
+
+<!-- ============================================================ -->
+<h2>6. Multiprocessor Scheduling</h2>
+<!-- ============================================================ -->
+
+<p>
+When a system has multiple CPUs (or cores), scheduling becomes more complex. We must decide how to assign processes to processors and how to balance load.
+</p>
+
+<h3>6.1 Asymmetric vs Symmetric Multiprocessing</h3>
+
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Asymmetric Multiprocessing (AMP)</th>
+    <th>Symmetric Multiprocessing (SMP)</th>
+  </tr>
+  <tr>
+    <td>Scheduling Decisions</td>
+    <td>One master processor handles all scheduling</td>
+    <td>Each processor is self-scheduling</td>
+  </tr>
+  <tr>
+    <td>Ready Queue</td>
+    <td>Single shared queue managed by master</td>
+    <td>Common ready queue OR per-processor queues</td>
+  </tr>
+  <tr>
+    <td>Complexity</td>
+    <td>Simpler (no need for synchronization of scheduler data)</td>
+    <td>More complex (need to synchronize access to shared queue)</td>
+  </tr>
+  <tr>
+    <td>Bottleneck</td>
+    <td>Master processor can become a bottleneck</td>
+    <td>Lock contention on shared ready queue</td>
+  </tr>
+  <tr>
+    <td>Modern Usage</td>
+    <td>Rare (used in some embedded systems)</td>
+    <td>Standard in modern OSes (Linux, Windows, macOS)</td>
+  </tr>
+</table>
+
+<div class="mermaid">
+graph TB
+    subgraph "Asymmetric Multiprocessing"
+        MASTER["Master CPU<br/>(scheduling)"]
+        SLAVE1["CPU 1<br/>(slave)"]
+        SLAVE2["CPU 2<br/>(slave)"]
+        SLAVE3["CPU 3<br/>(slave)"]
+        RQ1["Single Ready Queue"]
+        MASTER --> RQ1
+        RQ1 --> SLAVE1
+        RQ1 --> SLAVE2
+        RQ1 --> SLAVE3
+    end
+</div>
+
+<div class="mermaid">
+graph TB
+    subgraph "SMP with Per-Processor Queues"
+        CPU_A["CPU 0"]
+        CPU_B["CPU 1"]
+        CPU_C["CPU 2"]
+        Q_A["Queue 0"]
+        Q_B["Queue 1"]
+        Q_C["Queue 2"]
+        CPU_A --> Q_A
+        CPU_B --> Q_B
+        CPU_C --> Q_C
+    end
+</div>
+
+<h3>6.2 Processor Affinity</h3>
+
+<p>
+When a process runs on a particular processor, the processor's cache becomes populated with the process's data (warm cache). Migrating the process to another processor means starting with a cold cache, which hurts performance. <strong>Processor affinity</strong> refers to the tendency to keep a process on the same processor.
+</p>
+
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Implementation</th>
+  </tr>
+  <tr>
+    <td><strong>Soft Affinity</strong></td>
+    <td>OS tries to keep process on same CPU but may migrate if needed for load balancing</td>
+    <td>Default behavior in most SMP OSes</td>
+  </tr>
+  <tr>
+    <td><strong>Hard Affinity</strong></td>
+    <td>Process is bound to a specific CPU (or set of CPUs) and will NOT be migrated</td>
+    <td>Linux: <code>sched_setaffinity()</code> or <code>taskset</code> command</td>
+  </tr>
+</table>
+
+<h3>6.3 Load Balancing</h3>
+
+<p>In SMP systems with per-processor queues, load can become uneven. <strong>Load balancing</strong> redistributes processes across CPUs.</p>
+
+<table>
+  <tr>
+    <th>Strategy</th>
+    <th>Mechanism</th>
+    <th>Trigger</th>
+  </tr>
+  <tr>
+    <td><strong>Push Migration</strong></td>
+    <td>A dedicated task periodically checks load on each CPU. If imbalanced, it <em>pushes</em> processes from overloaded CPUs to underloaded ones.</td>
+    <td>Periodic (timer-based)</td>
+  </tr>
+  <tr>
+    <td><strong>Pull Migration</strong></td>
+    <td>An idle CPU <em>pulls</em> a waiting process from a busy CPU's queue.</td>
+    <td>Event-driven (when CPU becomes idle)</td>
+  </tr>
+</table>
+
+<div class="note">
+<strong>GATE Tip:</strong> Push and pull migration are not mutually exclusive. Linux uses both. Load balancing often conflicts with processor affinity &mdash; the OS must balance these competing goals.
+</div>
+
+<div class="mermaid">
+graph LR
+    subgraph "Before Load Balancing"
+        C0_before["CPU 0: 5 tasks"]
+        C1_before["CPU 1: 1 task"]
+    end
+    subgraph "After Push Migration"
+        C0_after["CPU 0: 3 tasks"]
+        C1_after["CPU 1: 3 tasks"]
+    end
+    C0_before -->|"push 2 tasks"| C1_after
+</div>
+
+<h3>6.4 NUMA-Aware Scheduling</h3>
+
+<p>
+In <strong>Non-Uniform Memory Access (NUMA)</strong> systems, each CPU has its own local memory, and accessing remote memory (attached to another CPU) is slower.
+</p>
+
+<div class="mermaid">
+graph LR
+    subgraph "NUMA Node 0"
+        CPU0["CPU 0"]
+        MEM0["Memory 0"]
+        CPU0 <-->|"fast"| MEM0
+    end
+    subgraph "NUMA Node 1"
+        CPU1["CPU 1"]
+        MEM1["Memory 1"]
+        CPU1 <-->|"fast"| MEM1
+    end
+    CPU0 <-->|"slow (interconnect)"| MEM1
+    CPU1 <-->|"slow (interconnect)"| MEM0
+</div>
+
+<p><strong>NUMA-aware scheduling</strong> means:</p>
+<ul>
+  <li>Schedule a process on a CPU that is in the same NUMA node as its memory allocation.</li>
+  <li>Allocate memory on the NUMA node where the process is running.</li>
+  <li>Avoid migrating processes across NUMA nodes (as it separates process from its memory).</li>
+</ul>
+
+<div class="important">
+<strong>Key Insight:</strong> In NUMA systems, processor affinity becomes even more important because migrating a process to a different NUMA node means all its memory accesses become remote (slower). The scheduler must be NUMA-aware to achieve good performance.
+</div>
+
+<!-- ============================================================ -->
+<h2>7. Thread Scheduling: PCS vs SCS</h2>
+<!-- ============================================================ -->
+
+<p>
+Thread scheduling depends on the threading model. The OS scheduler schedules <strong>kernel threads</strong> (not user threads directly).
+</p>
+
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Process-Contention Scope (PCS)</th>
+    <th>System-Contention Scope (SCS)</th>
+  </tr>
+  <tr>
+    <td>Scope</td>
+    <td>Threads within the SAME process compete for CPU</td>
+    <td>Threads across ALL processes compete for CPU</td>
+  </tr>
+  <tr>
+    <td>Used With</td>
+    <td>Many-to-one and many-to-many models</td>
+    <td>One-to-one model</td>
+  </tr>
+  <tr>
+    <td>Scheduler</td>
+    <td>User-level thread library schedules user threads onto available LWPs (kernel threads)</td>
+    <td>OS kernel directly schedules each thread onto a CPU</td>
+  </tr>
+  <tr>
+    <td>Priority</td>
+    <td>Priority set by programmer; competition within process</td>
+    <td>Priority used by kernel; competition system-wide</td>
+  </tr>
+  <tr>
+    <td>Examples</td>
+    <td>Solaris (M:M model)</td>
+    <td>Linux, Windows (1:1 model)</td>
+  </tr>
+</table>
+
+<div class="note">
+<strong>Linux Threading:</strong> Linux uses the 1:1 model (each user thread maps to one kernel thread), so all thread scheduling is SCS. The kernel treats each thread as an independently schedulable entity via the <code>clone()</code> system call.
+</div>
+
+<!-- ============================================================ -->
+<h2>8. Linux CFS (Completely Fair Scheduler)</h2>
+<!-- ============================================================ -->
+
+<p>
+The <strong>Completely Fair Scheduler (CFS)</strong> has been the default Linux CPU scheduler since kernel 2.6.23 (2007). It aims to allocate CPU time fairly among all runnable tasks.
+</p>
+
+<h3>8.1 Key Concepts</h3>
+
+<ul>
+  <li><strong>Virtual Runtime (vruntime):</strong> Each task has a <code>vruntime</code> counter that tracks how much CPU time it has received, weighted by its priority (nice value). A task with lower priority accumulates vruntime faster.</li>
+  <li><strong>Scheduling Decision:</strong> CFS always picks the task with the <strong>smallest vruntime</strong> to run next.</li>
+  <li><strong>Red-Black Tree:</strong> Runnable tasks are stored in a self-balancing red-black tree, ordered by vruntime. The leftmost node (smallest vruntime) is selected in O(1) time (cached). Insertion and deletion are O(log n).</li>
+  <li><strong>Time Slice:</strong> CFS does not use fixed time quanta. Instead, each task's "time slice" is proportional to its weight (priority) relative to all runnable tasks. The <strong>targeted latency</strong> (sched_latency) defines the period in which every runnable task should run at least once.</li>
+  <li><strong>Nice Values:</strong> Range from -20 (highest priority) to +19 (lowest priority). Default is 0. Each nice level corresponds to roughly a 10% change in CPU share (actually a factor of 1.25).</li>
+</ul>
+
+<div class="mermaid">
+graph TB
+    RBT["Red-Black Tree<br/>(ordered by vruntime)"]
+    LEFT["Leftmost Node<br/>(smallest vruntime)"]
+    RBT --> LEFT
+    LEFT -->|"Selected to run"| CPU_CFS["CPU"]
+    CPU_CFS -->|"Update vruntime"| RBT
+</div>
+
+<h3>8.2 CFS Weight Calculation</h3>
+
+<p>The weight of a task with nice value <em>n</em> is approximately:</p>
+<pre><code>weight(n) = 1024 / (1.25^n)
+
+Examples:
+  nice 0  -> weight = 1024
+  nice 1  -> weight = 1024 / 1.25 = 820 (approximately)
+  nice -1 -> weight = 1024 * 1.25 = 1280 (approximately)
+</code></pre>
+
+<p>The proportion of CPU time a task receives:</p>
+<pre><code>CPU_share(i) = weight(i) / sum(weight(j)) for all runnable tasks j</code></pre>
+
+<p><strong>Example:</strong> Two tasks, A (nice 0, weight 1024) and B (nice 5, weight ~335):</p>
+<pre><code>CPU_share(A) = 1024 / (1024 + 335) = 75.3%
+CPU_share(B) = 335 / (1024 + 335) = 24.7%</code></pre>
+
+<h3>8.3 CFS Virtual Runtime Update</h3>
+
+<p>When a task runs for <em>delta</em> actual time:</p>
+<pre><code>vruntime += delta * (weight_of_nice_0 / weight_of_this_task)
+
+For nice 0 task:  vruntime += delta * (1024/1024) = delta
+For nice 5 task:  vruntime += delta * (1024/335)  = delta * 3.06</code></pre>
+
+<p>Higher-nice (lower priority) tasks accumulate vruntime <strong>faster</strong>, causing them to be selected less often.</p>
+
+<div class="important">
+<strong>Key Properties of CFS:</strong>
+<ul>
+  <li>No fixed time quantum &mdash; adapts to system load</li>
+  <li>O(log n) scheduling decisions (red-black tree)</li>
+  <li>Fair &mdash; all tasks of equal priority get equal CPU time</li>
+  <li>Starvation-free &mdash; every runnable task will eventually have the smallest vruntime</li>
+  <li>Does not distinguish between I/O-bound and CPU-bound tasks explicitly</li>
+</ul>
+</div>
+
+<!-- ============================================================ -->
+<h2>9. Priority Inversion and Priority Inheritance Protocol</h2>
+<!-- ============================================================ -->
+
+<p>
+<strong>Priority inversion</strong> is a scheduling anomaly where a higher-priority task is indirectly blocked by a lower-priority task, because a medium-priority task preempts the lower-priority task that holds a resource needed by the higher-priority task.
+</p>
+
+<h3>9.1 The Classic Priority Inversion Scenario</h3>
+
+<p>Consider three tasks: T<sub>H</sub> (high priority), T<sub>M</sub> (medium priority), T<sub>L</sub> (low priority), and a shared resource R protected by a lock.</p>
+
+<ol>
+  <li>T<sub>L</sub> starts running and acquires lock on R.</li>
+  <li>T<sub>H</sub> arrives, preempts T<sub>L</sub>, and tries to acquire R &rarr; blocked (T<sub>L</sub> holds it).</li>
+  <li>T<sub>M</sub> arrives. Since T<sub>H</sub> is blocked, T<sub>M</sub> runs (higher priority than T<sub>L</sub>).</li>
+  <li>T<sub>M</sub> runs to completion before T<sub>L</sub> can resume and release R.</li>
+  <li>Only after T<sub>M</sub> finishes can T<sub>L</sub> resume, release R, and finally T<sub>H</sub> runs.</li>
+</ol>
+
+<p><strong>Result:</strong> T<sub>H</sub> (highest priority) is effectively blocked by T<sub>M</sub> (medium priority), which doesn't even use the shared resource. This is <strong>unbounded priority inversion</strong> &mdash; the blocking time depends on medium-priority tasks, which can be arbitrarily long.</p>
+
+<div class="mermaid">
+gantt
+    title Priority Inversion Example
+    dateFormat X
+    axisFormat %s
+
+    section T_H (High)
+    Blocked waiting for R :crit, h1, 3, 9
+    Running               :h2, 9, 11
+
+    section T_M (Medium)
+    Running               :m1, 3, 8
+
+    section T_L (Low)
+    Running + holds R     :l1, 0, 3
+    Preempted             :done, l2, 3, 8
+    Resumes + releases R  :l3, 8, 9
+</div>
+
+<div class="important">
+<strong>Mars Pathfinder Bug (1997):</strong> The Mars Pathfinder rover experienced repeated system resets due to priority inversion. A low-priority meteorological task held a shared bus lock, was preempted by medium-priority tasks, and this blocked the high-priority bus management task. The watchdog timer detected the delay and triggered a system reset. NASA fixed it by enabling priority inheritance remotely.
+</div>
+
+<h3>9.2 Priority Inheritance Protocol (PIP)</h3>
+
+<p><strong>Solution:</strong> When a high-priority task is blocked by a lower-priority task holding a resource, temporarily <strong>raise the priority</strong> of the lower-priority task to that of the highest-priority task waiting for the resource.</p>
+
+<p>With priority inheritance applied to the scenario above:</p>
+<ol>
+  <li>T<sub>L</sub> starts, acquires lock on R.</li>
+  <li>T<sub>H</sub> arrives, tries to acquire R, is blocked.</li>
+  <li><strong>T<sub>L</sub>'s priority is raised to T<sub>H</sub>'s priority level.</strong></li>
+  <li>T<sub>M</sub> arrives but cannot preempt T<sub>L</sub> (because T<sub>L</sub> now has T<sub>H</sub>'s high priority).</li>
+  <li>T<sub>L</sub> finishes its critical section, releases R, and its priority drops back to normal.</li>
+  <li>T<sub>H</sub> acquires R and runs.</li>
+  <li>After T<sub>H</sub> finishes, T<sub>M</sub> runs.</li>
+</ol>
+
+<div class="mermaid">
+gantt
+    title Priority Inheritance Protocol
+    dateFormat X
+    axisFormat %s
+
+    section T_H (High)
+    Blocked waiting for R :crit, h1, 3, 5
+    Running               :h2, 5, 7
+
+    section T_M (Medium)
+    Waiting               :done, m1, 3, 7
+    Running               :m2, 7, 12
+
+    section T_L (Low, inherits H)
+    Running + holds R     :l1, 0, 3
+    Running (inherited H) :active, l3, 3, 5
+</div>
+
+<h3>9.3 Priority Ceiling Protocol (PCP)</h3>
+
+<p>An alternative to PIP that also prevents <strong>deadlocks</strong>:</p>
+<ul>
+  <li>Each resource is assigned a <strong>priority ceiling</strong> = the highest priority of any task that may access it.</li>
+  <li>A task can lock a resource only if its priority is strictly higher than the ceiling of every resource currently locked by other tasks.</li>
+  <li>This prevents circular waiting and thus prevents deadlocks.</li>
+</ul>
+
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Priority Inheritance (PIP)</th>
+    <th>Priority Ceiling (PCP)</th>
+  </tr>
+  <tr>
+    <td>Priority boost</td>
+    <td>Only when actual blocking occurs</td>
+    <td>Preemptive; based on resource ceilings</td>
+  </tr>
+  <tr>
+    <td>Deadlock prevention</td>
+    <td>Does NOT prevent deadlocks</td>
+    <td>Prevents deadlocks</td>
+  </tr>
+  <tr>
+    <td>Blocking bound</td>
+    <td>May experience chained blocking</td>
+    <td>At most one blocking per critical section</td>
+  </tr>
+  <tr>
+    <td>Complexity</td>
+    <td>Simpler to implement</td>
+    <td>Requires knowing all resource-task relationships at design time</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>10. Worked Numerical Problems</h2>
+<!-- ============================================================ -->
+
+<h3>Problem 1: RMS Schedulability with Three Tasks</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>T<sub>1</sub>: C<sub>1</sub> = 1, p<sub>1</sub> = 4</li>
+  <li>T<sub>2</sub>: C<sub>2</sub> = 2, p<sub>2</sub> = 6</li>
+  <li>T<sub>3</sub>: C<sub>3</sub> = 3, p<sub>3</sub> = 12</li>
+</ul>
+<p><strong>Question:</strong> Is this task set schedulable under RMS?</p>
+
+<p><strong>Solution:</strong></p>
+<pre><code>U = 1/4 + 2/6 + 3/12 = 0.250 + 0.333 + 0.250 = 0.833
+
+RMS bound for n=3: 3 * (2^(1/3) - 1) = 3 * 0.2599 = 0.780
+
+Since 0.833 > 0.780, the Liu-Layland bound test FAILS.
+</code></pre>
+
+<p>Since the bound test fails, we cannot conclude immediately. We must construct the actual schedule. The hyperperiod is LCM(4, 6, 12) = 12.</p>
+
+<p><strong>Priority order:</strong> T<sub>1</sub> > T<sub>2</sub> > T<sub>3</sub> (periods: 4 < 6 < 12)</p>
+
+<p><strong>Schedule construction:</strong></p>
+<table>
+  <tr><th>Time</th><th>Event</th><th>Running</th></tr>
+  <tr><td>0</td><td>All three released</td><td>T1 (highest priority)</td></tr>
+  <tr><td>1</td><td>T1 done</td><td>T2 (next highest)</td></tr>
+  <tr><td>3</td><td>T2 done</td><td>T3 (only remaining)</td></tr>
+  <tr><td>4</td><td>T1 released; T3 has run 1 unit</td><td>T1 preempts T3</td></tr>
+  <tr><td>5</td><td>T1 done; T3 needs 2 more</td><td>T3 resumes</td></tr>
+  <tr><td>6</td><td>T2 released; T3 has 1 unit left</td><td>T2 preempts T3</td></tr>
+  <tr><td>8</td><td>T1 released at t=8; T2 done at t=8</td><td>T1 runs</td></tr>
+  <tr><td>9</td><td>T1 done; T3 needs 1 more</td><td>T3 resumes</td></tr>
+  <tr><td>10</td><td>T3 done</td><td>Idle</td></tr>
+  <tr><td>12</td><td>New hyperperiod</td><td>&mdash;</td></tr>
+</table>
+
+<p><strong>Check deadlines:</strong></p>
+<ul>
+  <li>T1 instances: completed at 1, 5, 9 &rarr; deadlines 4, 8, 12 &mdash; all met.</li>
+  <li>T2 instances: completed at 3, 8 &rarr; deadlines 6, 12 &mdash; all met.</li>
+  <li>T3 instance: completed at 10 &rarr; deadline 12 &mdash; met.</li>
+</ul>
+
+<p><strong>Answer:</strong> Despite failing the utilization bound, the task set IS schedulable under RMS.</p>
+
+<h3>Problem 2: EDF Schedule Construction</h3>
+
+<p><strong>Given:</strong></p>
+<ul>
+  <li>T<sub>1</sub>: C<sub>1</sub> = 2, p<sub>1</sub> = 4</li>
+  <li>T<sub>2</sub>: C<sub>2</sub> = 3, p<sub>2</sub> = 6</li>
+</ul>
+
+<p><strong>Utilization:</strong> U = 2/4 + 3/6 = 0.5 + 0.5 = 1.0 &le; 1.0 &rArr; Schedulable under EDF.</p>
+
+<p><strong>Schedule (LCM = 12):</strong></p>
+<table>
+  <tr><th>Time</th><th>Ready Tasks (absolute deadlines)</th><th>Running</th></tr>
+  <tr><td>0</td><td>T1(d=4), T2(d=6)</td><td>T1 (earlier deadline)</td></tr>
+  <tr><td>2</td><td>T2(d=6)</td><td>T2</td></tr>
+  <tr><td>4</td><td>T1(d=8), T2(d=6, remaining=1)</td><td>T2 (deadline 6 < 8)</td></tr>
+  <tr><td>5</td><td>T1(d=8)</td><td>T1</td></tr>
+  <tr><td>6</td><td>T1(d=8, remaining=1), T2(d=12)</td><td>T1 (deadline 8 < 12)</td></tr>
+  <tr><td>7</td><td>T2(d=12)</td><td>T2</td></tr>
+  <tr><td>8</td><td>T1(d=12), T2(d=12, remaining=1)</td><td>T1 or T2 (same deadline; say T1)</td></tr>
+  <tr><td>10</td><td>T2(d=12, remaining=1)</td><td>T2</td></tr>
+  <tr><td>11</td><td>empty</td><td>Idle</td></tr>
+  <tr><td>12</td><td>New hyperperiod</td><td>&mdash;</td></tr>
+</table>
+
+<p>All deadlines met. Notice CPU is 100% utilized during the active period (0-11), with just 1 idle unit at t=11 (which is because the LCM allows it).</p>
+
+<h3>Problem 3: Determining Maximum Computation Time</h3>
+
+<p><strong>Given:</strong> Two tasks under RMS. T<sub>1</sub>: C<sub>1</sub> = 2, p<sub>1</sub> = 5. T<sub>2</sub>: p<sub>2</sub> = 10. What is the maximum C<sub>2</sub> such that the task set is guaranteed schedulable under RMS?</p>
+
+<p><strong>Solution:</strong> Using the Liu-Layland bound for n = 2:</p>
+<pre><code>U &le; 2(2^(1/2) - 1) = 0.828
+
+C1/p1 + C2/p2 &le; 0.828
+2/5 + C2/10 &le; 0.828
+0.4 + C2/10 &le; 0.828
+C2/10 &le; 0.428
+C2 &le; 4.28
+
+Since C2 must be an integer: C2_max = 4</code></pre>
+
+<p><strong>Verification:</strong> U = 2/5 + 4/10 = 0.4 + 0.4 = 0.8 &le; 0.828. Schedulable.</p>
+
+<h3>Problem 4: CFS CPU Share Calculation</h3>
+
+<p><strong>Given:</strong> Three processes with nice values: A (nice = 0), B (nice = 5), C (nice = -5). Calculate each process's CPU share.</p>
+
+<p><strong>Solution:</strong> Using approximate weights (weight(n) &asymp; 1024 / 1.25<sup>n</sup>):</p>
+<pre><code>weight(A) = 1024 / 1.25^0  = 1024
+weight(B) = 1024 / 1.25^5  = 1024 / 3.052 = 335
+weight(C) = 1024 / 1.25^-5 = 1024 * 3.052 = 3125
+
+Total weight = 1024 + 335 + 3125 = 4484
+
+CPU_share(A) = 1024 / 4484 = 22.8%
+CPU_share(B) = 335 / 4484  = 7.5%
+CPU_share(C) = 3125 / 4484 = 69.7%</code></pre>
+
+<p>Process C (nice = -5, highest priority) gets the lion's share of CPU time.</p>
+
+<h3>Problem 5: Priority Inversion Duration</h3>
+
+<p><strong>Given:</strong> T<sub>H</sub> (high), T<sub>M1</sub>, T<sub>M2</sub> (medium), T<sub>L</sub> (low). T<sub>L</sub> holds resource R for 5 time units. At t=1, T<sub>H</sub> arrives and needs R. At t=2, T<sub>M1</sub> arrives (execution time 3). At t=4, T<sub>M2</sub> arrives (execution time 2). Without priority inheritance, how long is T<sub>H</sub> blocked?</p>
+
+<p><strong>Solution (no priority inheritance):</strong></p>
+<ul>
+  <li>t=0: T<sub>L</sub> starts, acquires R.</li>
+  <li>t=1: T<sub>H</sub> arrives, needs R, blocked.</li>
+  <li>t=2: T<sub>M1</sub> arrives, preempts T<sub>L</sub>. T<sub>M1</sub> runs t=2 to t=5.</li>
+  <li>t=4: T<sub>M2</sub> arrives, but T<sub>M1</sub> is running (same or higher priority among mediums; say same priority, FCFS). T<sub>M2</sub> waits.</li>
+  <li>t=5: T<sub>M1</sub> finishes. T<sub>M2</sub> runs t=5 to t=7.</li>
+  <li>t=7: T<sub>L</sub> resumes. T<sub>L</sub> had run 2 units (t=0 to t=2), needs 3 more (if total critical section = 5 units total including initial 1 unit before T<sub>H</sub> arrived). T<sub>L</sub> was in critical section from t=0, ran 1 unit before T<sub>H</sub> at t=1, then preempted. Actually T<sub>L</sub> ran from 0 to 1 (1 unit done), then T<sub>H</sub> arrives and blocks, T<sub>L</sub> continues but T<sub>M1</sub> preempts at t=2. T<sub>L</sub> ran 1 more unit (t=1 to t=2). So T<sub>L</sub> has done 2 of 5 units. Needs 3 more.</li>
+  <li>t=7 to t=10: T<sub>L</sub> completes, releases R.</li>
+  <li>t=10: T<sub>H</sub> finally gets R and runs.</li>
+</ul>
+
+<p><strong>T<sub>H</sub> was blocked from t=1 to t=10 = 9 time units.</strong></p>
+
+<p><strong>With priority inheritance:</strong> T<sub>L</sub> inherits T<sub>H</sub>'s priority at t=1. T<sub>M1</sub> and T<sub>M2</sub> cannot preempt. T<sub>L</sub> finishes R at t=0+5=5 (ran 1 unit before t=1, inherits at t=1, continues uninterrupted for 4 more = t=5). T<sub>H</sub> blocked from t=1 to t=5 = <strong>4 time units</strong>. Much better!</p>
+
+<!-- ============================================================ -->
+<h2>11. Summary: Key Formulas</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Formula / Concept</th>
+    <th>Expression</th>
+  </tr>
+  <tr>
+    <td>CPU Utilization</td>
+    <td>U = &sum; (C<sub>i</sub> / p<sub>i</sub>)</td>
+  </tr>
+  <tr>
+    <td>RMS Bound (Liu-Layland)</td>
+    <td>U &le; n(2<sup>1/n</sup> &minus; 1)</td>
+  </tr>
+  <tr>
+    <td>RMS Bound as n &rarr; &infin;</td>
+    <td>U &le; ln(2) &asymp; 0.693</td>
+  </tr>
+  <tr>
+    <td>EDF Schedulability</td>
+    <td>U &le; 1 (necessary and sufficient for implicit deadlines)</td>
+  </tr>
+  <tr>
+    <td>RMS Priority Rule</td>
+    <td>Shorter period = higher priority</td>
+  </tr>
+  <tr>
+    <td>EDF Priority Rule</td>
+    <td>Earliest absolute deadline = highest priority</td>
+  </tr>
+  <tr>
+    <td>CFS vruntime update</td>
+    <td>vruntime += delta &times; (weight<sub>nice0</sub> / weight<sub>task</sub>)</td>
+  </tr>
+  <tr>
+    <td>CFS CPU share</td>
+    <td>share(i) = weight(i) / &sum; weight(j)</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>12. GATE Practice Quiz</h2>
+<!-- ============================================================ -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "Real-Time Scheduling and Advanced CPU Scheduling Quiz",
+  "questions": [
+    {
+      "question": "Q1. In Rate Monotonic Scheduling, priorities are assigned based on:",
+      "options": ["(A) Execution time -- shorter execution time gets higher priority", "(B) Period -- shorter period gets higher priority", "(C) Deadline -- earlier deadline gets higher priority", "(D) Arrival time -- earlier arrival gets higher priority"],
+      "answer": 1,
+      "explanation": "RMS is a static-priority algorithm where tasks with shorter periods receive higher priority. The intuition is that tasks with shorter periods repeat more frequently (higher rate), so they need to be serviced more often. This is the 'rate monotonic' part -- priority is monotonically related to rate."
+    },
+    {
+      "question": "Q2. What is the utilization bound for RMS with 3 periodic tasks?",
+      "options": ["(A) 0.693", "(B) 0.780", "(C) 0.828", "(D) 1.000"],
+      "answer": 1,
+      "explanation": "The Liu-Layland utilization bound for n tasks is n(2^(1/n) - 1). For n = 3: 3 * (2^(1/3) - 1) = 3 * (1.2599 - 1) = 3 * 0.2599 = 0.780 (approximately 78%). If total utilization is at most 78%, RMS guarantees all deadlines are met."
+    },
+    {
+      "question": "Q3. Given tasks T1(C=2, p=5) and T2(C=3, p=10), is this task set schedulable under EDF?",
+      "options": ["(A) Yes, because U = 0.7 <= 1", "(B) No, because U = 0.7 > 0.693", "(C) Yes, because U = 0.5 <= 1", "(D) Cannot be determined"],
+      "answer": 0,
+      "explanation": "U = C1/p1 + C2/p2 = 2/5 + 3/10 = 0.4 + 0.3 = 0.7. For EDF with implicit deadlines, the schedulability condition is U <= 1. Since 0.7 <= 1, the task set is schedulable under EDF. Note: it is also schedulable under RMS since 0.7 <= 0.828 (bound for n=2)."
+    },
+    {
+      "question": "Q4. Which statement about EDF vs RMS is INCORRECT?",
+      "options": ["(A) EDF can achieve 100% CPU utilization while RMS cannot", "(B) EDF uses dynamic priorities while RMS uses static priorities", "(C) RMS is optimal among all preemptive uniprocessor scheduling algorithms", "(D) EDF has more unpredictable behavior under overload than RMS"],
+      "answer": 2,
+      "explanation": "Statement (C) is incorrect. RMS is optimal among STATIC-PRIORITY preemptive algorithms, not among all preemptive algorithms. EDF is optimal among all preemptive uniprocessor scheduling algorithms. All other statements are correct: EDF achieves up to 100% utilization, uses dynamic priorities, and behaves unpredictably under overload."
+    },
+    {
+      "question": "Q5. In symmetric multiprocessing (SMP), which of the following load balancing strategies is triggered when a CPU becomes idle?",
+      "options": ["(A) Push migration", "(B) Pull migration", "(C) Both push and pull", "(D) Neither -- SMP does not support load balancing"],
+      "answer": 1,
+      "explanation": "Pull migration is triggered when a CPU becomes idle -- the idle CPU 'pulls' a task from a busy CPU's ready queue. Push migration is periodic -- a kernel thread checks load distribution and pushes tasks from overloaded CPUs to underloaded ones. Both strategies can be used simultaneously in modern operating systems."
+    },
+    {
+      "question": "Q6. Priority inversion occurs when:",
+      "options": ["(A) A high-priority task preempts a low-priority task", "(B) A low-priority task holding a resource indirectly blocks a high-priority task while medium-priority tasks run", "(C) Two tasks of equal priority compete for the CPU", "(D) A task exceeds its time quantum"],
+      "answer": 1,
+      "explanation": "Priority inversion occurs when a high-priority task is blocked waiting for a resource held by a low-priority task, and meanwhile medium-priority tasks (that don't need the resource) preempt the low-priority task. This causes the high-priority task to wait longer than necessary, effectively being blocked by medium-priority tasks."
+    },
+    {
+      "question": "Q7. In the Linux CFS scheduler, which data structure is used to store runnable tasks?",
+      "options": ["(A) Min-heap", "(B) Hash table", "(C) Red-black tree (ordered by vruntime)", "(D) Circular queue"],
+      "answer": 2,
+      "explanation": "CFS uses a red-black tree (self-balancing BST) with tasks ordered by their virtual runtime (vruntime). The task with the smallest vruntime (leftmost node) is selected to run. The leftmost node is cached for O(1) access, while insertion and deletion are O(log n)."
+    },
+    {
+      "question": "Q8. In a NUMA system, NUMA-aware scheduling aims to:",
+      "options": ["(A) Always run tasks on the fastest CPU", "(B) Schedule tasks on CPUs close to the memory where their data resides", "(C) Distribute tasks evenly across all NUMA nodes regardless of memory location", "(D) Use only one NUMA node to avoid complexity"],
+      "answer": 1,
+      "explanation": "In NUMA (Non-Uniform Memory Access) systems, accessing local memory is faster than accessing remote memory (on another NUMA node). NUMA-aware scheduling keeps processes on CPUs within the same NUMA node as their allocated memory, minimizing remote memory accesses and improving performance."
+    },
+    {
+      "question": "Q9. The Priority Inheritance Protocol solves priority inversion by:",
+      "options": ["(A) Preventing low-priority tasks from acquiring locks", "(B) Temporarily raising the priority of a low-priority task holding a needed resource to that of the highest-priority blocked task", "(C) Always running high-priority tasks first regardless of locks", "(D) Using round-robin scheduling inside critical sections"],
+      "answer": 1,
+      "explanation": "PIP works by temporarily boosting the priority of a lower-priority task that holds a resource needed by a higher-priority task. The lower-priority task inherits the priority of the highest-priority task blocked on the resource. This prevents medium-priority tasks from preempting, allowing the lock holder to finish quickly and release the resource."
+    },
+    {
+      "question": "Q10. Given three tasks: T1(C=1, p=3), T2(C=1, p=4), T3(C=2, p=6). What is the total CPU utilization and is this schedulable under RMS (using the Liu-Layland bound)?",
+      "options": ["(A) U = 0.917, not schedulable", "(B) U = 0.917, schedulable", "(C) U = 0.833, schedulable", "(D) U = 0.917, need further analysis (bound test fails but may still be schedulable)"],
+      "answer": 3,
+      "explanation": "U = 1/3 + 1/4 + 2/6 = 0.333 + 0.250 + 0.333 = 0.917. The RMS bound for n=3 is 3(2^(1/3)-1) = 0.780. Since 0.917 > 0.780, the bound test fails. However, the Liu-Layland bound is only a sufficient condition. Failing the bound does NOT mean the task set is unschedulable -- it means we cannot conclude from the bound alone. We need to construct the actual schedule (response time analysis or timeline) to determine schedulability. In this case, U = 0.917 < 1, so it is schedulable under EDF, but RMS requires further analysis."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

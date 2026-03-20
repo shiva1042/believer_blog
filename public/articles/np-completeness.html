@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NP-Completeness and Computational Complexity — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Algorithms</span>
+<h1>NP-Completeness and Computational Complexity</h1>
+<p><em>Based on CLRS &mdash; Introduction to Algorithms, Chapter 34</em></p>
+
+<p>
+  Computational complexity theory is one of the most profound areas of computer science. It asks a
+  fundamental question: <strong>How hard is a problem?</strong> Not how hard a particular algorithm is,
+  but how hard the problem itself is &mdash; what is the inherent computational effort required to
+  solve it? This article covers the theory of NP-completeness, a cornerstone topic for GATE CSE,
+  drawing primarily from CLRS Chapter 34.
+</p>
+
+<!-- ============================================================ -->
+<h2>1. Decision Problems vs Optimization Problems</h2>
+<!-- ============================================================ -->
+
+<p>
+  Before diving into complexity classes, we must distinguish between two kinds of problems:
+</p>
+
+<table>
+  <tr>
+    <th>Aspect</th>
+    <th>Decision Problem</th>
+    <th>Optimization Problem</th>
+  </tr>
+  <tr>
+    <td>Output</td>
+    <td>YES or NO</td>
+    <td>An optimal value (min or max)</td>
+  </tr>
+  <tr>
+    <td>Example (TSP)</td>
+    <td>"Is there a tour of cost &le; k?"</td>
+    <td>"Find the minimum-cost tour."</td>
+  </tr>
+  <tr>
+    <td>Example (Clique)</td>
+    <td>"Does G have a clique of size &ge; k?"</td>
+    <td>"Find the largest clique in G."</td>
+  </tr>
+  <tr>
+    <td>Complexity theory focus</td>
+    <td><strong>Primary focus</strong></td>
+    <td>Converted to decision version for analysis</td>
+  </tr>
+</table>
+
+<div class="note">
+  <strong>Why decision problems?</strong> Complexity classes like P and NP are formally defined for
+  decision problems because they have a clean YES/NO output. An optimization problem is <em>at least
+  as hard</em> as its decision version. If the decision version is hard, so is the optimization version.
+</div>
+
+<h3>1.1 Encoding and Languages</h3>
+<p>
+  Formally, a <strong>decision problem</strong> is a <strong>language</strong> L &sube; {0,1}*.
+  An instance x belongs to L if and only if the answer to the decision problem on input x is YES.
+  An algorithm A <em>accepts</em> x if A(x) = 1, and <em>rejects</em> x if A(x) = 0.
+  A <em>decides</em> L if it correctly accepts every x &isin; L and rejects every x &notin; L.
+</p>
+
+<!-- ============================================================ -->
+<h2>2. Complexity Classes</h2>
+<!-- ============================================================ -->
+
+<h3>2.1 Class P</h3>
+<p>
+  <strong>P</strong> is the class of decision problems (languages) that can be <em>decided</em> by a
+  deterministic Turing machine in polynomial time.
+</p>
+<pre><code>P = { L &sube; {0,1}* : there exists an algorithm A and constant c
+      such that for every input x, A decides whether x &isin; L
+      in time O(|x|^c) }</code></pre>
+
+<p><strong>Examples of problems in P:</strong></p>
+<ul>
+  <li>Sorting (decision: "Is A[i] &le; A[i+1] for all i?")</li>
+  <li>Shortest path (decision: "Is there a path of weight &le; k?")</li>
+  <li>Maximum bipartite matching</li>
+  <li>Linear programming (Khachiyan's ellipsoid method)</li>
+  <li>Primality testing (AKS algorithm)</li>
+  <li>2-SAT</li>
+  <li>2-Coloring of graphs</li>
+  <li>Eulerian path/circuit</li>
+</ul>
+
+<h3>2.2 Class NP</h3>
+<p>
+  <strong>NP</strong> (Nondeterministic Polynomial time) is the class of decision problems for which
+  a YES answer can be <em>verified</em> in polynomial time given a suitable <strong>certificate</strong>
+  (also called a witness).
+</p>
+<pre><code>NP = { L &sube; {0,1}* : there exists a polynomial-time verifier V
+       and a polynomial p such that
+       x &isin; L  &hArr;  &exist; certificate y with |y| &le; p(|x|) and V(x,y) = 1 }</code></pre>
+
+<div class="important">
+  <strong>Common misconception:</strong> NP does NOT stand for "Non-Polynomial." It stands for
+  "Nondeterministic Polynomial." Every problem in P is also in NP (P &sube; NP), because if you can
+  solve it in polynomial time, you can certainly verify a solution in polynomial time (just solve it
+  and compare).
+</div>
+
+<p><strong>Verification examples:</strong></p>
+<table>
+  <tr>
+    <th>Problem</th>
+    <th>Certificate</th>
+    <th>Verification</th>
+  </tr>
+  <tr>
+    <td>HAMILTONIAN CYCLE</td>
+    <td>A sequence of vertices</td>
+    <td>Check it visits every vertex exactly once and forms a cycle</td>
+  </tr>
+  <tr>
+    <td>SAT</td>
+    <td>A truth assignment</td>
+    <td>Evaluate the formula under the assignment</td>
+  </tr>
+  <tr>
+    <td>CLIQUE</td>
+    <td>A set of k vertices</td>
+    <td>Check all pairs are connected by edges</td>
+  </tr>
+  <tr>
+    <td>SUBSET SUM</td>
+    <td>A subset of numbers</td>
+    <td>Sum them and check equality with target</td>
+  </tr>
+</table>
+
+<h3>2.3 Class co-NP</h3>
+<p>
+  <strong>co-NP</strong> is the class of decision problems whose <em>complement</em> is in NP. That
+  is, L &isin; co-NP if and only if the complement language L&#x0305; &isin; NP.
+</p>
+<p>
+  For a co-NP problem, a <strong>NO</strong> answer can be verified in polynomial time.
+</p>
+<p><strong>Examples:</strong></p>
+<ul>
+  <li>TAUTOLOGY: "Is the Boolean formula true for ALL assignments?" (The NO answer has a certificate: a falsifying assignment.)</li>
+  <li>UNSAT: The complement of SAT.</li>
+</ul>
+
+<div class="note">
+  <strong>Key relationships:</strong> P &sube; NP &cap; co-NP. It is conjectured (but not proven) that
+  NP &ne; co-NP. If any NP-complete problem is in co-NP, then NP = co-NP.
+</div>
+
+<h3>2.4 Class NP-hard</h3>
+<p>
+  A problem H is <strong>NP-hard</strong> if every problem in NP can be polynomial-time reduced to H.
+  Formally:
+</p>
+<pre><code>H is NP-hard  &hArr;  for all L &isin; NP, L &le;_p H</code></pre>
+<p>
+  NP-hard problems are <em>at least as hard</em> as the hardest problems in NP. An NP-hard problem
+  need not be a decision problem and need not be in NP itself.
+</p>
+<p><strong>Examples of NP-hard (but not NP-complete) problems:</strong></p>
+<ul>
+  <li>Halting Problem (undecidable, so not in NP)</li>
+  <li>Optimization version of TSP (not a decision problem)</li>
+  <li>Finding the chromatic number of a graph</li>
+</ul>
+
+<h3>2.5 Class NP-complete (NPC)</h3>
+<p>
+  A problem is <strong>NP-complete</strong> if it is both in NP and NP-hard:
+</p>
+<pre><code>NPC = NP &cap; NP-hard</code></pre>
+<p>
+  NP-complete problems are the "hardest" problems in NP. If <em>any single</em> NP-complete problem
+  can be solved in polynomial time, then P = NP and every problem in NP can be solved in polynomial
+  time.
+</p>
+
+<h3>2.6 Relationship Diagram</h3>
+<div class="mermaid">
+graph TB
+    subgraph "Assuming P &ne; NP"
+        P["P<br/>(Sorting, Shortest Path, 2-SAT)"]
+        NPI["NP-intermediate<br/>(Graph Isomorphism?, Factoring?)"]
+        NPC["NP-complete<br/>(SAT, CLIQUE, TSP-decision)"]
+    end
+    subgraph "NP"
+        P
+        NPI
+        NPC
+    end
+    NPH["NP-hard but not in NP<br/>(Halting Problem, Optimization TSP)"]
+    NPC --- NPH
+    style P fill:#27ae60,color:#fff
+    style NPI fill:#f39c12,color:#fff
+    style NPC fill:#e74c3c,color:#fff
+    style NPH fill:#8e44ad,color:#fff
+</div>
+
+<!-- ============================================================ -->
+<h2>3. Polynomial-Time Reductions</h2>
+<!-- ============================================================ -->
+
+<p>
+  A <strong>polynomial-time reduction</strong> from problem A to problem B (written A &le;<sub>p</sub> B)
+  is a polynomial-time computable function f such that for every instance x:
+</p>
+<pre><code>x &isin; A  &hArr;  f(x) &isin; B</code></pre>
+
+<p>Intuitively, A &le;<sub>p</sub> B means "A is no harder than B" (or "B is at least as hard as A").</p>
+
+<h3>3.1 Properties of Reductions</h3>
+<ul>
+  <li><strong>Transitivity:</strong> If A &le;<sub>p</sub> B and B &le;<sub>p</sub> C, then A &le;<sub>p</sub> C.</li>
+  <li><strong>If B &isin; P and A &le;<sub>p</sub> B, then A &isin; P.</strong></li>
+  <li><strong>If A is NP-hard and A &le;<sub>p</sub> B, then B is NP-hard.</strong></li>
+</ul>
+
+<div class="important">
+  <strong>GATE Tip:</strong> The direction of reduction is crucial! To prove B is NP-hard, you reduce
+  a <em>known</em> NP-hard problem A <strong>to</strong> B (A &le;<sub>p</sub> B), NOT B to A. Many
+  students get this wrong. Think of it as: "If I could solve B, I could solve A."
+</div>
+
+<h3>3.2 How a Reduction Works (Illustration)</h3>
+<pre><code>To show problem B is NP-hard:
+
+1. Pick a known NP-complete problem A.
+2. Construct a polynomial-time transformation f:
+     Given any instance x of A,
+     produce an instance f(x) of B
+     such that x is a YES-instance of A &hArr; f(x) is a YES-instance of B.
+3. Show that f runs in polynomial time.
+4. Prove correctness: x &isin; A &hArr; f(x) &isin; B.
+
+Combined with showing B &isin; NP, this proves B is NP-complete.</code></pre>
+
+<!-- ============================================================ -->
+<h2>4. The Cook-Levin Theorem: SAT is NP-Complete</h2>
+<!-- ============================================================ -->
+
+<p>
+  The <strong>Cook-Levin Theorem</strong> (1971) was the first proof that an NP-complete problem exists.
+  It states:
+</p>
+
+<div class="important">
+  <strong>Theorem (Cook-Levin):</strong> The Boolean satisfiability problem (SAT) is NP-complete.
+</div>
+
+<h3>4.1 SAT Problem Definition</h3>
+<p>
+  <strong>Input:</strong> A Boolean formula &phi; in conjunctive normal form (CNF).<br />
+  <strong>Question:</strong> Is there a truth assignment to the variables that makes &phi; true?
+</p>
+<p>Example:</p>
+<pre><code>&phi; = (x1 &or; &not;x2 &or; x3) &and; (&not;x1 &or; x2) &and; (x2 &or; &not;x3)
+
+Assignment: x1=T, x2=T, x3=F
+  Clause 1: (T &or; F &or; F) = T
+  Clause 2: (F &or; T) = T
+  Clause 3: (T &or; T) = T
+  Result: T &and; T &and; T = TRUE  &rArr;  Satisfiable!</code></pre>
+
+<h3>4.2 Proof Sketch</h3>
+<ol>
+  <li><strong>SAT &isin; NP:</strong> Given a truth assignment (certificate), we can evaluate &phi;
+    in polynomial time.</li>
+  <li><strong>SAT is NP-hard:</strong> For any problem L &isin; NP, there is a polynomial-time
+    Turing machine M that verifies L. We encode the entire computation of M on input (x, y) as a
+    Boolean formula &phi; such that &phi; is satisfiable if and only if there exists a certificate y
+    that M accepts. This encoding uses variables for each cell of the tape, each state, and each
+    time step, producing a formula of polynomial size.</li>
+</ol>
+
+<div class="note">
+  <strong>Historical note:</strong> Stephen Cook proved this in 1971. Independently, Leonid Levin proved
+  a similar result in the Soviet Union in 1973. This theorem opened the floodgates: once one NP-complete
+  problem was known, others could be proven NP-complete by reduction from SAT.
+</div>
+
+<!-- ============================================================ -->
+<h2>5. Proving NP-Completeness</h2>
+<!-- ============================================================ -->
+
+<p>
+  To prove a problem Q is NP-complete, you must show two things:
+</p>
+<ol>
+  <li><strong>Q &isin; NP:</strong> Exhibit a polynomial-time verifier (describe the certificate and how to check it).</li>
+  <li><strong>Q is NP-hard:</strong> Reduce a known NP-complete problem to Q in polynomial time.</li>
+</ol>
+
+<pre><code>TEMPLATE FOR NP-COMPLETENESS PROOF:
+
+Theorem: Problem Q is NP-complete.
+Proof:
+  (1) Q &isin; NP:
+      Certificate: [describe what the witness is]
+      Verification: [describe how to check in poly-time]
+
+  (2) Q is NP-hard:
+      We reduce [Known NPC Problem] to Q.
+      Given an instance I of [Known NPC], construct instance I' of Q as follows:
+        [describe the transformation]
+      Claim: I is a YES-instance &hArr; I' is a YES-instance.
+        (&rArr;) If I is YES, then ... so I' is YES.
+        (&lArr;) If I' is YES, then ... so I is YES.
+      The transformation runs in polynomial time because [reason].
+  QED.</code></pre>
+
+<!-- ============================================================ -->
+<h2>6. Important NP-Complete Problems</h2>
+<!-- ============================================================ -->
+
+<h3>6.1 SAT (Boolean Satisfiability)</h3>
+<p>
+  <strong>Input:</strong> A Boolean formula &phi; in CNF.<br />
+  <strong>Question:</strong> Is &phi; satisfiable?<br />
+  <strong>NP-complete by:</strong> Cook-Levin Theorem (the "first" NPC problem).
+</p>
+
+<h3>6.2 3-SAT</h3>
+<p>
+  <strong>Input:</strong> A Boolean formula &phi; in CNF where each clause has <em>exactly 3 literals</em>.<br />
+  <strong>Question:</strong> Is &phi; satisfiable?<br />
+  <strong>NP-complete by:</strong> Reduction from SAT.
+</p>
+<p><strong>Reduction idea (SAT &le;<sub>p</sub> 3-SAT):</strong></p>
+<ul>
+  <li>A clause with 1 literal (l): Replace with (l &or; a &or; b) &and; (l &or; a &or; &not;b) &and; (l &or; &not;a &or; b) &and; (l &or; &not;a &or; &not;b) using fresh variables a, b.</li>
+  <li>A clause with 2 literals (l<sub>1</sub> &or; l<sub>2</sub>): Replace with (l<sub>1</sub> &or; l<sub>2</sub> &or; a) &and; (l<sub>1</sub> &or; l<sub>2</sub> &or; &not;a).</li>
+  <li>A clause with 3 literals: Keep as is.</li>
+  <li>A clause with k &gt; 3 literals (l<sub>1</sub> &or; ... &or; l<sub>k</sub>): Introduce k&minus;3 fresh variables y<sub>1</sub>, ..., y<sub>k-3</sub> and create:
+    (l<sub>1</sub> &or; l<sub>2</sub> &or; y<sub>1</sub>) &and; (&not;y<sub>1</sub> &or; l<sub>3</sub> &or; y<sub>2</sub>) &and; ... &and; (&not;y<sub>k-3</sub> &or; l<sub>k-1</sub> &or; l<sub>k</sub>).</li>
+</ul>
+
+<div class="note">
+  <strong>Important:</strong> 2-SAT is in P! It can be solved in O(n + m) using strongly connected
+  components on the implication graph. The jump from 2 to 3 literals per clause changes the problem
+  from polynomial to NP-complete.
+</div>
+
+<h3>6.3 CLIQUE</h3>
+<p>
+  <strong>Input:</strong> An undirected graph G = (V, E) and an integer k.<br />
+  <strong>Question:</strong> Does G contain a complete subgraph (clique) of size k?<br />
+  <strong>NP-complete by:</strong> Reduction from 3-SAT.
+</p>
+<p><strong>Reduction (3-SAT &le;<sub>p</sub> CLIQUE):</strong></p>
+<p>Given a 3-SAT formula &phi; with m clauses:</p>
+<ol>
+  <li>For each literal in each clause, create a vertex. Label it with its clause number and literal.</li>
+  <li>Add an edge between vertices u and v if:
+    <ul>
+      <li>u and v are in <em>different</em> clauses, AND</li>
+      <li>u and v are not complementary (one is not the negation of the other).</li>
+    </ul>
+  </li>
+  <li>Set k = m (the number of clauses).</li>
+</ol>
+<p>
+  <strong>Correctness:</strong> &phi; is satisfiable &hArr; G has a clique of size m. A satisfying assignment
+  picks one true literal per clause; these form a clique because literals from different clauses that
+  are simultaneously true cannot be contradictory.
+</p>
+
+<p><strong>Worked Example:</strong></p>
+<pre><code>&phi; = (x1 &or; &not;x2 &or; x3) &and; (&not;x1 &or; x2 &or; x3) &and; (x1 &or; x2 &or; &not;x3)
+
+Vertices:
+  Clause 1: (1,x1), (1,&not;x2), (1,x3)
+  Clause 2: (2,&not;x1), (2,x2), (2,x3)
+  Clause 3: (3,x1), (3,x2), (3,&not;x3)
+
+Edges exist between all inter-clause pairs EXCEPT complementary ones:
+  No edge: (1,x1)-(2,&not;x1), (1,&not;x2)-(3,x2), (1,x3)-(3,&not;x3), (2,x3)-(3,&not;x3), (2,x2)-(1,&not;x2)
+
+k = 3 (number of clauses)
+
+One clique of size 3: {(1,x1), (2,x2), (3,x2)}
+  &rArr; x1=T, x2=T satisfies &phi; (verify: each clause has a true literal)</code></pre>
+
+<h3>6.4 VERTEX COVER</h3>
+<p>
+  <strong>Input:</strong> An undirected graph G = (V, E) and an integer k.<br />
+  <strong>Question:</strong> Is there a set S &sube; V with |S| &le; k such that every edge in E has
+  at least one endpoint in S?<br />
+  <strong>NP-complete by:</strong> Reduction from CLIQUE.
+</p>
+<p><strong>Reduction (CLIQUE &le;<sub>p</sub> VERTEX COVER):</strong></p>
+<p>
+  Given (G, k) for CLIQUE, construct (G&#x0305;, |V| &minus; k) for VERTEX COVER, where G&#x0305;
+  is the complement graph. S is a clique of size k in G &hArr; V \ S is a vertex cover of size
+  |V| &minus; k in G&#x0305;.
+</p>
+
+<h3>6.5 HAMILTONIAN CYCLE</h3>
+<p>
+  <strong>Input:</strong> An undirected graph G = (V, E).<br />
+  <strong>Question:</strong> Does G have a cycle that visits every vertex exactly once?<br />
+  <strong>NP-complete by:</strong> Reduction from VERTEX COVER.
+</p>
+
+<h3>6.6 SUBSET SUM</h3>
+<p>
+  <strong>Input:</strong> A set S = {s<sub>1</sub>, s<sub>2</sub>, ..., s<sub>n</sub>} of positive integers and a target integer t.<br />
+  <strong>Question:</strong> Is there a subset S' &sube; S such that the elements of S' sum to exactly t?<br />
+  <strong>NP-complete by:</strong> Reduction from 3-SAT.
+</p>
+<p><strong>Example:</strong></p>
+<pre><code>S = {2, 3, 7, 8, 10}, t = 15
+Subset {2, 3, 10}: 2 + 3 + 10 = 15 &rArr; YES
+
+S = {1, 5, 11, 13}, t = 12
+No subset sums to 12 &rArr; NO</code></pre>
+
+<div class="note">
+  <strong>GATE Tip:</strong> SUBSET SUM has a pseudo-polynomial time DP algorithm O(n &middot; t).
+  This does NOT place it in P because the input size is O(n &middot; log t), and t can be exponential
+  in the number of bits. Problems with pseudo-polynomial algorithms are called <strong>weakly NP-complete</strong>.
+</div>
+
+<h3>6.7 Graph Coloring (k-Coloring for k &ge; 3)</h3>
+<p>
+  <strong>Input:</strong> An undirected graph G = (V, E) and an integer k &ge; 3.<br />
+  <strong>Question:</strong> Can the vertices of G be colored with k colors such that no two adjacent
+  vertices share a color?<br />
+  <strong>NP-complete by:</strong> Reduction from 3-SAT (for 3-coloring).
+</p>
+<p>Note: 2-coloring is in P (it is equivalent to checking bipartiteness via BFS/DFS).</p>
+
+<h3>6.8 TSP (Decision Version)</h3>
+<p>
+  <strong>Input:</strong> A complete weighted graph G and an integer k.<br />
+  <strong>Question:</strong> Is there a Hamiltonian cycle (tour) of total weight &le; k?<br />
+  <strong>NP-complete by:</strong> Reduction from HAMILTONIAN CYCLE.
+</p>
+<p><strong>Reduction:</strong> Given graph G for HAM-CYCLE, create a complete graph where edges in G
+  have weight 0 and all other edges have weight 1. Set k = 0. Then G has a Hamiltonian cycle &hArr;
+  the complete graph has a tour of weight 0.</p>
+
+<!-- ============================================================ -->
+<h2>7. The Reduction Chain</h2>
+<!-- ============================================================ -->
+
+<p>
+  The classic chain of reductions from CLRS that establishes NP-completeness:
+</p>
+
+<div class="mermaid">
+graph TD
+    SAT["SAT<br/>(Cook-Levin)"]
+    TSAT["3-SAT"]
+    CLIQUE["CLIQUE"]
+    VC["VERTEX COVER"]
+    HC["HAMILTONIAN CYCLE"]
+    TSP["TSP (decision)"]
+    SS["SUBSET SUM"]
+    GC["3-COLORING"]
+    IS["INDEPENDENT SET"]
+    SAT --> TSAT
+    TSAT --> CLIQUE
+    TSAT --> SS
+    TSAT --> GC
+    CLIQUE --> VC
+    CLIQUE --> IS
+    VC --> HC
+    HC --> TSP
+    style SAT fill:#e74c3c,color:#fff
+    style TSAT fill:#e67e22,color:#fff
+    style CLIQUE fill:#f1c40f,color:#000
+    style VC fill:#2ecc71,color:#fff
+    style HC fill:#3498db,color:#fff
+    style TSP fill:#9b59b6,color:#fff
+    style SS fill:#1abc9c,color:#fff
+    style GC fill:#e91e63,color:#fff
+    style IS fill:#795548,color:#fff
+</div>
+
+<!-- ============================================================ -->
+<h2>8. Table of NP-Complete Problems</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Problem</th>
+    <th>Input</th>
+    <th>Question</th>
+    <th>Reduced From</th>
+    <th>Best Known Exact</th>
+  </tr>
+  <tr>
+    <td>SAT</td>
+    <td>CNF formula</td>
+    <td>Satisfiable?</td>
+    <td>Cook-Levin (direct)</td>
+    <td>O(2<sup>n</sup>)</td>
+  </tr>
+  <tr>
+    <td>3-SAT</td>
+    <td>3-CNF formula</td>
+    <td>Satisfiable?</td>
+    <td>SAT</td>
+    <td>O(1.329<sup>n</sup>)</td>
+  </tr>
+  <tr>
+    <td>CLIQUE</td>
+    <td>Graph G, integer k</td>
+    <td>Clique of size k?</td>
+    <td>3-SAT</td>
+    <td>O(2<sup>n/3</sup>)</td>
+  </tr>
+  <tr>
+    <td>VERTEX COVER</td>
+    <td>Graph G, integer k</td>
+    <td>Cover of size &le; k?</td>
+    <td>CLIQUE</td>
+    <td>O(1.2<sup>k</sup> &middot; n)</td>
+  </tr>
+  <tr>
+    <td>INDEPENDENT SET</td>
+    <td>Graph G, integer k</td>
+    <td>Ind. set of size k?</td>
+    <td>CLIQUE</td>
+    <td>O(2<sup>n/3</sup>)</td>
+  </tr>
+  <tr>
+    <td>HAMILTONIAN CYCLE</td>
+    <td>Graph G</td>
+    <td>Ham. cycle exists?</td>
+    <td>VERTEX COVER</td>
+    <td>O(2<sup>n</sup>)</td>
+  </tr>
+  <tr>
+    <td>TSP (decision)</td>
+    <td>Complete graph, integer k</td>
+    <td>Tour of cost &le; k?</td>
+    <td>HAMILTONIAN CYCLE</td>
+    <td>O(n<sup>2</sup> &middot; 2<sup>n</sup>)</td>
+  </tr>
+  <tr>
+    <td>SUBSET SUM</td>
+    <td>Set of integers, target t</td>
+    <td>Subset sums to t?</td>
+    <td>3-SAT</td>
+    <td>O(n &middot; t) pseudo-poly</td>
+  </tr>
+  <tr>
+    <td>3-COLORING</td>
+    <td>Graph G</td>
+    <td>3-colorable?</td>
+    <td>3-SAT</td>
+    <td>O(1.329<sup>n</sup>)</td>
+  </tr>
+  <tr>
+    <td>SET COVER</td>
+    <td>Universe, collection of sets, integer k</td>
+    <td>Cover with &le; k sets?</td>
+    <td>VERTEX COVER</td>
+    <td>O(2<sup>n</sup>)</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>9. Complementary Relationships</h2>
+<!-- ============================================================ -->
+
+<p>Several NP-complete problems are closely related through graph complement:</p>
+
+<table>
+  <tr>
+    <th>Problem</th>
+    <th>Complement Problem</th>
+    <th>Relationship</th>
+  </tr>
+  <tr>
+    <td>CLIQUE (size k in G)</td>
+    <td>INDEPENDENT SET (size k in G&#x0305;)</td>
+    <td>S is a clique in G &hArr; S is an independent set in G&#x0305;</td>
+  </tr>
+  <tr>
+    <td>VERTEX COVER (size k)</td>
+    <td>INDEPENDENT SET (size |V|&minus;k)</td>
+    <td>S is a vertex cover &hArr; V\S is an independent set</td>
+  </tr>
+</table>
+
+<div class="note">
+  <strong>GATE Tip:</strong> These relationships are frequently tested. Know them by heart:
+  <br />Clique of size k in G &hArr; Independent set of size k in complement of G
+  <br />Vertex cover of size k &hArr; Independent set of size |V|&minus;k in same graph
+</div>
+
+<!-- ============================================================ -->
+<h2>10. Approximation Algorithms</h2>
+<!-- ============================================================ -->
+
+<p>
+  Since NP-complete problems are believed to be unsolvable in polynomial time, we often settle for
+  <strong>approximation algorithms</strong> &mdash; polynomial-time algorithms that find near-optimal solutions.
+</p>
+
+<table>
+  <tr>
+    <th>Problem</th>
+    <th>Approximation Ratio</th>
+    <th>Algorithm</th>
+  </tr>
+  <tr>
+    <td>VERTEX COVER</td>
+    <td>2-approximation</td>
+    <td>Pick any edge, add both endpoints, remove covered edges, repeat</td>
+  </tr>
+  <tr>
+    <td>TSP (triangle inequality)</td>
+    <td>3/2 (Christofides)</td>
+    <td>MST + minimum weight perfect matching on odd-degree vertices</td>
+  </tr>
+  <tr>
+    <td>SET COVER</td>
+    <td>O(ln n)</td>
+    <td>Greedy: always pick the set covering the most uncovered elements</td>
+  </tr>
+  <tr>
+    <td>MAX-SAT</td>
+    <td>3/4</td>
+    <td>Randomized rounding of LP relaxation</td>
+  </tr>
+  <tr>
+    <td>MAX-CUT</td>
+    <td>0.878 (GW)</td>
+    <td>Semidefinite programming relaxation</td>
+  </tr>
+</table>
+
+<h3>10.1 Vertex Cover 2-Approximation Pseudocode</h3>
+<pre><code>APPROX-VERTEX-COVER(G):
+  C = {}
+  E' = E(G)
+  while E' is not empty:
+      pick any edge (u, v) from E'
+      C = C &cup; {u, v}
+      remove all edges incident to u or v from E'
+  return C
+
+// C is at most 2x the size of the optimal vertex cover.</code></pre>
+
+<p><strong>Why 2-approximation?</strong> Each edge picked contributes 2 vertices to C. The optimal
+  cover must include at least one endpoint of each picked edge. Since picked edges share no endpoints,
+  OPT &ge; (number of picked edges). Our solution has size 2 &times; (number of picked edges) &le; 2 &middot; OPT.</p>
+
+<!-- ============================================================ -->
+<h2>11. The P vs NP Question</h2>
+<!-- ============================================================ -->
+
+<p>
+  The <strong>P vs NP question</strong> asks: Is P = NP? It is one of the seven Millennium Prize
+  Problems (Clay Mathematics Institute, $1 million prize).
+</p>
+
+<h3>11.1 What Would P = NP Mean?</h3>
+<ul>
+  <li>Every problem whose solution can be quickly <em>verified</em> can also be quickly <em>solved</em>.</li>
+  <li>All NP-complete problems would have polynomial-time algorithms.</li>
+  <li>Modern cryptography (RSA, Diffie-Hellman) would collapse, as factoring and discrete log would be easy.</li>
+  <li>Many optimization problems in logistics, scheduling, and AI would become tractable.</li>
+</ul>
+
+<h3>11.2 What Does Most of the Community Believe?</h3>
+<p>
+  Most computer scientists believe <strong>P &ne; NP</strong>. Despite decades of effort, no one has
+  found polynomial-time algorithms for any NP-complete problem. However, there is no proof of this.
+</p>
+
+<h3>11.3 Consequences of the Answer</h3>
+<table>
+  <tr>
+    <th>If P = NP</th>
+    <th>If P &ne; NP</th>
+  </tr>
+  <tr>
+    <td>All NPC problems solvable efficiently</td>
+    <td>NPC problems inherently require exponential time</td>
+  </tr>
+  <tr>
+    <td>Cryptography breaks</td>
+    <td>Cryptography remains secure (assuming other hardness)</td>
+  </tr>
+  <tr>
+    <td>Mathematical proofs could be found automatically</td>
+    <td>Creativity in proof construction remains essential</td>
+  </tr>
+  <tr>
+    <td>NP-intermediate class would be empty</td>
+    <td>NP-intermediate problems exist (Ladner's Theorem)</td>
+  </tr>
+</table>
+
+<div class="note">
+  <strong>Ladner's Theorem (1975):</strong> If P &ne; NP, then there exist problems in NP that are
+  neither in P nor NP-complete. These are called <strong>NP-intermediate</strong> problems. Candidates
+  include Graph Isomorphism and Integer Factoring (though neither is proven to be NP-intermediate).
+</div>
+
+<!-- ============================================================ -->
+<h2>12. Summary of Key Concepts for GATE</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Concept</th>
+    <th>What to Remember</th>
+  </tr>
+  <tr>
+    <td>P</td>
+    <td>Problems solvable in polynomial time. P &sube; NP.</td>
+  </tr>
+  <tr>
+    <td>NP</td>
+    <td>Problems verifiable in polynomial time with a certificate. Does NOT mean "not polynomial."</td>
+  </tr>
+  <tr>
+    <td>co-NP</td>
+    <td>Complements of NP problems. NO answer verifiable in poly time.</td>
+  </tr>
+  <tr>
+    <td>NP-hard</td>
+    <td>At least as hard as all of NP. May not be in NP (e.g., Halting Problem).</td>
+  </tr>
+  <tr>
+    <td>NP-complete</td>
+    <td>In NP AND NP-hard. The hardest problems that are still in NP.</td>
+  </tr>
+  <tr>
+    <td>Reduction direction</td>
+    <td>To prove B is NPC: reduce known NPC &rarr; B (not the other way).</td>
+  </tr>
+  <tr>
+    <td>2-SAT vs 3-SAT</td>
+    <td>2-SAT &isin; P, 3-SAT is NP-complete.</td>
+  </tr>
+  <tr>
+    <td>2-Coloring vs 3-Coloring</td>
+    <td>2-Coloring &isin; P (bipartiteness), 3-Coloring is NP-complete.</td>
+  </tr>
+  <tr>
+    <td>Pseudo-polynomial</td>
+    <td>Poly in value, not input size. SUBSET SUM O(nt) is pseudo-poly. Weakly NP-complete.</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>13. Practice Quiz</h2>
+<!-- ============================================================ -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "NP-Completeness and Computational Complexity Quiz",
+  "questions": [
+    {
+      "question": "Q1. Which of the following is the correct relationship between complexity classes (assuming P ≠ NP)?",
+      "options": ["(A) P = NP ∩ co-NP", "(B) P ⊂ NP ⊂ NP-hard", "(C) P ⊆ NP and P ⊆ co-NP", "(D) NP-complete ⊂ P"],
+      "answer": 2,
+      "explanation": "P ⊆ NP and P ⊆ co-NP are both true. Any problem solvable in polynomial time can trivially be verified in polynomial time (so P ⊆ NP), and its complement is also in P (so P ⊆ co-NP). Option (A) is conjectured but unproven. Option (B) is wrong because NP is not a subset of NP-hard (only NPC problems are in NP ∩ NP-hard). Option (D) contradicts P ≠ NP."
+    },
+    {
+      "question": "Q2. To prove that a problem Q is NP-complete, we need to:",
+      "options": ["(A) Reduce Q to a known NP-complete problem in polynomial time", "(B) Show that Q is in P and reduce a known NP-complete problem to Q", "(C) Show that Q is in NP and reduce a known NP-complete problem to Q in polynomial time", "(D) Show that Q is in NP and reduce Q to a known NP-complete problem"],
+      "answer": 2,
+      "explanation": "NP-completeness requires: (1) Q ∈ NP, and (2) Q is NP-hard, which is shown by reducing a known NPC problem TO Q (not Q to the known problem). Reducing a known hard problem to Q shows Q is at least as hard. Option (A) and (D) have the reduction direction wrong."
+    },
+    {
+      "question": "Q3. Which of the following problems is in P?",
+      "options": ["(A) 3-SAT", "(B) 3-Coloring", "(C) 2-SAT", "(D) Hamiltonian Cycle"],
+      "answer": 2,
+      "explanation": "2-SAT can be solved in polynomial time O(n + m) using the implication graph and strongly connected components (Aspvall, Plass, Tarjan algorithm). All other options are NP-complete."
+    },
+    {
+      "question": "Q4. The Cook-Levin theorem states that:",
+      "options": ["(A) P ≠ NP", "(B) SAT is NP-hard but not NP-complete", "(C) SAT is the first problem proven to be NP-complete", "(D) Every NP-complete problem can be solved in exponential time"],
+      "answer": 2,
+      "explanation": "The Cook-Levin theorem (1971) proved that SAT is NP-complete — it is in NP and every problem in NP can be reduced to SAT in polynomial time. This was the first NP-completeness result, enabling all subsequent proofs by reduction from SAT."
+    },
+    {
+      "question": "Q5. If problem A is NP-complete and A ≤p B (A reduces to B in polynomial time), and B is in NP, then:",
+      "options": ["(A) B is in P", "(B) B is NP-complete", "(C) A is in P", "(D) B is not in NP"],
+      "answer": 1,
+      "explanation": "Since A is NP-complete (hence NP-hard) and A ≤p B, it follows that B is NP-hard (by transitivity of reductions — every problem in NP reduces to A, which reduces to B). Since B is also given to be in NP, B is NP-complete."
+    },
+    {
+      "question": "Q6. The SUBSET SUM problem has a dynamic programming solution running in O(n·t) time. Why doesn't this place SUBSET SUM in P?",
+      "options": ["(A) The DP solution is incorrect", "(B) O(n·t) is exponential in the input size because t can be exponentially large relative to the number of bits needed to represent it", "(C) The DP solution requires exponential space", "(D) SUBSET SUM is not a decision problem"],
+      "answer": 1,
+      "explanation": "The input size is O(n · log t) bits. The value t can be as large as 2^(number of bits), so O(n·t) is exponential in the input size. This is called a pseudo-polynomial time algorithm. Problems with pseudo-polynomial algorithms are called weakly NP-complete."
+    },
+    {
+      "question": "Q7. Which of the following is TRUE about the relationship between CLIQUE and INDEPENDENT SET?",
+      "options": ["(A) They are the same problem", "(B) A set S is a clique in G if and only if S is an independent set in the complement of G", "(C) CLIQUE is NP-complete but INDEPENDENT SET is in P", "(D) S is a clique in G if and only if V\\S is an independent set in G"],
+      "answer": 1,
+      "explanation": "S is a clique in G ⟺ every pair in S is connected in G ⟺ no pair in S is connected in the complement graph ⟺ S is an independent set in the complement of G. Both problems are NP-complete."
+    },
+    {
+      "question": "Q8. Which of the following is NOT known to be NP-complete?",
+      "options": ["(A) Graph Isomorphism", "(B) 3-SAT", "(C) Vertex Cover", "(D) Hamiltonian Path"],
+      "answer": 0,
+      "explanation": "Graph Isomorphism is in NP but is not known to be NP-complete (and is not known to be in P either). It is a candidate for NP-intermediate status. Babai showed it is in quasi-polynomial time. All other options are well-known NP-complete problems."
+    },
+    {
+      "question": "Q9. A 2-approximation algorithm for VERTEX COVER works by:",
+      "options": ["(A) Finding the minimum spanning tree and selecting every other vertex", "(B) Repeatedly picking an edge, adding both endpoints to the cover, and removing incident edges", "(C) Using a greedy algorithm to pick the vertex with maximum degree", "(D) Solving the LP relaxation and rounding"],
+      "answer": 1,
+      "explanation": "The standard 2-approximation picks any uncovered edge (u,v), adds both u and v to the cover, removes all edges incident on u and v, and repeats. The result is at most twice the optimal vertex cover size. While greedy (max degree) also works, it gives an O(log n) approximation, not a 2-approximation."
+    },
+    {
+      "question": "Q10. If P = NP, which of the following would be a consequence?",
+      "options": ["(A) Only SAT becomes solvable in polynomial time", "(B) All problems become solvable in polynomial time", "(C) All NP-complete problems become solvable in polynomial time, and modern cryptography based on computational hardness would be undermined", "(D) The Halting Problem becomes decidable"],
+      "answer": 2,
+      "explanation": "If P = NP, every problem in NP (including all NP-complete problems) would be solvable in polynomial time. This would break cryptographic systems like RSA that rely on the assumed hardness of problems like factoring. However, it would NOT make all problems poly-time (e.g., EXPTIME-complete problems), and the Halting Problem is undecidable regardless of P vs NP."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

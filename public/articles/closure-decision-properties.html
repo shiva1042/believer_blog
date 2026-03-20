@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Closure Properties and Decision Problems — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Theory of Computation</span>
+<h1>Closure Properties and Decision Problems</h1>
+
+<p>
+  Closure properties and decision problems form the backbone of formal language theory and are among the most heavily tested topics in GATE CSE. Understanding <em>which operations preserve which language classes</em> and <em>which questions are algorithmically answerable</em> for each class gives you a powerful toolkit for reasoning about automata and languages. This article covers Chapters 4, 7, and 9 of Hopcroft, Motwani, and Ullman's <em>Introduction to Automata Theory, Languages, and Computation</em>.
+</p>
+
+<!-- ================================================================== -->
+<h2>1. Closure Properties &mdash; Overview</h2>
+<!-- ================================================================== -->
+
+<p>
+  A class of languages <strong>C</strong> is said to be <em>closed</em> under an operation <strong>op</strong> if, whenever we apply <strong>op</strong> to languages in <strong>C</strong>, the result is also in <strong>C</strong>. Formally, for a unary operation: if <code>L &isin; C</code>, then <code>op(L) &isin; C</code>. For a binary operation: if <code>L<sub>1</sub>, L<sub>2</sub> &isin; C</code>, then <code>L<sub>1</sub> op L<sub>2</sub> &isin; C</code>.
+</p>
+
+<div class="note">
+  <strong>Why does this matter for GATE?</strong> Closure properties let you prove or disprove that a given language belongs to a certain class. If you know <code>L</code> is CFL and <code>R</code> is regular, then <code>L &cap; R</code> is CFL &mdash; a fact used in many proofs and GATE questions.
+</div>
+
+<!-- ================================================================== -->
+<h2>2. Closure Properties of Regular Languages</h2>
+<!-- ================================================================== -->
+
+<p>Regular languages enjoy closure under <strong>all</strong> commonly studied operations. This is one of the reasons they are so well-behaved.</p>
+
+<h3>2.1 Union</h3>
+<p><strong>Theorem:</strong> If <code>L<sub>1</sub></code> and <code>L<sub>2</sub></code> are regular, then <code>L<sub>1</sub> &cup; L<sub>2</sub></code> is regular.</p>
+<p><strong>Proof sketch (NFA construction):</strong> Given NFAs <code>N<sub>1</sub></code> and <code>N<sub>2</sub></code> for <code>L<sub>1</sub></code> and <code>L<sub>2</sub></code>, create a new NFA with a new start state <code>q<sub>0</sub></code> that has &epsilon;-transitions to the start states of both <code>N<sub>1</sub></code> and <code>N<sub>2</sub></code>. The accepting states are the union of the accepting states of both NFAs.</p>
+
+<div class="mermaid">
+graph LR
+    q0((q0)) -->|ε| s1((start N1))
+    q0 -->|ε| s2((start N2))
+    s1 -->|...| f1((accept N1))
+    s2 -->|...| f2((accept N2))
+</div>
+
+<h3>2.2 Intersection</h3>
+<p><strong>Theorem:</strong> If <code>L<sub>1</sub></code> and <code>L<sub>2</sub></code> are regular, then <code>L<sub>1</sub> &cap; L<sub>2</sub></code> is regular.</p>
+<p><strong>Proof (Product/Cross-product Construction):</strong> Given DFAs <code>D<sub>1</sub> = (Q<sub>1</sub>, &Sigma;, &delta;<sub>1</sub>, q<sub>01</sub>, F<sub>1</sub>)</code> and <code>D<sub>2</sub> = (Q<sub>2</sub>, &Sigma;, &delta;<sub>2</sub>, q<sub>02</sub>, F<sub>2</sub>)</code>, construct DFA <code>D = (Q<sub>1</sub> &times; Q<sub>2</sub>, &Sigma;, &delta;, (q<sub>01</sub>, q<sub>02</sub>), F<sub>1</sub> &times; F<sub>2</sub>)</code> where:</p>
+
+<pre><code>&delta;((p, q), a) = (&delta;<sub>1</sub>(p, a), &delta;<sub>2</sub>(q, a))</code></pre>
+
+<p>A string is accepted if and only if <em>both</em> components reach accepting states simultaneously, i.e., the final state is in <code>F<sub>1</sub> &times; F<sub>2</sub></code>.</p>
+
+<p><strong>Worked Example:</strong> Let <code>L<sub>1</sub></code> = strings over {0,1} with even number of 0s, and <code>L<sub>2</sub></code> = strings with odd number of 1s.</p>
+<ul>
+  <li><code>D<sub>1</sub></code> has states {E0, O0} (even/odd count of 0s), start = E0, accept = {E0}.</li>
+  <li><code>D<sub>2</sub></code> has states {E1, O1} (even/odd count of 1s), start = E1, accept = {O1}.</li>
+  <li>Product DFA has states: {(E0,E1), (E0,O1), (O0,E1), (O0,O1)}.</li>
+  <li>Start state: (E0, E1). Accept states: {(E0, O1)}.</li>
+</ul>
+
+<table>
+  <tr><th>State</th><th>Input 0</th><th>Input 1</th></tr>
+  <tr><td>(E0, E1)</td><td>(O0, E1)</td><td>(E0, O1)</td></tr>
+  <tr><td>(E0, O1)</td><td>(O0, O1)</td><td>(E0, E1)</td></tr>
+  <tr><td>(O0, E1)</td><td>(E0, E1)</td><td>(O0, O1)</td></tr>
+  <tr><td>(O0, O1)</td><td>(E0, O1)</td><td>(O0, E1)</td></tr>
+</table>
+
+<div class="note">
+  <strong>GATE Tip:</strong> The product construction is the most common proof technique tested. The number of states in the product DFA is |Q<sub>1</sub>| &times; |Q<sub>2</sub>|. For union, change the accept set to <code>(F<sub>1</sub> &times; Q<sub>2</sub>) &cup; (Q<sub>1</sub> &times; F<sub>2</sub>)</code>.
+</div>
+
+<h3>2.3 Complement</h3>
+<p><strong>Theorem:</strong> If <code>L</code> is regular, then <code>&Sigma;* &minus; L</code> (the complement) is regular.</p>
+<p><strong>Proof:</strong> Given a <em>complete</em> DFA <code>D = (Q, &Sigma;, &delta;, q<sub>0</sub>, F)</code>, construct <code>D' = (Q, &Sigma;, &delta;, q<sub>0</sub>, Q &minus; F)</code>. Simply swap accepting and non-accepting states.</p>
+
+<div class="important">
+  <strong>Critical detail:</strong> The DFA <em>must</em> be complete (every state has a transition for every symbol). If starting from an NFA, first convert to DFA, ensure completeness (add a dead state if needed), then complement. Complementing an NFA directly by flipping accept states does <strong>NOT</strong> work.
+</div>
+
+<h3>2.4 Concatenation</h3>
+<p><strong>Theorem:</strong> If <code>L<sub>1</sub></code> and <code>L<sub>2</sub></code> are regular, then <code>L<sub>1</sub> &middot; L<sub>2</sub></code> is regular.</p>
+<p><strong>Proof:</strong> Given NFAs <code>N<sub>1</sub></code> and <code>N<sub>2</sub></code>, add &epsilon;-transitions from every accepting state of <code>N<sub>1</sub></code> to the start state of <code>N<sub>2</sub></code>. The start state of the new NFA is the start state of <code>N<sub>1</sub></code>, and the accepting states are those of <code>N<sub>2</sub></code>.</p>
+
+<h3>2.5 Kleene Star</h3>
+<p><strong>Theorem:</strong> If <code>L</code> is regular, then <code>L*</code> is regular.</p>
+<p><strong>Proof:</strong> Given NFA <code>N</code> for <code>L</code>, create a new start state <code>q<sub>0</sub></code> (which is also accepting, to accept &epsilon;). Add &epsilon;-transitions from <code>q<sub>0</sub></code> to the old start state, and from every old accepting state back to the old start state.</p>
+
+<h3>2.6 Reversal</h3>
+<p><strong>Theorem:</strong> If <code>L</code> is regular, then <code>L<sup>R</sup> = {w<sup>R</sup> | w &isin; L}</code> is regular.</p>
+<p><strong>Proof:</strong> Given DFA <code>D</code> for <code>L</code>:</p>
+<ol>
+  <li>Reverse all transitions (if <code>&delta;(p, a) = q</code>, add transition from <code>q</code> to <code>p</code> on <code>a</code>).</li>
+  <li>Make the old start state the (only) accepting state.</li>
+  <li>Create a new start state with &epsilon;-transitions to all old accepting states.</li>
+</ol>
+<p>The resulting NFA accepts <code>L<sup>R</sup></code>.</p>
+
+<h3>2.7 Homomorphism</h3>
+<p><strong>Definition:</strong> A homomorphism <code>h: &Sigma; &rarr; &Delta;*</code> maps each symbol to a string. It extends to strings: <code>h(a<sub>1</sub>a<sub>2</sub>...a<sub>n</sub>) = h(a<sub>1</sub>)h(a<sub>2</sub>)...h(a<sub>n</sub>)</code>. For a language: <code>h(L) = {h(w) | w &isin; L}</code>.</p>
+<p><strong>Theorem:</strong> Regular languages are closed under homomorphism.</p>
+<p><strong>Proof:</strong> Given a regular expression <code>r</code> for <code>L</code>, replace each symbol <code>a</code> in <code>r</code> with <code>h(a)</code>. The result is a valid regular expression for <code>h(L)</code>.</p>
+
+<p><strong>Example:</strong> Let <code>L = {01, 10}</code> and <code>h(0) = ab</code>, <code>h(1) = &epsilon;</code>. Then <code>h(L) = {ab, ab} = {ab}</code>.</p>
+
+<h3>2.8 Inverse Homomorphism</h3>
+<p><strong>Definition:</strong> <code>h<sup>-1</sup>(L) = {w &isin; &Sigma;* | h(w) &isin; L}</code>.</p>
+<p><strong>Theorem:</strong> Regular languages are closed under inverse homomorphism.</p>
+<p><strong>Proof:</strong> Given DFA <code>D = (Q, &Delta;, &delta;, q<sub>0</sub>, F)</code> for <code>L</code>, construct DFA <code>D' = (Q, &Sigma;, &delta;', q<sub>0</sub>, F)</code> where <code>&delta;'(q, a) = &delta;̂(q, h(a))</code>. That is, on reading symbol <code>a</code>, we simulate reading the entire string <code>h(a)</code> in the original DFA.</p>
+
+<div class="note">
+  <strong>Key insight:</strong> Inverse homomorphism preserves regularity even though the mapping is "backwards." The number of states does not change &mdash; only the transition function is modified.
+</div>
+
+<h3>Summary: Regular Language Closure Properties</h3>
+<table>
+  <tr><th>Operation</th><th>Closed?</th><th>Construction</th></tr>
+  <tr><td>Union</td><td>Yes</td><td>NFA with new start + &epsilon;-transitions, or product DFA</td></tr>
+  <tr><td>Intersection</td><td>Yes</td><td>Product (cross-product) DFA construction</td></tr>
+  <tr><td>Complement</td><td>Yes</td><td>Swap accept/non-accept in complete DFA</td></tr>
+  <tr><td>Concatenation</td><td>Yes</td><td>NFA: &epsilon;-transitions from accept of N1 to start of N2</td></tr>
+  <tr><td>Kleene Star</td><td>Yes</td><td>NFA: new start (accepting) + &epsilon;-loops</td></tr>
+  <tr><td>Reversal</td><td>Yes</td><td>Reverse transitions, swap start/accept roles</td></tr>
+  <tr><td>Homomorphism</td><td>Yes</td><td>Replace symbols in regex</td></tr>
+  <tr><td>Inverse Homomorphism</td><td>Yes</td><td>Modify DFA transitions: &delta;'(q,a) = &delta;̂(q, h(a))</td></tr>
+  <tr><td>Difference</td><td>Yes</td><td>L<sub>1</sub> &minus; L<sub>2</sub> = L<sub>1</sub> &cap; L<sub>2</sub><sup>c</sup></td></tr>
+  <tr><td>Symmetric Difference</td><td>Yes</td><td>(L<sub>1</sub> &minus; L<sub>2</sub>) &cup; (L<sub>2</sub> &minus; L<sub>1</sub>)</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2>3. Closure Properties of Context-Free Languages</h2>
+<!-- ================================================================== -->
+
+<p>Context-free languages are <strong>not</strong> as well-behaved as regular languages. Several key operations break closure.</p>
+
+<h3>3.1 Operations Under Which CFLs Are Closed</h3>
+
+<h4>Union</h4>
+<p>Given CFGs <code>G<sub>1</sub></code> with start symbol <code>S<sub>1</sub></code> and <code>G<sub>2</sub></code> with start symbol <code>S<sub>2</sub></code> (with disjoint variable sets), create a new grammar with start symbol <code>S &rarr; S<sub>1</sub> | S<sub>2</sub></code>.</p>
+
+<h4>Concatenation</h4>
+<p>Create <code>S &rarr; S<sub>1</sub>S<sub>2</sub></code>.</p>
+
+<h4>Kleene Star</h4>
+<p>Create <code>S &rarr; SS<sub>1</sub> | &epsilon;</code>.</p>
+
+<h4>Reversal</h4>
+<p>Reverse the right-hand side of every production in the grammar. If <code>A &rarr; &alpha;</code>, create <code>A &rarr; &alpha;<sup>R</sup></code>.</p>
+
+<h4>Homomorphism</h4>
+<p>Replace each terminal <code>a</code> in every production with <code>h(a)</code>.</p>
+
+<h4>Inverse Homomorphism</h4>
+<p>CFLs are also closed under inverse homomorphism (proof uses PDA construction).</p>
+
+<h4>Substitution</h4>
+<p>If <code>L</code> is a CFL and for each <code>a &isin; &Sigma;</code>, <code>s(a)</code> is a CFL, then <code>s(L) = {s(w) | w &isin; L}</code> is a CFL.</p>
+
+<h3>3.2 Operations Under Which CFLs Are NOT Closed</h3>
+
+<h4>Intersection</h4>
+<p><strong>CFLs are NOT closed under intersection.</strong></p>
+<p><strong>Counterexample:</strong></p>
+<ul>
+  <li><code>L<sub>1</sub> = {a<sup>n</sup>b<sup>n</sup>c<sup>m</sup> | n, m &ge; 0}</code> is context-free (match a's and b's, c's are free).</li>
+  <li><code>L<sub>2</sub> = {a<sup>m</sup>b<sup>n</sup>c<sup>n</sup> | n, m &ge; 0}</code> is context-free (a's are free, match b's and c's).</li>
+  <li><code>L<sub>1</sub> &cap; L<sub>2</sub> = {a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> | n &ge; 0}</code> is <strong>not</strong> context-free (by the pumping lemma).</li>
+</ul>
+
+<h4>Complement</h4>
+<p><strong>CFLs are NOT closed under complement.</strong></p>
+<p><strong>Proof by contradiction:</strong> If CFLs were closed under complement, then since <code>L<sub>1</sub> &cap; L<sub>2</sub> = (L<sub>1</sub><sup>c</sup> &cup; L<sub>2</sub><sup>c</sup>)<sup>c</sup></code> (De Morgan's), and CFLs are closed under union, CFLs would be closed under intersection. But we just showed they are not. Contradiction.</p>
+
+<div class="important">
+  <strong>GATE trap:</strong> Many students assume that because regular languages are closed under intersection and complement, CFLs must be too. This is false. Always check!
+</div>
+
+<h3>3.3 Intersection of a CFL with a Regular Language</h3>
+
+<p><strong>Theorem:</strong> If <code>L</code> is a CFL and <code>R</code> is a regular language, then <code>L &cap; R</code> is a CFL.</p>
+
+<p><strong>Proof (Product Construction for PDA &times; DFA):</strong> Given PDA <code>P</code> for <code>L</code> and DFA <code>D</code> for <code>R</code>, construct a new PDA that simulates both in parallel. The state set is the cross product of states, and the stack operations come from the original PDA. A configuration is accepted if both the PDA component is in an accepting state and the DFA component is in an accepting state.</p>
+
+<div class="note">
+  <strong>GATE favorite:</strong> This property is extremely useful for proving languages are not context-free. Strategy: assume <code>L</code> is CFL, intersect with a carefully chosen regular language <code>R</code> to get a known non-CFL, and reach a contradiction.
+</div>
+
+<p><strong>Example Application:</strong> Prove <code>L = {a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> | n &ge; 1}</code> is not CFL.</p>
+<ol>
+  <li>Suppose <code>L</code> is CFL.</li>
+  <li>Let <code>R = a*b*c*</code> (regular).</li>
+  <li>Then <code>L &cap; R = L</code> itself should be CFL.</li>
+  <li>But <code>L</code> is not CFL (pumping lemma). Contradiction.</li>
+</ol>
+<p>(In this case, the intersection trick is not needed, but the technique shines for more complex languages where direct pumping is hard.)</p>
+
+<h3>3.4 Deterministic CFLs (DCFLs)</h3>
+
+<p>DCFLs have different closure properties from general CFLs:</p>
+<table>
+  <tr><th>Operation</th><th>DCFL Closed?</th><th>CFL Closed?</th></tr>
+  <tr><td>Union</td><td>No</td><td>Yes</td></tr>
+  <tr><td>Intersection</td><td>No</td><td>No</td></tr>
+  <tr><td>Complement</td><td>Yes</td><td>No</td></tr>
+  <tr><td>Concatenation</td><td>No</td><td>Yes</td></tr>
+  <tr><td>Kleene Star</td><td>No</td><td>Yes</td></tr>
+  <tr><td>Intersection with Regular</td><td>Yes</td><td>Yes</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2>4. Closure Properties of Recursive and Recursively Enumerable Languages</h2>
+<!-- ================================================================== -->
+
+<h3>4.1 Recursive (Decidable) Languages</h3>
+<p>A language is recursive (decidable) if there exists a Turing machine that halts on all inputs and accepts exactly the strings in the language.</p>
+
+<table>
+  <tr><th>Operation</th><th>Closed?</th><th>Proof Idea</th></tr>
+  <tr><td>Union</td><td>Yes</td><td>Run both TMs; accept if either accepts</td></tr>
+  <tr><td>Intersection</td><td>Yes</td><td>Run both TMs; accept if both accept</td></tr>
+  <tr><td>Complement</td><td>Yes</td><td>Swap accept/reject of the TM</td></tr>
+  <tr><td>Concatenation</td><td>Yes</td><td>Nondeterministically guess split point; simulate both</td></tr>
+  <tr><td>Kleene Star</td><td>Yes</td><td>Nondeterministically guess all split points</td></tr>
+  <tr><td>Homomorphism</td><td>Yes</td><td>Apply inverse homomorphism to input, test membership</td></tr>
+  <tr><td>Inverse Homomorphism</td><td>Yes</td><td>Apply homomorphism to input, test membership</td></tr>
+  <tr><td>Reversal</td><td>Yes</td><td>Reverse input, run original TM</td></tr>
+</table>
+
+<div class="note">
+  <strong>Key fact:</strong> Recursive languages are closed under ALL boolean operations (union, intersection, complement, difference). This follows because TMs that always halt can be composed freely.
+</div>
+
+<h3>4.2 Recursively Enumerable (RE) Languages</h3>
+<p>A language is RE if there exists a TM that accepts every string in the language (but may loop forever on strings not in the language).</p>
+
+<table>
+  <tr><th>Operation</th><th>Closed?</th><th>Proof Idea</th></tr>
+  <tr><td>Union</td><td>Yes</td><td>Run both TMs in parallel (dovetailing); accept if either accepts</td></tr>
+  <tr><td>Intersection</td><td>Yes</td><td>Run both TMs in parallel; accept if both accept</td></tr>
+  <tr><td>Complement</td><td><strong>No</strong></td><td>If RE were closed under complement, RE &cap; co-RE = Recursive for all RE languages</td></tr>
+  <tr><td>Concatenation</td><td>Yes</td><td>Nondeterministically guess split; simulate both</td></tr>
+  <tr><td>Kleene Star</td><td>Yes</td><td>Nondeterministically guess splits</td></tr>
+  <tr><td>Homomorphism</td><td>Yes</td><td>Standard construction</td></tr>
+  <tr><td>Inverse Homomorphism</td><td>Yes</td><td>Standard construction</td></tr>
+  <tr><td>Reversal</td><td>Yes</td><td>Reverse input tape, simulate</td></tr>
+  <tr><td>Difference</td><td><strong>No</strong></td><td>L &minus; M could yield complement if M = &Sigma;*</td></tr>
+</table>
+
+<div class="important">
+  <strong>Critical theorem:</strong> A language <code>L</code> is <strong>recursive</strong> (decidable) if and only if <strong>both</strong> <code>L</code> and <code>L<sup>c</sup></code> are recursively enumerable. That is: <code>Recursive = RE &cap; co-RE</code>.
+</div>
+
+<h3>4.3 co-RE Languages</h3>
+<p>A language is co-RE if its complement is RE. co-RE languages are closed under union, intersection, but NOT complement.</p>
+
+<!-- ================================================================== -->
+<h2>5. Master Closure Property Comparison Table</h2>
+<!-- ================================================================== -->
+
+<table>
+  <tr>
+    <th>Operation</th>
+    <th>Regular</th>
+    <th>DCFL</th>
+    <th>CFL</th>
+    <th>CSL</th>
+    <th>Recursive</th>
+    <th>RE</th>
+  </tr>
+  <tr><td>Union</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Intersection</td><td>Yes</td><td>No</td><td><strong>No</strong></td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Complement</td><td>Yes</td><td>Yes</td><td><strong>No</strong></td><td>Yes</td><td>Yes</td><td><strong>No</strong></td></tr>
+  <tr><td>Concatenation</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Kleene Star</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Reversal</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Homomorphism</td><td>Yes</td><td>No</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Inverse Homomorphism</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Intersection with Regular</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+</table>
+
+<div class="note">
+  <strong>Memory aid for CFLs:</strong> CFLs are closed under "SUCKRHi" &mdash; Substitution, Union, Concatenation, Kleene star, Reversal, Homomorphism, inverse homomorphism. They fail on Intersection and Complement (the "IC" of "nICe" that they lack).
+</div>
+
+<!-- ================================================================== -->
+<h2>6. Decision Problems for Regular Languages</h2>
+<!-- ================================================================== -->
+
+<p>All standard decision problems for regular languages are <strong>decidable</strong>. This is because DFAs are finite objects that can be fully explored.</p>
+
+<h3>6.1 Membership Problem</h3>
+<p><strong>Question:</strong> Given a DFA <code>D</code> and a string <code>w</code>, is <code>w &isin; L(D)</code>?</p>
+<p><strong>Algorithm:</strong> Simulate <code>D</code> on <code>w</code>. Accept if the final state is accepting.</p>
+<p><strong>Complexity:</strong> O(|w|) time, O(1) space (just track current state).</p>
+
+<h3>6.2 Emptiness Problem</h3>
+<p><strong>Question:</strong> Is <code>L(D) = &empty;</code>?</p>
+<p><strong>Algorithm:</strong> Perform BFS/DFS from the start state. If any accepting state is reachable, <code>L(D) &ne; &empty;</code>.</p>
+<p><strong>Complexity:</strong> O(|Q| + |&delta;|) &mdash; linear in the size of the DFA.</p>
+
+<pre><code>function isEmpty(DFA D):
+    visited = {q0}
+    queue = [q0]
+    while queue is not empty:
+        state = queue.dequeue()
+        if state in F:
+            return false   // language is NOT empty
+        for each symbol a in Sigma:
+            next = delta(state, a)
+            if next not in visited:
+                visited.add(next)
+                queue.enqueue(next)
+    return true   // no accepting state reachable</code></pre>
+
+<h3>6.3 Finiteness Problem</h3>
+<p><strong>Question:</strong> Is <code>L(D)</code> finite?</p>
+<p><strong>Algorithm:</strong></p>
+<ol>
+  <li>Remove all states not reachable from the start state.</li>
+  <li>Remove all states from which no accepting state is reachable.</li>
+  <li>Check if the remaining transition graph has a cycle (using DFS).</li>
+  <li>If there is a cycle, the language is infinite. Otherwise, it is finite.</li>
+</ol>
+
+<p><strong>Alternative (Pumping Lemma approach):</strong> A regular language <code>L</code> recognized by a DFA with <code>n</code> states is infinite if and only if it contains a string <code>w</code> with <code>n &le; |w| &lt; 2n</code>.</p>
+
+<h3>6.4 Equivalence Problem</h3>
+<p><strong>Question:</strong> Given DFAs <code>D<sub>1</sub></code> and <code>D<sub>2</sub></code>, is <code>L(D<sub>1</sub>) = L(D<sub>2</sub>)</code>?</p>
+<p><strong>Algorithm (Symmetric Difference):</strong></p>
+<pre><code>L(D1) = L(D2)  iff  (L(D1) &Delta; L(D2)) = &empty;
+                iff  (L(D1) &cap; L(D2)^c) &cup; (L(D1)^c &cap; L(D2)) = &empty;</code></pre>
+<p>Construct the symmetric difference automaton (using product construction) and test for emptiness.</p>
+
+<p><strong>Alternative (Table-filling / Myhill-Nerode):</strong> Minimize both DFAs and check if the minimal DFAs are isomorphic.</p>
+
+<h3>6.5 Subset (Containment) Problem</h3>
+<p><strong>Question:</strong> Is <code>L(D<sub>1</sub>) &sube; L(D<sub>2</sub>)</code>?</p>
+<p><strong>Algorithm:</strong> Check if <code>L(D<sub>1</sub>) &cap; L(D<sub>2</sub>)<sup>c</sup> = &empty;</code>. Build the product DFA for the intersection and test emptiness.</p>
+
+<h3>6.6 Universality Problem</h3>
+<p><strong>Question:</strong> Is <code>L(D) = &Sigma;*</code>?</p>
+<p><strong>Algorithm:</strong> Check if <code>L(D)<sup>c</sup> = &empty;</code>. Complement the DFA and test emptiness.</p>
+
+<h3>Summary: Regular Language Decision Problems</h3>
+<table>
+  <tr><th>Problem</th><th>Decidable?</th><th>Complexity</th></tr>
+  <tr><td>Membership</td><td>Yes</td><td>O(|w|)</td></tr>
+  <tr><td>Emptiness</td><td>Yes</td><td>O(n) where n = |states| + |transitions|</td></tr>
+  <tr><td>Finiteness</td><td>Yes</td><td>O(n) — cycle detection</td></tr>
+  <tr><td>Equivalence</td><td>Yes</td><td>O(n<sub>1</sub> &middot; n<sub>2</sub>) via product + emptiness</td></tr>
+  <tr><td>Subset</td><td>Yes</td><td>O(n<sub>1</sub> &middot; n<sub>2</sub>) via product + emptiness</td></tr>
+  <tr><td>Universality</td><td>Yes</td><td>O(n) — complement + emptiness</td></tr>
+  <tr><td>Minimality</td><td>Yes</td><td>O(n log n) — Hopcroft's algorithm</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2>7. Decision Problems for Context-Free Languages</h2>
+<!-- ================================================================== -->
+
+<h3>7.1 Membership Problem &mdash; CYK Algorithm</h3>
+<p><strong>Question:</strong> Given CFG <code>G</code> and string <code>w</code>, is <code>w &isin; L(G)</code>?</p>
+<p><strong>Algorithm:</strong> The Cocke-Younger-Kasami (CYK) algorithm uses dynamic programming on a grammar in Chomsky Normal Form (CNF).</p>
+
+<p><strong>Steps:</strong></p>
+<ol>
+  <li>Convert <code>G</code> to CNF (all productions of the form <code>A &rarr; BC</code> or <code>A &rarr; a</code>).</li>
+  <li>Build a triangular table <code>T[i][j]</code> = set of variables that derive the substring <code>w[i..j]</code>.</li>
+  <li>Base case: <code>T[i][i] = {A | A &rarr; w[i] is a production}</code>.</li>
+  <li>Inductive step: <code>A &isin; T[i][j]</code> if there exists <code>k</code> with <code>i &le; k &lt; j</code> and production <code>A &rarr; BC</code> where <code>B &isin; T[i][k]</code> and <code>C &isin; T[k+1][j]</code>.</li>
+  <li>Accept if <code>S &isin; T[1][n]</code>.</li>
+</ol>
+
+<p><strong>Complexity:</strong> O(n<sup>3</sup> &middot; |G|) where n = |w|.</p>
+
+<p><strong>Worked Example:</strong> Let <code>G</code> have productions:</p>
+<pre><code>S &rarr; AB | BC
+A &rarr; BA | a
+B &rarr; CC | b
+C &rarr; AB | a</code></pre>
+
+<p>Parse the string <code>w = baaba</code>:</p>
+
+<table>
+  <tr><th></th><th>b (1)</th><th>a (2)</th><th>a (3)</th><th>b (4)</th><th>a (5)</th></tr>
+  <tr><td>1</td><td>{B}</td><td>{S,A}</td><td>{}</td><td>{S,A,C}</td><td>{S,A,C}</td></tr>
+  <tr><td>2</td><td></td><td>{A,C}</td><td>{S,C,B}</td><td>{B}</td><td>{S,A,C}</td></tr>
+  <tr><td>3</td><td></td><td></td><td>{A,C}</td><td>{S,A}</td><td>{B}</td></tr>
+  <tr><td>4</td><td></td><td></td><td></td><td>{B}</td><td>{S,A,C}</td></tr>
+  <tr><td>5</td><td></td><td></td><td></td><td></td><td>{A,C}</td></tr>
+</table>
+<p>Since <code>S &isin; T[1][5]</code>, the string <code>baaba</code> is in the language.</p>
+
+<h3>7.2 Emptiness Problem</h3>
+<p><strong>Question:</strong> Is <code>L(G) = &empty;</code>?</p>
+<p><strong>Algorithm:</strong> Mark terminals as "generating." Repeatedly mark any variable <code>A</code> as generating if there is a production <code>A &rarr; &alpha;</code> where all symbols in <code>&alpha;</code> are generating. The language is non-empty iff the start symbol <code>S</code> is marked generating.</p>
+<p><strong>Complexity:</strong> O(|G|).</p>
+
+<h3>7.3 Finiteness Problem</h3>
+<p><strong>Question:</strong> Is <code>L(G)</code> finite?</p>
+<p><strong>Algorithm:</strong></p>
+<ol>
+  <li>Remove useless symbols (non-generating and non-reachable).</li>
+  <li>Remove unit productions and &epsilon;-productions.</li>
+  <li>Build a dependency graph among variables (edge from <code>A</code> to <code>B</code> if <code>B</code> appears in a production for <code>A</code>).</li>
+  <li>The language is infinite iff this graph has a cycle.</li>
+</ol>
+
+<h3>7.4 Undecidable Problems for CFLs</h3>
+
+<table>
+  <tr><th>Problem</th><th>Decidable?</th></tr>
+  <tr><td>Membership (w &isin; L?)</td><td>Yes (CYK: O(n<sup>3</sup>))</td></tr>
+  <tr><td>Emptiness (L = &empty;?)</td><td>Yes</td></tr>
+  <tr><td>Finiteness (L finite?)</td><td>Yes</td></tr>
+  <tr><td>Equivalence (L<sub>1</sub> = L<sub>2</sub>?)</td><td><strong>No</strong> (undecidable)</td></tr>
+  <tr><td>Containment (L<sub>1</sub> &sube; L<sub>2</sub>?)</td><td><strong>No</strong> (undecidable)</td></tr>
+  <tr><td>Universality (L = &Sigma;*?)</td><td><strong>No</strong> (undecidable)</td></tr>
+  <tr><td>Regularity (Is L regular?)</td><td><strong>No</strong> (undecidable)</td></tr>
+  <tr><td>Ambiguity (Is G ambiguous?)</td><td><strong>No</strong> (undecidable)</td></tr>
+  <tr><td>Disjointness (L<sub>1</sub> &cap; L<sub>2</sub> = &empty;?)</td><td><strong>No</strong> (undecidable)</td></tr>
+  <tr><td>Is CFL inherently ambiguous?</td><td><strong>No</strong> (undecidable)</td></tr>
+</table>
+
+<div class="important">
+  <strong>GATE Trap:</strong> Equivalence is decidable for regular languages but <strong>undecidable</strong> for CFLs. Similarly, universality is decidable for regular languages but undecidable for CFLs. Don't confuse them!
+</div>
+
+<!-- ================================================================== -->
+<h2>8. Decision Problems for Recursive and RE Languages</h2>
+<!-- ================================================================== -->
+
+<h3>8.1 The Halting Problem</h3>
+<p><strong>Problem:</strong> Given a Turing machine <code>M</code> and input <code>w</code>, does <code>M</code> halt on <code>w</code>?</p>
+<p><strong>Result:</strong> <strong>Undecidable</strong> (proved by Alan Turing via diagonalization).</p>
+
+<p><strong>Proof sketch:</strong></p>
+<ol>
+  <li>Assume there exists a TM <code>H</code> that decides the halting problem: <code>H(&lt;M&gt;, w)</code> accepts if <code>M</code> halts on <code>w</code>, rejects otherwise.</li>
+  <li>Construct TM <code>D</code>: on input <code>&lt;M&gt;</code>, run <code>H(&lt;M&gt;, &lt;M&gt;)</code>. If <code>H</code> accepts, loop forever. If <code>H</code> rejects, accept.</li>
+  <li>Consider <code>D(&lt;D&gt;)</code>:
+    <ul>
+      <li>If <code>D</code> halts on <code>&lt;D&gt;</code>, then <code>H</code> accepts, so <code>D</code> loops. Contradiction.</li>
+      <li>If <code>D</code> doesn't halt on <code>&lt;D&gt;</code>, then <code>H</code> rejects, so <code>D</code> accepts (halts). Contradiction.</li>
+    </ul>
+  </li>
+  <li>Therefore, <code>H</code> cannot exist.</li>
+</ol>
+
+<p>The halting problem <em>is</em> RE (we can simulate and accept if the machine halts) but <em>not</em> recursive.</p>
+
+<h3>8.2 Rice's Theorem</h3>
+<p><strong>Theorem:</strong> Every <em>non-trivial</em> property of the language of a Turing machine is undecidable.</p>
+
+<p><strong>Formal statement:</strong> Let <code>P</code> be a property of RE languages (a set of RE languages). If <code>P</code> is non-trivial (i.e., some RE languages have property <code>P</code> and some do not), then the language <code>L<sub>P</sub> = {&lt;M&gt; | L(M) &isin; P}</code> is undecidable.</p>
+
+<p><strong>Examples of properties covered by Rice's theorem:</strong></p>
+<ul>
+  <li>"Is <code>L(M)</code> empty?" &mdash; undecidable</li>
+  <li>"Is <code>L(M)</code> finite?" &mdash; undecidable</li>
+  <li>"Is <code>L(M) = &Sigma;*</code>?" &mdash; undecidable</li>
+  <li>"Is <code>L(M)</code> regular?" &mdash; undecidable</li>
+  <li>"Is <code>L(M)</code> context-free?" &mdash; undecidable</li>
+  <li>"Does <code>L(M)</code> contain the string <code>01</code>?" &mdash; undecidable</li>
+</ul>
+
+<div class="note">
+  <strong>What Rice's theorem does NOT cover:</strong> Properties of the <em>Turing machine itself</em> (not its language). For example, "Does M have exactly 5 states?" is decidable &mdash; just examine the description of M. Rice's theorem applies only to <em>semantic</em> properties (properties of L(M)), not <em>syntactic</em> properties (properties of M's description).
+</div>
+
+<h3>8.3 Other Undecidable Problems</h3>
+<table>
+  <tr><th>Problem</th><th>Status</th><th>RE?</th></tr>
+  <tr><td>Does M halt on input w?</td><td>Undecidable</td><td>Yes (RE)</td></tr>
+  <tr><td>Does M halt on empty input?</td><td>Undecidable</td><td>Yes (RE)</td></tr>
+  <tr><td>Is L(M) = &empty;?</td><td>Undecidable</td><td>No (co-RE)</td></tr>
+  <tr><td>Is L(M) = &Sigma;*?</td><td>Undecidable</td><td>No (co-RE)</td></tr>
+  <tr><td>Is L(M) finite?</td><td>Undecidable</td><td>No (neither RE nor co-RE)</td></tr>
+  <tr><td>Is L(M) regular?</td><td>Undecidable</td><td>No</td></tr>
+  <tr><td>Is L(M<sub>1</sub>) = L(M<sub>2</sub>)?</td><td>Undecidable</td><td>No (co-RE)</td></tr>
+  <tr><td>Is L(M<sub>1</sub>) &sube; L(M<sub>2</sub>)?</td><td>Undecidable</td><td>No (co-RE)</td></tr>
+  <tr><td>Does M halt on all inputs?</td><td>Undecidable</td><td>No (co-RE)</td></tr>
+  <tr><td>Post Correspondence Problem</td><td>Undecidable</td><td>Yes (RE)</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2>9. Master Decision Problem Comparison Table</h2>
+<!-- ================================================================== -->
+
+<table>
+  <tr>
+    <th>Problem</th>
+    <th>Regular</th>
+    <th>DCFL</th>
+    <th>CFL</th>
+    <th>Recursive</th>
+    <th>RE</th>
+  </tr>
+  <tr><td>Membership (w &isin; L?)</td><td>Decidable</td><td>Decidable</td><td>Decidable</td><td>Decidable</td><td>Undecidable</td></tr>
+  <tr><td>Emptiness (L = &empty;?)</td><td>Decidable</td><td>Decidable</td><td>Decidable</td><td>Undecidable</td><td>Undecidable</td></tr>
+  <tr><td>Finiteness</td><td>Decidable</td><td>Decidable</td><td>Decidable</td><td>Undecidable</td><td>Undecidable</td></tr>
+  <tr><td>Equivalence</td><td>Decidable</td><td>Decidable</td><td>Undecidable</td><td>Undecidable</td><td>Undecidable</td></tr>
+  <tr><td>Universality (L = &Sigma;*?)</td><td>Decidable</td><td>Decidable</td><td>Undecidable</td><td>Undecidable</td><td>Undecidable</td></tr>
+  <tr><td>Containment</td><td>Decidable</td><td>Decidable</td><td>Undecidable</td><td>Undecidable</td><td>Undecidable</td></tr>
+  <tr><td>Disjointness</td><td>Decidable</td><td>Decidable</td><td>Undecidable</td><td>Undecidable</td><td>Undecidable</td></tr>
+  <tr><td>Ambiguity</td><td>N/A</td><td>N/A</td><td>Undecidable</td><td>N/A</td><td>N/A</td></tr>
+  <tr><td>Regularity</td><td>Trivial</td><td>Decidable</td><td>Undecidable</td><td>Undecidable</td><td>Undecidable</td></tr>
+</table>
+
+<div class="note">
+  <strong>Pattern to remember:</strong> As you move from Regular &rarr; CFL &rarr; Recursive &rarr; RE, more problems become undecidable. Regular languages have ALL problems decidable. For CFLs, equivalence and universality become undecidable. For RE, even membership becomes undecidable (the halting problem).
+</div>
+
+<!-- ================================================================== -->
+<h2>10. Common GATE Tricks and Traps</h2>
+<!-- ================================================================== -->
+
+<h3>Trick 1: Using Closure to Prove a Language Is Not in a Class</h3>
+<p>If you suspect <code>L</code> is not CFL, try to show that intersecting <code>L</code> with a regular language gives a known non-CFL.</p>
+
+<h3>Trick 2: Complement Confusion</h3>
+<p>Students often assume: "If L is CFL, then L<sup>c</sup> is CFL." This is FALSE. CFLs are not closed under complement.</p>
+
+<h3>Trick 3: The "Intersection of Two CFLs" Trap</h3>
+<p>A GATE question might give you two CFLs and ask about their intersection. Remember: the intersection of two CFLs is NOT necessarily a CFL. But it is always recursively enumerable (in fact, recursive if the CFLs are given by CFGs).</p>
+
+<h3>Trick 4: Confusing Machine Properties with Language Properties</h3>
+<p>Rice's theorem says that non-trivial <em>language</em> properties of TMs are undecidable. But properties of the <em>machine description</em> (like "does M have 100 states?") ARE decidable.</p>
+
+<h3>Trick 5: DCFL Equivalence Is Decidable</h3>
+<p>One of the deep results in formal language theory (proved by Senizergues in 2001): equivalence of DPDAs is decidable. This is often a surprising fact tested in GATE.</p>
+
+<h3>Trick 6: Membership in RE vs Decidability</h3>
+<p>Membership in RE means "given w, is w in L?" — this is the halting problem in disguise. For a specific RE language given by a TM, you can <em>enumerate</em> but not <em>decide</em>.</p>
+
+<h3>Trick 7: Product Construction State Count</h3>
+<p>If DFA<sub>1</sub> has <code>m</code> states and DFA<sub>2</sub> has <code>n</code> states, the product DFA has at most <code>m &times; n</code> states. The minimal DFA for the intersection could have fewer, but the upper bound is <code>m &times; n</code>.</p>
+
+<h3>Trick 8: Empty and Sigma-star</h3>
+<p>Both <code>&empty;</code> and <code>&Sigma;*</code> are regular languages. Any class containing all regular languages has these as members. This helps in many closure arguments.</p>
+
+<!-- ================================================================== -->
+<h2>11. Worked GATE-Style Examples</h2>
+<!-- ================================================================== -->
+
+<h3>Example 1: Closure Argument</h3>
+<p><strong>Q:</strong> Let <code>L<sub>1</sub> = {a<sup>m</sup>b<sup>n</sup>c<sup>n</sup> | m, n &ge; 0}</code> and <code>L<sub>2</sub> = {a<sup>n</sup>b<sup>n</sup>c<sup>m</sup> | m, n &ge; 0}</code>. What is the type of <code>L<sub>1</sub> &cap; L<sub>2</sub></code>?</p>
+<p><strong>Solution:</strong></p>
+<ul>
+  <li><code>L<sub>1</sub></code> is CFL (PDA matches b's and c's, ignores a's).</li>
+  <li><code>L<sub>2</sub></code> is CFL (PDA matches a's and b's, ignores c's).</li>
+  <li><code>L<sub>1</sub> &cap; L<sub>2</sub> = {a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> | n &ge; 0}</code>, which is NOT context-free.</li>
+  <li>It IS context-sensitive (an LBA can check it), and recursive.</li>
+</ul>
+<p><strong>Answer:</strong> CSL (context-sensitive) / Recursive, but not CFL.</p>
+
+<h3>Example 2: Decision Problem</h3>
+<p><strong>Q:</strong> Which of the following is decidable?</p>
+<ol type="A">
+  <li>Whether a given CFG is ambiguous</li>
+  <li>Whether the language of a given CFG is regular</li>
+  <li>Whether the language of a given CFG is empty</li>
+  <li>Whether two CFGs generate the same language</li>
+</ol>
+<p><strong>Solution:</strong> (A) Ambiguity of CFG &mdash; undecidable. (B) Regularity of CFL &mdash; undecidable. (C) Emptiness of CFL &mdash; <strong>decidable</strong> (mark generating symbols). (D) Equivalence &mdash; undecidable.</p>
+<p><strong>Answer: C</strong></p>
+
+<h3>Example 3: Rice's Theorem Application</h3>
+<p><strong>Q:</strong> Is the following problem decidable? "Given a TM M, does L(M) contain at least 10 strings?"</p>
+<p><strong>Solution:</strong> This is a non-trivial property of L(M): some RE languages have 10+ strings (e.g., &Sigma;*), some don't (e.g., &empty;). By Rice's theorem, it is <strong>undecidable</strong>.</p>
+
+<h3>Example 4: Applying Inverse Homomorphism</h3>
+<p><strong>Q:</strong> Let <code>h(a) = 01</code>, <code>h(b) = 10</code>, and <code>L = {0110, 0101}</code>. Find <code>h<sup>-1</sup>(L)</code>.</p>
+<p><strong>Solution:</strong> We need all strings <code>w &isin; {a,b}*</code> such that <code>h(w) &isin; L</code>.</p>
+<ul>
+  <li><code>h(ab) = 0110 &isin; L</code>. So <code>ab &isin; h<sup>-1</sup>(L)</code>.</li>
+  <li><code>h(aa) = 0101 &isin; L</code>. So <code>aa &isin; h<sup>-1</sup>(L)</code>.</li>
+  <li><code>h(ba) = 1001 &notin; L</code>.</li>
+  <li><code>h(bb) = 1010 &notin; L</code>.</li>
+</ul>
+<p><strong>Answer:</strong> <code>h<sup>-1</sup>(L) = {ab, aa}</code>.</p>
+
+<!-- ================================================================== -->
+<h2>12. Quiz</h2>
+<!-- ================================================================== -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "Closure Properties and Decision Problems Quiz",
+  "questions": [
+    {
+      "question": "Q1. Which of the following operations is context-free languages NOT closed under?",
+      "options": ["(A) Union", "(B) Concatenation", "(C) Intersection", "(D) Kleene Star"],
+      "answer": 2,
+      "explanation": "Context-free languages are NOT closed under intersection. The classic counterexample uses L1 = {a^n b^n c^m} and L2 = {a^m b^n c^n}, whose intersection is {a^n b^n c^n}, which is not context-free."
+    },
+    {
+      "question": "Q2. In the product construction for the intersection of two DFAs with m and n states respectively, how many states does the resulting DFA have?",
+      "options": ["(A) m + n", "(B) m × n", "(C) max(m, n)", "(D) 2^(m+n)"],
+      "answer": 1,
+      "explanation": "The product (cross-product) construction creates a DFA with state set Q1 × Q2, which has m × n states. Each state is a pair (q_i, q_j) where q_i ∈ Q1 and q_j ∈ Q2."
+    },
+    {
+      "question": "Q3. Which of the following problems is undecidable for context-free languages?",
+      "options": ["(A) Membership", "(B) Emptiness", "(C) Finiteness", "(D) Equivalence"],
+      "answer": 3,
+      "explanation": "Equivalence of CFLs is undecidable. Membership (CYK algorithm, O(n³)), emptiness (checking if start symbol is generating), and finiteness (checking for cycles after removing useless symbols) are all decidable for CFLs."
+    },
+    {
+      "question": "Q4. According to Rice's theorem, which of the following is decidable?",
+      "options": ["(A) Does L(M) contain exactly 5 strings?", "(B) Is L(M) regular?", "(C) Does Turing machine M have at least 3 states?", "(D) Is L(M) = Σ*?"],
+      "answer": 2,
+      "explanation": "Rice's theorem applies to properties of the LANGUAGE of a TM, not properties of the TM description itself. 'Does M have at least 3 states?' is a syntactic property of the machine description and is trivially decidable by examining the encoding of M. All other options are non-trivial language properties and thus undecidable by Rice's theorem."
+    },
+    {
+      "question": "Q5. If L is a CFL and R is a regular language, then L ∩ R is:",
+      "options": ["(A) Always regular", "(B) Always context-free", "(C) Always context-sensitive but not CFL", "(D) Not necessarily recursive"],
+      "answer": 1,
+      "explanation": "The intersection of a CFL with a regular language is always a CFL. This is proved by constructing a product of the PDA for L and the DFA for R. This is one of the most important and frequently tested closure properties."
+    },
+    {
+      "question": "Q6. Recursively enumerable languages are NOT closed under which operation?",
+      "options": ["(A) Union", "(B) Intersection", "(C) Complement", "(D) Concatenation"],
+      "answer": 2,
+      "explanation": "RE languages are NOT closed under complement. If they were, then every RE language would also be co-RE, making every RE language recursive (since Recursive = RE ∩ co-RE). But the halting problem is RE but not recursive, contradiction."
+    },
+    {
+      "question": "Q7. The CYK algorithm for CFL membership has time complexity:",
+      "options": ["(A) O(n)", "(B) O(n²)", "(C) O(n³)", "(D) O(2^n)"],
+      "answer": 2,
+      "explanation": "The CYK (Cocke-Younger-Kasami) algorithm runs in O(n³ · |G|) time where n is the length of the input string and |G| is the grammar size. The cubic factor comes from the three nested loops: two for the substring endpoints (i,j) and one for the split point k."
+    },
+    {
+      "question": "Q8. To prove L(D1) ⊆ L(D2) for DFAs D1 and D2, we check:",
+      "options": ["(A) L(D1) ∩ L(D2) = ∅", "(B) L(D1) ∪ L(D2) = L(D2)", "(C) L(D1) ∩ complement(L(D2)) = ∅", "(D) complement(L(D1)) ∩ L(D2) = ∅"],
+      "answer": 2,
+      "explanation": "L1 ⊆ L2 iff there is no string in L1 that is NOT in L2, i.e., L1 ∩ L2^c = ∅. We construct the product DFA for the intersection of D1 with the complement of D2, then check if its language is empty."
+    },
+    {
+      "question": "Q9. Which class of languages is closed under complement but NOT under union?",
+      "options": ["(A) Regular languages", "(B) Context-free languages", "(C) Deterministic context-free languages", "(D) Recursively enumerable languages"],
+      "answer": 2,
+      "explanation": "DCFLs (deterministic context-free languages) are closed under complement (by modifying the DPDA to swap accept/reject behavior) but NOT closed under union. Two DCFLs can be unioned to produce a non-deterministic CFL. Regular languages are closed under both; CFLs under neither; RE under union but not complement."
+    },
+    {
+      "question": "Q10. A language L is recursive if and only if:",
+      "options": ["(A) L is RE", "(B) L^c is RE", "(C) Both L and L^c are RE", "(D) L is a subset of some CFL"],
+      "answer": 2,
+      "explanation": "A language is recursive (decidable) if and only if both it and its complement are recursively enumerable. This is because: if both L and L^c have TMs (possibly non-halting), we can run them in parallel — one will always accept, giving us a total decision procedure. Conversely, if L is recursive, its TM always halts, so complementing gives a TM for L^c that also always halts."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

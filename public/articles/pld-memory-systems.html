@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLDs, ROM, RAM, and Memory Types — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>PLDs, ROM, RAM, and Memory Types</h1>
+  <p class="article-section-tag">Digital Logic</p>
+
+  <p>
+    Programmable Logic Devices (PLDs) and memory systems form the backbone of modern digital design.
+    This article covers the full spectrum from combinational logic implementation using ROM, PLA, and PAL
+    to the memory hierarchy including SRAM, DRAM, and various ROM types. These topics are drawn from
+    <strong>Morris Mano's Digital Design (Chapters 5 and 7)</strong> and are high-frequency GATE CSE questions.
+  </p>
+
+  <!-- ================================================================== -->
+  <h2>1. Programmable Logic Devices (PLDs) &mdash; Overview</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    A PLD is an IC that contains a large number of gates whose interconnections can be programmed by the user.
+    The key idea: any combinational function can be expressed as a sum of products (SOP). A PLD provides
+    an AND-plane (to form product terms) and an OR-plane (to sum selected products).
+  </p>
+
+  <div class="mermaid">
+    graph LR
+      A[Inputs] --> B[AND Plane<br>Product Terms]
+      B --> C[OR Plane<br>Sum of Products]
+      C --> D[Outputs]
+  </div>
+
+  <p>The three classical PLD architectures differ in which planes are programmable:</p>
+
+  <table>
+    <tr>
+      <th>Device</th>
+      <th>AND Plane</th>
+      <th>OR Plane</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td><strong>ROM</strong></td>
+      <td>Fixed (full decoder)</td>
+      <td>Programmable</td>
+      <td>Generates all 2<sup>n</sup> minterms; OR plane selects which to sum</td>
+    </tr>
+    <tr>
+      <td><strong>PLA</strong></td>
+      <td>Programmable</td>
+      <td>Programmable</td>
+      <td>Most flexible; both planes user-defined</td>
+    </tr>
+    <tr>
+      <td><strong>PAL</strong></td>
+      <td>Programmable</td>
+      <td>Fixed</td>
+      <td>Simpler than PLA; each output has a fixed number of product terms</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Tip:</strong> A ROM with <em>n</em> input lines and <em>m</em> output lines can implement
+    <strong>any</strong> m functions of n variables without minimisation. It has 2<sup>n</sup> &times; m
+    programmable connections in the OR plane.
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>2. ROM as a Combinational Function Generator</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    A ROM (Read-Only Memory) is essentially a complete decoder (AND plane) followed by a programmable OR
+    plane. Because the decoder produces every minterm, any Boolean function can be stored directly from
+    its truth table — no minimisation is required.
+  </p>
+
+  <h3>2.1 ROM Structure</h3>
+
+  <p>A 2<sup>n</sup> &times; m ROM has:</p>
+  <ul>
+    <li><strong>n</strong> input (address) lines</li>
+    <li>An internal n-to-2<sup>n</sup> decoder (AND plane)</li>
+    <li><strong>m</strong> output lines</li>
+    <li>2<sup>n</sup> &times; m programmable OR-plane connections (fuse or transistor based)</li>
+  </ul>
+
+  <div class="mermaid">
+    graph TD
+      subgraph ROM 2^3 x 4
+        I0[A2] --> DEC[3-to-8<br>Decoder]
+        I1[A1] --> DEC
+        I2[A0] --> DEC
+        DEC -->|m0| OR0[OR gates<br>4 outputs]
+        DEC -->|m1| OR0
+        DEC -->|m2| OR0
+        DEC -->|m3| OR0
+        DEC -->|m4| OR0
+        DEC -->|m5| OR0
+        DEC -->|m6| OR0
+        DEC -->|m7| OR0
+        OR0 --> O0[F0]
+        OR0 --> O1[F1]
+        OR0 --> O2[F2]
+        OR0 --> O3[F3]
+      end
+  </div>
+
+  <h3>2.2 Worked Example: Implementing Functions with ROM</h3>
+
+  <p>
+    <strong>Problem:</strong> Implement the following three functions using a ROM:
+  </p>
+  <pre><code>F1(A, B, C) = Sum of minterms(1, 3, 5, 7)
+F2(A, B, C) = Sum of minterms(0, 2, 4, 6)
+F3(A, B, C) = Sum of minterms(2, 3, 6, 7)</code></pre>
+
+  <p><strong>Solution:</strong> We need a ROM with 3 inputs and 3 outputs, i.e., 2<sup>3</sup> &times; 3 = 8 &times; 3 ROM.</p>
+
+  <table>
+    <tr>
+      <th>Address (A B C)</th>
+      <th>Minterm</th>
+      <th>F1</th>
+      <th>F2</th>
+      <th>F3</th>
+    </tr>
+    <tr><td>0 0 0</td><td>m<sub>0</sub></td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>0 0 1</td><td>m<sub>1</sub></td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>0 1 0</td><td>m<sub>2</sub></td><td>0</td><td>1</td><td>1</td></tr>
+    <tr><td>0 1 1</td><td>m<sub>3</sub></td><td>1</td><td>0</td><td>1</td></tr>
+    <tr><td>1 0 0</td><td>m<sub>4</sub></td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>1 0 1</td><td>m<sub>5</sub></td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>1 1 0</td><td>m<sub>6</sub></td><td>0</td><td>1</td><td>1</td></tr>
+    <tr><td>1 1 1</td><td>m<sub>7</sub></td><td>1</td><td>0</td><td>1</td></tr>
+  </table>
+
+  <p>
+    Observation: F1 = C (LSB), F2 = C' (complement of C), F3 = B. But with a ROM, we do not need to
+    derive these simplifications — we simply program the truth table directly into the OR plane.
+  </p>
+
+  <div class="note">
+    <strong>Key Insight:</strong> ROM size grows exponentially with the number of inputs (2<sup>n</sup> rows).
+    For functions with many inputs but few product terms, a PLA is more efficient.
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>3. Programmable Logic Array (PLA)</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    A PLA has <strong>both</strong> AND and OR planes programmable. This means we only need to implement
+    the product terms that actually appear in the minimised expressions — no need for a full decoder.
+  </p>
+
+  <h3>3.1 PLA Structure</h3>
+
+  <ul>
+    <li><strong>n</strong> inputs, each available in true and complemented form (2n lines into AND plane)</li>
+    <li><strong>k</strong> AND gates (product terms) — programmable connections to input lines</li>
+    <li><strong>m</strong> OR gates (outputs) — programmable connections to product terms</li>
+    <li>Optional: output inverters (XOR gates) for complemented outputs</li>
+  </ul>
+
+  <div class="mermaid">
+    graph LR
+      subgraph "PLA Structure"
+        IN["n inputs<br>(true + complement)"] --> AND["AND Plane<br>(Programmable)<br>k product terms"]
+        AND --> OR["OR Plane<br>(Programmable)<br>m outputs"]
+        OR --> XOR["Optional XOR<br>(complement)"]
+        XOR --> OUT["m outputs"]
+      end
+  </div>
+
+  <h3>3.2 PLA Programming Table</h3>
+
+  <p>
+    A PLA programming table lists each product term and shows which inputs are connected (1 = true,
+    0 = complement, dash = not connected) and which outputs include that term.
+  </p>
+
+  <p><strong>Example:</strong> Implement using a PLA with 3 inputs, 4 product terms, 2 outputs:</p>
+  <pre><code>F1(A, B, C) = AB' + AC + A'BC
+F2(A, B, C) = AC + BC</code></pre>
+
+  <p>After minimisation, the shared product terms are: AB', AC, A'BC, BC</p>
+
+  <table>
+    <tr>
+      <th>Product Term</th>
+      <th>A</th>
+      <th>B</th>
+      <th>C</th>
+      <th>F1</th>
+      <th>F2</th>
+    </tr>
+    <tr><td>AB'</td><td>1</td><td>0</td><td>&mdash;</td><td>1</td><td>0</td></tr>
+    <tr><td>AC</td><td>1</td><td>&mdash;</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td>A'BC</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><td>BC</td><td>&mdash;</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+  </table>
+
+  <p>
+    The PLA requires 4 product terms. Notice that <code>AC</code> is shared between F1 and F2 — this
+    sharing is a key advantage of PLA. A PAL would not allow this sharing easily.
+  </p>
+
+  <h3>3.3 PLA vs ROM Comparison</h3>
+
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>ROM</th>
+      <th>PLA</th>
+    </tr>
+    <tr>
+      <td>AND plane</td>
+      <td>Fixed (full decoder)</td>
+      <td>Programmable</td>
+    </tr>
+    <tr>
+      <td>OR plane</td>
+      <td>Programmable</td>
+      <td>Programmable</td>
+    </tr>
+    <tr>
+      <td>Product terms</td>
+      <td>All 2<sup>n</sup> minterms</td>
+      <td>Only required terms (k &lt;&lt; 2<sup>n</sup>)</td>
+    </tr>
+    <tr>
+      <td>Minimisation needed?</td>
+      <td>No</td>
+      <td>Yes (to reduce product terms)</td>
+    </tr>
+    <tr>
+      <td>Cost for many inputs</td>
+      <td>Exponential</td>
+      <td>Proportional to k</td>
+    </tr>
+    <tr>
+      <td>Speed</td>
+      <td>Faster (simpler routing)</td>
+      <td>Slower (two programmable planes)</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>4. Programmable Array Logic (PAL)</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    A PAL has a <strong>programmable AND plane</strong> and a <strong>fixed OR plane</strong>.
+    Each output OR gate is hard-wired to a specific set of AND gates (typically 4 or 8 product
+    terms per output).
+  </p>
+
+  <h3>4.1 PAL Structure</h3>
+
+  <div class="mermaid">
+    graph LR
+      subgraph "PAL Structure"
+        IN["n inputs<br>(true + complement)"] --> AND["AND Plane<br>(Programmable)"]
+        AND --> OR["OR Plane<br>(Fixed)<br>each output gets<br>fixed # of terms"]
+        OR --> OUT["m outputs"]
+      end
+  </div>
+
+  <h3>4.2 Key Characteristics of PAL</h3>
+
+  <ul>
+    <li>Each output has a <strong>fixed number</strong> of product terms (e.g., 4 AND gates per OR gate)</li>
+    <li>Product terms <strong>cannot be shared</strong> between outputs (unlike PLA)</li>
+    <li>Simpler and faster than PLA because the OR plane has fixed connections</li>
+    <li>If a function requires more product terms than available, it cannot be implemented directly</li>
+    <li>Some PALs have registered outputs (flip-flops) for sequential logic</li>
+  </ul>
+
+  <h3>4.3 Worked Example: PAL Implementation</h3>
+
+  <p><strong>Problem:</strong> Implement using a PAL with 3 inputs and max 3 product terms per output:</p>
+  <pre><code>F1(A, B, C) = AB + AC + BC
+F2(A, B, C) = AB + A'C'</code></pre>
+
+  <p><strong>Solution:</strong> Each function must be expressed with at most 3 product terms.</p>
+
+  <p>For output F1, the AND plane is programmed for: AB, AC, BC (3 terms — fits)</p>
+  <p>For output F2, the AND plane is programmed for: AB, A'C' (2 terms — fits, one AND gate unused)</p>
+
+  <div class="note">
+    <strong>Note:</strong> In a PAL, even though both F1 and F2 use the term AB, it must be generated
+    separately in each output's AND-gate group. In a PLA, the AB term would be shared.
+  </div>
+
+  <h3>4.4 Comparison: ROM vs PLA vs PAL</h3>
+
+  <table>
+    <tr>
+      <th>Property</th>
+      <th>ROM</th>
+      <th>PLA</th>
+      <th>PAL</th>
+    </tr>
+    <tr>
+      <td>AND plane</td>
+      <td>Fixed</td>
+      <td>Programmable</td>
+      <td>Programmable</td>
+    </tr>
+    <tr>
+      <td>OR plane</td>
+      <td>Programmable</td>
+      <td>Programmable</td>
+      <td>Fixed</td>
+    </tr>
+    <tr>
+      <td>Flexibility</td>
+      <td>High (any function)</td>
+      <td>Highest</td>
+      <td>Moderate</td>
+    </tr>
+    <tr>
+      <td>Speed</td>
+      <td>Fastest</td>
+      <td>Slowest</td>
+      <td>Fast</td>
+    </tr>
+    <tr>
+      <td>Term sharing</td>
+      <td>N/A</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Minimisation</td>
+      <td>Not needed</td>
+      <td>Essential</td>
+      <td>Recommended</td>
+    </tr>
+    <tr>
+      <td>Programmable fuses</td>
+      <td>2<sup>n</sup> &times; m</td>
+      <td>2n &times; k + k &times; m</td>
+      <td>2n &times; k</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>5. FPGA Basics</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    A <strong>Field-Programmable Gate Array (FPGA)</strong> is a more advanced PLD that can implement
+    complex digital systems. Unlike ROM/PLA/PAL which use a two-level AND-OR structure, FPGAs use
+    a matrix of configurable logic blocks (CLBs) connected by programmable routing.
+  </p>
+
+  <h3>5.1 FPGA Architecture</h3>
+
+  <div class="mermaid">
+    graph TD
+      subgraph "FPGA Architecture"
+        IOB1["I/O Block"] --- CLB1["CLB"]
+        IOB2["I/O Block"] --- CLB2["CLB"]
+        CLB1 --- RI["Programmable<br>Interconnect"]
+        CLB2 --- RI
+        CLB3["CLB"] --- RI
+        CLB4["CLB"] --- RI
+        IOB3["I/O Block"] --- CLB3
+        IOB4["I/O Block"] --- CLB4
+      end
+  </div>
+
+  <p>Key components of an FPGA:</p>
+
+  <table>
+    <tr>
+      <th>Component</th>
+      <th>Function</th>
+    </tr>
+    <tr>
+      <td><strong>CLB (Configurable Logic Block)</strong></td>
+      <td>Contains LUTs (Look-Up Tables), flip-flops, and multiplexers. Implements combinational and sequential logic.</td>
+    </tr>
+    <tr>
+      <td><strong>LUT (Look-Up Table)</strong></td>
+      <td>A small memory (typically 4-input or 6-input) that can implement any Boolean function of its inputs. Functionally equivalent to a small ROM.</td>
+    </tr>
+    <tr>
+      <td><strong>I/O Blocks</strong></td>
+      <td>Interface between internal logic and external pins. Configurable for input, output, or bidirectional.</td>
+    </tr>
+    <tr>
+      <td><strong>Programmable Interconnect</strong></td>
+      <td>Routing channels and switch matrices that connect CLBs to each other and to I/O blocks.</td>
+    </tr>
+    <tr>
+      <td><strong>Block RAM</strong></td>
+      <td>Dedicated memory blocks for on-chip storage.</td>
+    </tr>
+    <tr>
+      <td><strong>DSP Slices</strong></td>
+      <td>Hardened multiply-accumulate units for signal processing.</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>GATE Note:</strong> A k-input LUT is functionally a 2<sup>k</sup> &times; 1 ROM. A 4-input LUT
+    stores 2<sup>4</sup> = 16 bits and can implement any function of 4 variables.
+  </div>
+
+  <h3>5.2 FPGA vs ASIC vs PLD</h3>
+
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>SPLD (PAL/PLA)</th>
+      <th>FPGA</th>
+      <th>ASIC</th>
+    </tr>
+    <tr>
+      <td>Logic capacity</td>
+      <td>Low (tens of gates)</td>
+      <td>High (millions of gates)</td>
+      <td>Highest</td>
+    </tr>
+    <tr>
+      <td>Reconfigurable?</td>
+      <td>One-time or limited</td>
+      <td>Yes (SRAM-based)</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Design time</td>
+      <td>Minutes</td>
+      <td>Weeks</td>
+      <td>Months</td>
+    </tr>
+    <tr>
+      <td>Unit cost (volume)</td>
+      <td>Low</td>
+      <td>Medium</td>
+      <td>Lowest</td>
+    </tr>
+    <tr>
+      <td>NRE cost</td>
+      <td>Very low</td>
+      <td>Low</td>
+      <td>Very high</td>
+    </tr>
+    <tr>
+      <td>Performance</td>
+      <td>Moderate</td>
+      <td>Good</td>
+      <td>Best</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>6. RAM Types: SRAM vs DRAM</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    Random Access Memory (RAM) is volatile memory that allows both read and write operations.
+    The two fundamental types are Static RAM (SRAM) and Dynamic RAM (DRAM).
+  </p>
+
+  <h3>6.1 SRAM (Static RAM)</h3>
+
+  <p>
+    SRAM stores each bit in a <strong>bistable flip-flop circuit</strong> (typically 6 transistors per cell).
+    Data is retained as long as power is supplied — no refresh is needed.
+  </p>
+
+  <p>A typical 6T SRAM cell consists of:</p>
+  <ul>
+    <li>2 cross-coupled inverters (4 transistors) forming the latch</li>
+    <li>2 access transistors controlled by the word line</li>
+  </ul>
+
+  <h3>6.2 DRAM (Dynamic RAM)</h3>
+
+  <p>
+    DRAM stores each bit as charge on a <strong>capacitor</strong> (1 transistor + 1 capacitor per cell).
+    The charge leaks over time, so periodic <strong>refresh</strong> is required (typically every 2-8 ms).
+  </p>
+
+  <h3>6.3 SRAM vs DRAM Comparison</h3>
+
+  <table>
+    <tr>
+      <th>Parameter</th>
+      <th>SRAM</th>
+      <th>DRAM</th>
+    </tr>
+    <tr>
+      <td>Storage element</td>
+      <td>Flip-flop (6 transistors)</td>
+      <td>Capacitor (1T + 1C)</td>
+    </tr>
+    <tr>
+      <td>Refresh needed?</td>
+      <td>No</td>
+      <td>Yes (every 2-8 ms)</td>
+    </tr>
+    <tr>
+      <td>Speed</td>
+      <td>Faster (1-10 ns)</td>
+      <td>Slower (50-70 ns)</td>
+    </tr>
+    <tr>
+      <td>Density</td>
+      <td>Lower (6T per cell)</td>
+      <td>Higher (1T1C per cell)</td>
+    </tr>
+    <tr>
+      <td>Cost per bit</td>
+      <td>Higher</td>
+      <td>Lower</td>
+    </tr>
+    <tr>
+      <td>Power consumption</td>
+      <td>Higher (static current)</td>
+      <td>Lower (except during refresh)</td>
+    </tr>
+    <tr>
+      <td>Volatile?</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Typical use</td>
+      <td>Cache memory (L1, L2, L3)</td>
+      <td>Main memory</td>
+    </tr>
+    <tr>
+      <td>Address lines</td>
+      <td>All sent at once</td>
+      <td>Multiplexed (row then column)</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Favourite:</strong> DRAM uses address multiplexing — the row address is sent first
+    (latched by RAS), then the column address (latched by CAS). This halves the number of address pins
+    needed but requires two cycles per access.
+  </div>
+
+  <h3>6.4 DRAM Variants</h3>
+
+  <table>
+    <tr>
+      <th>Type</th>
+      <th>Key Feature</th>
+      <th>Typical Bandwidth</th>
+    </tr>
+    <tr>
+      <td>FPM DRAM</td>
+      <td>Fast Page Mode — row address held, multiple columns accessed</td>
+      <td>~176 MB/s</td>
+    </tr>
+    <tr>
+      <td>EDO DRAM</td>
+      <td>Extended Data Out — allows next address before current data done</td>
+      <td>~264 MB/s</td>
+    </tr>
+    <tr>
+      <td>SDRAM</td>
+      <td>Synchronous — clocked with system bus</td>
+      <td>~528 MB/s</td>
+    </tr>
+    <tr>
+      <td>DDR SDRAM</td>
+      <td>Double Data Rate — transfers on both clock edges</td>
+      <td>~2.1 GB/s</td>
+    </tr>
+    <tr>
+      <td>DDR2</td>
+      <td>4-bit prefetch, lower voltage (1.8V)</td>
+      <td>~4.2 GB/s</td>
+    </tr>
+    <tr>
+      <td>DDR3</td>
+      <td>8-bit prefetch, 1.5V</td>
+      <td>~8.5 GB/s</td>
+    </tr>
+    <tr>
+      <td>DDR4</td>
+      <td>Bank groups, 1.2V</td>
+      <td>~25.6 GB/s</td>
+    </tr>
+    <tr>
+      <td>DDR5</td>
+      <td>16-bit prefetch, 1.1V, two channels per DIMM</td>
+      <td>~51.2 GB/s</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>7. ROM Types</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    ROM (Read-Only Memory) is non-volatile memory. Data is retained even when power is off.
+    Various ROM types differ in how they are programmed and whether they can be erased.
+  </p>
+
+  <table>
+    <tr>
+      <th>Type</th>
+      <th>Programming</th>
+      <th>Erasure</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td><strong>Mask ROM</strong></td>
+      <td>Factory (mask)</td>
+      <td>Not possible</td>
+      <td>Cheapest for high volume; programmed during IC fabrication</td>
+    </tr>
+    <tr>
+      <td><strong>PROM</strong></td>
+      <td>User (one-time)</td>
+      <td>Not possible</td>
+      <td>Uses fusible links; blown fuse = 0, intact = 1</td>
+    </tr>
+    <tr>
+      <td><strong>EPROM</strong></td>
+      <td>User (electrical)</td>
+      <td>UV light (bulk erase)</td>
+      <td>Uses floating-gate transistors; quartz window on chip</td>
+    </tr>
+    <tr>
+      <td><strong>EEPROM</strong></td>
+      <td>User (electrical)</td>
+      <td>Electrical (byte-level)</td>
+      <td>Can erase individual bytes; slower write, limited cycles (~10<sup>5</sup>)</td>
+    </tr>
+    <tr>
+      <td><strong>Flash Memory</strong></td>
+      <td>User (electrical)</td>
+      <td>Electrical (block-level)</td>
+      <td>Erases in blocks; faster than EEPROM; used in SSDs, USB drives (~10<sup>5</sup>-10<sup>6</sup> cycles)</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>Key Difference:</strong> EEPROM erases at the byte level while Flash erases in blocks.
+    Flash is cheaper per bit and denser, making it the dominant non-volatile technology today.
+  </div>
+
+  <h3>7.1 Flash Memory: NOR vs NAND</h3>
+
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>NOR Flash</th>
+      <th>NAND Flash</th>
+    </tr>
+    <tr>
+      <td>Read access</td>
+      <td>Random access (fast reads)</td>
+      <td>Sequential/page access</td>
+    </tr>
+    <tr>
+      <td>Write speed</td>
+      <td>Slow</td>
+      <td>Fast</td>
+    </tr>
+    <tr>
+      <td>Erase speed</td>
+      <td>Slow</td>
+      <td>Fast</td>
+    </tr>
+    <tr>
+      <td>Density</td>
+      <td>Lower</td>
+      <td>Higher</td>
+    </tr>
+    <tr>
+      <td>Cost per bit</td>
+      <td>Higher</td>
+      <td>Lower</td>
+    </tr>
+    <tr>
+      <td>Typical use</td>
+      <td>Firmware, BIOS, code execution</td>
+      <td>Mass storage: SSDs, SD cards, USB</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>8. Memory Expansion</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    When a single memory chip does not provide enough capacity, multiple chips are combined using
+    two techniques: <strong>word expansion</strong> and <strong>bit expansion</strong>.
+  </p>
+
+  <h3>8.1 Bit Expansion (Increasing Word Size)</h3>
+
+  <p>
+    Multiple memory chips are connected in parallel to increase the number of bits per word.
+    All chips share the same address and control lines.
+  </p>
+
+  <p>
+    <strong>Example:</strong> Create 1K &times; 8 memory using 1K &times; 4 chips.
+  </p>
+  <ul>
+    <li>Need 8 / 4 = <strong>2 chips</strong></li>
+    <li>Both chips receive the same 10-bit address (A0-A9)</li>
+    <li>Chip 1 provides bits D0-D3, Chip 2 provides bits D4-D7</li>
+    <li>CS and R/W lines are common</li>
+  </ul>
+
+  <div class="mermaid">
+    graph LR
+      A["Address Bus<br>A0-A9"] --> C1["1K x 4<br>Chip 1<br>(D0-D3)"]
+      A --> C2["1K x 4<br>Chip 2<br>(D4-D7)"]
+      CS["CS, R/W"] --> C1
+      CS --> C2
+      C1 --> DB["Data Bus D0-D7"]
+      C2 --> DB
+  </div>
+
+  <h3>8.2 Word Expansion (Increasing Number of Words)</h3>
+
+  <p>
+    Memory chips are selected one at a time using a decoder connected to extra address lines.
+    This increases the address space.
+  </p>
+
+  <p>
+    <strong>Example:</strong> Create 4K &times; 8 memory using 1K &times; 8 chips.
+  </p>
+  <ul>
+    <li>Need 4K / 1K = <strong>4 chips</strong></li>
+    <li>Lower 10 address bits (A0-A9) go to all chips</li>
+    <li>Upper 2 address bits (A10-A11) go to a 2-to-4 decoder</li>
+    <li>Decoder outputs connect to CS (chip select) of each chip</li>
+    <li>Only one chip is enabled at a time</li>
+  </ul>
+
+  <div class="mermaid">
+    graph TD
+      A["A10-A11"] --> DEC["2-to-4<br>Decoder"]
+      DEC -->|CS0| C0["1K x 8<br>Chip 0<br>0000-03FF"]
+      DEC -->|CS1| C1["1K x 8<br>Chip 1<br>0400-07FF"]
+      DEC -->|CS2| C2["1K x 8<br>Chip 2<br>0800-0BFF"]
+      DEC -->|CS3| C3["1K x 8<br>Chip 3<br>0C00-0FFF"]
+      AL["A0-A9"] --> C0
+      AL --> C1
+      AL --> C2
+      AL --> C3
+  </div>
+
+  <h3>8.3 Combined Expansion</h3>
+
+  <p>
+    <strong>Problem:</strong> Design a 4K &times; 16 memory system using 1K &times; 4 chips.
+  </p>
+
+  <p><strong>Solution:</strong></p>
+  <ul>
+    <li>Total bits needed: 4K &times; 16 = 65,536 bits</li>
+    <li>Bits per chip: 1K &times; 4 = 4,096 bits</li>
+    <li>Total chips needed: 65,536 / 4,096 = <strong>16 chips</strong></li>
+    <li>Bit expansion: 16 / 4 = 4 chips per row (to get 16-bit word)</li>
+    <li>Word expansion: 4K / 1K = 4 rows of chips</li>
+    <li>Layout: 4 rows &times; 4 columns = 16 chips</li>
+    <li>Decoder: 2-to-4 (using A10, A11) to select the row</li>
+  </ul>
+
+  <div class="important">
+    <strong>Formula:</strong> Number of chips = (Required words / Chip words) &times; (Required bits per word / Chip bits per word)
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>9. Memory Address Decoding</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    Address decoding determines which memory chip or I/O device responds to a given address.
+    There are two main approaches:
+  </p>
+
+  <h3>9.1 Full Address Decoding</h3>
+
+  <p>
+    Every address bit is used in the decoding logic. Each memory location has exactly one address.
+    No address aliasing occurs.
+  </p>
+
+  <p>
+    <strong>Example:</strong> A system with 16-bit addresses uses a 2K &times; 8 RAM chip.
+    The chip needs 11 address lines (A0-A10). The remaining 5 lines (A11-A15) are decoded to
+    generate the chip select.
+  </p>
+
+  <pre><code>Address range for CS when A15-A11 = 10110:
+  Start: 1011 0 000 0000 0000 = B000h
+  End:   1011 0 111 1111 1111 = B7FFh
+  Range: B000h to B7FFh (2K bytes)</code></pre>
+
+  <h3>9.2 Partial Address Decoding</h3>
+
+  <p>
+    Not all high-order address bits are used. This is simpler but causes <strong>address aliasing</strong>
+    — the same physical memory appears at multiple address ranges.
+  </p>
+
+  <p>
+    <strong>Example:</strong> If only A15 is used for chip select (A15 = 0 selects the chip) and the
+    chip is 2K, then A14-A11 are don't cares. The 2K block is mirrored at every 2K boundary
+    in the lower half of the address space (16 aliases).
+  </p>
+
+  <div class="note">
+    <strong>Trade-off:</strong> Partial decoding uses fewer gates but wastes address space due to
+    aliasing. Full decoding is more complex but uses the address space efficiently.
+  </div>
+
+  <h3>9.3 Address Decoding Example</h3>
+
+  <p><strong>Problem:</strong> A microprocessor has a 16-bit address bus. Design address decoding for:</p>
+  <ul>
+    <li>8K ROM at address 0000h-1FFFh</li>
+    <li>4K RAM at address 4000h-4FFFh</li>
+    <li>4K RAM at address 5000h-5FFFh</li>
+  </ul>
+
+  <p><strong>Solution:</strong></p>
+  <pre><code>8K ROM (0000-1FFF): A15=0, A14=0, A13=0  => CS_ROM = A15 + A14 + A13 (active low)
+  Uses A0-A12 for internal addressing.
+
+4K RAM-1 (4000-4FFF): A15=0, A14=1, A13=0, A12=0 => CS_RAM1 = A15 + A14' + A13 + A12
+  Uses A0-A11 for internal addressing.
+
+4K RAM-2 (5000-5FFF): A15=0, A14=1, A13=0, A12=1 => CS_RAM2 = A15 + A14' + A13 + A12'
+  Uses A0-A11 for internal addressing.</code></pre>
+
+  <p>
+    A 3-to-8 decoder with inputs A13, A14, A15 can generate chip selects, with additional
+    gating on A12 where needed.
+  </p>
+
+  <!-- ================================================================== -->
+  <h2>10. Worked Examples for GATE</h2>
+  <!-- ================================================================== -->
+
+  <h3>Example 1: ROM Size Calculation</h3>
+
+  <p>
+    <strong>Q:</strong> A combinational circuit has 5 inputs and 3 outputs. What is the minimum ROM
+    size needed?
+  </p>
+  <p>
+    <strong>A:</strong> ROM size = 2<sup>5</sup> &times; 3 = 32 &times; 3 = <strong>96 bits</strong>. The ROM has
+    32 words of 3 bits each (32 &times; 3 ROM).
+  </p>
+
+  <h3>Example 2: PLA Size</h3>
+
+  <p>
+    <strong>Q:</strong> A PLA has 12 inputs, 24 product terms, and 6 outputs. How many programmable
+    connections does it have?
+  </p>
+  <p>
+    <strong>A:</strong> AND plane: 2 &times; 12 &times; 24 = 576 connections (each input in true and complement form).
+    OR plane: 24 &times; 6 = 144 connections.
+    Total = 576 + 144 = <strong>720 programmable connections</strong>.
+  </p>
+
+  <h3>Example 3: Memory Chip Count</h3>
+
+  <p>
+    <strong>Q:</strong> How many 512 &times; 4 RAM chips are needed to construct a 2K &times; 8 memory?
+  </p>
+  <p>
+    <strong>A:</strong> Word expansion: 2K / 512 = 4. Bit expansion: 8 / 4 = 2.
+    Total chips = 4 &times; 2 = <strong>8 chips</strong>.
+  </p>
+
+  <h3>Example 4: Decoder for Memory</h3>
+
+  <p>
+    <strong>Q:</strong> A 64K memory space is divided into 4 equal blocks using a 2-to-4 decoder.
+    Which address lines are connected to the decoder?
+  </p>
+  <p>
+    <strong>A:</strong> 64K = 2<sup>16</sup> addresses. 4 blocks means each block is 16K = 2<sup>14</sup>.
+    The two highest address lines <strong>A14 and A15</strong> go to the decoder.
+    A0-A13 go to the memory chips.
+  </p>
+
+  <h3>Example 5: Implementing a Full Adder with ROM</h3>
+
+  <p>
+    <strong>Q:</strong> Implement a full adder using a ROM. Determine the ROM size.
+  </p>
+  <p>
+    <strong>A:</strong> A full adder has 3 inputs (A, B, Cin) and 2 outputs (Sum, Cout).
+    ROM size = 2<sup>3</sup> &times; 2 = 8 &times; 2 ROM.
+  </p>
+
+  <table>
+    <tr>
+      <th>Address (A B Cin)</th>
+      <th>Sum</th>
+      <th>Cout</th>
+    </tr>
+    <tr><td>0 0 0</td><td>0</td><td>0</td></tr>
+    <tr><td>0 0 1</td><td>1</td><td>0</td></tr>
+    <tr><td>0 1 0</td><td>1</td><td>0</td></tr>
+    <tr><td>0 1 1</td><td>0</td><td>1</td></tr>
+    <tr><td>1 0 0</td><td>1</td><td>0</td></tr>
+    <tr><td>1 0 1</td><td>0</td><td>1</td></tr>
+    <tr><td>1 1 0</td><td>0</td><td>1</td></tr>
+    <tr><td>1 1 1</td><td>1</td><td>1</td></tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>Quiz: PLDs, ROM, RAM, and Memory Types</h2>
+  <!-- ================================================================== -->
+
+  <script type="application/json" class="quiz-data">
+  {
+    "title": "PLDs, ROM, RAM, and Memory Types",
+    "questions": [
+      {
+        "question": "Q1. In a PLA, which planes are programmable?",
+        "options": ["(A) AND plane only", "(B) OR plane only", "(C) Both AND and OR planes", "(D) Neither plane"],
+        "answer": 2,
+        "explanation": "A PLA (Programmable Logic Array) has both AND and OR planes programmable. This gives it maximum flexibility but makes it slower and more expensive than a PAL (programmable AND, fixed OR) or ROM (fixed AND, programmable OR)."
+      },
+      {
+        "question": "Q2. A ROM with 10 address lines and 8 data lines has how many bits of storage?",
+        "options": ["(A) 80 bits", "(B) 1024 bits", "(C) 8192 bits", "(D) 10240 bits"],
+        "answer": 2,
+        "explanation": "A ROM with n address lines has 2^n words. Here, 2^10 = 1024 words, each 8 bits wide. Total = 1024 x 8 = 8192 bits. The ROM size is 1K x 8."
+      },
+      {
+        "question": "Q3. What is the key difference between PAL and PLA?",
+        "options": ["(A) PAL has a fixed AND plane", "(B) PAL has a fixed OR plane", "(C) PLA has a fixed OR plane", "(D) PAL has no OR plane"],
+        "answer": 1,
+        "explanation": "In a PAL, the AND plane is programmable but the OR plane is fixed. Each output OR gate is hard-wired to a specific set of AND gates. In a PLA, both planes are programmable. In a ROM, the AND plane is fixed (full decoder) and the OR plane is programmable."
+      },
+      {
+        "question": "Q4. DRAM requires periodic refresh because:",
+        "options": ["(A) Transistors lose their gate charge", "(B) Capacitors leak charge over time", "(C) Flip-flops become unstable", "(D) Power supply fluctuates"],
+        "answer": 1,
+        "explanation": "DRAM stores data as charge on a capacitor. Due to leakage currents, the charge dissipates over time. Periodic refresh (typically every 2-8 ms) reads and rewrites each row to restore the charge. SRAM uses flip-flops and does not need refresh."
+      },
+      {
+        "question": "Q5. How many 256 x 4 RAM chips are needed to build a 1K x 8 memory?",
+        "options": ["(A) 4", "(B) 8", "(C) 16", "(D) 2"],
+        "answer": 1,
+        "explanation": "Word expansion: 1K / 256 = 4 rows. Bit expansion: 8 / 4 = 2 chips per row. Total = 4 x 2 = 8 chips. The 4 rows are selected by a 2-to-4 decoder using the two extra address lines."
+      },
+      {
+        "question": "Q6. Which ROM type can be erased electrically one byte at a time?",
+        "options": ["(A) PROM", "(B) EPROM", "(C) EEPROM", "(D) Flash Memory"],
+        "answer": 2,
+        "explanation": "EEPROM (Electrically Erasable PROM) supports byte-level electrical erasure. EPROM requires UV light for bulk erasure. Flash memory erases in blocks (not individual bytes). PROM is one-time programmable and cannot be erased."
+      },
+      {
+        "question": "Q7. In a DRAM, the row and column addresses are sent separately because:",
+        "options": ["(A) It increases speed", "(B) It reduces the number of address pins (multiplexing)", "(C) It improves reliability", "(D) It reduces power consumption"],
+        "answer": 1,
+        "explanation": "DRAM uses address multiplexing — the row address is sent first (latched by RAS signal) and the column address is sent next (latched by CAS signal). This halves the number of address pins needed on the chip package, reducing cost, though it requires two address cycles per access."
+      },
+      {
+        "question": "Q8. A 4-input LUT in an FPGA can implement:",
+        "options": ["(A) Only AND/OR functions of 4 variables", "(B) Any Boolean function of 4 variables", "(C) Only symmetric functions of 4 variables", "(D) Only functions with at most 4 product terms"],
+        "answer": 1,
+        "explanation": "A 4-input LUT is functionally a 2^4 = 16-bit ROM that can store the truth table of ANY Boolean function of 4 variables. Since there are 2^16 = 65,536 possible functions of 4 variables, a 4-input LUT can implement any one of them."
+      },
+      {
+        "question": "Q9. Partial address decoding in memory systems causes:",
+        "options": ["(A) Faster access time", "(B) Address aliasing (multiple addresses map to same location)", "(C) Higher reliability", "(D) More efficient use of address space"],
+        "answer": 1,
+        "explanation": "Partial address decoding does not use all higher-order address bits. The unused bits become don't cares, so the same physical memory location can be accessed at multiple addresses (aliasing). This wastes address space but requires simpler decoding hardware."
+      },
+      {
+        "question": "Q10. A PLA has 8 inputs, 16 product terms, and 4 outputs. The total number of programmable connections is:",
+        "options": ["(A) 256", "(B) 320", "(C) 192", "(D) 128"],
+        "answer": 1,
+        "explanation": "AND plane: Each of the 8 inputs appears in true and complemented form = 16 input lines. Each connects to 16 AND gates = 16 x 16 = 256 connections. OR plane: 16 product terms x 4 outputs = 64 connections. Total = 256 + 64 = 320 programmable connections."
+      }
+    ]
+  }
+  </script>
+
+</article>
+</body>
+</html>

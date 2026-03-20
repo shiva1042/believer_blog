@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complexity Classes — P, NP, PSPACE, and Beyond — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Theory of Computation</span>
+<h1>Complexity Classes &mdash; P, NP, PSPACE, and Beyond</h1>
+
+<p>
+  Computational complexity theory classifies problems not by <em>whether</em> they can be solved, but by <em>how efficiently</em> they can be solved. While computability theory asks "Is this problem solvable at all?", complexity theory asks "How much time or space does it take?" This article covers the material from Chapters 10&ndash;11 of Hopcroft, Motwani, and Ullman, with a focus on what appears in GATE CSE examinations.
+</p>
+
+<!-- ================================================================== -->
+<h2>1. Foundational Concepts</h2>
+<!-- ================================================================== -->
+
+<h3>1.1 Measuring Complexity</h3>
+<p>We measure the complexity of a <strong>decision problem</strong> (a yes/no question) in terms of the resources consumed by the best algorithm (Turing machine) that solves it, as a function of input size <code>n</code>.</p>
+
+<ul>
+  <li><strong>Time complexity:</strong> The number of steps a TM takes before halting.</li>
+  <li><strong>Space complexity:</strong> The number of tape cells a TM uses (beyond the input).</li>
+</ul>
+
+<p>We use <strong>worst-case</strong> analysis: <code>T(n) = max over all inputs of size n</code> of the number of steps.</p>
+
+<h3>1.2 Deterministic vs Nondeterministic TMs</h3>
+<p>A <strong>deterministic TM (DTM)</strong> has exactly one possible action in each configuration. A <strong>nondeterministic TM (NTM)</strong> can have multiple possible actions; it accepts if <em>any</em> computation path leads to acceptance.</p>
+
+<p>For time complexity:</p>
+<ul>
+  <li><strong>DTM time:</strong> Number of steps in the single computation.</li>
+  <li><strong>NTM time:</strong> Length of the <em>shortest</em> accepting computation path (if one exists).</li>
+</ul>
+
+<div class="note">
+  <strong>Key relationship:</strong> Any NTM running in time <code>T(n)</code> can be simulated by a DTM in time <code>2<sup>O(T(n))</sup></code>. This exponential blowup is the crux of the P vs NP question.
+</div>
+
+<!-- ================================================================== -->
+<h2>2. Time Complexity Classes</h2>
+<!-- ================================================================== -->
+
+<h3>2.1 P &mdash; Polynomial Time</h3>
+
+<p><strong>Definition:</strong></p>
+<pre><code>P = &bigcup;<sub>k&ge;0</sub> DTIME(n<sup>k</sup>)</code></pre>
+<p><code>P</code> is the class of all decision problems solvable by a deterministic Turing machine in polynomial time.</p>
+
+<p><strong>Informal meaning:</strong> Problems in P are considered "efficiently solvable" or "tractable."</p>
+
+<p><strong>Examples of problems in P:</strong></p>
+<table>
+  <tr><th>Problem</th><th>Best Known Complexity</th></tr>
+  <tr><td>Sorting</td><td>O(n log n)</td></tr>
+  <tr><td>Shortest path (Dijkstra)</td><td>O((V+E) log V)</td></tr>
+  <tr><td>Maximum matching (bipartite)</td><td>O(V &middot; E)</td></tr>
+  <tr><td>Primality testing (AKS)</td><td>O(n<sup>6</sup>) where n = number of digits</td></tr>
+  <tr><td>2-SAT</td><td>O(V + E) via implication graph</td></tr>
+  <tr><td>Linear programming</td><td>Polynomial (ellipsoid or interior point)</td></tr>
+  <tr><td>Context-free language membership</td><td>O(n<sup>3</sup>) via CYK</td></tr>
+  <tr><td>Maximum flow</td><td>Polynomial (various algorithms)</td></tr>
+  <tr><td>Topological sorting</td><td>O(V + E)</td></tr>
+  <tr><td>Connected components</td><td>O(V + E)</td></tr>
+  <tr><td>Strongly connected components</td><td>O(V + E)</td></tr>
+  <tr><td>Minimum spanning tree</td><td>O(E log V)</td></tr>
+  <tr><td>2-Coloring (bipartiteness check)</td><td>O(V + E)</td></tr>
+  <tr><td>Euler path/circuit existence</td><td>O(V + E)</td></tr>
+</table>
+
+<h3>2.2 NP &mdash; Nondeterministic Polynomial Time</h3>
+
+<p><strong>Definition (NTM view):</strong></p>
+<pre><code>NP = &bigcup;<sub>k&ge;0</sub> NTIME(n<sup>k</sup>)</code></pre>
+<p><code>NP</code> is the class of decision problems solvable by a <em>nondeterministic</em> Turing machine in polynomial time.</p>
+
+<p><strong>Definition (Certificate/Verifier view):</strong> A language <code>L</code> is in NP if there exists a polynomial-time deterministic verifier <code>V</code> such that:</p>
+<pre><code>x &isin; L  &hArr;  &exist; certificate c, |c| &le; p(|x|), such that V(x, c) accepts</code></pre>
+
+<p>The certificate (also called a "witness" or "proof") must be:</p>
+<ul>
+  <li>Of polynomial length in the input size.</li>
+  <li>Verifiable in polynomial time by a deterministic machine.</li>
+</ul>
+
+<div class="note">
+  <strong>Intuition:</strong> NP problems are those where a proposed solution can be <em>checked</em> quickly, even if <em>finding</em> the solution might be hard. For example, given a claimed Hamiltonian cycle, you can verify it in O(n) time, but finding one might require exponential time.
+</div>
+
+<p><strong>Examples of problems in NP:</strong></p>
+<table>
+  <tr><th>Problem</th><th>Certificate</th><th>Verification</th></tr>
+  <tr><td>SAT (Boolean satisfiability)</td><td>A satisfying assignment</td><td>Evaluate formula: O(|formula|)</td></tr>
+  <tr><td>Hamiltonian Cycle</td><td>The cycle itself</td><td>Check it visits all vertices once: O(V)</td></tr>
+  <tr><td>Graph Coloring (k-coloring)</td><td>The coloring</td><td>Check no adjacent same-color: O(E)</td></tr>
+  <tr><td>Clique</td><td>The clique vertices</td><td>Check all edges exist: O(k<sup>2</sup>)</td></tr>
+  <tr><td>Subset Sum</td><td>The subset</td><td>Sum the elements: O(n)</td></tr>
+  <tr><td>Vertex Cover</td><td>The cover set</td><td>Check all edges covered: O(E)</td></tr>
+  <tr><td>Integer Linear Programming</td><td>A feasible solution</td><td>Check constraints: O(constraints)</td></tr>
+  <tr><td>Travelling Salesman (decision)</td><td>The tour</td><td>Compute tour length: O(n)</td></tr>
+</table>
+
+<h3>2.3 co-NP</h3>
+
+<p><strong>Definition:</strong> <code>co-NP = {L | L<sup>c</sup> &isin; NP}</code></p>
+<p>A language is in co-NP if its <em>complement</em> is in NP, i.e., there exist short proofs of "NO" instances.</p>
+
+<p><strong>Examples:</strong></p>
+<ul>
+  <li><strong>TAUTOLOGY:</strong> "Is this Boolean formula true for ALL assignments?" The complement (SATISFIABILITY of the negation) is in NP, so TAUTOLOGY &isin; co-NP.</li>
+  <li><strong>Primality:</strong> Actually in both NP and co-NP (and in P, by AKS).</li>
+  <li><strong>UNSAT:</strong> "Is this formula unsatisfiable?" This is co-NP (complement of SAT).</li>
+</ul>
+
+<p><strong>Relationship with NP:</strong></p>
+<ul>
+  <li><code>P &sube; NP &cap; co-NP</code> (every problem in P is in both NP and co-NP).</li>
+  <li>Whether <code>NP = co-NP</code> is an open question.</li>
+  <li>If any NP-complete problem is in co-NP, then <code>NP = co-NP</code>.</li>
+</ul>
+
+<div class="mermaid">
+graph TB
+    subgraph "Believed Relationship"
+    P["P"] --> NP["NP"]
+    P --> coNP["co-NP"]
+    NP --> NPUNION["NP ∪ co-NP"]
+    coNP --> NPUNION
+    end
+</div>
+
+<h3>2.4 NP-Hard and NP-Complete</h3>
+
+<p><strong>Definition (NP-Hard):</strong> A problem <code>H</code> is NP-hard if every problem in NP can be polynomial-time reduced to <code>H</code>. Formally: <code>&forall; L &isin; NP: L &le;<sub>p</sub> H</code>.</p>
+
+<p><strong>Definition (NP-Complete):</strong> A problem is NP-complete if it is:</p>
+<ol>
+  <li>In NP, AND</li>
+  <li>NP-hard.</li>
+</ol>
+<pre><code>NPC = NP &cap; NP-hard</code></pre>
+
+<div class="important">
+  <strong>Critical distinction:</strong> NP-hard problems need NOT be in NP. The Halting Problem is NP-hard (every NP problem reduces to it) but it is not in NP (it's not even decidable!). NP-complete problems must be in NP.
+</div>
+
+<p><strong>Significance of NP-completeness:</strong></p>
+<ul>
+  <li>If ANY NP-complete problem can be solved in polynomial time, then <code>P = NP</code>.</li>
+  <li>If ANY NP-complete problem cannot be solved in polynomial time, then <code>P &ne; NP</code>.</li>
+  <li>All NP-complete problems are polynomial-time equivalent to each other.</li>
+</ul>
+
+<h3>2.5 The Cook-Levin Theorem</h3>
+<p><strong>Theorem (Cook, 1971; Levin, 1973):</strong> SAT (Boolean Satisfiability) is NP-complete.</p>
+<p><strong>Proof idea:</strong> Given any NP language <code>L</code> with NTM <code>M</code> running in time <code>p(n)</code>, encode the entire computation of <code>M</code> on input <code>x</code> as a Boolean formula <code>&phi;</code> such that <code>&phi;</code> is satisfiable iff <code>M</code> accepts <code>x</code>. The formula has variables representing the state, head position, and tape contents at each time step, with clauses enforcing the transition function.</p>
+
+<!-- ================================================================== -->
+<h2>3. Key Relationships Among Time Classes</h2>
+<!-- ================================================================== -->
+
+<h3>3.1 Known Inclusions</h3>
+<pre><code>P &sube; NP &sube; EXPTIME
+P &sube; co-NP &sube; EXPTIME
+NPC &sube; NP
+P &sube; NP &cap; co-NP</code></pre>
+
+<h3>3.2 What Is Known vs Open</h3>
+<table>
+  <tr><th>Question</th><th>Status</th></tr>
+  <tr><td>P &sube; NP?</td><td>Yes (known, trivially)</td></tr>
+  <tr><td>P = NP?</td><td><strong>Open</strong> (widely believed P &ne; NP)</td></tr>
+  <tr><td>NP = co-NP?</td><td><strong>Open</strong></td></tr>
+  <tr><td>P = NP &cap; co-NP?</td><td><strong>Open</strong></td></tr>
+  <tr><td>P &subne; EXPTIME?</td><td>Yes (by Time Hierarchy Theorem)</td></tr>
+  <tr><td>NP &sube; PSPACE?</td><td>Yes (known)</td></tr>
+</table>
+
+<div class="mermaid">
+graph LR
+    P --> NP --> PSPACE --> EXPTIME
+    P --> coNP["co-NP"] --> PSPACE
+</div>
+
+<h3>3.3 EXPTIME</h3>
+<p><strong>Definition:</strong> <code>EXPTIME = &bigcup;<sub>k&ge;0</sub> DTIME(2<sup>n<sup>k</sup></sup>)</code></p>
+<p>Problems solvable in exponential time by a deterministic TM.</p>
+<p><strong>Key result:</strong> <code>P &subne; EXPTIME</code> (by the Time Hierarchy Theorem). This is one of the few <em>proven</em> separations.</p>
+
+<!-- ================================================================== -->
+<h2>4. Space Complexity Classes</h2>
+<!-- ================================================================== -->
+
+<h3>4.1 Definitions</h3>
+<p>Space complexity measures the number of work tape cells used (excluding the read-only input tape for sublinear classes).</p>
+
+<pre><code>DSPACE(f(n)) = languages decidable by a DTM using O(f(n)) space
+NSPACE(f(n)) = languages decidable by an NTM using O(f(n)) space</code></pre>
+
+<h3>4.2 L &mdash; Logarithmic Space</h3>
+<p><strong>Definition:</strong> <code>L = DSPACE(log n)</code></p>
+<p>Problems solvable using only O(log n) additional space (beyond the read-only input).</p>
+
+<p><strong>Examples:</strong></p>
+<ul>
+  <li>Undirected s-t connectivity (Reingold's theorem, 2004)</li>
+  <li>Checking if a string is a palindrome (using two pointers)</li>
+  <li>Checking graph properties that need only a constant number of pointers into the input</li>
+</ul>
+
+<div class="note">
+  <strong>Why logarithmic?</strong> With O(log n) space, you can store a constant number of pointers/indices into the input (each index requires log n bits). This is exactly what you need for many graph traversals.
+</div>
+
+<h3>4.3 NL &mdash; Nondeterministic Logarithmic Space</h3>
+<p><strong>Definition:</strong> <code>NL = NSPACE(log n)</code></p>
+
+<p><strong>Key example:</strong> <code>PATH = {(G, s, t) | there is a directed path from s to t in G}</code> is NL-complete.</p>
+<p><strong>Proof that PATH is in NL:</strong> Nondeterministically guess the next vertex on the path, keeping only the current vertex in memory (O(log n) bits).</p>
+
+<p><strong>Immerman-Szelepcs&eacute;nyi Theorem:</strong> <code>NL = co-NL</code>. More generally, <code>NSPACE(f(n)) = co-NSPACE(f(n))</code> for <code>f(n) &ge; log n</code>. This means non-reachability is also in NL.</p>
+
+<h3>4.4 PSPACE</h3>
+<p><strong>Definition:</strong> <code>PSPACE = &bigcup;<sub>k&ge;0</sub> DSPACE(n<sup>k</sup>)</code></p>
+<p>Problems solvable using polynomial space.</p>
+
+<h3>4.5 NPSPACE</h3>
+<p><strong>Definition:</strong> <code>NPSPACE = &bigcup;<sub>k&ge;0</sub> NSPACE(n<sup>k</sup>)</code></p>
+
+<h3>4.6 Savitch's Theorem</h3>
+<p><strong>Theorem (Savitch, 1970):</strong> For any function <code>f(n) &ge; log n</code>:</p>
+<pre><code>NSPACE(f(n)) &sube; DSPACE(f(n)<sup>2</sup>)</code></pre>
+
+<p><strong>Corollary:</strong> <code>NPSPACE = PSPACE</code></p>
+<p>Nondeterministic polynomial space equals deterministic polynomial space. The squaring of space is polynomial if we started with polynomial space.</p>
+
+<p><strong>Proof idea:</strong> To check if configuration <code>C<sub>1</sub></code> leads to configuration <code>C<sub>2</sub></code> in at most <code>2<sup>k</sup></code> steps, guess a midpoint configuration <code>C<sub>m</sub></code> and recursively check:</p>
+<ol>
+  <li><code>C<sub>1</sub></code> leads to <code>C<sub>m</sub></code> in at most <code>2<sup>k-1</sup></code> steps, AND</li>
+  <li><code>C<sub>m</sub></code> leads to <code>C<sub>2</sub></code> in at most <code>2<sup>k-1</sup></code> steps.</li>
+</ol>
+<p>The recursion depth is <code>O(log(2<sup>f(n)</sup>)) = O(f(n))</code>, and each level stores one configuration of size <code>O(f(n))</code>, giving total space <code>O(f(n)<sup>2</sup>)</code>.</p>
+
+<div class="important">
+  <strong>GATE significance:</strong> Savitch's theorem is frequently tested. The key takeaway: nondeterminism doesn't help much for space (only a quadratic blowup), unlike time (where the blowup is believed to be exponential for NP vs P).
+</div>
+
+<h3>4.7 PSPACE-Complete Problems</h3>
+
+<p><strong>Definition:</strong> A problem is PSPACE-complete if it is in PSPACE and every PSPACE problem reduces to it in polynomial time.</p>
+
+<p><strong>TQBF (True Quantified Boolean Formulas):</strong></p>
+<p>Given a fully quantified Boolean formula:</p>
+<pre><code>&forall;x<sub>1</sub> &exist;x<sub>2</sub> &forall;x<sub>3</sub> ... Q<sub>n</sub>x<sub>n</sub> &phi;(x<sub>1</sub>, ..., x<sub>n</sub>)</code></pre>
+<p>Is this formula true?</p>
+<p><strong>TQBF is PSPACE-complete.</strong> It is the canonical PSPACE-complete problem, analogous to SAT for NP.</p>
+
+<p><strong>Other PSPACE-complete problems:</strong></p>
+<table>
+  <tr><th>Problem</th><th>Description</th></tr>
+  <tr><td>TQBF</td><td>Is a quantified Boolean formula true?</td></tr>
+  <tr><td>Generalized Geography</td><td>Does Player 1 have a winning strategy?</td></tr>
+  <tr><td>Generalized Chess</td><td>Does White have a forced win on an n&times;n board?</td></tr>
+  <tr><td>Regular Expression Equivalence</td><td>Do two regexes with squaring describe the same language?</td></tr>
+  <tr><td>Sticker Systems</td><td>Reachability in certain string rewriting systems</td></tr>
+</table>
+
+<div class="note">
+  <strong>Pattern:</strong> Many two-player games, when generalized to n&times;n boards, become PSPACE-complete. The alternation of &forall; (opponent moves) and &exist; (your moves) maps naturally to TQBF.
+</div>
+
+<!-- ================================================================== -->
+<h2>5. The Complete Inclusion Chain</h2>
+<!-- ================================================================== -->
+
+<pre><code>L &sube; NL &sube; P &sube; NP &sube; PSPACE &sube; EXPTIME &sube; NEXPTIME &sube; EXPSPACE</code></pre>
+
+<div class="mermaid">
+graph LR
+    L["L"] --> NL["NL"] --> P["P"] --> NP["NP"] --> PSPACE["PSPACE"] --> EXPTIME["EXPTIME"]
+</div>
+
+<h3>5.1 What We Know for Sure</h3>
+<table>
+  <tr><th>Inclusion</th><th>Status</th><th>Reason</th></tr>
+  <tr><td>L &sube; NL</td><td>Known</td><td>Deterministic is a special case of nondeterministic</td></tr>
+  <tr><td>NL &sube; P</td><td>Known</td><td>NL &sube; DSPACE(log<sup>2</sup> n) &sube; P (by space-to-time simulation)</td></tr>
+  <tr><td>P &sube; NP</td><td>Known</td><td>DTM is a special case of NTM</td></tr>
+  <tr><td>NP &sube; PSPACE</td><td>Known</td><td>Explore all NTM branches using polynomial space (reuse space)</td></tr>
+  <tr><td>PSPACE &sube; EXPTIME</td><td>Known</td><td>Poly-space TM has at most exponentially many configs</td></tr>
+  <tr><td>L &subne; PSPACE</td><td>Known</td><td>Space Hierarchy Theorem</td></tr>
+  <tr><td>NL &subne; PSPACE</td><td>Known</td><td>Space Hierarchy Theorem</td></tr>
+  <tr><td>P &subne; EXPTIME</td><td>Known</td><td>Time Hierarchy Theorem</td></tr>
+  <tr><td>NP &subne; NEXPTIME</td><td>Known</td><td>Time Hierarchy Theorem (nondeterministic version)</td></tr>
+</table>
+
+<div class="important">
+  <strong>Key fact for GATE:</strong> We know <code>L &subne; PSPACE</code> (strict), but we do NOT know which of L, NL, P, NP, PSPACE is the first pair that separates. We just know the chain can't be entirely equal because the endpoints differ.
+</div>
+
+<h3>5.2 Space and Time Hierarchy Theorems</h3>
+
+<p><strong>Time Hierarchy Theorem:</strong> For any time-constructible function <code>f(n)</code>:</p>
+<pre><code>DTIME(f(n)) &subne; DTIME(f(n) &middot; log<sup>2</sup>(f(n)))</code></pre>
+<p>In particular, <code>DTIME(n<sup>k</sup>) &subne; DTIME(n<sup>k+1</sup>)</code>, which gives us <code>P &subne; EXPTIME</code>.</p>
+
+<p><strong>Space Hierarchy Theorem:</strong> For any space-constructible function <code>f(n)</code>:</p>
+<pre><code>DSPACE(f(n)) &subne; DSPACE(f(n) &middot; log(f(n)))</code></pre>
+<p>In particular, <code>DSPACE(log n) &subne; DSPACE(n)</code>, giving <code>L &subne; PSPACE</code>.</p>
+
+<!-- ================================================================== -->
+<h2>6. Reductions</h2>
+<!-- ================================================================== -->
+
+<h3>6.1 Many-One (Karp) Reductions</h3>
+<p><strong>Definition:</strong> Language <code>A</code> is polynomial-time many-one reducible to language <code>B</code> (written <code>A &le;<sub>p</sub> B</code>) if there exists a polynomial-time computable function <code>f</code> such that:</p>
+<pre><code>x &isin; A  &hArr;  f(x) &isin; B</code></pre>
+
+<p><strong>Properties:</strong></p>
+<ul>
+  <li><strong>Transitivity:</strong> If <code>A &le;<sub>p</sub> B</code> and <code>B &le;<sub>p</sub> C</code>, then <code>A &le;<sub>p</sub> C</code>.</li>
+  <li>If <code>A &le;<sub>p</sub> B</code> and <code>B &isin; P</code>, then <code>A &isin; P</code>.</li>
+  <li>If <code>A &le;<sub>p</sub> B</code> and <code>A &notin; P</code>, then <code>B &notin; P</code>.</li>
+  <li>Karp reductions preserve NP membership: if <code>A &le;<sub>p</sub> B</code> and <code>B &isin; NP</code>, then <code>A &isin; NP</code>.</li>
+</ul>
+
+<h3>6.2 Turing (Cook) Reductions</h3>
+<p><strong>Definition:</strong> <code>A &le;<sub>T</sub> B</code> if there is a polynomial-time algorithm for <code>A</code> that can make queries to an oracle for <code>B</code>.</p>
+
+<p><strong>Key differences from Karp reductions:</strong></p>
+<table>
+  <tr><th>Property</th><th>Karp Reduction</th><th>Turing Reduction</th></tr>
+  <tr><td>Type</td><td>One function call, output is the answer</td><td>Multiple oracle calls allowed</td></tr>
+  <tr><td>Answer usage</td><td>Must preserve yes/no directly</td><td>Can negate, combine oracle answers</td></tr>
+  <tr><td>Power</td><td>Weaker</td><td>Strictly more powerful</td></tr>
+  <tr><td>NPC definition</td><td>Standard (uses Karp)</td><td>Gives "NP-hard under Turing reductions"</td></tr>
+  <tr><td>Complement</td><td>A &le;<sub>p</sub> B does NOT imply A<sup>c</sup> &le;<sub>p</sub> B</td><td>A &le;<sub>T</sub> B implies A<sup>c</sup> &le;<sub>T</sub> B</td></tr>
+</table>
+
+<div class="note">
+  <strong>GATE focus:</strong> GATE primarily uses Karp (many-one) reductions. When a question says "polynomial-time reduction," it almost always means Karp reduction unless stated otherwise.
+</div>
+
+<h3>6.3 Direction of Reduction</h3>
+<p>To show problem <code>B</code> is NP-hard, reduce a <em>known</em> NP-hard problem <code>A</code> <strong>to</strong> <code>B</code>: <code>A &le;<sub>p</sub> B</code>.</p>
+<p>The reduction goes FROM the known hard problem TO the target problem.</p>
+
+<div class="important">
+  <strong>Common mistake:</strong> Students often reduce in the wrong direction. Remember: <code>A &le;<sub>p</sub> B</code> means "A is no harder than B." To show B is hard, show something known-hard reduces TO B.
+</div>
+
+<!-- ================================================================== -->
+<h2>7. Key NP-Complete Problems</h2>
+<!-- ================================================================== -->
+
+<p>The following diagram shows the classic chain of reductions establishing NP-completeness:</p>
+
+<div class="mermaid">
+graph TD
+    SAT["SAT (Cook-Levin)"] --> CLIQUE["CLIQUE"]
+    SAT --> 3SAT["3-SAT"]
+    3SAT --> VC["VERTEX COVER"]
+    3SAT --> CLIQUE
+    3SAT --> 3COLOR["3-COLORING"]
+    3SAT --> SUBSETSUM["SUBSET SUM"]
+    VC --> IS["INDEPENDENT SET"]
+    VC --> HC["HAMILTONIAN CYCLE"]
+    HC --> TSP["TSP (decision)"]
+    SUBSETSUM --> PARTITION["PARTITION"]
+    PARTITION --> KNAPSACK["0/1 KNAPSACK"]
+    IS --> CLIQUE
+    3SAT --> NAE3SAT["NAE-3-SAT"]
+    3SAT --> MAXCUT["MAX-CUT"]
+</div>
+
+<h3>7.1 Comprehensive NPC Problem List</h3>
+
+<table>
+  <tr><th>Problem</th><th>Reduces From</th><th>Description</th></tr>
+  <tr><td><strong>SAT</strong></td><td>(Cook-Levin theorem)</td><td>Is a Boolean formula satisfiable?</td></tr>
+  <tr><td><strong>3-SAT</strong></td><td>SAT</td><td>SAT restricted to clauses of size 3</td></tr>
+  <tr><td><strong>CLIQUE</strong></td><td>3-SAT</td><td>Does graph G have a clique of size k?</td></tr>
+  <tr><td><strong>INDEPENDENT SET</strong></td><td>CLIQUE (complement graph)</td><td>Does G have an independent set of size k?</td></tr>
+  <tr><td><strong>VERTEX COVER</strong></td><td>INDEPENDENT SET</td><td>Does G have a vertex cover of size k?</td></tr>
+  <tr><td><strong>HAMILTONIAN CYCLE</strong></td><td>VERTEX COVER</td><td>Does G have a Hamiltonian cycle?</td></tr>
+  <tr><td><strong>HAMILTONIAN PATH</strong></td><td>HAMILTONIAN CYCLE</td><td>Does G have a Hamiltonian path?</td></tr>
+  <tr><td><strong>TSP (decision)</strong></td><td>HAMILTONIAN CYCLE</td><td>Is there a tour of cost &le; k?</td></tr>
+  <tr><td><strong>SUBSET SUM</strong></td><td>3-SAT</td><td>Is there a subset summing to target T?</td></tr>
+  <tr><td><strong>PARTITION</strong></td><td>SUBSET SUM</td><td>Can you partition into two equal-sum sets?</td></tr>
+  <tr><td><strong>0/1 KNAPSACK</strong></td><td>PARTITION</td><td>Maximize value within weight limit</td></tr>
+  <tr><td><strong>3-COLORING</strong></td><td>3-SAT</td><td>Can G be properly 3-colored?</td></tr>
+  <tr><td><strong>SET COVER</strong></td><td>VERTEX COVER</td><td>Cover universe with k sets?</td></tr>
+  <tr><td><strong>EXACT COVER</strong></td><td>3-SAT</td><td>Cover universe with disjoint sets?</td></tr>
+  <tr><td><strong>DOMINATING SET</strong></td><td>VERTEX COVER</td><td>Does G have a dominating set of size k?</td></tr>
+  <tr><td><strong>MAX-CUT</strong></td><td>NAE-3-SAT</td><td>Is there a cut of size &ge; k?</td></tr>
+  <tr><td><strong>GRAPH ISOMORPHISM</strong></td><td>&mdash;</td><td><em>NOT known to be NP-complete</em> (in NP &cap; co-AM)</td></tr>
+</table>
+
+<div class="note">
+  <strong>Important special cases in P:</strong>
+  <ul>
+    <li>2-SAT is in P (polynomial via implication graph/SCC).</li>
+    <li>2-COLORING is in P (just check bipartiteness via BFS).</li>
+    <li>EULER PATH is in P (check degree conditions).</li>
+    <li>MATCHING (maximum) is in P.</li>
+    <li>Horn-SAT is in P (unit propagation).</li>
+  </ul>
+  These contrast sharply with their NP-complete generalizations (3-SAT, 3-COLORING, HAMILTONIAN PATH, etc.).
+</div>
+
+<!-- ================================================================== -->
+<h2>8. Undecidable vs Intractable</h2>
+<!-- ================================================================== -->
+
+<p>It is critical to distinguish two very different notions of "hard":</p>
+
+<table>
+  <tr><th></th><th>Undecidable</th><th>Intractable (NP-hard)</th></tr>
+  <tr><td><strong>Can it be solved at all?</strong></td><td>No algorithm exists</td><td>Algorithm exists, but likely not efficient</td></tr>
+  <tr><td><strong>Halts on all inputs?</strong></td><td>No TM always halts</td><td>Algorithm halts, but may take exponential time</td></tr>
+  <tr><td><strong>Example</strong></td><td>Halting Problem</td><td>3-SAT, TSP</td></tr>
+  <tr><td><strong>Can we verify?</strong></td><td>Not always</td><td>Yes, in polynomial time (for NP)</td></tr>
+  <tr><td><strong>Approach</strong></td><td>No general solution possible</td><td>Heuristics, approximations, special cases</td></tr>
+  <tr><td><strong>Language class</strong></td><td>Not in Recursive</td><td>In Recursive but (likely) not in P</td></tr>
+</table>
+
+<div class="important">
+  <strong>GATE distinction:</strong> An undecidable problem has NO algorithm at all. An intractable problem HAS an algorithm, but every known algorithm takes super-polynomial time. NP-complete problems are decidable (they are in NP &sube; EXPTIME), just believed to not be in P.
+</div>
+
+<!-- ================================================================== -->
+<h2>9. Complement Classes and Their Significance</h2>
+<!-- ================================================================== -->
+
+<h3>9.1 Overview</h3>
+<table>
+  <tr><th>Class</th><th>Complement Class</th><th>Equal?</th></tr>
+  <tr><td>P</td><td>P (= co-P)</td><td>Yes (P is closed under complement)</td></tr>
+  <tr><td>NP</td><td>co-NP</td><td>Unknown (open problem)</td></tr>
+  <tr><td>NL</td><td>co-NL</td><td>Yes (Immerman-Szelepcs&eacute;nyi)</td></tr>
+  <tr><td>PSPACE</td><td>co-PSPACE = PSPACE</td><td>Yes (PSPACE is closed under complement)</td></tr>
+  <tr><td>EXPTIME</td><td>co-EXPTIME = EXPTIME</td><td>Yes</td></tr>
+</table>
+
+<h3>9.2 Why Complements Matter</h3>
+<p>If a class equals its complement class, it means the class is "symmetric" &mdash; proving membership is as easy as proving non-membership. For NP, the asymmetry is key:</p>
+<ul>
+  <li>NP has short proofs for YES instances.</li>
+  <li>co-NP has short proofs for NO instances.</li>
+  <li>If NP &ne; co-NP, then no NP-complete problem has short proofs of non-membership.</li>
+</ul>
+
+<h3>9.3 Implications of P = NP</h3>
+<p>If P = NP, then:</p>
+<ul>
+  <li>NP = co-NP (since P = co-P).</li>
+  <li>Every problem in NP has a polynomial-time algorithm.</li>
+  <li>The entire polynomial hierarchy collapses to P.</li>
+  <li>Cryptography based on one-way functions would be broken.</li>
+</ul>
+
+<!-- ================================================================== -->
+<h2>10. The Polynomial Hierarchy (Brief Overview)</h2>
+<!-- ================================================================== -->
+
+<p>The polynomial hierarchy (PH) generalizes NP and co-NP:</p>
+
+<pre><code>&Sigma;<sub>0</sub><sup>P</sup> = &Pi;<sub>0</sub><sup>P</sup> = &Delta;<sub>0</sub><sup>P</sup> = P
+&Sigma;<sub>1</sub><sup>P</sup> = NP
+&Pi;<sub>1</sub><sup>P</sup> = co-NP
+&Sigma;<sub>k+1</sub><sup>P</sup> = NP<sup>&Sigma;<sub>k</sub><sup>P</sup></sup>  (NP with a &Sigma;<sub>k</sub><sup>P</sup> oracle)
+&Pi;<sub>k</sub><sup>P</sup> = co-&Sigma;<sub>k</sub><sup>P</sup>
+
+PH = &bigcup;<sub>k&ge;0</sub> &Sigma;<sub>k</sub><sup>P</sup></code></pre>
+
+<p><strong>Key facts:</strong></p>
+<ul>
+  <li><code>PH &sube; PSPACE</code>.</li>
+  <li>If PH has a complete problem, then PH collapses to some finite level.</li>
+  <li>If <code>P = NP</code>, then <code>PH = P</code> (total collapse).</li>
+  <li>&Sigma;<sub>2</sub><sup>P</sup> problems have the form: <code>&exist;y &forall;z &phi;(x, y, z)</code> where <code>&phi;</code> is polynomial-time decidable.</li>
+</ul>
+
+<div class="note">
+  <strong>GATE relevance:</strong> The polynomial hierarchy is rarely tested in depth, but you should know that it exists, that PH &sube; PSPACE, and that P = NP would collapse it entirely.
+</div>
+
+<!-- ================================================================== -->
+<h2>11. Summary of Complexity Relationships</h2>
+<!-- ================================================================== -->
+
+<div class="mermaid">
+graph TB
+    L["L (Logspace)"] --> NL["NL = co-NL"]
+    NL --> P["P = co-P"]
+    P --> NP["NP"]
+    P --> coNP["co-NP"]
+    NP --> PH["PH"]
+    coNP --> PH
+    PH --> PSPACE["PSPACE = NPSPACE"]
+    PSPACE --> EXPTIME["EXPTIME"]
+    EXPTIME --> NEXPTIME["NEXPTIME"]
+    NEXPTIME --> EXPSPACE["EXPSPACE"]
+</div>
+
+<h3>Quick Reference: Problem Classification</h3>
+<table>
+  <tr><th>Problem</th><th>Class</th></tr>
+  <tr><td>Reachability in undirected graph</td><td>L (Reingold)</td></tr>
+  <tr><td>Reachability in directed graph (PATH)</td><td>NL-complete</td></tr>
+  <tr><td>2-SAT</td><td>NL-complete (P at most)</td></tr>
+  <tr><td>Linear programming</td><td>P</td></tr>
+  <tr><td>Maximum matching</td><td>P</td></tr>
+  <tr><td>Primality</td><td>P (AKS)</td></tr>
+  <tr><td>3-SAT</td><td>NP-complete</td></tr>
+  <tr><td>Graph coloring (k &ge; 3)</td><td>NP-complete</td></tr>
+  <tr><td>TSP</td><td>NP-complete (decision), NP-hard (optimization)</td></tr>
+  <tr><td>TQBF</td><td>PSPACE-complete</td></tr>
+  <tr><td>Generalized Chess</td><td>PSPACE-complete / EXPTIME-complete</td></tr>
+  <tr><td>Halting Problem</td><td>Undecidable (RE but not Recursive)</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2>12. Common GATE Question Patterns</h2>
+<!-- ================================================================== -->
+
+<h3>Pattern 1: "Which class does this problem belong to?"</h3>
+<p>Given a problem description, identify whether it is in P, NP-complete, PSPACE-complete, or undecidable.</p>
+<p><strong>Strategy:</strong> Look for known NP-complete kernels (3-SAT structure, clique-like, subset-sum-like). Check if it has a polynomial-time algorithm. Check if it involves quantifier alternation (PSPACE). Check if it involves TM behavior (undecidable).</p>
+
+<h3>Pattern 2: "If P = NP, which of the following is true?"</h3>
+<p>If P = NP, then: NP = co-NP, PH = P, NPC = P (all NPC problems would be in P), and every NP problem is polynomial.</p>
+
+<h3>Pattern 3: "Which of these reductions is correct?"</h3>
+<p>Check: (1) Is the direction correct? (from known hard to new problem), (2) Is it polynomial-time computable? (3) Does it preserve yes/no instances?</p>
+
+<h3>Pattern 4: "What is the relationship between these classes?"</h3>
+<p>Know the chain: L &sube; NL &sube; P &sube; NP &sube; PSPACE &sube; EXPTIME. Know which equalities are open vs proven.</p>
+
+<h3>Pattern 5: Confusing NP-hard with NP-complete</h3>
+<p>NP-hard problems need NOT be in NP. The optimization version of TSP ("find the shortest tour") is NP-hard but not in NP (it's not even a decision problem). The Halting Problem is NP-hard but undecidable.</p>
+
+<h3>Pattern 6: Savitch's Theorem Applications</h3>
+<p>If a problem is in NPSPACE (nondeterministic polynomial space), then it is also in PSPACE (deterministic polynomial space) by Savitch's theorem.</p>
+
+<h3>Pattern 7: Problems in NP &cap; co-NP but not known to be in P</h3>
+<p>Examples: Factoring (widely believed), Graph Isomorphism (now known to be in quasi-polynomial time). These are candidates for problems in NP &cap; co-NP \ P, if such problems exist.</p>
+
+<!-- ================================================================== -->
+<h2>13. Worked GATE-Style Examples</h2>
+<!-- ================================================================== -->
+
+<h3>Example 1</h3>
+<p><strong>Q:</strong> Let <code>L</code> be a language in NP. Consider the following statements:</p>
+<ol>
+  <li><code>L</code> is decidable.</li>
+  <li><code>L</code> can be solved in polynomial time.</li>
+  <li><code>L</code> can be solved in exponential time.</li>
+  <li>The complement of <code>L</code> is in NP.</li>
+</ol>
+<p>Which statements are necessarily true?</p>
+<p><strong>Solution:</strong></p>
+<ul>
+  <li>(1) TRUE: NP &sube; EXPTIME &sube; Decidable. All NP problems are decidable.</li>
+  <li>(2) UNKNOWN: Only true if P = NP, which is unproven.</li>
+  <li>(3) TRUE: NP &sube; EXPTIME, so every NP problem has an exponential-time (or better) algorithm.</li>
+  <li>(4) UNKNOWN: Only true if NP = co-NP, which is unproven.</li>
+</ul>
+<p><strong>Answer: (1) and (3) are necessarily true.</strong></p>
+
+<h3>Example 2</h3>
+<p><strong>Q:</strong> Problem X is NP-complete. Problem Y is in P. What can we say about X &le;<sub>p</sub> Y?</p>
+<p><strong>Solution:</strong> If <code>X &le;<sub>p</sub> Y</code> and <code>Y &isin; P</code>, then <code>X &isin; P</code>. But X is NP-complete, so this would mean P = NP. Since we believe P &ne; NP, it is <strong>unlikely</strong> (but not proven impossible) that <code>X &le;<sub>p</sub> Y</code>. If P = NP, then yes, such a reduction exists.</p>
+
+<h3>Example 3</h3>
+<p><strong>Q:</strong> Show that if TAUTOLOGY is in NP, then NP = co-NP.</p>
+<p><strong>Solution:</strong></p>
+<ol>
+  <li>TAUTOLOGY is the complement of SAT. Since SAT is NP-complete, TAUTOLOGY is co-NP-complete.</li>
+  <li>If TAUTOLOGY &isin; NP, then a co-NP-complete problem is in NP.</li>
+  <li>Therefore, every co-NP problem reduces to TAUTOLOGY (which is in NP), so co-NP &sube; NP.</li>
+  <li>By symmetry (complement both sides), NP &sube; co-NP.</li>
+  <li>Hence NP = co-NP.</li>
+</ol>
+
+<h3>Example 4</h3>
+<p><strong>Q:</strong> A problem requires O(n<sup>2</sup>) space on a nondeterministic TM. What can we say about its deterministic space complexity?</p>
+<p><strong>Solution:</strong> By Savitch's theorem, <code>NSPACE(n<sup>2</sup>) &sube; DSPACE(n<sup>4</sup>)</code>. So the problem can be solved deterministically in O(n<sup>4</sup>) space.</p>
+
+<!-- ================================================================== -->
+<h2>14. Quiz</h2>
+<!-- ================================================================== -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "Complexity Classes Quiz",
+  "questions": [
+    {
+      "question": "Q1. Which of the following is a correct statement?",
+      "options": ["(A) P = NP has been proven", "(B) P ⊆ NP is known to be true", "(C) NP ⊆ P is known to be true", "(D) P ∩ NP = ∅"],
+      "answer": 1,
+      "explanation": "P ⊆ NP is trivially true: any deterministic polynomial-time TM is also a nondeterministic polynomial-time TM (it just never branches). Whether P = NP is the famous open problem. P ∩ NP = P, which is certainly non-empty."
+    },
+    {
+      "question": "Q2. Savitch's theorem states that:",
+      "options": ["(A) P = NP", "(B) NSPACE(f(n)) ⊆ DSPACE(f(n)²) for f(n) ≥ log n", "(C) NP ⊆ DTIME(n²)", "(D) NTIME(f(n)) = DTIME(f(n)²)"],
+      "answer": 1,
+      "explanation": "Savitch's theorem says NSPACE(f(n)) ⊆ DSPACE(f(n)²) for space-constructible f(n) ≥ log n. The key consequence is NPSPACE = PSPACE, since squaring polynomial space still gives polynomial space. It does NOT apply to time complexity."
+    },
+    {
+      "question": "Q3. Which problem is PSPACE-complete?",
+      "options": ["(A) 3-SAT", "(B) TQBF (True Quantified Boolean Formulas)", "(C) Halting Problem", "(D) Graph Coloring"],
+      "answer": 1,
+      "explanation": "TQBF is the canonical PSPACE-complete problem. 3-SAT and Graph Coloring are NP-complete. The Halting Problem is undecidable and thus not in any standard complexity class like PSPACE."
+    },
+    {
+      "question": "Q4. If problem A is NP-complete and A ≤p B, then:",
+      "options": ["(A) B is in P", "(B) B is NP-hard", "(C) B is NP-complete", "(D) B is in NP"],
+      "answer": 1,
+      "explanation": "If A is NP-complete and A ≤p B, then every NP problem reduces to A (by NP-completeness) and A reduces to B, so by transitivity, every NP problem reduces to B. This means B is NP-hard. We cannot conclude B is in NP (it might be harder), so we cannot say B is NP-complete without additional information."
+    },
+    {
+      "question": "Q5. Which of the following problems is known to be in P?",
+      "options": ["(A) 3-SAT", "(B) Hamiltonian Cycle", "(C) 2-SAT", "(D) Graph 3-Coloring"],
+      "answer": 2,
+      "explanation": "2-SAT can be solved in polynomial time using the implication graph and strongly connected components (SCC) algorithm. It is NL-complete, and NL ⊆ P. The other three problems (3-SAT, Hamiltonian Cycle, 3-Coloring) are all NP-complete."
+    },
+    {
+      "question": "Q6. The class co-NP contains:",
+      "options": ["(A) Problems whose complements are in P", "(B) Problems whose complements are in NP", "(C) Only problems not in NP", "(D) Only undecidable problems"],
+      "answer": 1,
+      "explanation": "co-NP = {L | L^c ∈ NP}. A language is in co-NP if its complement is in NP. Note that P ⊆ co-NP (since P = co-P ⊆ co-NP), so co-NP contains many decidable problems, including all of P."
+    },
+    {
+      "question": "Q7. Which is the correct inclusion chain?",
+      "options": ["(A) NP ⊆ P ⊆ PSPACE ⊆ EXPTIME", "(B) L ⊆ NL ⊆ P ⊆ NP ⊆ PSPACE ⊆ EXPTIME", "(C) L ⊆ P ⊆ NL ⊆ NP ⊆ PSPACE", "(D) P ⊆ L ⊆ NL ⊆ NP ⊆ EXPTIME"],
+      "answer": 1,
+      "explanation": "The correct chain is L ⊆ NL ⊆ P ⊆ NP ⊆ PSPACE ⊆ EXPTIME. L (logspace) is contained in NL, which is contained in P (a logspace TM has polynomially many configurations), P ⊆ NP (deterministic is a special case of nondeterministic), NP ⊆ PSPACE (explore all branches reusing space), and PSPACE ⊆ EXPTIME (poly-space means exponentially many configurations at most)."
+    },
+    {
+      "question": "Q8. A problem is NP-hard but NOT NP-complete. This means:",
+      "options": ["(A) It is in P", "(B) It is in NP but not reducible from SAT", "(C) Every NP problem reduces to it, but it is not in NP itself", "(D) It is easier than NP-complete problems"],
+      "answer": 2,
+      "explanation": "NP-complete = NP ∩ NP-hard. If a problem is NP-hard but not NP-complete, it must not be in NP. Examples include the Halting Problem (undecidable, hence not in NP) and optimization versions of NP-complete problems (not decision problems, so technically not in NP)."
+    },
+    {
+      "question": "Q9. The Time Hierarchy Theorem directly implies:",
+      "options": ["(A) P ≠ NP", "(B) P ≠ EXPTIME", "(C) NP ≠ PSPACE", "(D) L ≠ NL"],
+      "answer": 1,
+      "explanation": "The Time Hierarchy Theorem states that DTIME(f(n)) ⊊ DTIME(g(n)) when g grows sufficiently faster than f. Applied to polynomial vs exponential time: P = ∪ DTIME(n^k) is strictly contained in EXPTIME = ∪ DTIME(2^(n^k)). It does NOT directly resolve P vs NP because NP involves nondeterminism, not just a different time bound."
+    },
+    {
+      "question": "Q10. If P = NP, which of the following would be true?",
+      "options": ["(A) The Halting Problem becomes decidable", "(B) Every NP-complete problem has a polynomial-time algorithm", "(C) PSPACE = EXPTIME", "(D) All problems become solvable in linear time"],
+      "answer": 1,
+      "explanation": "If P = NP, then every problem in NP (including all NP-complete problems) would have a polynomial-time algorithm. The Halting Problem would remain undecidable (it's not about time complexity). PSPACE = EXPTIME is unrelated. And 'polynomial time' doesn't mean 'linear time.'"
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

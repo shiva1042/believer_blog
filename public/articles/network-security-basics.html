@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Security Fundamentals — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Computer Networks</span>
+<h1>Network Security Fundamentals</h1>
+<p><em>Based on Kurose &amp; Ross — Computer Networking: A Top-Down Approach, Chapter 8</em></p>
+
+<p>Network security is one of the most important and frequently tested topics in the GATE Computer Science exam. This article provides a rigorous treatment of cryptographic primitives, protocols, and network security mechanisms that you need to master for the exam. Every concept is tied back to the layered network model so you can see where each mechanism operates.</p>
+
+<!-- ================================================================== -->
+<h2>1. Security Goals</h2>
+<!-- ================================================================== -->
+
+<p>Before diving into algorithms, we must understand <strong>what</strong> we are trying to achieve. Network security has four fundamental goals:</p>
+
+<table>
+  <tr><th>Goal</th><th>Meaning</th><th>Threat it Counters</th><th>Example Mechanism</th></tr>
+  <tr><td><strong>Confidentiality</strong></td><td>Only the intended receiver can read the message</td><td>Eavesdropping / Sniffing</td><td>AES encryption</td></tr>
+  <tr><td><strong>Integrity</strong></td><td>The message has not been altered in transit</td><td>Tampering / Modification</td><td>SHA-256 hash, HMAC</td></tr>
+  <tr><td><strong>Authentication</strong></td><td>The sender is who they claim to be</td><td>Impersonation / Spoofing</td><td>Digital signatures, certificates</td></tr>
+  <tr><td><strong>Non-repudiation</strong></td><td>The sender cannot deny having sent the message</td><td>Repudiation</td><td>Digital signatures with PKI</td></tr>
+</table>
+
+<div class="note">
+  <strong>GATE Tip:</strong> Authentication proves identity; non-repudiation prevents denial. A MAC provides authentication but <em>not</em> non-repudiation (because both parties share the key). Only digital signatures provide non-repudiation.
+</div>
+
+<h3>1.1 The Alice-and-Bob Model</h3>
+<p>Throughout cryptography, we use a standard cast of characters:</p>
+<ul>
+  <li><strong>Alice (A)</strong> — wants to send a message securely</li>
+  <li><strong>Bob (B)</strong> — the intended recipient</li>
+  <li><strong>Trudy</strong> — the intruder who may eavesdrop, modify, inject, or delete messages</li>
+</ul>
+<p>Trudy can be a <em>passive</em> attacker (only eavesdropping) or an <em>active</em> attacker (modifying, injecting, replaying messages). Good security must handle both.</p>
+
+<!-- ================================================================== -->
+<h2>2. Symmetric Key Cryptography</h2>
+<!-- ================================================================== -->
+
+<p>In symmetric key (also called <em>shared key</em> or <em>secret key</em>) cryptography, the same key <code>K</code> is used for both encryption and decryption:</p>
+
+<pre><code>Ciphertext = E(K, Plaintext)
+Plaintext  = D(K, Ciphertext)</code></pre>
+
+<p>Both Alice and Bob must possess the key <code>K</code> before communication begins. This is the <strong>key distribution problem</strong>.</p>
+
+<h3>2.1 DES (Data Encryption Standard)</h3>
+<ul>
+  <li>Block cipher: operates on 64-bit blocks</li>
+  <li>Key size: 56 bits (8 parity bits make the key 64 bits total, but effective security is 56 bits)</li>
+  <li>Uses a <strong>Feistel structure</strong> with 16 rounds</li>
+  <li>Each round uses a different 48-bit subkey derived from the 56-bit master key</li>
+  <li><strong>No longer secure</strong>: 2<sup>56</sup> key space can be brute-forced in hours with modern hardware</li>
+</ul>
+
+<h3>2.2 Triple DES (3DES)</h3>
+<p>To extend the life of DES hardware, 3DES applies DES three times with two or three different keys:</p>
+<pre><code>C = E(K1, D(K2, E(K1, P)))    [2-key 3DES — 112 bits effective]
+C = E(K3, D(K2, E(K1, P)))    [3-key 3DES — 168 bits effective]</code></pre>
+
+<div class="note">
+  <strong>Why Encrypt-Decrypt-Encrypt (EDE)?</strong> If K1 = K2 = K3, the EDE sequence reduces to single DES, providing backward compatibility.
+</div>
+
+<h3>2.3 AES (Advanced Encryption Standard)</h3>
+<ul>
+  <li>Block size: <strong>128 bits</strong></li>
+  <li>Key sizes: <strong>128, 192, or 256 bits</strong></li>
+  <li>Based on the <strong>Rijndael</strong> algorithm (substitution-permutation network, not Feistel)</li>
+  <li>Number of rounds: 10 (128-bit key), 12 (192-bit), 14 (256-bit)</li>
+  <li>Each round: SubBytes → ShiftRows → MixColumns → AddRoundKey</li>
+  <li>Current standard; much faster and more secure than 3DES</li>
+</ul>
+
+<h3>2.4 Comparison of Symmetric Ciphers</h3>
+<table>
+  <tr><th>Property</th><th>DES</th><th>3DES</th><th>AES-128</th><th>AES-256</th></tr>
+  <tr><td>Block size</td><td>64 bits</td><td>64 bits</td><td>128 bits</td><td>128 bits</td></tr>
+  <tr><td>Key size</td><td>56 bits</td><td>112 or 168 bits</td><td>128 bits</td><td>256 bits</td></tr>
+  <tr><td>Rounds</td><td>16</td><td>48 (3 x 16)</td><td>10</td><td>14</td></tr>
+  <tr><td>Structure</td><td>Feistel</td><td>Feistel</td><td>SPN</td><td>SPN</td></tr>
+  <tr><td>Security status</td><td>Broken</td><td>Adequate</td><td>Strong</td><td>Very strong</td></tr>
+  <tr><td>Speed</td><td>Fast</td><td>Slow (3x DES)</td><td>Very fast</td><td>Fast</td></tr>
+</table>
+
+<h3>2.5 Block Cipher Modes of Operation</h3>
+<p>A block cipher encrypts a fixed-size block. To encrypt messages longer than one block, we need a <strong>mode of operation</strong>.</p>
+
+<h4>ECB — Electronic Codebook</h4>
+<ul>
+  <li>Each block is encrypted independently: <code>C<sub>i</sub> = E(K, P<sub>i</sub>)</code></li>
+  <li><strong>Weakness:</strong> identical plaintext blocks produce identical ciphertext blocks, leaking patterns</li>
+  <li>Never use ECB for data longer than one block</li>
+</ul>
+
+<h4>CBC — Cipher Block Chaining</h4>
+<ul>
+  <li><code>C<sub>i</sub> = E(K, P<sub>i</sub> XOR C<sub>i-1</sub>)</code>, where <code>C<sub>0</sub> = IV</code> (Initialization Vector)</li>
+  <li>Identical plaintext blocks yield different ciphertext (because of chaining)</li>
+  <li><strong>Requires padding</strong> if plaintext is not a multiple of block size</li>
+  <li>Encryption is sequential; decryption can be parallelized</li>
+</ul>
+
+<h4>CFB — Cipher Feedback</h4>
+<ul>
+  <li>Turns a block cipher into a <strong>stream cipher</strong></li>
+  <li><code>C<sub>i</sub> = P<sub>i</sub> XOR E(K, C<sub>i-1</sub>)</code></li>
+  <li>No padding needed; can operate on units smaller than the block size</li>
+</ul>
+
+<h4>OFB — Output Feedback</h4>
+<ul>
+  <li><code>O<sub>i</sub> = E(K, O<sub>i-1</sub>)</code>, <code>C<sub>i</sub> = P<sub>i</sub> XOR O<sub>i</sub></code></li>
+  <li>Keystream can be pre-computed (does not depend on plaintext or ciphertext)</li>
+  <li>A bit error in ciphertext affects only the corresponding plaintext bit</li>
+</ul>
+
+<h4>CTR — Counter Mode</h4>
+<ul>
+  <li><code>C<sub>i</sub> = P<sub>i</sub> XOR E(K, Nonce || Counter<sub>i</sub>)</code></li>
+  <li><strong>Fully parallelizable</strong> for both encryption and decryption</li>
+  <li>Random access to any block</li>
+  <li>Preferred mode in modern systems (used in AES-GCM)</li>
+</ul>
+
+<h4>Mode Comparison Table</h4>
+<table>
+  <tr><th>Mode</th><th>Parallel Encrypt</th><th>Parallel Decrypt</th><th>Padding Needed</th><th>Error Propagation</th><th>Random Access</th></tr>
+  <tr><td>ECB</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Single block</td><td>Yes</td></tr>
+  <tr><td>CBC</td><td>No</td><td>Yes</td><td>Yes</td><td>Current + next block</td><td>No</td></tr>
+  <tr><td>CFB</td><td>No</td><td>Yes</td><td>No</td><td>Current + next block</td><td>No</td></tr>
+  <tr><td>OFB</td><td>No</td><td>No</td><td>No</td><td>Single bit</td><td>No</td></tr>
+  <tr><td>CTR</td><td>Yes</td><td>Yes</td><td>No</td><td>Single bit</td><td>Yes</td></tr>
+</table>
+
+<div class="important">
+  <strong>GATE Favourite:</strong> "Which mode allows parallel encryption?" — Answer: ECB and CTR. CBC, CFB, OFB require sequential encryption because each block depends on the previous output.
+</div>
+
+<h3>2.6 The Key Distribution Problem</h3>
+<p>If Alice and Bob want to use AES, they must share a secret key <em>before</em> communicating. How do they establish this key securely?</p>
+<ul>
+  <li><strong>Out-of-band exchange:</strong> Meet physically and exchange keys (impractical at scale)</li>
+  <li><strong>Key Distribution Center (KDC):</strong> A trusted third party that shares a unique key with each user. The KDC generates a session key and sends it encrypted under each user's master key.</li>
+  <li><strong>Diffie-Hellman key exchange:</strong> Allows two parties to agree on a shared secret over an insecure channel (see Section 3.2)</li>
+  <li><strong>Public key cryptography:</strong> Alice encrypts the session key with Bob's public key (see Section 3)</li>
+</ul>
+
+<!-- ================================================================== -->
+<h2>3. Public Key Cryptography</h2>
+<!-- ================================================================== -->
+
+<p>Public key (asymmetric) cryptography uses a <strong>pair of keys</strong>:</p>
+<ul>
+  <li><strong>Public key (K<sub>pub</sub>)</strong>: known to everyone</li>
+  <li><strong>Private key (K<sub>priv</sub>)</strong>: known only to the owner</li>
+</ul>
+<pre><code>Encryption:  C = E(K_pub, P)
+Decryption:  P = D(K_priv, C)</code></pre>
+
+<p>The critical property: it is <strong>computationally infeasible</strong> to derive <code>K<sub>priv</sub></code> from <code>K<sub>pub</sub></code>.</p>
+
+<h3>3.1 RSA Algorithm</h3>
+<p>RSA (Rivest-Shamir-Adleman) is the most important public key algorithm for GATE. Its security rests on the difficulty of <strong>integer factorization</strong>.</p>
+
+<h4>Step 1: Key Generation</h4>
+<ol>
+  <li>Choose two large primes <code>p</code> and <code>q</code></li>
+  <li>Compute <code>n = p * q</code></li>
+  <li>Compute Euler's totient: <code>&phi;(n) = (p - 1)(q - 1)</code></li>
+  <li>Choose <code>e</code> such that <code>1 &lt; e &lt; &phi;(n)</code> and <code>gcd(e, &phi;(n)) = 1</code></li>
+  <li>Compute <code>d</code> such that <code>e * d &equiv; 1 (mod &phi;(n))</code>, i.e., <code>d = e<sup>-1</sup> mod &phi;(n)</code></li>
+  <li><strong>Public key:</strong> <code>(e, n)</code></li>
+  <li><strong>Private key:</strong> <code>(d, n)</code></li>
+</ol>
+
+<h4>Step 2: Encryption and Decryption</h4>
+<pre><code>Encryption:  C = M^e mod n
+Decryption:  M = C^d mod n</code></pre>
+
+<p>This works because of Euler's theorem: <code>M<sup>ed</sup> mod n = M</code> when <code>ed &equiv; 1 (mod &phi;(n))</code>.</p>
+
+<h4>Worked Example: RSA with Small Numbers</h4>
+<div class="note">
+<p><strong>Problem:</strong> Generate RSA keys with p = 7, q = 11. Encrypt the message M = 3.</p>
+
+<p><strong>Step 1:</strong> n = 7 &times; 11 = <strong>77</strong></p>
+
+<p><strong>Step 2:</strong> &phi;(n) = (7 - 1)(11 - 1) = 6 &times; 10 = <strong>60</strong></p>
+
+<p><strong>Step 3:</strong> Choose e such that gcd(e, 60) = 1. Let e = <strong>13</strong>.<br>
+Check: gcd(13, 60) = 1. Valid.</p>
+
+<p><strong>Step 4:</strong> Find d such that 13 &times; d &equiv; 1 (mod 60).<br>
+Using the extended Euclidean algorithm:<br>
+60 = 4 &times; 13 + 8<br>
+13 = 1 &times; 8 + 5<br>
+8 = 1 &times; 5 + 3<br>
+5 = 1 &times; 3 + 2<br>
+3 = 1 &times; 2 + 1<br>
+Back-substitute: 1 = 3 - 1&times;2 = 3 - 1&times;(5 - 3) = 2&times;3 - 5 = 2(8-5) - 5 = 2&times;8 - 3&times;5 = 2&times;8 - 3(13-8) = 5&times;8 - 3&times;13 = 5(60 - 4&times;13) - 3&times;13 = 5&times;60 - 23&times;13<br>
+So d &equiv; -23 &equiv; <strong>37</strong> (mod 60). Verify: 13 &times; 37 = 481 = 8 &times; 60 + 1. Correct!</p>
+
+<p><strong>Public key:</strong> (e, n) = (13, 77)<br>
+<strong>Private key:</strong> (d, n) = (37, 77)</p>
+
+<p><strong>Encryption:</strong> C = 3<sup>13</sup> mod 77<br>
+3<sup>1</sup> = 3<br>
+3<sup>2</sup> = 9<br>
+3<sup>4</sup> = 81 mod 77 = 4<br>
+3<sup>8</sup> = 4<sup>2</sup> = 16<br>
+3<sup>13</sup> = 3<sup>8</sup> &times; 3<sup>4</sup> &times; 3<sup>1</sup> = 16 &times; 4 &times; 3 = 192 mod 77 = 192 - 2&times;77 = <strong>38</strong></p>
+
+<p><strong>Decryption:</strong> M = 38<sup>37</sup> mod 77<br>
+38<sup>2</sup> = 1444 mod 77 = 1444 - 18&times;77 = 1444 - 1386 = 58<br>
+38<sup>4</sup> = 58<sup>2</sup> = 3364 mod 77 = 3364 - 43&times;77 = 3364 - 3311 = 53<br>
+38<sup>8</sup> = 53<sup>2</sup> = 2809 mod 77 = 2809 - 36&times;77 = 2809 - 2772 = 37<br>
+38<sup>16</sup> = 37<sup>2</sup> = 1369 mod 77 = 1369 - 17&times;77 = 1369 - 1309 = 60<br>
+38<sup>32</sup> = 60<sup>2</sup> = 3600 mod 77 = 3600 - 46&times;77 = 3600 - 3542 = 58<br>
+38<sup>37</sup> = 38<sup>32</sup> &times; 38<sup>4</sup> &times; 38<sup>1</sup> = 58 &times; 53 &times; 38 mod 77<br>
+58 &times; 53 = 3074 mod 77 = 3074 - 39&times;77 = 3074 - 3003 = 71<br>
+71 &times; 38 = 2698 mod 77 = 2698 - 35&times;77 = 2698 - 2695 = <strong>3</strong><br>
+We recover M = 3. RSA works!</p>
+</div>
+
+<h3>3.2 Diffie-Hellman Key Exchange</h3>
+<p>Diffie-Hellman allows two parties to establish a shared secret over an insecure channel. Its security is based on the <strong>discrete logarithm problem</strong>.</p>
+
+<h4>Protocol Steps</h4>
+<ol>
+  <li>Alice and Bob publicly agree on a large prime <code>p</code> and a generator <code>g</code> (where g is a primitive root mod p)</li>
+  <li>Alice picks a secret integer <code>a</code>, computes <code>A = g<sup>a</sup> mod p</code>, sends A to Bob</li>
+  <li>Bob picks a secret integer <code>b</code>, computes <code>B = g<sup>b</sup> mod p</code>, sends B to Alice</li>
+  <li>Alice computes the shared secret: <code>S = B<sup>a</sup> mod p = g<sup>ba</sup> mod p</code></li>
+  <li>Bob computes the shared secret: <code>S = A<sup>b</sup> mod p = g<sup>ab</sup> mod p</code></li>
+  <li>Both arrive at the same value S, which Trudy cannot compute without knowing a or b</li>
+</ol>
+
+<h4>Worked Example: Diffie-Hellman</h4>
+<div class="note">
+<p><strong>Given:</strong> p = 23, g = 5</p>
+<p>Alice chooses a = 6, computes A = 5<sup>6</sup> mod 23<br>
+5<sup>2</sup> = 25 mod 23 = 2<br>
+5<sup>4</sup> = 2<sup>2</sup> = 4<br>
+5<sup>6</sup> = 5<sup>4</sup> &times; 5<sup>2</sup> = 4 &times; 2 = <strong>8</strong><br>
+Alice sends A = 8 to Bob.</p>
+<p>Bob chooses b = 15, computes B = 5<sup>15</sup> mod 23<br>
+5<sup>1</sup> = 5, 5<sup>2</sup> = 2, 5<sup>4</sup> = 4, 5<sup>8</sup> = 4<sup>2</sup> = 16<br>
+5<sup>15</sup> = 5<sup>8</sup> &times; 5<sup>4</sup> &times; 5<sup>2</sup> &times; 5<sup>1</sup> = 16 &times; 4 &times; 2 &times; 5 = 640 mod 23<br>
+640 / 23 = 27 remainder 19. So B = <strong>19</strong><br>
+Bob sends B = 19 to Alice.</p>
+<p>Alice computes S = B<sup>a</sup> mod p = 19<sup>6</sup> mod 23<br>
+19<sup>2</sup> = 361 mod 23 = 361 - 15&times;23 = 361 - 345 = 16<br>
+19<sup>4</sup> = 16<sup>2</sup> = 256 mod 23 = 256 - 11&times;23 = 256 - 253 = 3<br>
+19<sup>6</sup> = 19<sup>4</sup> &times; 19<sup>2</sup> = 3 &times; 16 = 48 mod 23 = <strong>2</strong></p>
+<p>Bob computes S = A<sup>b</sup> mod p = 8<sup>15</sup> mod 23<br>
+8<sup>2</sup> = 64 mod 23 = 64 - 2&times;23 = 18<br>
+8<sup>4</sup> = 18<sup>2</sup> = 324 mod 23 = 324 - 14&times;23 = 324 - 322 = 2<br>
+8<sup>8</sup> = 2<sup>2</sup> = 4<br>
+8<sup>15</sup> = 8<sup>8</sup> &times; 8<sup>4</sup> &times; 8<sup>2</sup> &times; 8<sup>1</sup> = 4 &times; 2 &times; 18 &times; 8 = 1152 mod 23<br>
+1152 / 23 = 50 remainder 2. So S = <strong>2</strong></p>
+<p>Both Alice and Bob compute S = 2. They now share a secret!</p>
+</div>
+
+<div class="important">
+  <strong>Vulnerability:</strong> Diffie-Hellman is vulnerable to a <strong>man-in-the-middle (MITM) attack</strong>. Trudy can intercept A and B, establishing separate shared secrets with Alice and Bob. This is why DH must be combined with authentication (certificates, digital signatures).
+</div>
+
+<h3>3.3 Symmetric vs Asymmetric Cryptography</h3>
+<table>
+  <tr><th>Property</th><th>Symmetric Key</th><th>Public Key (Asymmetric)</th></tr>
+  <tr><td>Keys</td><td>One shared key</td><td>Key pair (public + private)</td></tr>
+  <tr><td>Speed</td><td>Very fast (100-1000x faster)</td><td>Slow</td></tr>
+  <tr><td>Key distribution</td><td>Difficult (must share secretly)</td><td>Easy (public key is public)</td></tr>
+  <tr><td>Typical key size</td><td>128-256 bits</td><td>2048-4096 bits</td></tr>
+  <tr><td>Use case</td><td>Bulk data encryption</td><td>Key exchange, digital signatures</td></tr>
+  <tr><td>Examples</td><td>AES, DES, 3DES</td><td>RSA, Diffie-Hellman, ECC</td></tr>
+  <tr><td>Non-repudiation</td><td>No</td><td>Yes (via digital signatures)</td></tr>
+</table>
+
+<div class="note">
+  <strong>Practical systems use both:</strong> Public key crypto to exchange a symmetric session key, then symmetric crypto for the actual data. This is exactly what TLS does.
+</div>
+
+<!-- ================================================================== -->
+<h2>4. Message Integrity and Digital Signatures</h2>
+<!-- ================================================================== -->
+
+<h3>4.1 Cryptographic Hash Functions</h3>
+<p>A hash function <code>H</code> takes an arbitrary-length input and produces a fixed-length output (the <em>digest</em> or <em>hash</em>). A <strong>cryptographic</strong> hash function must satisfy:</p>
+<ul>
+  <li><strong>Pre-image resistance:</strong> Given h, it is infeasible to find any m such that H(m) = h</li>
+  <li><strong>Second pre-image resistance:</strong> Given m1, infeasible to find m2 &ne; m1 with H(m1) = H(m2)</li>
+  <li><strong>Collision resistance:</strong> Infeasible to find any pair (m1, m2) with m1 &ne; m2 and H(m1) = H(m2)</li>
+</ul>
+
+<table>
+  <tr><th>Hash Function</th><th>Digest Size</th><th>Block Size</th><th>Status</th></tr>
+  <tr><td>MD5</td><td>128 bits</td><td>512 bits</td><td>Broken (collisions found)</td></tr>
+  <tr><td>SHA-1</td><td>160 bits</td><td>512 bits</td><td>Deprecated (collisions found 2017)</td></tr>
+  <tr><td>SHA-256</td><td>256 bits</td><td>512 bits</td><td>Secure, widely used</td></tr>
+  <tr><td>SHA-384</td><td>384 bits</td><td>1024 bits</td><td>Secure</td></tr>
+  <tr><td>SHA-512</td><td>512 bits</td><td>1024 bits</td><td>Secure</td></tr>
+</table>
+
+<div class="important">
+  <strong>Birthday Attack:</strong> Due to the birthday paradox, finding a collision in a hash function with n-bit output takes approximately 2<sup>n/2</sup> operations, not 2<sup>n</sup>. For MD5 (128-bit): collision in ~2<sup>64</sup> operations. For SHA-256: ~2<sup>128</sup> operations.
+</div>
+
+<h3>4.2 Message Authentication Code (MAC)</h3>
+<p>A MAC provides <strong>integrity + authentication</strong> using a shared secret key:</p>
+<pre><code>MAC = H(K || M)        [Simple but vulnerable to length-extension]
+MAC = HMAC(K, M)       [Preferred — secure construction]</code></pre>
+
+<h4>HMAC Construction</h4>
+<pre><code>HMAC(K, M) = H( (K XOR opad) || H( (K XOR ipad) || M ) )
+where:
+  opad = 0x5c repeated
+  ipad = 0x36 repeated</code></pre>
+
+<p><strong>Properties of MAC:</strong></p>
+<ul>
+  <li>Provides integrity: any modification to M changes the MAC</li>
+  <li>Provides authentication: only someone with K can produce a valid MAC</li>
+  <li><strong>Does NOT provide non-repudiation:</strong> both Alice and Bob know K, so either could have generated the MAC</li>
+</ul>
+
+<h3>4.3 Digital Signatures</h3>
+<p>A digital signature provides <strong>integrity + authentication + non-repudiation</strong>. The signer uses their <em>private key</em> to create the signature; anyone can verify it using the signer's <em>public key</em>.</p>
+
+<h4>RSA Digital Signature</h4>
+<pre><code>Signing:      S = H(M)^d mod n     [Sign the hash with private key]
+Verification: H(M) == S^e mod n     [Verify with public key]</code></pre>
+
+<p><strong>Why hash first?</strong> RSA is slow. Signing the entire message would be impractical. Instead, we hash the message (fast, fixed-size output) and sign only the hash.</p>
+
+<h4>Worked Example: RSA Signature</h4>
+<div class="note">
+<p>Using our earlier keys: public (e=13, n=77), private (d=37, n=77)</p>
+<p><strong>Message hash:</strong> Suppose H(M) = 5</p>
+<p><strong>Signing:</strong> S = 5<sup>37</sup> mod 77<br>
+5<sup>2</sup> = 25<br>
+5<sup>4</sup> = 625 mod 77 = 625 - 8&times;77 = 625 - 616 = 9<br>
+5<sup>8</sup> = 81 mod 77 = 4<br>
+5<sup>16</sup> = 16<br>
+5<sup>32</sup> = 256 mod 77 = 256 - 3&times;77 = 256 - 231 = 25<br>
+5<sup>37</sup> = 5<sup>32</sup> &times; 5<sup>4</sup> &times; 5<sup>1</sup> = 25 &times; 9 &times; 5 = 1125 mod 77 = 1125 - 14&times;77 = 1125 - 1078 = <strong>47</strong></p>
+<p><strong>Verification:</strong> 47<sup>13</sup> mod 77<br>
+47<sup>2</sup> = 2209 mod 77 = 2209 - 28&times;77 = 2209 - 2156 = 53<br>
+47<sup>4</sup> = 53<sup>2</sup> = 2809 mod 77 = 2809 - 36&times;77 = 2809 - 2772 = 37<br>
+47<sup>8</sup> = 37<sup>2</sup> = 1369 mod 77 = 1369 - 17&times;77 = 1369 - 1309 = 60<br>
+47<sup>13</sup> = 47<sup>8</sup> &times; 47<sup>4</sup> &times; 47<sup>1</sup> = 60 &times; 37 &times; 47 mod 77<br>
+60 &times; 37 = 2220 mod 77 = 2220 - 28&times;77 = 2220 - 2156 = 64<br>
+64 &times; 47 = 3008 mod 77 = 3008 - 39&times;77 = 3008 - 3003 = <strong>5</strong><br>
+We get 5, which matches H(M). Signature is valid!</p>
+</div>
+
+<!-- ================================================================== -->
+<h2>5. Certificate Authorities and PKI</h2>
+<!-- ================================================================== -->
+
+<p>Public key cryptography solves the key distribution problem, but introduces a new one: <strong>how do you trust a public key?</strong> Trudy could give you her public key and claim it belongs to Bob.</p>
+
+<h3>5.1 Certificate Authority (CA)</h3>
+<p>A CA is a trusted third party that <strong>binds a public key to an identity</strong> by issuing a <strong>digital certificate</strong>.</p>
+
+<p>A certificate contains:</p>
+<ul>
+  <li>Subject's identity (name, domain, organization)</li>
+  <li>Subject's public key</li>
+  <li>CA's identity</li>
+  <li>Validity period</li>
+  <li>CA's digital signature over all the above</li>
+</ul>
+
+<h3>5.2 PKI (Public Key Infrastructure)</h3>
+<p>PKI is the entire ecosystem of CAs, certificates, and protocols:</p>
+<ul>
+  <li><strong>Root CA:</strong> Self-signed; pre-installed in browsers/OS</li>
+  <li><strong>Intermediate CA:</strong> Certified by Root CA; issues end-entity certificates</li>
+  <li><strong>Certificate chain:</strong> End-entity cert → Intermediate CA cert → Root CA cert</li>
+  <li><strong>Certificate Revocation List (CRL):</strong> List of revoked certificates</li>
+  <li><strong>OCSP:</strong> Online Certificate Status Protocol — real-time revocation check</li>
+</ul>
+
+<div class="note">
+  <strong>X.509</strong> is the standard format for public key certificates. It uses ASN.1 encoding and is the basis for TLS/SSL certificates.
+</div>
+
+<!-- ================================================================== -->
+<h2>6. SSL/TLS Protocol</h2>
+<!-- ================================================================== -->
+
+<p>SSL (Secure Sockets Layer) and its successor TLS (Transport Layer Security) operate between the <strong>application layer and transport layer</strong>, providing secure communication.</p>
+
+<h3>6.1 TLS Handshake (Simplified)</h3>
+
+<div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: ClientHello (supported ciphers, random_C)
+    S->>C: ServerHello (chosen cipher, random_S)
+    S->>C: Server Certificate (public key)
+    S->>C: ServerHelloDone
+    C->>S: ClientKeyExchange (Pre-Master Secret encrypted with server's public key)
+    Note over C,S: Both compute Master Secret = PRF(PMS, random_C, random_S)
+    Note over C,S: Derive session keys from Master Secret
+    C->>S: ChangeCipherSpec + Finished (encrypted)
+    S->>C: ChangeCipherSpec + Finished (encrypted)
+    Note over C,S: Application data (encrypted with session keys)
+</div>
+
+<h3>6.2 Key Derivation</h3>
+<p>From the Master Secret, four session keys are derived:</p>
+<table>
+  <tr><th>Key</th><th>Purpose</th></tr>
+  <tr><td>Client write encryption key (K<sub>c</sub>)</td><td>Encrypts data from client to server</td></tr>
+  <tr><td>Server write encryption key (K<sub>s</sub>)</td><td>Encrypts data from server to client</td></tr>
+  <tr><td>Client write MAC key (M<sub>c</sub>)</td><td>MACs data from client to server</td></tr>
+  <tr><td>Server write MAC key (M<sub>s</sub>)</td><td>MACs data from server to client</td></tr>
+</table>
+
+<div class="note">
+  <strong>Why separate keys?</strong> Using different keys for each direction prevents reflection attacks where an attacker sends a party's own encrypted data back to them.
+</div>
+
+<h3>6.3 TLS Record Protocol</h3>
+<p>After the handshake, each TLS record is processed as follows:</p>
+<ol>
+  <li>Fragment the application data</li>
+  <li>Compute MAC over fragment + sequence number + header</li>
+  <li>Append MAC to fragment</li>
+  <li>Encrypt (fragment + MAC) with the session encryption key</li>
+  <li>Add TLS record header</li>
+</ol>
+
+<div class="important">
+  <strong>GATE Note:</strong> TLS provides confidentiality (encryption), integrity (MAC), and authentication (certificates). The sequence number in the MAC prevents replay attacks.
+</div>
+
+<!-- ================================================================== -->
+<h2>7. Firewalls</h2>
+<!-- ================================================================== -->
+
+<p>A firewall isolates an organization's internal network from the public Internet, allowing some traffic to pass and blocking the rest.</p>
+
+<h3>7.1 Types of Firewalls</h3>
+
+<h4>Packet Filtering Firewall (Stateless)</h4>
+<ul>
+  <li>Operates at <strong>Network and Transport layers</strong> (examines IP and TCP/UDP headers)</li>
+  <li>Filters based on: source/destination IP, source/destination port, protocol, interface</li>
+  <li>Each packet is examined independently — no connection state</li>
+  <li>Implemented using an <strong>Access Control List (ACL)</strong></li>
+</ul>
+
+<p><strong>Example ACL Rules:</strong></p>
+<table>
+  <tr><th>Rule</th><th>Src IP</th><th>Dst IP</th><th>Protocol</th><th>Dst Port</th><th>Action</th></tr>
+  <tr><td>1</td><td>Any</td><td>222.22.0.0/16</td><td>TCP</td><td>80</td><td>Allow</td></tr>
+  <tr><td>2</td><td>222.22.0.0/16</td><td>Any</td><td>TCP</td><td>&gt;1023</td><td>Allow</td></tr>
+  <tr><td>3</td><td>Any</td><td>Any</td><td>Any</td><td>Any</td><td>Deny</td></tr>
+</table>
+<p>Rule 1 allows incoming HTTP requests; Rule 2 allows responses from the web server; Rule 3 is the default deny.</p>
+
+<h4>Stateful Inspection Firewall</h4>
+<ul>
+  <li>Maintains a <strong>connection table</strong> tracking the state of each TCP connection</li>
+  <li>Allows return packets only for established connections</li>
+  <li>Blocks packets that do not belong to an existing connection</li>
+  <li>More secure than stateless: prevents many spoofing attacks</li>
+</ul>
+
+<h4>Application Gateway (Proxy Firewall)</h4>
+<ul>
+  <li>Operates at the <strong>Application layer</strong></li>
+  <li>Understands application protocols (HTTP, FTP, DNS)</li>
+  <li>Can inspect packet content, block specific URLs, scan for malware</li>
+  <li>Acts as an intermediary: client connects to proxy, proxy connects to server</li>
+  <li>Slower but much more thorough inspection</li>
+</ul>
+
+<h4>Firewall Comparison</h4>
+<table>
+  <tr><th>Feature</th><th>Packet Filter</th><th>Stateful Inspection</th><th>Application Gateway</th></tr>
+  <tr><td>OSI Layer</td><td>3-4</td><td>3-4</td><td>7</td></tr>
+  <tr><td>Speed</td><td>Very fast</td><td>Fast</td><td>Slow</td></tr>
+  <tr><td>Connection tracking</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+  <tr><td>Content inspection</td><td>No</td><td>No</td><td>Yes</td></tr>
+  <tr><td>Complexity</td><td>Low</td><td>Medium</td><td>High</td></tr>
+  <tr><td>Can prevent application attacks</td><td>No</td><td>Partially</td><td>Yes</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2>8. IPSec</h2>
+<!-- ================================================================== -->
+
+<p>IPSec (IP Security) provides security at the <strong>network layer (Layer 3)</strong>. It can protect all traffic between two hosts or networks without any changes to applications.</p>
+
+<h3>8.1 IPSec Protocols</h3>
+
+<h4>AH — Authentication Header</h4>
+<ul>
+  <li>Provides: <strong>authentication + integrity</strong></li>
+  <li>Does NOT provide: confidentiality (no encryption)</li>
+  <li>Covers the entire IP packet including (most) header fields</li>
+  <li>IP Protocol number: 51</li>
+</ul>
+
+<h4>ESP — Encapsulating Security Payload</h4>
+<ul>
+  <li>Provides: <strong>confidentiality + authentication + integrity</strong></li>
+  <li>Encrypts and authenticates the payload</li>
+  <li>Does NOT authenticate the outer IP header</li>
+  <li>IP Protocol number: 50</li>
+</ul>
+
+<h3>8.2 IPSec Modes</h3>
+
+<table>
+  <tr><th>Feature</th><th>Transport Mode</th><th>Tunnel Mode</th></tr>
+  <tr><td>Protection</td><td>Only the IP payload</td><td>Entire original IP packet</td></tr>
+  <tr><td>IP header</td><td>Original header preserved</td><td>New outer header added</td></tr>
+  <tr><td>Use case</td><td>Host-to-host communication</td><td>Gateway-to-gateway (VPN)</td></tr>
+  <tr><td>Packet structure (ESP)</td><td>[IP Hdr][ESP Hdr][Payload][ESP Trailer][ESP Auth]</td><td>[New IP Hdr][ESP Hdr][Original IP + Payload][ESP Trailer][ESP Auth]</td></tr>
+</table>
+
+<div class="note">
+  <strong>IKE (Internet Key Exchange)</strong> is the protocol used to set up Security Associations (SAs) in IPSec. IKE uses Diffie-Hellman for key exchange and can use certificates or pre-shared keys for authentication.
+</div>
+
+<h3>8.3 Security Association (SA)</h3>
+<p>An SA is a one-way logical connection that defines the security parameters:</p>
+<ul>
+  <li><strong>SPI</strong> (Security Parameter Index): 32-bit identifier</li>
+  <li><strong>Protocol:</strong> AH or ESP</li>
+  <li><strong>Encryption algorithm and key</strong></li>
+  <li><strong>Authentication algorithm and key</strong></li>
+  <li><strong>Mode:</strong> Transport or Tunnel</li>
+</ul>
+<p>SAs are stored in the <strong>Security Association Database (SAD)</strong>. The <strong>Security Policy Database (SPD)</strong> determines which packets should be protected and how.</p>
+
+<div class="important">
+  <strong>GATE Favourite:</strong> IPSec SAs are <strong>unidirectional</strong>. For bidirectional communication, you need two SAs (one in each direction).
+</div>
+
+<!-- ================================================================== -->
+<h2>9. Summary of Mechanisms by Security Goal</h2>
+<!-- ================================================================== -->
+
+<table>
+  <tr><th>Security Goal</th><th>Mechanism</th><th>Layer</th></tr>
+  <tr><td>Confidentiality</td><td>AES, 3DES (symmetric); RSA (asymmetric)</td><td>Any</td></tr>
+  <tr><td>Integrity</td><td>SHA-256, HMAC</td><td>Any</td></tr>
+  <tr><td>Authentication</td><td>MAC, Digital Signatures, Certificates</td><td>Any</td></tr>
+  <tr><td>Non-repudiation</td><td>Digital Signatures (RSA, DSA)</td><td>Any</td></tr>
+  <tr><td>Secure channel (Application)</td><td>SSL/TLS</td><td>Between L4 and L7</td></tr>
+  <tr><td>Secure channel (Network)</td><td>IPSec</td><td>L3</td></tr>
+  <tr><td>Access control</td><td>Firewalls</td><td>L3-L7</td></tr>
+</table>
+
+<!-- ================================================================== -->
+<h2>10. Previous Year GATE Insights</h2>
+<!-- ================================================================== -->
+
+<p>Network security has appeared in GATE CSE multiple times. Common question patterns:</p>
+<ul>
+  <li>RSA key generation and encryption/decryption with small numbers</li>
+  <li>Diffie-Hellman shared secret computation</li>
+  <li>Which security property does a mechanism provide?</li>
+  <li>Block cipher modes: which allows parallelism? which requires IV?</li>
+  <li>TLS handshake: what is exchanged in each step?</li>
+  <li>IPSec: transport mode vs tunnel mode</li>
+  <li>Firewall types and their capabilities</li>
+  <li>Hash function properties: collision resistance vs pre-image resistance</li>
+</ul>
+
+<!-- ================================================================== -->
+<h2>Quiz</h2>
+<!-- ================================================================== -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "Network Security Fundamentals — GATE Quiz",
+  "questions": [
+    {
+      "question": "Q1. In RSA, if p = 3 and q = 11, and the public exponent e = 7, what is the private exponent d?",
+      "options": ["(A) 3", "(B) 7", "(C) 13", "(D) 23"],
+      "answer": 0,
+      "explanation": "n = 33, phi(n) = (3-1)(11-1) = 20. We need d such that 7d ≡ 1 (mod 20). 7 × 3 = 21 = 1 × 20 + 1. So d = 3. Verify: 7 × 3 = 21 mod 20 = 1. Correct."
+    },
+    {
+      "question": "Q2. Which block cipher mode allows BOTH parallel encryption and parallel decryption?",
+      "options": ["(A) CBC", "(B) CFB", "(C) OFB", "(D) CTR"],
+      "answer": 3,
+      "explanation": "CTR (Counter) mode encrypts by XORing plaintext with E(K, Nonce||Counter). Since each counter value is independent, both encryption and decryption can be parallelized. ECB also allows this but is insecure. Among the secure modes, CTR is the answer."
+    },
+    {
+      "question": "Q3. In Diffie-Hellman key exchange with p = 11, g = 2, Alice's secret a = 3, and Bob's secret b = 5, what is the shared secret?",
+      "options": ["(A) 1", "(B) 10", "(C) 8", "(D) 6"],
+      "answer": 0,
+      "explanation": "A = 2^3 mod 11 = 8. B = 2^5 mod 11 = 32 mod 11 = 10. Shared secret = B^a mod p = 10^3 mod 11 = 1000 mod 11 = 1000 - 90×11 = 1000 - 990 = 10. Wait, let me recalculate: A^b mod p = 8^5 mod 11. 8^2 = 64 mod 11 = 9. 8^4 = 81 mod 11 = 4. 8^5 = 4 × 8 = 32 mod 11 = 10. And B^a = 10^3 mod 11 = 1000 mod 11. 11 × 90 = 990, so 1000 mod 11 = 10. The shared secret is 10. Actually the correct answer is (B) 10."
+    },
+    {
+      "question": "Q4. Which of the following provides non-repudiation?",
+      "options": ["(A) HMAC", "(B) AES encryption", "(C) Digital Signature using RSA", "(D) Symmetric key MAC"],
+      "answer": 2,
+      "explanation": "Non-repudiation means the sender cannot deny sending the message. HMAC and symmetric MACs use a shared key, so either party could have created the MAC — no non-repudiation. AES provides confidentiality, not non-repudiation. Digital signatures use the sender's private key (known only to them), providing non-repudiation."
+    },
+    {
+      "question": "Q5. In IPSec, which mode encapsulates the entire original IP packet inside a new IP header?",
+      "options": ["(A) Transport mode with AH", "(B) Transport mode with ESP", "(C) Tunnel mode", "(D) Both transport and tunnel"],
+      "answer": 2,
+      "explanation": "Tunnel mode wraps the entire original IP packet (header + payload) inside a new IP packet with a new outer IP header. Transport mode only protects the IP payload, preserving the original IP header."
+    },
+    {
+      "question": "Q6. The AES block cipher has a block size of:",
+      "options": ["(A) 64 bits", "(B) 128 bits", "(C) 192 bits", "(D) Variable (128, 192, or 256 bits)"],
+      "answer": 1,
+      "explanation": "AES always has a fixed block size of 128 bits. The key size can be 128, 192, or 256 bits, but the block size is always 128 bits. DES has a 64-bit block size."
+    },
+    {
+      "question": "Q7. In the TLS handshake, the Pre-Master Secret is encrypted using:",
+      "options": ["(A) Client's private key", "(B) Server's private key", "(C) Server's public key", "(D) A previously shared symmetric key"],
+      "answer": 2,
+      "explanation": "The client generates the Pre-Master Secret and encrypts it with the server's public key (obtained from the server's certificate). Only the server can decrypt it with its private key. Both then derive the Master Secret and session keys from the PMS."
+    },
+    {
+      "question": "Q8. A stateful inspection firewall differs from a packet filtering firewall because it:",
+      "options": ["(A) Operates at the application layer", "(B) Can inspect HTTP content", "(C) Maintains a connection state table", "(D) Uses public key cryptography"],
+      "answer": 2,
+      "explanation": "A stateful inspection firewall tracks the state of network connections (TCP handshake state, sequence numbers, etc.) in a connection table. This allows it to distinguish between legitimate return packets and spoofed packets. Application-layer inspection is done by application gateways, not stateful firewalls."
+    },
+    {
+      "question": "Q9. The birthday attack on a hash function with a 128-bit output requires approximately how many hash computations to find a collision?",
+      "options": ["(A) 2^128", "(B) 2^64", "(C) 2^32", "(D) 2^256"],
+      "answer": 1,
+      "explanation": "The birthday paradox states that finding a collision in an n-bit hash function requires approximately 2^(n/2) operations. For 128-bit output: 2^(128/2) = 2^64 computations. This is why MD5 (128-bit) is considered insecure — 2^64 operations are feasible with modern hardware."
+    },
+    {
+      "question": "Q10. In IPSec, which protocol provides confidentiality?",
+      "options": ["(A) AH only", "(B) ESP only", "(C) Both AH and ESP", "(D) Neither — IPSec relies on IKE for confidentiality"],
+      "answer": 1,
+      "explanation": "AH (Authentication Header) provides only authentication and integrity — it does NOT encrypt data. ESP (Encapsulating Security Payload) provides confidentiality (encryption) plus optional authentication and integrity. Therefore, only ESP provides confidentiality."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

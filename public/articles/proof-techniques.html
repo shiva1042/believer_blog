@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mathematical Induction and Proof Techniques — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Engineering Mathematics</span>
+<h1>Mathematical Induction and Proof Techniques</h1>
+
+<p>
+  Proof techniques form the backbone of discrete mathematics and are essential for GATE CSE.
+  This article covers the major proof methods from Rosen's <em>Discrete Mathematics and Its Applications</em>
+  (Chapters 1 and 5), with worked examples, GATE-relevant patterns, and common pitfalls.
+  Mastering these techniques is not only necessary for the Engineering Mathematics section but also
+  strengthens your ability to reason about algorithms, data structures, and complexity theory.
+</p>
+
+<!-- ============================================================ -->
+<h2>1. Direct Proof</h2>
+<!-- ============================================================ -->
+
+<p>
+  A <strong>direct proof</strong> of the statement <code>P &rArr; Q</code> begins by assuming
+  <code>P</code> is true and then, through a sequence of logical deductions, arrives at <code>Q</code>.
+</p>
+
+<h3>Structure</h3>
+<ol>
+  <li>Assume the hypothesis <code>P</code> is true.</li>
+  <li>Use definitions, axioms, and previously proven theorems.</li>
+  <li>Derive the conclusion <code>Q</code>.</li>
+</ol>
+
+<h3>Example 1: Sum of Two Even Numbers</h3>
+<p><strong>Theorem:</strong> The sum of two even integers is even.</p>
+<p><strong>Proof:</strong></p>
+<ol>
+  <li>Let <code>a</code> and <code>b</code> be even integers. By definition, there exist integers <code>k</code> and <code>m</code> such that <code>a = 2k</code> and <code>b = 2m</code>.</li>
+  <li>Then <code>a + b = 2k + 2m = 2(k + m)</code>.</li>
+  <li>Since <code>k + m</code> is an integer, <code>a + b</code> is even by definition. &marker;</li>
+</ol>
+
+<h3>Example 2: Product of Odd Numbers</h3>
+<p><strong>Theorem:</strong> If <code>a</code> and <code>b</code> are odd integers, then <code>ab</code> is odd.</p>
+<p><strong>Proof:</strong></p>
+<ol>
+  <li>Since <code>a</code> and <code>b</code> are odd, write <code>a = 2k + 1</code> and <code>b = 2m + 1</code> for integers <code>k, m</code>.</li>
+  <li><code>ab = (2k+1)(2m+1) = 4km + 2k + 2m + 1 = 2(2km + k + m) + 1</code>.</li>
+  <li>Since <code>2km + k + m</code> is an integer, <code>ab</code> has the form <code>2n + 1</code> and is therefore odd. &marker;</li>
+</ol>
+
+<h3>Example 3: Divisibility</h3>
+<p><strong>Theorem:</strong> If <code>a | b</code> and <code>b | c</code>, then <code>a | c</code>.</p>
+<p><strong>Proof:</strong></p>
+<ol>
+  <li>By definition, <code>b = a &middot; s</code> and <code>c = b &middot; t</code> for integers <code>s, t</code>.</li>
+  <li>Substituting: <code>c = (a &middot; s) &middot; t = a &middot; (st)</code>.</li>
+  <li>Since <code>st</code> is an integer, <code>a | c</code>. &marker;</li>
+</ol>
+
+<div class="note">
+  <strong>When to use:</strong> Direct proof works best when the definitions of the hypothesis
+  naturally lead to the conclusion. If the path from <code>P</code> to <code>Q</code> is not
+  obvious, consider contrapositive or contradiction.
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Proof by Contrapositive</h2>
+<!-- ============================================================ -->
+
+<p>
+  To prove <code>P &rArr; Q</code>, we instead prove the logically equivalent statement
+  <code>&not;Q &rArr; &not;P</code>. This is called the <strong>contrapositive</strong>.
+</p>
+
+<h3>Why It Works</h3>
+<p>
+  The conditional <code>P &rArr; Q</code> and its contrapositive <code>&not;Q &rArr; &not;P</code>
+  have identical truth tables. Proving one automatically proves the other.
+</p>
+
+<table>
+  <tr><th>P</th><th>Q</th><th>P &rArr; Q</th><th>&not;Q &rArr; &not;P</th></tr>
+  <tr><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+  <tr><td>T</td><td>F</td><td>F</td><td>F</td></tr>
+  <tr><td>F</td><td>T</td><td>T</td><td>T</td></tr>
+  <tr><td>F</td><td>F</td><td>T</td><td>T</td></tr>
+</table>
+
+<h3>Example 1: Parity Argument</h3>
+<p><strong>Theorem:</strong> If <code>n&sup2;</code> is even, then <code>n</code> is even.</p>
+<p><strong>Proof (by contrapositive):</strong> We prove: if <code>n</code> is odd, then <code>n&sup2;</code> is odd.</p>
+<ol>
+  <li>Suppose <code>n</code> is odd. Then <code>n = 2k + 1</code> for some integer <code>k</code>.</li>
+  <li><code>n&sup2; = (2k+1)&sup2; = 4k&sup2; + 4k + 1 = 2(2k&sup2; + 2k) + 1</code>.</li>
+  <li>This is odd. Since the contrapositive is true, the original statement holds. &marker;</li>
+</ol>
+
+<h3>Example 2: Divisibility Contrapositive</h3>
+<p><strong>Theorem:</strong> If <code>3 &nmid; n</code>, then <code>3 &nmid; n&sup2;</code>. (Equivalently: if <code>3 | n&sup2;</code>, then <code>3 | n</code>.)</p>
+<p><strong>Proof (by contrapositive):</strong> We prove: if <code>3 &nmid; n</code>, then <code>3 &nmid; n&sup2;</code>.</p>
+<ol>
+  <li>If <code>3 &nmid; n</code>, then <code>n &equiv; 1 (mod 3)</code> or <code>n &equiv; 2 (mod 3)</code>.</li>
+  <li>Case 1: <code>n &equiv; 1 (mod 3)</code> &rArr; <code>n&sup2; &equiv; 1 (mod 3)</code>. So <code>3 &nmid; n&sup2;</code>.</li>
+  <li>Case 2: <code>n &equiv; 2 (mod 3)</code> &rArr; <code>n&sup2; &equiv; 4 &equiv; 1 (mod 3)</code>. So <code>3 &nmid; n&sup2;</code>.</li>
+  <li>In both cases, <code>3 &nmid; n&sup2;</code>. &marker;</li>
+</ol>
+
+<div class="note">
+  <strong>When to use:</strong> Contrapositive is ideal when the negation of the conclusion
+  (<code>&not;Q</code>) gives you a concrete, easy-to-work-with assumption (e.g., "n is odd"
+  is easier to manipulate than "n&sup2; is even").
+</div>
+
+<!-- ============================================================ -->
+<h2>3. Proof by Contradiction</h2>
+<!-- ============================================================ -->
+
+<p>
+  To prove a statement <code>P</code>, assume <code>&not;P</code> is true and derive a
+  logical contradiction. Since the assumption leads to an impossibility, <code>P</code> must be true.
+</p>
+
+<h3>Structure</h3>
+<ol>
+  <li>Assume <code>&not;P</code>.</li>
+  <li>Through valid deductions, arrive at a statement that is always false (e.g., <code>R &and; &not;R</code>).</li>
+  <li>Conclude that the assumption <code>&not;P</code> is false, so <code>P</code> is true.</li>
+</ol>
+
+<h3>Example 1: Irrationality of &radic;2 (Classic GATE Favorite)</h3>
+<p><strong>Theorem:</strong> &radic;2 is irrational.</p>
+<p><strong>Proof:</strong></p>
+<ol>
+  <li>Assume for contradiction that &radic;2 is rational. Then &radic;2 = <code>p/q</code> where <code>p, q</code> are integers with no common factor (i.e., the fraction is in lowest terms) and <code>q &ne; 0</code>.</li>
+  <li>Squaring: <code>2 = p&sup2;/q&sup2;</code>, so <code>p&sup2; = 2q&sup2;</code>.</li>
+  <li>This means <code>p&sup2;</code> is even. By our earlier result, <code>p</code> must be even. Write <code>p = 2k</code>.</li>
+  <li>Substituting: <code>(2k)&sup2; = 2q&sup2;</code> &rArr; <code>4k&sup2; = 2q&sup2;</code> &rArr; <code>q&sup2; = 2k&sup2;</code>.</li>
+  <li>So <code>q&sup2;</code> is even, which means <code>q</code> is even.</li>
+  <li><strong>Contradiction:</strong> Both <code>p</code> and <code>q</code> are even, contradicting our assumption that <code>p/q</code> is in lowest terms.</li>
+  <li>Therefore, &radic;2 is irrational. &marker;</li>
+</ol>
+
+<h3>Example 2: Infinitude of Primes</h3>
+<p><strong>Theorem (Euclid):</strong> There are infinitely many prime numbers.</p>
+<p><strong>Proof:</strong></p>
+<ol>
+  <li>Assume for contradiction that there are only finitely many primes: <code>p<sub>1</sub>, p<sub>2</sub>, &hellip;, p<sub>n</sub></code>.</li>
+  <li>Consider the number <code>N = p<sub>1</sub> &middot; p<sub>2</sub> &middot; &hellip; &middot; p<sub>n</sub> + 1</code>.</li>
+  <li><code>N</code> is not divisible by any <code>p<sub>i</sub></code> (since dividing by any <code>p<sub>i</sub></code> leaves remainder 1).</li>
+  <li>But by the Fundamental Theorem of Arithmetic, <code>N &gt; 1</code> must have a prime factor.</li>
+  <li>This prime factor is not in our list &mdash; <strong>contradiction</strong>.</li>
+  <li>Therefore, there are infinitely many primes. &marker;</li>
+</ol>
+
+<h3>Example 3: No Rational Solution</h3>
+<p><strong>Theorem:</strong> There is no rational number <code>r</code> such that <code>r&sup2; = 3</code>.</p>
+<p><strong>Proof:</strong></p>
+<ol>
+  <li>Assume <code>r = p/q</code> in lowest terms with <code>r&sup2; = 3</code>. Then <code>p&sup2; = 3q&sup2;</code>.</li>
+  <li>So <code>3 | p&sup2;</code>. Since 3 is prime, <code>3 | p</code>. Write <code>p = 3k</code>.</li>
+  <li>Then <code>9k&sup2; = 3q&sup2;</code>, so <code>q&sup2; = 3k&sup2;</code>, meaning <code>3 | q</code>.</li>
+  <li>Contradiction: both <code>p</code> and <code>q</code> are divisible by 3, violating lowest terms. &marker;</li>
+</ol>
+
+<div class="important">
+  <strong>Contradiction vs. Contrapositive:</strong> Use contradiction when the statement is not
+  naturally in <code>P &rArr; Q</code> form (e.g., "&radic;2 is irrational" is a standalone
+  assertion). Use contrapositive when you have a clear conditional to negate.
+</div>
+
+<!-- ============================================================ -->
+<h2>4. Mathematical Induction</h2>
+<!-- ============================================================ -->
+
+<p>
+  Mathematical induction is used to prove statements of the form <code>&forall;n &ge; n<sub>0</sub>, P(n)</code>
+  where <code>n</code> ranges over integers. It is arguably the most frequently tested proof technique in GATE.
+</p>
+
+<h3>4.1 Principle of Mathematical Induction (PMI)</h3>
+
+<p>To prove <code>P(n)</code> for all <code>n &ge; n<sub>0</sub></code>:</p>
+<ol>
+  <li><strong>Base Case:</strong> Prove <code>P(n<sub>0</sub>)</code> is true.</li>
+  <li><strong>Inductive Step:</strong> Prove that for an arbitrary <code>k &ge; n<sub>0</sub></code>, if <code>P(k)</code> is true (<em>inductive hypothesis</em>), then <code>P(k+1)</code> is true.</li>
+</ol>
+<p>By PMI, <code>P(n)</code> holds for all <code>n &ge; n<sub>0</sub></code>.</p>
+
+<div class="note">
+  <strong>Intuition:</strong> Think of induction as a chain of dominoes. The base case knocks over
+  the first domino. The inductive step ensures each domino knocks over the next one.
+</div>
+
+<h3>4.2 Worked Example 1: Summation Formula</h3>
+<p><strong>Theorem:</strong> For all <code>n &ge; 1</code>,
+  <code>1 + 2 + 3 + &hellip; + n = n(n+1)/2</code>.
+</p>
+<p><strong>Proof by induction:</strong></p>
+<p><em>Base case (n = 1):</em> LHS = 1. RHS = 1(2)/2 = 1. True. &check;</p>
+<p><em>Inductive step:</em> Assume <code>P(k)</code> is true, i.e., <code>1 + 2 + &hellip; + k = k(k+1)/2</code>.</p>
+<p>We must show <code>P(k+1)</code>: <code>1 + 2 + &hellip; + k + (k+1) = (k+1)(k+2)/2</code>.</p>
+<pre><code>LHS = [1 + 2 + ... + k] + (k+1)
+    = k(k+1)/2 + (k+1)          [by inductive hypothesis]
+    = (k+1)[k/2 + 1]
+    = (k+1)(k+2)/2
+    = RHS  ✓</code></pre>
+<p>By PMI, the formula holds for all <code>n &ge; 1</code>. &marker;</p>
+
+<h3>4.3 Worked Example 2: Sum of Squares</h3>
+<p><strong>Theorem:</strong> For all <code>n &ge; 1</code>,
+  <code>1&sup2; + 2&sup2; + &hellip; + n&sup2; = n(n+1)(2n+1)/6</code>.
+</p>
+<p><strong>Proof by induction:</strong></p>
+<p><em>Base case (n = 1):</em> LHS = 1. RHS = 1 &middot; 2 &middot; 3 / 6 = 1. &check;</p>
+<p><em>Inductive step:</em> Assume <code>&sum;<sub>i=1</sub><sup>k</sup> i&sup2; = k(k+1)(2k+1)/6</code>.</p>
+<p>Show: <code>&sum;<sub>i=1</sub><sup>k+1</sup> i&sup2; = (k+1)(k+2)(2k+3)/6</code>.</p>
+<pre><code>LHS = k(k+1)(2k+1)/6 + (k+1)²
+    = (k+1)/6 · [k(2k+1) + 6(k+1)]
+    = (k+1)/6 · [2k² + k + 6k + 6]
+    = (k+1)/6 · [2k² + 7k + 6]
+    = (k+1)/6 · (k+2)(2k+3)
+    = (k+1)(k+2)(2k+3)/6
+    = RHS  ✓</code></pre>
+<p>By PMI, the result holds for all <code>n &ge; 1</code>. &marker;</p>
+
+<h3>4.4 Worked Example 3: Divisibility Proof</h3>
+<p><strong>Theorem:</strong> For all <code>n &ge; 1</code>, <code>6 | (n&sup3; - n)</code> (i.e., <code>n&sup3; - n</code> is divisible by 6).</p>
+<p><strong>Proof by induction:</strong></p>
+<p><em>Base case (n = 1):</em> <code>1&sup3; - 1 = 0 = 6 &middot; 0</code>. &check;</p>
+<p><em>Inductive step:</em> Assume <code>6 | (k&sup3; - k)</code>. Show <code>6 | ((k+1)&sup3; - (k+1))</code>.</p>
+<pre><code>(k+1)³ - (k+1) = k³ + 3k² + 3k + 1 - k - 1
+               = (k³ - k) + 3k² + 3k
+               = (k³ - k) + 3k(k + 1)</code></pre>
+<p>
+  By the inductive hypothesis, <code>6 | (k&sup3; - k)</code>.
+  Now, <code>k(k+1)</code> is the product of two consecutive integers, so one of them is even.
+  Hence <code>2 | k(k+1)</code>, which means <code>6 | 3k(k+1)</code>.
+</p>
+<p>
+  Since 6 divides both terms, <code>6 | ((k+1)&sup3; - (k+1))</code>. &marker;
+</p>
+
+<h3>4.5 Worked Example 4: Inequality Proof</h3>
+<p><strong>Theorem:</strong> For all <code>n &ge; 5</code>, <code>2<sup>n</sup> &gt; n&sup2;</code>.</p>
+<p><strong>Proof by induction:</strong></p>
+<p><em>Base case (n = 5):</em> <code>2<sup>5</sup> = 32 &gt; 25 = 5&sup2;</code>. &check;</p>
+<p><em>Inductive step:</em> Assume <code>2<sup>k</sup> &gt; k&sup2;</code> for some <code>k &ge; 5</code>. Show <code>2<sup>k+1</sup> &gt; (k+1)&sup2;</code>.</p>
+<pre><code>2^(k+1) = 2 · 2^k
+        > 2k²             [by inductive hypothesis]
+
+We need: 2k² ≥ (k+1)² = k² + 2k + 1
+
+This requires: k² - 2k - 1 ≥ 0, i.e., k² ≥ 2k + 1.
+
+For k ≥ 5: k² = 25 ≥ 11 = 2(5) + 1. ✓
+In general, k² - 2k - 1 = (k-1)² - 2 ≥ 0 for k ≥ 3.</code></pre>
+<p>
+  So <code>2<sup>k+1</sup> &gt; 2k&sup2; &ge; (k+1)&sup2;</code> for <code>k &ge; 5</code>. By PMI, the inequality holds. &marker;
+</p>
+
+<h3>4.6 Worked Example 5: Tree Property</h3>
+<p><strong>Theorem:</strong> A full binary tree with <code>n</code> internal nodes has exactly <code>n + 1</code> leaves.</p>
+<p><strong>Proof by induction on the number of internal nodes:</strong></p>
+<p><em>Base case (n = 0):</em> A full binary tree with 0 internal nodes is a single leaf. Leaves = 0 + 1 = 1. &check;</p>
+<p><em>Inductive step:</em> Assume every full binary tree with <code>k</code> internal nodes has <code>k + 1</code> leaves. Consider a full binary tree <code>T</code> with <code>k + 1</code> internal nodes.</p>
+<ol>
+  <li>Find an internal node <code>v</code> whose both children are leaves (such a node always exists in a full binary tree).</li>
+  <li>Remove both children of <code>v</code>, making <code>v</code> a leaf. Call the resulting tree <code>T'</code>.</li>
+  <li><code>T'</code> is a full binary tree with <code>k</code> internal nodes. By the inductive hypothesis, <code>T'</code> has <code>k + 1</code> leaves.</li>
+  <li>Going from <code>T'</code> back to <code>T</code>: we lost one leaf (<code>v</code> became internal) and gained two leaves (the children). Net change: +1 leaf.</li>
+  <li>So <code>T</code> has <code>(k + 1) + 1 = k + 2</code> leaves, which equals <code>(k+1) + 1</code>. &check;</li>
+</ol>
+<p>By PMI, the result holds. &marker;</p>
+
+<!-- ============================================================ -->
+<h2>5. Strong Induction</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Strong induction</strong> (also called <em>complete induction</em>) is a variant where the inductive
+  hypothesis assumes <code>P(n<sub>0</sub>), P(n<sub>0</sub>+1), &hellip;, P(k)</code> are all true (not just <code>P(k)</code>).
+</p>
+
+<h3>Principle</h3>
+<ol>
+  <li><strong>Base Case:</strong> Prove <code>P(n<sub>0</sub>)</code>.</li>
+  <li><strong>Inductive Step:</strong> Assume <code>P(n<sub>0</sub>), P(n<sub>0</sub>+1), &hellip;, P(k)</code> are all true. Prove <code>P(k+1)</code>.</li>
+</ol>
+<p>Strong induction and ordinary induction are logically equivalent, but strong induction can make certain proofs much simpler.</p>
+
+<h3>Example: Fundamental Theorem of Arithmetic</h3>
+<p><strong>Theorem:</strong> Every integer <code>n &ge; 2</code> can be written as a product of primes.</p>
+<p><strong>Proof by strong induction:</strong></p>
+<p><em>Base case (n = 2):</em> 2 is itself prime. &check;</p>
+<p><em>Inductive step:</em> Assume every integer from 2 to <code>k</code> can be written as a product of primes. Consider <code>k + 1</code>.</p>
+<ul>
+  <li><strong>Case 1:</strong> <code>k + 1</code> is prime. Then it is trivially a product of primes (just itself).</li>
+  <li><strong>Case 2:</strong> <code>k + 1</code> is composite. Then <code>k + 1 = a &middot; b</code> where <code>2 &le; a, b &le; k</code>. By the strong inductive hypothesis, both <code>a</code> and <code>b</code> can be written as products of primes. Therefore, <code>k + 1 = a &middot; b</code> is also a product of primes.</li>
+</ul>
+<p>By strong induction, every integer <code>n &ge; 2</code> is a product of primes. &marker;</p>
+
+<h3>Example: Fibonacci Inequality</h3>
+<p><strong>Theorem:</strong> For all <code>n &ge; 1</code>, <code>F<sub>n</sub> &lt; 2<sup>n</sup></code>, where <code>F<sub>n</sub></code> is the <code>n</code>-th Fibonacci number.</p>
+<p><strong>Proof by strong induction:</strong></p>
+<p><em>Base cases:</em> <code>F<sub>1</sub> = 1 &lt; 2 = 2<sup>1</sup></code>. <code>F<sub>2</sub> = 1 &lt; 4 = 2<sup>2</sup></code>. &check;</p>
+<p><em>Inductive step:</em> Assume <code>F<sub>j</sub> &lt; 2<sup>j</sup></code> for all <code>1 &le; j &le; k</code> where <code>k &ge; 2</code>. Show <code>F<sub>k+1</sub> &lt; 2<sup>k+1</sup></code>.</p>
+<pre><code>F_(k+1) = F_k + F_(k-1)
+        < 2^k + 2^(k-1)     [by strong inductive hypothesis]
+        < 2^k + 2^k
+        = 2^(k+1)  ✓</code></pre>
+<p>By strong induction, <code>F<sub>n</sub> &lt; 2<sup>n</sup></code> for all <code>n &ge; 1</code>. &marker;</p>
+
+<!-- ============================================================ -->
+<h2>6. Structural Induction</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Structural induction</strong> is used to prove properties of recursively defined structures
+  (trees, strings, formulas, etc.). The proof mirrors the recursive definition:
+</p>
+<ol>
+  <li><strong>Base Case:</strong> Prove the property for the base elements of the recursive definition.</li>
+  <li><strong>Recursive Step:</strong> Assuming the property holds for the sub-structures, prove it for structures built by the recursive rules.</li>
+</ol>
+
+<h3>Example: Well-Formed Propositional Formulas</h3>
+<p>
+  <strong>Recursive definition:</strong> (1) Every propositional variable <code>p</code> is a formula.
+  (2) If <code>&phi;</code> is a formula, so is <code>&not;&phi;</code>.
+  (3) If <code>&phi;</code> and <code>&psi;</code> are formulas, so are <code>(&phi; &and; &psi;)</code> and <code>(&phi; &or; &psi;)</code>.
+</p>
+<p><strong>Theorem:</strong> Every well-formed formula has an equal number of opening and closing parentheses.</p>
+<p><strong>Proof by structural induction:</strong></p>
+<p><em>Base case:</em> A variable <code>p</code> has 0 opening and 0 closing parentheses. 0 = 0. &check;</p>
+<p><em>Recursive step:</em></p>
+<ul>
+  <li><code>&not;&phi;</code>: Same parentheses as <code>&phi;</code>. By hypothesis, equal. &check;</li>
+  <li><code>(&phi; &and; &psi;)</code>: Opens = opens(&phi;) + opens(&psi;) + 1. Closes = closes(&phi;) + closes(&psi;) + 1. By hypothesis, opens(&phi;) = closes(&phi;) and opens(&psi;) = closes(&psi;). So opens = closes. &check;</li>
+  <li>The <code>&or;</code> case is identical. &marker;</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>7. The Well-Ordering Principle</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Well-Ordering Principle (WOP):</strong> Every non-empty subset of the non-negative integers has a
+  <em>least element</em>.
+</p>
+
+<p>
+  WOP is logically equivalent to the Principle of Mathematical Induction. It provides an alternative approach
+  to induction-style proofs.
+</p>
+
+<h3>Example: Division Algorithm</h3>
+<p><strong>Theorem:</strong> For any integers <code>a</code> and <code>d &gt; 0</code>, there exist unique integers <code>q</code> and <code>r</code> such that <code>a = dq + r</code> and <code>0 &le; r &lt; d</code>.</p>
+<p><strong>Proof sketch (existence via WOP):</strong></p>
+<ol>
+  <li>Consider the set <code>S = {a - dk : k &isin; Z, a - dk &ge; 0}</code>.</li>
+  <li><code>S</code> is non-empty (choose a sufficiently small <code>k</code>).</li>
+  <li>By WOP, <code>S</code> has a least element <code>r = a - dq</code>.</li>
+  <li>We have <code>r &ge; 0</code>. If <code>r &ge; d</code>, then <code>r - d = a - d(q+1) &ge; 0</code> is in <code>S</code> and is smaller than <code>r</code> &mdash; contradiction.</li>
+  <li>Therefore <code>0 &le; r &lt; d</code>. &marker;</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2>8. Common GATE Patterns</h2>
+<!-- ============================================================ -->
+
+<p>Here are the types of problems that appear most frequently in GATE:</p>
+
+<h3>Pattern 1: Proving Summation Formulas</h3>
+<p>
+  Given a formula like <code>&sum; i = n(n+1)/2</code> or <code>&sum; i&sup2; = n(n+1)(2n+1)/6</code>,
+  prove it by induction. GATE may ask you to identify the inductive step or point out errors in a given proof.
+</p>
+
+<h3>Pattern 2: Divisibility</h3>
+<p>
+  "Prove that <code>n&sup3; - n</code> is divisible by 6" or "Prove <code>7<sup>n</sup> - 1</code> is divisible by 6."
+  The key technique: expand using binomial theorem or factor, then use the inductive hypothesis.
+</p>
+
+<h3>Pattern 3: Graph and Tree Properties</h3>
+<p>Common statements to prove by induction include:</p>
+<ul>
+  <li>A tree with <code>n</code> vertices has <code>n - 1</code> edges.</li>
+  <li>A connected planar graph satisfies <code>V - E + F = 2</code> (Euler's formula).</li>
+  <li>A full binary tree with <code>n</code> internal nodes has <code>n + 1</code> leaves.</li>
+  <li>The sum of degrees in a graph equals <code>2|E|</code> (Handshaking Lemma).</li>
+</ul>
+
+<h3>Pattern 4: Recurrence Relations</h3>
+<p>
+  Prove that a given closed-form solution satisfies a recurrence. For example, prove
+  <code>T(n) = 2T(n/2) + n</code> has solution <code>T(n) = O(n log n)</code> by strong induction.
+</p>
+
+<!-- ============================================================ -->
+<h2>9. Comparison of Proof Techniques</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Technique</th>
+    <th>When to Use</th>
+    <th>Structure</th>
+    <th>Key Advantage</th>
+  </tr>
+  <tr>
+    <td>Direct Proof</td>
+    <td>Definitions naturally lead to conclusion</td>
+    <td>Assume P, derive Q</td>
+    <td>Most straightforward; easiest to follow</td>
+  </tr>
+  <tr>
+    <td>Contrapositive</td>
+    <td>&not;Q provides a useful concrete assumption</td>
+    <td>Assume &not;Q, derive &not;P</td>
+    <td>Often simpler when direct path is unclear</td>
+  </tr>
+  <tr>
+    <td>Contradiction</td>
+    <td>Statement is not conditional; need to show non-existence or uniqueness</td>
+    <td>Assume &not;P, derive a contradiction</td>
+    <td>Works for existential / irrationality proofs</td>
+  </tr>
+  <tr>
+    <td>Mathematical Induction</td>
+    <td>Statement is &forall;n &ge; n<sub>0</sub>, P(n)</td>
+    <td>Base + P(k) &rArr; P(k+1)</td>
+    <td>Natural for formulas over integers</td>
+  </tr>
+  <tr>
+    <td>Strong Induction</td>
+    <td>P(k+1) depends on multiple earlier values</td>
+    <td>Base + P(n<sub>0</sub>)&hellip;P(k) &rArr; P(k+1)</td>
+    <td>Handles recurrences, prime factorization</td>
+  </tr>
+  <tr>
+    <td>Structural Induction</td>
+    <td>Property of recursively defined objects</td>
+    <td>Base elements + recursive constructors</td>
+    <td>Natural for trees, strings, formulas</td>
+  </tr>
+  <tr>
+    <td>Well-Ordering</td>
+    <td>Existence of a minimal counterexample</td>
+    <td>Assume counterexample set is non-empty; find least</td>
+    <td>Alternative to induction; useful for existence proofs</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>10. Common Mistakes and Pitfalls</h2>
+<!-- ============================================================ -->
+
+<div class="important">
+  <strong>Pitfall 1: Forgetting the Base Case.</strong>
+  A "proof" by induction with no base case can "prove" false statements.
+  Example: "All horses are the same color" uses a faulty induction argument that fails at <code>n = 2</code>
+  because the sets do not overlap.
+</div>
+
+<div class="important">
+  <strong>Pitfall 2: Not Using the Inductive Hypothesis.</strong>
+  If your inductive step does not reference <code>P(k)</code>, you are likely doing a direct proof,
+  not induction, and the argument may have gaps.
+</div>
+
+<div class="important">
+  <strong>Pitfall 3: Wrong Base Case Index.</strong>
+  If the theorem says "for all <code>n &ge; 5</code>," you must use <code>n = 5</code> as the base case,
+  not <code>n = 1</code>. The inductive step also only needs to work for <code>k &ge; 5</code>.
+</div>
+
+<div class="important">
+  <strong>Pitfall 4: Circular Reasoning in Contradiction Proofs.</strong>
+  Make sure the contradiction genuinely arises from the assumption <code>&not;P</code>, not from
+  an algebraic error or an unjustified step.
+</div>
+
+<div class="important">
+  <strong>Pitfall 5: Confusing Contradiction and Contrapositive.</strong>
+  In a contrapositive proof, you prove <code>&not;Q &rArr; &not;P</code>. In a contradiction proof,
+  you assume <code>&not;P</code> (or <code>P &and; &not;Q</code>) and derive any contradiction.
+  They are different techniques.
+</div>
+
+<div class="note">
+  <strong>Pitfall 6: Strong Induction Base Cases.</strong>
+  When using strong induction, you may need <em>multiple</em> base cases. For instance, if the recurrence
+  is <code>P(k+1)</code> depends on <code>P(k)</code> and <code>P(k-1)</code>, you need base cases for
+  both <code>n<sub>0</sub></code> and <code>n<sub>0</sub> + 1</code>.
+</div>
+
+<div class="note">
+  <strong>Pitfall 7: Assuming What You Want to Prove.</strong>
+  In the inductive step, you assume <code>P(k)</code> and prove <code>P(k+1)</code>.
+  Do NOT assume <code>P(k+1)</code>. A common student error is to start with the equation
+  you want to prove and manipulate both sides simultaneously.
+</div>
+
+<!-- ============================================================ -->
+<h2>11. Additional Important Results</h2>
+<!-- ============================================================ -->
+
+<h3>Geometric Series</h3>
+<p><strong>Theorem:</strong> For <code>r &ne; 1</code> and <code>n &ge; 0</code>,
+  <code>&sum;<sub>i=0</sub><sup>n</sup> r<sup>i</sup> = (r<sup>n+1</sup> - 1) / (r - 1)</code>.
+</p>
+<p>This is proved by induction on <code>n</code> and is extremely useful for algorithm analysis.</p>
+
+<h3>Power Set Cardinality</h3>
+<p><strong>Theorem:</strong> If <code>|S| = n</code>, then <code>|P(S)| = 2<sup>n</sup></code>.</p>
+<p><strong>Proof by induction on n:</strong></p>
+<p><em>Base case (n = 0):</em> <code>S = &empty;</code>, <code>P(S) = {&empty;}</code>, <code>|P(S)| = 1 = 2<sup>0</sup></code>. &check;</p>
+<p><em>Inductive step:</em> Let <code>|S| = k + 1</code>. Pick any element <code>a &isin; S</code>. Then <code>S' = S \ {a}</code> has <code>k</code> elements.</p>
+<p>Every subset of <code>S</code> either contains <code>a</code> or does not:</p>
+<ul>
+  <li>Subsets not containing <code>a</code>: these are exactly the subsets of <code>S'</code>. By hypothesis, there are <code>2<sup>k</sup></code>.</li>
+  <li>Subsets containing <code>a</code>: each is formed by adding <code>a</code> to a subset of <code>S'</code>. There are <code>2<sup>k</sup></code> of these too.</li>
+</ul>
+<p>Total: <code>2<sup>k</sup> + 2<sup>k</sup> = 2<sup>k+1</sup></code>. &marker;</p>
+
+<h3>Handshaking Lemma</h3>
+<p><strong>Theorem:</strong> In any graph <code>G = (V, E)</code>, <code>&sum;<sub>v &isin; V</sub> deg(v) = 2|E|</code>.</p>
+<p><strong>Proof by induction on <code>|E|</code>:</strong></p>
+<p><em>Base case (|E| = 0):</em> All degrees are 0. Sum = 0 = 2(0). &check;</p>
+<p><em>Inductive step:</em> Assume the result holds for graphs with <code>k</code> edges. Consider a graph with <code>k + 1</code> edges. Remove one edge <code>{u, v}</code>. By hypothesis, the remaining graph satisfies the formula. Adding <code>{u, v}</code> back increases <code>deg(u)</code> by 1, <code>deg(v)</code> by 1, and <code>|E|</code> by 1. So the sum increases by 2 and 2|E| increases by 2. &marker;</p>
+
+<!-- ============================================================ -->
+<h2>12. Practice Quiz</h2>
+<!-- ============================================================ -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "Mathematical Induction and Proof Techniques Quiz",
+  "questions": [
+    {
+      "question": "Q1. In a proof by mathematical induction of the statement P(n) for all n ≥ 1, what must be established in the inductive step?",
+      "options": ["(A) P(1) is true", "(B) P(k) → P(k+1) for an arbitrary k ≥ 1", "(C) P(n) is true for all n", "(D) P(k+1) is true"],
+      "answer": 1,
+      "explanation": "The inductive step requires proving P(k) → P(k+1) for an arbitrary k ≥ 1. You assume P(k) (the inductive hypothesis) and use it to prove P(k+1). Option (A) is the base case, (C) is what we're trying to prove, and (D) is incomplete since it doesn't mention the assumption."
+    },
+    {
+      "question": "Q2. Which proof technique is being used when we prove 'if n² is even then n is even' by showing 'if n is odd then n² is odd'?",
+      "options": ["(A) Direct proof", "(B) Proof by contradiction", "(C) Proof by contrapositive", "(D) Mathematical induction"],
+      "answer": 2,
+      "explanation": "The statement 'if n is odd then n² is odd' is the contrapositive of 'if n² is even then n is even.' The contrapositive ¬Q → ¬P is logically equivalent to P → Q. This is a classic example of proof by contrapositive."
+    },
+    {
+      "question": "Q3. In the proof that √2 is irrational, what is the contradiction that is reached?",
+      "options": ["(A) p and q are both zero", "(B) p/q is not in lowest terms because both p and q are even", "(C) p² = 2q² has no solution", "(D) √2 can be expressed as a terminating decimal"],
+      "answer": 1,
+      "explanation": "We assume √2 = p/q in lowest terms (gcd(p,q) = 1). We derive that p must be even (from p² = 2q²), and then q must also be even (from q² = 2k²). This contradicts the assumption that p/q was in lowest terms, since both share a factor of 2."
+    },
+    {
+      "question": "Q4. Prove by induction: 1 + 3 + 5 + ... + (2n−1) = n². In the inductive step, after assuming the formula holds for k, the left side for k+1 becomes?",
+      "options": ["(A) k² + 2k", "(B) k² + (2k+1)", "(C) (k+1)² − 1", "(D) k² + 2k − 1"],
+      "answer": 1,
+      "explanation": "The sum up to k is k² (by the inductive hypothesis). For k+1, we add the next term (2(k+1)−1) = (2k+1). So the LHS becomes k² + (2k+1) = (k+1)², which is the desired RHS."
+    },
+    {
+      "question": "Q5. Strong induction differs from ordinary induction in that:",
+      "options": ["(A) It does not require a base case", "(B) The inductive hypothesis assumes P(j) for all n₀ ≤ j ≤ k", "(C) It can only be used for inequalities", "(D) It requires proving P(k+1) → P(k)"],
+      "answer": 1,
+      "explanation": "In strong induction, the inductive hypothesis assumes P(j) for ALL values from the base case up to k, not just P(k). This is useful when P(k+1) depends on multiple earlier values. Strong induction still requires a base case and is equivalent in power to ordinary induction."
+    },
+    {
+      "question": "Q6. Using induction, prove 2^n > n for all n ≥ 1. In the inductive step, we need to show 2^(k+1) > k+1 given 2^k > k. Which intermediate step is correct?",
+      "options": ["(A) 2^(k+1) = 2·2^k > 2k ≥ k+1 for k ≥ 1", "(B) 2^(k+1) = 2^k + 2^k > k + k = 2k", "(C) 2^(k+1) = 2^k · 2 > k · 2 > k+1", "(D) All of the above are valid approaches"],
+      "answer": 3,
+      "explanation": "All three approaches are valid. (A) uses 2·2^k > 2k and 2k ≥ k+1 for k ≥ 1. (B) splits the power and uses the hypothesis twice. (C) multiplies both sides by 2 and notes 2k > k+1 for k ≥ 1. Each correctly completes the inductive step."
+    },
+    {
+      "question": "Q7. What is wrong with the following 'proof' by induction? Claim: All horses are the same color. Base case: 1 horse is trivially the same color. Inductive step: Given any set of k+1 horses, remove one to get k horses (same color by hypothesis), then swap and remove another to get another set of k horses (same color). The two sets overlap, so all k+1 are the same color.",
+      "options": ["(A) The base case is wrong", "(B) The inductive step fails at k=1 because the two sets do not overlap", "(C) Induction cannot be applied to sets", "(D) The conclusion contradicts the Pigeonhole Principle"],
+      "answer": 1,
+      "explanation": "The flaw is in the step from k=1 to k=2. With 2 horses, removing one gives a set of 1 horse, and removing the other gives another set of 1 horse. These two sets do NOT overlap, so the argument that they share a common color breaks down. The overlap is only guaranteed when k ≥ 2."
+    },
+    {
+      "question": "Q8. To prove that a statement of the form '∃x, P(x)' is true, which method is most natural?",
+      "options": ["(A) Mathematical induction", "(B) Direct proof by constructing a witness", "(C) Proof by contrapositive", "(D) Structural induction"],
+      "answer": 1,
+      "explanation": "Existential statements are most naturally proved by constructing a specific element x (a 'witness') that satisfies P(x). This is a constructive direct proof. Alternatively, one could use contradiction (assume no such x exists). Induction and contrapositive are typically for universal statements."
+    },
+    {
+      "question": "Q9. Using induction, one can show that a tree with n vertices has exactly n−1 edges. What serves as a good base case?",
+      "options": ["(A) n = 0: an empty tree has 0 vertices and 0 edges", "(B) n = 1: a single vertex with 0 edges, and 1 − 1 = 0", "(C) n = 2: two vertices connected by 1 edge", "(D) Both (B) and (C) are valid base cases"],
+      "answer": 1,
+      "explanation": "The most natural base case is n = 1: a single vertex constitutes a tree with 0 edges, and 1 − 1 = 0. While n = 2 also works as a verification, the standard base case starts at the smallest valid tree. Option (A) is debatable since some definitions require a tree to be non-empty."
+    },
+    {
+      "question": "Q10. Consider the statement: 'For all n ≥ 1, 7^n − 1 is divisible by 6.' In the inductive step, 7^(k+1) − 1 can be rewritten as:",
+      "options": ["(A) 7 · 7^k − 1 = 7(7^k − 1) + 6", "(B) 7^k + 6·7^k − 1", "(C) 6·7^k + 7^k − 1", "(D) Both (A) and (C)"],
+      "answer": 3,
+      "explanation": "7^(k+1) − 1 = 7·7^k − 1. We can write this as 7(7^k − 1) + 7 − 1 = 7(7^k − 1) + 6 [option A], or equivalently as (6 + 1)·7^k − 1 = 6·7^k + (7^k − 1) [option C]. Both decompositions show that 6 divides the expression: in (A), 6 | 7(7^k − 1) by IH and 6 | 6; in (C), 6 | 6·7^k and 6 | (7^k − 1) by IH."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

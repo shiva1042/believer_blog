@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lattices, Partial Orders, and Boolean Algebra — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Engineering Mathematics</span>
+<h1>Lattices, Partial Orders, and Boolean Algebra</h1>
+
+<p>
+  This article provides a comprehensive treatment of partially ordered sets, lattices, and Boolean algebra
+  as covered in Rosen's <em>Discrete Mathematics and Its Applications</em> (Chapters 9 and 12).
+  These topics are heavily tested in GATE CSE under Engineering Mathematics. Understanding Hasse diagrams,
+  special elements, lattice types, and Boolean algebra is essential for scoring well.
+</p>
+
+<!-- ============================================================ -->
+<h2>1. Relations and Partial Orders — Foundations</h2>
+<!-- ============================================================ -->
+
+<h3>1.1 Binary Relations Recap</h3>
+<p>
+  A <strong>binary relation</strong> <code>R</code> on a set <code>S</code> is a subset of <code>S &times; S</code>.
+  We write <code>a R b</code> (or <code>(a, b) &isin; R</code>) to mean that <code>a</code> is related to <code>b</code>.
+</p>
+
+<h3>1.2 Properties of Relations</h3>
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Definition</th>
+    <th>Example on Z</th>
+  </tr>
+  <tr>
+    <td>Reflexive</td>
+    <td>&forall;a &isin; S, a R a</td>
+    <td>a &le; a &check;</td>
+  </tr>
+  <tr>
+    <td>Antisymmetric</td>
+    <td>If a R b and b R a, then a = b</td>
+    <td>a &le; b and b &le; a &rArr; a = b &check;</td>
+  </tr>
+  <tr>
+    <td>Transitive</td>
+    <td>If a R b and b R c, then a R c</td>
+    <td>a &le; b and b &le; c &rArr; a &le; c &check;</td>
+  </tr>
+  <tr>
+    <td>Symmetric</td>
+    <td>If a R b, then b R a</td>
+    <td>&le; is NOT symmetric</td>
+  </tr>
+  <tr>
+    <td>Total/Linear</td>
+    <td>&forall;a, b: a R b or b R a</td>
+    <td>&le; on Z is total &check;</td>
+  </tr>
+</table>
+
+<h3>1.3 Partial Order (Poset)</h3>
+<p>
+  A relation <code>&le;</code> on a set <code>S</code> is a <strong>partial order</strong> if it is:
+</p>
+<ol>
+  <li><strong>Reflexive:</strong> <code>a &le; a</code> for all <code>a &isin; S</code>.</li>
+  <li><strong>Antisymmetric:</strong> <code>a &le; b</code> and <code>b &le; a</code> implies <code>a = b</code>.</li>
+  <li><strong>Transitive:</strong> <code>a &le; b</code> and <code>b &le; c</code> implies <code>a &le; c</code>.</li>
+</ol>
+<p>The pair <code>(S, &le;)</code> is called a <strong>partially ordered set (poset)</strong>.</p>
+
+<div class="note">
+  <strong>Mnemonic — RAT:</strong> Reflexive, Antisymmetric, Transitive.
+</div>
+
+<h3>1.4 Classic Examples of Posets</h3>
+<table>
+  <tr><th>Set S</th><th>Relation &le;</th><th>Type</th></tr>
+  <tr><td>Z (integers)</td><td>Usual &le;</td><td>Total order</td></tr>
+  <tr><td>P(A) (power set of A)</td><td>&sube; (subset inclusion)</td><td>Partial order (not total in general)</td></tr>
+  <tr><td>Z<sup>+</sup> (positive integers)</td><td>Divisibility: a | b</td><td>Partial order (not total: 2 and 3 are incomparable)</td></tr>
+  <tr><td>{propositions}</td><td>Logical implication &rArr;</td><td>Preorder (not antisymmetric without equivalence classes)</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>2. Total Orders vs. Partial Orders</h2>
+<!-- ============================================================ -->
+
+<p>
+  A <strong>total order</strong> (also called a <strong>linear order</strong>) is a partial order where
+  every two elements are comparable:
+</p>
+<p><code>&forall;a, b &isin; S: a &le; b or b &le; a</code></p>
+
+<table>
+  <tr>
+    <th>Feature</th>
+    <th>Partial Order</th>
+    <th>Total Order</th>
+  </tr>
+  <tr>
+    <td>Comparability</td>
+    <td>Some pairs may be incomparable</td>
+    <td>Every pair is comparable</td>
+  </tr>
+  <tr>
+    <td>Hasse diagram shape</td>
+    <td>Can have "branches" (width &gt; 1)</td>
+    <td>Always a single chain (path)</td>
+  </tr>
+  <tr>
+    <td>Example</td>
+    <td>(P({a,b,c}), &sube;)</td>
+    <td>(Z, &le;)</td>
+  </tr>
+  <tr>
+    <td>Maximal = Greatest?</td>
+    <td>Not necessarily</td>
+    <td>Yes, always</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>3. Hasse Diagrams</h2>
+<!-- ============================================================ -->
+
+<p>
+  A <strong>Hasse diagram</strong> is a visual representation of a finite poset that removes
+  redundant information:
+</p>
+<ol>
+  <li><strong>Remove self-loops</strong> (reflexive edges).</li>
+  <li><strong>Remove transitive edges:</strong> if <code>a &le; b &le; c</code>, do not draw the edge <code>a &mdash; c</code>.</li>
+  <li><strong>Orient upward:</strong> if <code>a &le; b</code>, place <code>b</code> above <code>a</code>. No arrows needed.</li>
+</ol>
+
+<h3>Example: Divisibility on {1, 2, 3, 4, 6, 12}</h3>
+<p>The poset <code>({1, 2, 3, 4, 6, 12}, |)</code> has the following Hasse diagram:</p>
+
+<div class="mermaid">
+graph BT
+    1["1"] --> 2["2"]
+    1 --> 3["3"]
+    2 --> 4["4"]
+    2 --> 6["6"]
+    3 --> 6
+    4 --> 12["12"]
+    6 --> 12
+</div>
+
+<p>Reading the diagram: 1 divides everything (bottom). 12 is divisible by everything (top). 4 and 6 are incomparable (neither divides the other). 2 and 3 are incomparable.</p>
+
+<h3>Example: Power Set P({a, b})</h3>
+<p>The poset <code>(P({a,b}), &sube;)</code>:</p>
+
+<div class="mermaid">
+graph BT
+    E["{&empty;}"] --> A["{a}"]
+    E --> B["{b}"]
+    A --> AB["{a, b}"]
+    B --> AB
+</div>
+
+<h3>Example: Power Set P({a, b, c})</h3>
+<p>The poset <code>(P({a,b,c}), &sube;)</code>:</p>
+
+<div class="mermaid">
+graph BT
+    E["{&empty;}"] --> A["{a}"]
+    E --> B["{b}"]
+    E --> C["{c}"]
+    A --> AB["{a,b}"]
+    A --> AC["{a,c}"]
+    B --> AB
+    B --> BC["{b,c}"]
+    C --> AC
+    C --> BC
+    AB --> ABC["{a,b,c}"]
+    AC --> ABC
+    BC --> ABC
+</div>
+
+<h3>How to Read a Hasse Diagram</h3>
+<ul>
+  <li><code>a &le; b</code> if and only if there is an upward path from <code>a</code> to <code>b</code>.</li>
+  <li>Two elements are <strong>incomparable</strong> if there is no upward path between them in either direction.</li>
+  <li>A direct edge (no intermediate elements) means <code>b</code> <strong>covers</strong> <code>a</code>: <code>a &lt; b</code> and there is no <code>c</code> with <code>a &lt; c &lt; b</code>.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>4. Special Elements in Posets</h2>
+<!-- ============================================================ -->
+
+<p>Let <code>(S, &le;)</code> be a poset and <code>A &sube; S</code>.</p>
+
+<table>
+  <tr>
+    <th>Element</th>
+    <th>Definition</th>
+    <th>Uniqueness</th>
+  </tr>
+  <tr>
+    <td><strong>Maximal</strong> of S</td>
+    <td>No element in S is strictly greater: &not;&exist;b &isin; S, a &lt; b</td>
+    <td>May be multiple</td>
+  </tr>
+  <tr>
+    <td><strong>Minimal</strong> of S</td>
+    <td>No element in S is strictly less: &not;&exist;b &isin; S, b &lt; a</td>
+    <td>May be multiple</td>
+  </tr>
+  <tr>
+    <td><strong>Greatest</strong> (maximum) of S</td>
+    <td>&forall;b &isin; S, b &le; a</td>
+    <td>Unique if exists</td>
+  </tr>
+  <tr>
+    <td><strong>Least</strong> (minimum) of S</td>
+    <td>&forall;b &isin; S, a &le; b</td>
+    <td>Unique if exists</td>
+  </tr>
+  <tr>
+    <td><strong>Upper Bound</strong> of A</td>
+    <td>u &isin; S such that &forall;a &isin; A, a &le; u</td>
+    <td>May be multiple or none</td>
+  </tr>
+  <tr>
+    <td><strong>Lower Bound</strong> of A</td>
+    <td>l &isin; S such that &forall;a &isin; A, l &le; a</td>
+    <td>May be multiple or none</td>
+  </tr>
+  <tr>
+    <td><strong>LUB / Supremum / Join</strong> (a &or; b)</td>
+    <td>Least upper bound: smallest element among all upper bounds of A</td>
+    <td>Unique if exists</td>
+  </tr>
+  <tr>
+    <td><strong>GLB / Infimum / Meet</strong> (a &and; b)</td>
+    <td>Greatest lower bound: largest element among all lower bounds of A</td>
+    <td>Unique if exists</td>
+  </tr>
+</table>
+
+<div class="important">
+  <strong>Key GATE Distinction:</strong> Maximal &ne; Greatest.
+  <br />A <em>greatest</em> element must be comparable to and greater than or equal to ALL elements.
+  A <em>maximal</em> element just has nothing above it — there may be incomparable elements elsewhere.
+  <br />In a total order, maximal = greatest (if the set is finite). In a partial order, they can differ.
+</div>
+
+<h3>Worked Example</h3>
+<p>Consider the poset <code>({1, 2, 3, 4, 6, 12}, |)</code> and the subset <code>A = {2, 3}</code>.</p>
+<ul>
+  <li><strong>Upper bounds of A:</strong> Elements divisible by both 2 and 3, i.e., divisible by lcm(2,3) = 6. UB = {6, 12}.</li>
+  <li><strong>LUB (join) of A:</strong> The least element in {6, 12} under divisibility is 6. So <code>2 &or; 3 = 6</code>.</li>
+  <li><strong>Lower bounds of A:</strong> Elements that divide both 2 and 3, i.e., divisors of gcd(2,3) = 1. LB = {1}.</li>
+  <li><strong>GLB (meet) of A:</strong> The greatest element in {1} is 1. So <code>2 &and; 3 = 1</code>.</li>
+</ul>
+
+<h3>Another Example</h3>
+<p>In <code>(P({a,b,c}), &sube;)</code>, let <code>A = {{a}, {b}}</code>.</p>
+<ul>
+  <li><strong>Upper bounds:</strong> Sets containing both a and b: {{a,b}, {a,b,c}}.</li>
+  <li><strong>LUB:</strong> {a,b} (the smallest such set). So <code>{a} &or; {b} = {a, b}</code>.</li>
+  <li><strong>Lower bounds:</strong> Sets contained in both {a} and {b}: {&empty;}.</li>
+  <li><strong>GLB:</strong> &empty;. So <code>{a} &and; {b} = &empty;</code>.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>5. Chains and Antichains</h2>
+<!-- ============================================================ -->
+
+<p>
+  Let <code>(S, &le;)</code> be a poset.
+</p>
+<ul>
+  <li>A <strong>chain</strong> is a subset <code>C &sube; S</code> where every two elements in <code>C</code> are comparable. (A chain is a totally ordered subset.)</li>
+  <li>An <strong>antichain</strong> is a subset <code>A &sube; S</code> where no two distinct elements in <code>A</code> are comparable.</li>
+</ul>
+
+<h3>Example</h3>
+<p>In <code>({1, 2, 3, 4, 6, 12}, |)</code>:</p>
+<ul>
+  <li>Chain: {1, 2, 4, 12} — each divides the next.</li>
+  <li>Chain: {1, 3, 6, 12}.</li>
+  <li>Antichain: {4, 3} — 4 does not divide 3 and 3 does not divide 4.</li>
+  <li>Antichain: {4, 6, 3} — no two are related by divisibility? Actually 3 | 6, so {4, 3} is an antichain but {4, 6, 3} is not.</li>
+  <li>Maximum antichain: {4, 3} has size 2. (In fact, the width of this poset is 2.)</li>
+</ul>
+
+<h3>Dilworth's Theorem</h3>
+<p><strong>Theorem:</strong> In any finite poset, the minimum number of chains needed to partition the poset equals the maximum size of an antichain (the <em>width</em> of the poset).</p>
+
+<h3>Mirsky's Theorem</h3>
+<p><strong>Theorem:</strong> The minimum number of antichains needed to partition the poset equals the length of the longest chain (the <em>height</em> of the poset).</p>
+
+<div class="note">
+  <strong>GATE Tip:</strong> Questions on chains and antichains often ask for the length of the longest chain
+  or the size of the maximum antichain in a divisibility poset or power set poset.
+</div>
+
+<!-- ============================================================ -->
+<h2>6. Lattices</h2>
+<!-- ============================================================ -->
+
+<h3>6.1 Definition</h3>
+<p>
+  A poset <code>(L, &le;)</code> is a <strong>lattice</strong> if for every pair of elements <code>a, b &isin; L</code>,
+  both <code>a &or; b</code> (join / LUB) and <code>a &and; b</code> (meet / GLB) exist.
+</p>
+
+<div class="important">
+  <strong>Critical:</strong> For a poset to be a lattice, <em>every</em> pair must have both a join and a meet.
+  If even one pair fails, it is NOT a lattice.
+</div>
+
+<h3>6.2 Examples of Lattices</h3>
+
+<table>
+  <tr><th>Poset</th><th>Join (a &or; b)</th><th>Meet (a &and; b)</th><th>Lattice?</th></tr>
+  <tr><td>(Z, &le;)</td><td>max(a, b)</td><td>min(a, b)</td><td>Yes</td></tr>
+  <tr><td>(P(S), &sube;)</td><td>a &cup; b</td><td>a &cap; b</td><td>Yes</td></tr>
+  <tr><td>(Z<sup>+</sup>, |)</td><td>lcm(a, b)</td><td>gcd(a, b)</td><td>Yes</td></tr>
+  <tr><td>(D<sub>n</sub>, |) — divisors of n</td><td>lcm(a, b)</td><td>gcd(a, b)</td><td>Yes</td></tr>
+</table>
+
+<h3>6.3 Non-Lattice Example</h3>
+<p>Consider the poset with Hasse diagram:</p>
+
+<div class="mermaid">
+graph BT
+    A["a"] --> C["c"]
+    A --> D["d"]
+    B["b"] --> C
+    B --> D
+</div>
+
+<p>
+  Here, <code>a &or; b</code> should be the LUB of {a, b}. The upper bounds are {c, d}, but neither
+  c &le; d nor d &le; c (they are incomparable). So there is no <em>least</em> upper bound.
+  This poset is <strong>NOT a lattice</strong>.
+</p>
+
+<h3>6.4 Properties of Lattices</h3>
+<p>In any lattice <code>(L, &and;, &or;)</code>, the following hold for all <code>a, b, c &isin; L</code>:</p>
+
+<table>
+  <tr><th>Property</th><th>Meet (&and;)</th><th>Join (&or;)</th></tr>
+  <tr><td>Commutative</td><td>a &and; b = b &and; a</td><td>a &or; b = b &or; a</td></tr>
+  <tr><td>Associative</td><td>(a &and; b) &and; c = a &and; (b &and; c)</td><td>(a &or; b) &or; c = a &or; (b &or; c)</td></tr>
+  <tr><td>Idempotent</td><td>a &and; a = a</td><td>a &or; a = a</td></tr>
+  <tr><td>Absorption</td><td>a &and; (a &or; b) = a</td><td>a &or; (a &and; b) = a</td></tr>
+</table>
+
+<div class="note">
+  <strong>Absorption Laws:</strong> These are unique to lattices and are often tested.
+  They capture the idea that join and meet "absorb" each other.
+  From these four properties, you can recover the partial order: <code>a &le; b</code> iff <code>a &and; b = a</code> (equivalently, <code>a &or; b = b</code>).
+</div>
+
+<!-- ============================================================ -->
+<h2>7. Types of Lattices</h2>
+<!-- ============================================================ -->
+
+<h3>7.1 Bounded Lattice</h3>
+<p>
+  A lattice is <strong>bounded</strong> if it has a <strong>greatest element</strong> (denoted <code>1</code>)
+  and a <strong>least element</strong> (denoted <code>0</code>):
+</p>
+<ul>
+  <li><code>&forall;a: a &or; 1 = 1</code> and <code>a &and; 1 = a</code> (1 is the identity for meet)</li>
+  <li><code>&forall;a: a &and; 0 = 0</code> and <code>a &or; 0 = a</code> (0 is the identity for join)</li>
+</ul>
+<p>Every finite lattice is bounded (the join of all elements gives 1; the meet of all elements gives 0).</p>
+
+<h3>7.2 Complemented Lattice</h3>
+<p>
+  A bounded lattice is <strong>complemented</strong> if for every element <code>a</code>, there exists
+  an element <code>a'</code> (called the <strong>complement</strong>) such that:
+</p>
+<ul>
+  <li><code>a &or; a' = 1</code></li>
+  <li><code>a &and; a' = 0</code></li>
+</ul>
+
+<p><strong>Example:</strong> <code>(P(S), &sube;)</code> is complemented: the complement of <code>A</code> is <code>S \ A</code>.</p>
+<p><strong>Example:</strong> <code>(D<sub>30</sub>, |)</code> = {1, 2, 3, 5, 6, 10, 15, 30} is complemented. For instance, complement of 6 is 5 (since lcm(6,5) = 30 and gcd(6,5) = 1).</p>
+
+<div class="important">
+  <strong>Warning:</strong> In a complemented lattice, complements need not be unique (unless the
+  lattice is also distributive). In a Boolean algebra, complements are always unique.
+</div>
+
+<h3>7.3 Distributive Lattice</h3>
+<p>A lattice is <strong>distributive</strong> if for all <code>a, b, c</code>:</p>
+<ul>
+  <li><code>a &and; (b &or; c) = (a &and; b) &or; (a &and; c)</code></li>
+  <li><code>a &or; (b &and; c) = (a &or; b) &and; (a &or; c)</code></li>
+</ul>
+<p>(In a lattice, either distributive law implies the other.)</p>
+
+<h3>Characterization: When is a lattice NOT distributive?</h3>
+<p>
+  <strong>Theorem (Birkhoff):</strong> A lattice is non-distributive if and only if it contains a sublattice
+  isomorphic to one of these two:
+</p>
+
+<p><strong>N<sub>5</sub> (Pentagon):</strong></p>
+<div class="mermaid">
+graph BT
+    O["0"] --> A["a"]
+    O --> B["b"]
+    A --> C["c"]
+    C --> I["1"]
+    B --> I
+</div>
+
+<p><strong>M<sub>3</sub> (Diamond):</strong></p>
+<div class="mermaid">
+graph BT
+    O["0"] --> A["a"]
+    O --> B["b"]
+    O --> C["c"]
+    A --> I["1"]
+    B --> I
+    C --> I
+</div>
+
+<p>
+  <code>M<sub>3</sub></code> is a lattice but NOT distributive: <code>a &and; (b &or; c) = a &and; 1 = a</code>,
+  but <code>(a &and; b) &or; (a &and; c) = 0 &or; 0 = 0 &ne; a</code>.
+</p>
+
+<div class="note">
+  <strong>GATE Tip:</strong> To check if a lattice is distributive, look for sublattices isomorphic to
+  M<sub>3</sub> or N<sub>5</sub>. If neither exists, the lattice is distributive.
+  Also: in a distributive lattice, every element has at most one complement.
+</div>
+
+<h3>7.4 Summary of Lattice Types</h3>
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Requirements</th>
+    <th>Example</th>
+    <th>Key Property</th>
+  </tr>
+  <tr>
+    <td>Lattice</td>
+    <td>Every pair has join and meet</td>
+    <td>(Z, &le;)</td>
+    <td>Commutative, associative, absorption</td>
+  </tr>
+  <tr>
+    <td>Bounded</td>
+    <td>Lattice + has 0 and 1</td>
+    <td>Any finite lattice</td>
+    <td>Identity elements for join and meet</td>
+  </tr>
+  <tr>
+    <td>Complemented</td>
+    <td>Bounded + every element has a complement</td>
+    <td>(P(S), &sube;)</td>
+    <td>a &or; a' = 1, a &and; a' = 0</td>
+  </tr>
+  <tr>
+    <td>Distributive</td>
+    <td>Lattice + distributive laws hold</td>
+    <td>(D<sub>n</sub>, |) for squarefree n</td>
+    <td>No M<sub>3</sub> or N<sub>5</sub> sublattice</td>
+  </tr>
+  <tr>
+    <td>Boolean Algebra</td>
+    <td>Complemented + Distributive</td>
+    <td>(P(S), &sube;)</td>
+    <td>Unique complements; 2<sup>n</sup> elements</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>8. Boolean Algebra as a Lattice</h2>
+<!-- ============================================================ -->
+
+<h3>8.1 Definition</h3>
+<p>
+  A <strong>Boolean algebra</strong> is a complemented distributive lattice. Equivalently, it is a
+  bounded lattice <code>(B, &and;, &or;, ', 0, 1)</code> satisfying:
+</p>
+<ol>
+  <li>Commutative, associative, and absorption laws (lattice axioms).</li>
+  <li>Distributive laws: <code>a &and; (b &or; c) = (a &and; b) &or; (a &and; c)</code> and its dual.</li>
+  <li>Complement laws: <code>a &or; a' = 1</code> and <code>a &and; a' = 0</code>.</li>
+</ol>
+
+<h3>8.2 Key Theorems</h3>
+
+<p><strong>Theorem (Uniqueness of Complement):</strong> In a Boolean algebra, every element has exactly one complement.</p>
+<p><strong>Proof:</strong> Suppose <code>a</code> has two complements <code>b</code> and <code>c</code>. Then:</p>
+<pre><code>b = b ∧ 1 = b ∧ (a ∨ c) = (b ∧ a) ∨ (b ∧ c) = 0 ∨ (b ∧ c) = b ∧ c
+
+c = c ∧ 1 = c ∧ (a ∨ b) = (c ∧ a) ∨ (c ∧ b) = 0 ∨ (c ∧ b) = c ∧ b = b ∧ c
+
+Therefore b = b ∧ c = c.  ■</code></pre>
+
+<p><strong>Theorem (De Morgan's Laws):</strong> In any Boolean algebra:</p>
+<ul>
+  <li><code>(a &or; b)' = a' &and; b'</code></li>
+  <li><code>(a &and; b)' = a' &or; b'</code></li>
+</ul>
+
+<p><strong>Theorem (Involution):</strong> <code>(a')' = a</code>.</p>
+
+<h3>8.3 The Canonical Boolean Algebra</h3>
+<p>
+  The power set lattice <code>(P(S), &cup;, &cap;, complement, &empty;, S)</code> is the prototypical Boolean algebra.
+  In fact:
+</p>
+<p>
+  <strong>Stone's Representation Theorem:</strong> Every finite Boolean algebra is isomorphic to
+  <code>(P(S), &sube;)</code> for some finite set <code>S</code>. Consequently, every finite Boolean
+  algebra has <code>2<sup>n</sup></code> elements for some <code>n &ge; 0</code>.
+</p>
+
+<div class="important">
+  <strong>GATE Corollary:</strong> If a Boolean algebra has <code>k</code> elements, then
+  <code>k</code> must be a power of 2. It has exactly <code>n = log<sub>2</sub>(k)</code> atoms
+  (minimal non-zero elements).
+</div>
+
+<h3>8.4 Atoms</h3>
+<p>
+  An <strong>atom</strong> in a Boolean algebra is an element <code>a &ne; 0</code> such that there is
+  no element <code>b</code> with <code>0 &lt; b &lt; a</code>. In <code>P(S)</code>, the atoms are the
+  singleton sets <code>{x}</code> for <code>x &isin; S</code>.
+</p>
+<p>
+  Every element in a finite Boolean algebra can be uniquely expressed as the join of atoms below it.
+  This is the lattice-theoretic analogue of writing a set as the union of its singleton subsets.
+</p>
+
+<!-- ============================================================ -->
+<h2>9. Isomorphism of Lattices</h2>
+<!-- ============================================================ -->
+
+<p>
+  Two lattices <code>(L<sub>1</sub>, &le;<sub>1</sub>)</code> and <code>(L<sub>2</sub>, &le;<sub>2</sub>)</code>
+  are <strong>isomorphic</strong> if there exists a bijection <code>f: L<sub>1</sub> &rarr; L<sub>2</sub></code> such that:
+</p>
+<p><code>a &le;<sub>1</sub> b &hArr; f(a) &le;<sub>2</sub> f(b)</code></p>
+
+<p>Equivalently, <code>f</code> preserves both join and meet:</p>
+<ul>
+  <li><code>f(a &or; b) = f(a) &or; f(b)</code></li>
+  <li><code>f(a &and; b) = f(a) &and; f(b)</code></li>
+</ul>
+
+<h3>Example</h3>
+<p>
+  <code>(D<sub>6</sub>, |) = ({1, 2, 3, 6}, |)</code> is isomorphic to <code>(P({a, b}), &sube;)</code>.
+</p>
+<p>The mapping: <code>1 &rarr; &empty;</code>, <code>2 &rarr; {a}</code>, <code>3 &rarr; {b}</code>, <code>6 &rarr; {a, b}</code>.</p>
+<p>Both have the same diamond-shaped Hasse diagram:</p>
+<div class="mermaid">
+graph BT
+    Bot["1 / &empty;"] --> L["2 / {a}"]
+    Bot --> R["3 / {b}"]
+    L --> Top["6 / {a,b}"]
+    R --> Top
+</div>
+
+<h3>How to Check Isomorphism (GATE Strategy)</h3>
+<ol>
+  <li>Both lattices must have the same number of elements.</li>
+  <li>Their Hasse diagrams must have the same structure (same "shape").</li>
+  <li>Corresponding elements must preserve the order relation.</li>
+  <li>Quick checks: same number of atoms, same number of elements at each "level."</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2>10. Divisibility Lattices — Detailed Analysis</h2>
+<!-- ============================================================ -->
+
+<p>
+  The lattice <code>(D<sub>n</sub>, |)</code> of divisors of <code>n</code> is one of the most frequently
+  tested lattice structures in GATE.
+</p>
+
+<h3>When is D<sub>n</sub> a Boolean Algebra?</h3>
+<p>
+  <strong>Theorem:</strong> <code>(D<sub>n</sub>, |)</code> is a Boolean algebra if and only if
+  <code>n</code> is <strong>squarefree</strong> (i.e., <code>n</code> is a product of distinct primes).
+</p>
+<p>
+  <strong>Reason:</strong> If <code>n = p<sub>1</sub> &middot; p<sub>2</sub> &middot; &hellip; &middot; p<sub>k</sub></code>
+  (all distinct primes), then <code>D<sub>n</sub></code> is isomorphic to <code>P({p<sub>1</sub>, &hellip;, p<sub>k</sub>})</code>.
+  Each divisor corresponds to a subset of the prime factors. The number of divisors is <code>2<sup>k</sup></code>.
+</p>
+
+<h3>Examples</h3>
+<table>
+  <tr><th>n</th><th>D<sub>n</sub></th><th>|D<sub>n</sub>|</th><th>Boolean Algebra?</th><th>Reason</th></tr>
+  <tr><td>6 = 2 &middot; 3</td><td>{1, 2, 3, 6}</td><td>4 = 2&sup2;</td><td>Yes</td><td>Squarefree</td></tr>
+  <tr><td>30 = 2 &middot; 3 &middot; 5</td><td>{1,2,3,5,6,10,15,30}</td><td>8 = 2&sup3;</td><td>Yes</td><td>Squarefree</td></tr>
+  <tr><td>12 = 2&sup2; &middot; 3</td><td>{1,2,3,4,6,12}</td><td>6</td><td>No</td><td>Not squarefree; 6 &ne; 2<sup>k</sup></td></tr>
+  <tr><td>8 = 2&sup3;</td><td>{1, 2, 4, 8}</td><td>4</td><td>No</td><td>Not squarefree; D<sub>8</sub> is a chain, not distributive with complements</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>11. Important Counting Results</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Poset/Lattice</th>
+    <th>Number of Elements</th>
+    <th>Number of Atoms</th>
+    <th>Height (longest chain)</th>
+  </tr>
+  <tr>
+    <td>P(S), |S| = n</td>
+    <td>2<sup>n</sup></td>
+    <td>n (the singletons)</td>
+    <td>n + 1</td>
+  </tr>
+  <tr>
+    <td>D<sub>p<sub>1</sub>&middot;p<sub>2</sub>&middot;&hellip;&middot;p<sub>k</sub></sub></td>
+    <td>2<sup>k</sup></td>
+    <td>k (the primes)</td>
+    <td>k + 1</td>
+  </tr>
+  <tr>
+    <td>D<sub>p<sup>n</sup></sub> (prime power)</td>
+    <td>n + 1</td>
+    <td>1 (namely p)</td>
+    <td>n + 1 (a chain)</td>
+  </tr>
+  <tr>
+    <td>Boolean algebra with 2<sup>n</sup> elements</td>
+    <td>2<sup>n</sup></td>
+    <td>n</td>
+    <td>n + 1</td>
+  </tr>
+</table>
+
+<div class="note">
+  <strong>Useful for GATE:</strong> The number of elements in D<sub>n</sub> where <code>n = p<sub>1</sub><sup>a<sub>1</sub></sup> &middot; p<sub>2</sub><sup>a<sub>2</sub></sup> &middot; &hellip; &middot; p<sub>k</sub><sup>a<sub>k</sub></sup></code> is <code>(a<sub>1</sub>+1)(a<sub>2</sub>+1)&hellip;(a<sub>k</sub>+1)</code>.
+</div>
+
+<!-- ============================================================ -->
+<h2>12. Topological Sort and Linearization</h2>
+<!-- ============================================================ -->
+
+<p>
+  A <strong>topological sort</strong> (or <strong>linear extension</strong>) of a poset <code>(S, &le;)</code>
+  is a total order <code>&le;<sub>T</sub></code> on <code>S</code> that is compatible with <code>&le;</code>:
+  if <code>a &le; b</code> in the poset, then <code>a &le;<sub>T</sub> b</code> in the total order.
+</p>
+
+<p>
+  <strong>Theorem:</strong> Every finite poset has at least one linear extension. (This follows from the fact
+  that every finite poset has a minimal element — repeatedly extracting minimal elements gives a topological sort.)
+</p>
+
+<p>
+  For GATE, topological sort is more commonly encountered in the context of DAGs (directed acyclic graphs)
+  and algorithm design, but the mathematical foundation lies in poset theory.
+</p>
+
+<!-- ============================================================ -->
+<h2>13. Summary of Key Relationships</h2>
+<!-- ============================================================ -->
+
+<div class="mermaid">
+graph TD
+    PO["Partially Ordered Set (Poset)"] --> L["Lattice"]
+    L --> BL["Bounded Lattice"]
+    BL --> CL["Complemented Lattice"]
+    L --> DL["Distributive Lattice"]
+    CL --> BA["Boolean Algebra"]
+    DL --> BA
+    PO --> TO["Total Order"]
+</div>
+
+<p>
+  <strong>Boolean Algebra = Complemented + Distributive lattice.</strong>
+  Every arrow represents "is a special case of" (reading downward).
+</p>
+
+<!-- ============================================================ -->
+<h2>14. Practice Quiz</h2>
+<!-- ============================================================ -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "Lattices, Partial Orders, and Boolean Algebra Quiz",
+  "questions": [
+    {
+      "question": "Q1. Which of the following is NOT a property required for a relation to be a partial order?",
+      "options": ["(A) Reflexive", "(B) Symmetric", "(C) Antisymmetric", "(D) Transitive"],
+      "answer": 1,
+      "explanation": "A partial order must be Reflexive, Antisymmetric, and Transitive (RAT). Symmetric is NOT required — in fact, a relation that is both symmetric and antisymmetric can only relate elements to themselves. Equivalence relations are reflexive, symmetric, and transitive."
+    },
+    {
+      "question": "Q2. In the poset ({1, 2, 3, 5, 6, 10, 15, 30}, |), what is the join (LUB) of 6 and 10?",
+      "options": ["(A) 60", "(B) 30", "(C) 2", "(D) 6"],
+      "answer": 1,
+      "explanation": "The join under divisibility is the lcm. lcm(6, 10) = 30. Since 30 is in the set and 30 divides 30, the LUB is 30. Note that lcm(6,10) = 30 because 6 = 2·3 and 10 = 2·5, so lcm = 2·3·5 = 30."
+    },
+    {
+      "question": "Q3. Which of the following posets is NOT a lattice?",
+      "options": ["(A) (P({a,b}), ⊆)", "(B) (Z⁺, |) — positive integers under divisibility", "(C) A poset where two elements have two minimal upper bounds but no least upper bound", "(D) ({1, 2, 3, 6}, |)"],
+      "answer": 2,
+      "explanation": "For a poset to be a lattice, every pair must have a unique LUB and GLB. Option (C) describes a situation where the join does not exist for some pair — hence it's not a lattice. The classic example is the poset with elements {a, b, c, d} where a,b < c,d but c and d are incomparable — the pair {a,b} has no LUB. Options (A), (B), and (D) are all lattices."
+    },
+    {
+      "question": "Q4. In a Boolean algebra with 64 elements, how many atoms does it have?",
+      "options": ["(A) 6", "(B) 8", "(C) 32", "(D) 63"],
+      "answer": 0,
+      "explanation": "A finite Boolean algebra with 2^n elements has exactly n atoms. Since 64 = 2^6, there are 6 atoms. Atoms are the minimal non-zero elements; in the power set model, they correspond to singleton sets."
+    },
+    {
+      "question": "Q5. The lattice of divisors of n under divisibility is a Boolean algebra if and only if:",
+      "options": ["(A) n is a prime number", "(B) n is a perfect square", "(C) n is squarefree (product of distinct primes)", "(D) n is a power of 2"],
+      "answer": 2,
+      "explanation": "D_n is a Boolean algebra iff n is squarefree (e.g., n = 2·3·5 = 30). When n is squarefree with k distinct prime factors, D_n is isomorphic to P({p1,...,pk}) and has 2^k elements. If n has a repeated prime factor (like 12 = 2²·3), complements may not exist for all elements."
+    },
+    {
+      "question": "Q6. Consider the poset ({1, 2, 3, 4, 6, 12}, |). What are the maximal elements?",
+      "options": ["(A) {12}", "(B) {4, 6, 12}", "(C) {4, 6}", "(D) {6, 12}"],
+      "answer": 0,
+      "explanation": "A maximal element has no element strictly above it. In this poset, 12 is divisible by all others (they all divide 12), and nothing in the set is strictly above 12 (no element that 12 divides, other than itself). So 12 is the only maximal element. In fact, 12 is also the greatest element."
+    },
+    {
+      "question": "Q7. Which of the following lattices is distributive but NOT a Boolean algebra?",
+      "options": ["(A) The power set lattice P({a,b})", "(B) The chain lattice {0 < 1 < 2}", "(C) The diamond lattice M₃", "(D) D₆ = {1, 2, 3, 6} under divisibility"],
+      "answer": 1,
+      "explanation": "The chain {0 < 1 < 2} is a totally ordered set and hence trivially distributive (every total order is a distributive lattice). However, the element 1 has no complement (there's no x with 1∧x = 0 and 1∨x = 2, since 1∧0 = 0 and 1∨0 = 1 ≠ 2, and 1∧2 = 1 ≠ 0). So it is not complemented, hence not a Boolean algebra. Options (A) and (D) are Boolean algebras; (C) is not distributive."
+    },
+    {
+      "question": "Q8. In a Hasse diagram, an edge from a to b (with b above a) means:",
+      "options": ["(A) a ≤ b", "(B) b covers a: a < b and there is no c with a < c < b", "(C) a and b are incomparable", "(D) a = b"],
+      "answer": 1,
+      "explanation": "A Hasse diagram only shows covering relations. An edge from a to b (b higher) means b covers a: a < b with no intermediate element. General ≤ relations are inferred by following paths upward. Reflexive pairs (a ≤ a) and transitive edges are omitted."
+    },
+    {
+      "question": "Q9. The absorption law in a lattice states:",
+      "options": ["(A) a ∧ (a ∨ b) = b", "(B) a ∧ (a ∨ b) = a", "(C) a ∨ (a ∧ b) = b", "(D) a ∧ (b ∨ c) = (a ∧ b) ∨ (a ∧ c)"],
+      "answer": 1,
+      "explanation": "The absorption laws are: a ∧ (a ∨ b) = a and a ∨ (a ∧ b) = a. Option (B) is one of the absorption laws. Option (D) is the distributive law, which holds only in distributive lattices, not all lattices."
+    },
+    {
+      "question": "Q10. In the poset (P({1,2,3}), ⊆), what is the length of the longest chain?",
+      "options": ["(A) 3", "(B) 4", "(C) 7", "(D) 8"],
+      "answer": 1,
+      "explanation": "A chain in P({1,2,3}) is a sequence of sets where each is a proper subset of the next. The longest chain is: ∅ ⊂ {1} ⊂ {1,2} ⊂ {1,2,3}, which has 4 elements. The length of a chain with 4 elements is 4 (counting elements) or 3 (counting edges). In GATE, 'length of the longest chain' typically refers to the number of elements, which is 4. This equals n + 1 = 3 + 1 = 4."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

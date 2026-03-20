@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parallel Processing and Multiprocessor Systems — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <h1>Parallel Processing and Multiprocessor Systems</h1>
+  <p class="article-section-tag">Computer Organization</p>
+
+  <p>
+    Parallel processing is the simultaneous use of multiple processing elements to solve a problem faster
+    than possible with a single processor. This article covers the key concepts from
+    <strong>Stallings Chapters 17-18</strong>, including Flynn's taxonomy, pipelining, multiprocessor
+    architectures, cache coherence, interconnection networks, and the fundamental performance laws
+    (Amdahl's Law and Gustafson's Law).
+  </p>
+
+  <!-- ================================================================== -->
+  <h2>1. Flynn's Taxonomy</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    <strong>Michael Flynn (1966)</strong> classified computer architectures based on the number of
+    concurrent instruction streams and data streams. This remains the most widely used classification scheme.
+  </p>
+
+  <h3>1.1 The Four Categories</h3>
+
+  <table>
+    <tr>
+      <th>Category</th>
+      <th>Instruction Streams</th>
+      <th>Data Streams</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td><strong>SISD</strong></td>
+      <td>Single</td>
+      <td>Single</td>
+      <td>Conventional uniprocessor. One instruction operates on one data item at a time.</td>
+    </tr>
+    <tr>
+      <td><strong>SIMD</strong></td>
+      <td>Single</td>
+      <td>Multiple</td>
+      <td>One instruction simultaneously operates on multiple data items. Array/vector processors.</td>
+    </tr>
+    <tr>
+      <td><strong>MISD</strong></td>
+      <td>Multiple</td>
+      <td>Single</td>
+      <td>Multiple instructions operate on the same data stream. Rarely implemented; systolic arrays are sometimes classified here.</td>
+    </tr>
+    <tr>
+      <td><strong>MIMD</strong></td>
+      <td>Multiple</td>
+      <td>Multiple</td>
+      <td>Multiple processors execute different instructions on different data. Most general parallel architecture.</td>
+    </tr>
+  </table>
+
+  <div class="mermaid">
+    graph TD
+      subgraph "SISD"
+        IS1["Instruction<br>Stream"] --> PU1["Processing<br>Unit"]
+        PU1 --> DS1["Data<br>Stream"]
+      end
+      subgraph "SIMD"
+        IS2["Single<br>Instruction"] --> PU2A["PU1"]
+        IS2 --> PU2B["PU2"]
+        IS2 --> PU2C["PU3"]
+        PU2A --> DS2A["DS1"]
+        PU2B --> DS2B["DS2"]
+        PU2C --> DS2C["DS3"]
+      end
+  </div>
+
+  <h3>1.2 Examples for Each Category</h3>
+
+  <table>
+    <tr>
+      <th>Category</th>
+      <th>Examples</th>
+    </tr>
+    <tr>
+      <td><strong>SISD</strong></td>
+      <td>Traditional von Neumann machines, early microprocessors (Intel 8086), single-core CPUs without pipelining</td>
+    </tr>
+    <tr>
+      <td><strong>SIMD</strong></td>
+      <td>GPU shader cores, Intel SSE/AVX extensions, Cray-1 vector processor, array processors (ILLIAC IV), DSP processors</td>
+    </tr>
+    <tr>
+      <td><strong>MISD</strong></td>
+      <td>Rare in practice. Sometimes cited: systolic arrays, redundant fault-tolerant systems (space shuttle flight computers), pipelining (debated)</td>
+    </tr>
+    <tr>
+      <td><strong>MIMD</strong></td>
+      <td>Multi-core processors (Intel i7, AMD Ryzen), clusters, distributed systems, SMP servers, supercomputers</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>GATE Note:</strong> Pipelining is sometimes classified as MISD (multiple instructions on same
+    data in different stages) but this is debated. The standard GATE answer treats pipelining as a
+    technique within SISD, not a separate Flynn category. GPUs are classified as SIMD.
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>2. Pipelining Review</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    Pipelining is a technique where multiple instructions are overlapped in execution. Each stage of the
+    pipeline performs part of the instruction, and multiple instructions are in different stages simultaneously.
+  </p>
+
+  <h3>2.1 Instruction Pipeline</h3>
+
+  <p>A classic 5-stage instruction pipeline:</p>
+
+  <table>
+    <tr>
+      <th>Stage</th>
+      <th>Abbreviation</th>
+      <th>Function</th>
+    </tr>
+    <tr><td>1</td><td><strong>IF</strong></td><td>Instruction Fetch</td></tr>
+    <tr><td>2</td><td><strong>ID</strong></td><td>Instruction Decode / Register Read</td></tr>
+    <tr><td>3</td><td><strong>EX</strong></td><td>Execute / ALU Operation</td></tr>
+    <tr><td>4</td><td><strong>MEM</strong></td><td>Memory Access</td></tr>
+    <tr><td>5</td><td><strong>WB</strong></td><td>Write Back to Register</td></tr>
+  </table>
+
+  <h3>2.2 Pipeline Timing Diagram</h3>
+
+  <pre><code>Clock Cycle:    1    2    3    4    5    6    7    8    9
+Instruction 1: IF   ID   EX  MEM   WB
+Instruction 2:      IF   ID   EX  MEM   WB
+Instruction 3:           IF   ID   EX  MEM   WB
+Instruction 4:                IF   ID   EX  MEM   WB
+Instruction 5:                     IF   ID   EX  MEM   WB
+
+Without pipeline: 5 instructions x 5 cycles = 25 cycles
+With pipeline: 5 + (5-1) = 9 cycles
+Speedup = 25/9 = 2.78x</code></pre>
+
+  <h3>2.3 Pipeline Performance Formulas</h3>
+
+  <table>
+    <tr>
+      <th>Formula</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td><code>T_pipeline = k + (n - 1)</code> cycles</td>
+      <td>k = number of stages, n = number of instructions</td>
+    </tr>
+    <tr>
+      <td><code>T_non-pipeline = n x k</code> cycles</td>
+      <td>Sequential execution time</td>
+    </tr>
+    <tr>
+      <td><code>Speedup = (n x k) / (k + n - 1)</code></td>
+      <td>Ratio of sequential to pipelined time</td>
+    </tr>
+    <tr>
+      <td><code>Max Speedup = k</code> (as n -> infinity)</td>
+      <td>Ideal speedup equals the number of stages</td>
+    </tr>
+    <tr>
+      <td><code>Throughput = n / (k + n - 1)</code> instructions/cycle</td>
+      <td>Approaches 1 instruction/cycle for large n</td>
+    </tr>
+    <tr>
+      <td><code>Efficiency = Speedup / k = n / (k + n - 1)</code></td>
+      <td>Utilization of pipeline stages</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Formula (with stalls):</strong> If there are <em>s</em> stall cycles total, then:
+    <br><code>T_pipeline = k + (n - 1) + s</code> cycles
+    <br><code>Speedup = (n x k) / (k + n - 1 + s)</code>
+    <br>CPI for ideal pipeline = 1. With stalls: CPI = 1 + (stall cycles per instruction).
+  </div>
+
+  <h3>2.4 Pipeline Hazards</h3>
+
+  <table>
+    <tr>
+      <th>Hazard Type</th>
+      <th>Cause</th>
+      <th>Solutions</th>
+    </tr>
+    <tr>
+      <td><strong>Structural</strong></td>
+      <td>Hardware resource conflict (e.g., single memory port for both IF and MEM)</td>
+      <td>Duplicate resources, separate instruction/data memory (Harvard architecture), stalling</td>
+    </tr>
+    <tr>
+      <td><strong>Data</strong></td>
+      <td>Instruction depends on result of a previous instruction still in the pipeline</td>
+      <td>Forwarding (bypassing), stalling (pipeline bubble), reordering (compiler)</td>
+    </tr>
+    <tr>
+      <td><strong>Control</strong></td>
+      <td>Branch instruction changes the flow — next instruction is unknown until branch resolves</td>
+      <td>Branch prediction, delayed branching, branch target buffer, speculative execution</td>
+    </tr>
+  </table>
+
+  <h3>2.5 Data Hazard Types</h3>
+
+  <table>
+    <tr>
+      <th>Type</th>
+      <th>Pattern</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td><strong>RAW</strong> (Read After Write)</td>
+      <td>i: Write R1<br>j: Read R1</td>
+      <td>True dependency. j needs the value written by i. Most common and problematic.</td>
+    </tr>
+    <tr>
+      <td><strong>WAR</strong> (Write After Read)</td>
+      <td>i: Read R1<br>j: Write R1</td>
+      <td>Anti-dependency. Can occur in out-of-order execution. Solved by register renaming.</td>
+    </tr>
+    <tr>
+      <td><strong>WAW</strong> (Write After Write)</td>
+      <td>i: Write R1<br>j: Write R1</td>
+      <td>Output dependency. Can occur in out-of-order execution. Solved by register renaming.</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>GATE Tip:</strong> In a standard in-order pipeline, only RAW hazards are possible. WAR
+    and WAW hazards only arise in out-of-order (superscalar) pipelines.
+  </div>
+
+  <h3>2.6 Arithmetic Pipeline</h3>
+
+  <p>
+    Arithmetic operations like floating-point addition can be pipelined by breaking them into stages:
+  </p>
+
+  <table>
+    <tr>
+      <th>Stage</th>
+      <th>Operation (FP Addition)</th>
+    </tr>
+    <tr><td>1</td><td>Compare exponents</td></tr>
+    <tr><td>2</td><td>Align mantissas (shift smaller mantissa right)</td></tr>
+    <tr><td>3</td><td>Add/subtract mantissas</td></tr>
+    <tr><td>4</td><td>Normalize result and handle overflow/underflow</td></tr>
+  </table>
+
+  <p>
+    With a 4-stage arithmetic pipeline, a new FP addition can begin every clock cycle, even though
+    each addition takes 4 cycles to complete. Throughput = 1 result/cycle (after pipeline is full).
+  </p>
+
+  <!-- ================================================================== -->
+  <h2>3. Vector Processing</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    A <strong>vector processor</strong> operates on entire arrays (vectors) of data with a single instruction.
+    Instead of a loop that processes one element at a time, a vector instruction processes all elements
+    simultaneously (or in a pipelined fashion).
+  </p>
+
+  <h3>3.1 Scalar vs Vector Processing</h3>
+
+  <pre><code>Scalar (SISD) code to add two arrays:
+  for i = 0 to N-1:
+    C[i] = A[i] + B[i]     // N iterations, N add instructions
+
+Vector (SIMD) code:
+  VADD C, A, B             // Single instruction adds entire vectors</code></pre>
+
+  <h3>3.2 Vector Processor Characteristics</h3>
+
+  <ul>
+    <li><strong>Vector registers:</strong> Hold vectors of 64-128 elements</li>
+    <li><strong>Pipelined functional units:</strong> Arithmetic units are deeply pipelined</li>
+    <li><strong>Vector load/store:</strong> Streaming memory access for sequential data</li>
+    <li><strong>Chaining:</strong> Output of one vector operation feeds directly to the next (like forwarding)</li>
+    <li><strong>Masking:</strong> Conditional execution on individual vector elements</li>
+  </ul>
+
+  <p><strong>Vector length register (VLR):</strong> Specifies how many elements to process (for arrays
+  shorter than the vector register length).</p>
+
+  <p><strong>Vector stride:</strong> The distance between successive elements in memory. Stride = 1 means
+  consecutive elements (best for cache). Non-unit strides occur when accessing columns of a matrix
+  stored in row-major order.</p>
+
+  <div class="note">
+    <strong>Example:</strong> The Cray-1 (1976) had 8 vector registers, each holding 64 elements of 64 bits.
+    Modern CPUs include vector extensions: Intel AVX-512 operates on 512-bit (8 double) vectors.
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>4. Multiprocessor Architectures</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    Multiprocessor systems have multiple CPUs that communicate and cooperate to execute programs.
+    They are classified by how memory is organized and shared.
+  </p>
+
+  <h3>4.1 Shared Memory Multiprocessors</h3>
+
+  <p>All processors share a single global address space. Any processor can access any memory location.</p>
+
+  <h4>4.1.1 UMA (Uniform Memory Access)</h4>
+
+  <div class="mermaid">
+    graph TD
+      P1["CPU 1"] --> BUS["Shared Bus / Interconnect"]
+      P2["CPU 2"] --> BUS
+      P3["CPU 3"] --> BUS
+      P4["CPU 4"] --> BUS
+      BUS --> M["Shared<br>Main Memory"]
+  </div>
+
+  <ul>
+    <li>All processors have <strong>equal access time</strong> to all memory locations</li>
+    <li>Also called <strong>SMP (Symmetric Multiprocessor)</strong></li>
+    <li>Typically connected via a shared bus or crossbar switch</li>
+    <li>Scalability limited by bus/interconnect bandwidth</li>
+    <li>Examples: Intel multi-core desktop processors, small servers</li>
+  </ul>
+
+  <h4>4.1.2 NUMA (Non-Uniform Memory Access)</h4>
+
+  <div class="mermaid">
+    graph TD
+      subgraph "Node 1"
+        P1A["CPU 1"] --> M1["Local<br>Memory 1"]
+      end
+      subgraph "Node 2"
+        P2A["CPU 2"] --> M2["Local<br>Memory 2"]
+      end
+      M1 <--> IC["Interconnect<br>Network"]
+      M2 <--> IC
+  </div>
+
+  <ul>
+    <li>Each processor has <strong>local memory</strong> (fast access) and can access <strong>remote memory</strong> (slower)</li>
+    <li>Access time depends on whether the address is local or remote</li>
+    <li>Better scalability than UMA — each processor adds both compute and memory bandwidth</li>
+    <li>More complex programming — data placement matters for performance</li>
+    <li>Examples: AMD EPYC multi-socket servers, SGI Origin, large-scale servers</li>
+  </ul>
+
+  <h3>4.2 Distributed Memory (Message-Passing)</h3>
+
+  <div class="mermaid">
+    graph LR
+      subgraph "Node 1"
+        PA["CPU + Private Memory"]
+      end
+      subgraph "Node 2"
+        PB["CPU + Private Memory"]
+      end
+      subgraph "Node 3"
+        PC["CPU + Private Memory"]
+      end
+      PA <-->|"Messages"| NET["Interconnection<br>Network"]
+      PB <-->|"Messages"| NET
+      PC <-->|"Messages"| NET
+  </div>
+
+  <ul>
+    <li>Each processor has its own <strong>private memory</strong> — no shared address space</li>
+    <li>Processors communicate by <strong>sending and receiving messages</strong></li>
+    <li>Highly scalable — adding nodes adds both compute and memory</li>
+    <li>Programming model: MPI (Message Passing Interface)</li>
+    <li>Examples: Clusters, Beowulf systems, most supercomputers (Top500)</li>
+  </ul>
+
+  <h3>4.3 Comparison Table</h3>
+
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>UMA (SMP)</th>
+      <th>NUMA</th>
+      <th>Distributed Memory</th>
+    </tr>
+    <tr>
+      <td>Address space</td>
+      <td>Shared (uniform)</td>
+      <td>Shared (non-uniform)</td>
+      <td>Private (no sharing)</td>
+    </tr>
+    <tr>
+      <td>Memory access time</td>
+      <td>Uniform</td>
+      <td>Local fast, remote slow</td>
+      <td>Local only; remote via messages</td>
+    </tr>
+    <tr>
+      <td>Communication</td>
+      <td>Shared variables</td>
+      <td>Shared variables</td>
+      <td>Message passing</td>
+    </tr>
+    <tr>
+      <td>Scalability</td>
+      <td>Low (bus bottleneck)</td>
+      <td>Medium-High</td>
+      <td>Highest</td>
+    </tr>
+    <tr>
+      <td>Cache coherence</td>
+      <td>Required (hardware)</td>
+      <td>Required (complex)</td>
+      <td>Not needed</td>
+    </tr>
+    <tr>
+      <td>Programming ease</td>
+      <td>Easiest (shared memory)</td>
+      <td>Moderate</td>
+      <td>Most difficult</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>5. Cache Coherence</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    In a shared-memory multiprocessor, each processor typically has a private cache. When multiple caches
+    hold copies of the same memory location and one processor modifies it, the other caches may hold
+    <strong>stale (outdated) data</strong>. This is the <strong>cache coherence problem</strong>.
+  </p>
+
+  <h3>5.1 The Problem Illustrated</h3>
+
+  <pre><code>Initial state: Memory location X = 5
+  Cache of CPU 1: X = 5
+  Cache of CPU 2: X = 5
+
+CPU 1 writes: X = 10
+  Cache of CPU 1: X = 10
+  Cache of CPU 2: X = 5  (STALE!)
+  Main Memory: X = 5 or 10 (depends on write policy)
+
+If CPU 2 reads X, it gets stale value 5 instead of 10.
+This violates cache coherence.</code></pre>
+
+  <h3>5.2 Coherence Requirements</h3>
+
+  <p>A memory system is coherent if:</p>
+  <ol>
+    <li><strong>Program order:</strong> A read by processor P to location X that follows a write by P to X
+    always returns the value written by P (if no other processor writes X in between).</li>
+    <li><strong>Coherent view:</strong> A read by any processor to X eventually returns the value of the
+    last write to X by any processor.</li>
+    <li><strong>Write serialization:</strong> All writes to the same location are seen in the same order
+    by all processors.</li>
+  </ol>
+
+  <h3>5.3 Snooping Protocols</h3>
+
+  <p>
+    <strong>Snooping</strong> (bus-based) protocols require that all caches monitor (snoop on) the shared
+    bus. When one cache performs a write, all other caches observe the bus transaction and take appropriate action.
+  </p>
+
+  <h4>Write-Invalidate Protocol</h4>
+  <ul>
+    <li>When a processor writes to a shared block, it broadcasts an <strong>invalidation</strong> signal on the bus</li>
+    <li>All other caches that hold a copy of that block <strong>invalidate</strong> their copy</li>
+    <li>Subsequent reads by other processors will <strong>miss</strong> and fetch the updated value</li>
+    <li>Most common approach (used in MESI protocol)</li>
+  </ul>
+
+  <h4>Write-Update (Write-Broadcast) Protocol</h4>
+  <ul>
+    <li>When a processor writes to a shared block, the new value is <strong>broadcast</strong> to all caches</li>
+    <li>All copies are updated simultaneously</li>
+    <li>Higher bus traffic (broadcasts every write) but lower read latency (copies always up to date)</li>
+    <li>Less common in practice — Dragon protocol is an example</li>
+  </ul>
+
+  <h3>5.4 MESI Protocol</h3>
+
+  <p>
+    The <strong>MESI protocol</strong> is the most widely used snooping-based cache coherence protocol.
+    Each cache line is in one of four states:
+  </p>
+
+  <table>
+    <tr>
+      <th>State</th>
+      <th>Letter</th>
+      <th>Meaning</th>
+    </tr>
+    <tr>
+      <td><strong>Modified (M)</strong></td>
+      <td>M</td>
+      <td>Only copy, and it has been modified. Different from main memory. Must write back before eviction.</td>
+    </tr>
+    <tr>
+      <td><strong>Exclusive (E)</strong></td>
+      <td>E</td>
+      <td>Only copy, but it is clean (same as main memory). Can be written without bus transaction.</td>
+    </tr>
+    <tr>
+      <td><strong>Shared (S)</strong></td>
+      <td>S</td>
+      <td>Multiple copies may exist in different caches. All are clean. Must invalidate others before writing.</td>
+    </tr>
+    <tr>
+      <td><strong>Invalid (I)</strong></td>
+      <td>I</td>
+      <td>Cache line is not valid. Equivalent to not being in the cache.</td>
+    </tr>
+  </table>
+
+  <h3>5.5 MESI State Transitions</h3>
+
+  <div class="mermaid">
+    graph TD
+      I["Invalid (I)"] -->|"Local Read<br>(no other copy)"| E["Exclusive (E)"]
+      I -->|"Local Read<br>(other copies exist)"| S["Shared (S)"]
+      E -->|"Local Write"| M["Modified (M)"]
+      E -->|"Remote Read<br>(snoop)"| S
+      S -->|"Local Write<br>(invalidate others)"| M
+      S -->|"Remote Write<br>(snoop invalidate)"| I
+      M -->|"Remote Read<br>(snoop: write back,<br>share)"| S
+      M -->|"Eviction<br>(write back)"| I
+      E -->|"Eviction"| I
+      S -->|"Eviction"| I
+  </div>
+
+  <div class="important">
+    <strong>GATE Key Point:</strong> The Exclusive state is an optimization over the basic MSI protocol.
+    It allows a processor to write to a cache line without generating bus traffic if it is the only owner.
+    Without the E state, even a private write to a clean line would require a bus invalidation.
+  </div>
+
+  <h3>5.6 Directory-Based Coherence</h3>
+
+  <p>
+    For systems with many processors (where bus snooping does not scale), <strong>directory-based
+    protocols</strong> are used. A central directory maintains the sharing status of each memory block.
+  </p>
+
+  <table>
+    <tr>
+      <th>Aspect</th>
+      <th>Snooping</th>
+      <th>Directory-Based</th>
+    </tr>
+    <tr>
+      <td>Communication</td>
+      <td>Broadcast on shared bus</td>
+      <td>Point-to-point messages</td>
+    </tr>
+    <tr>
+      <td>Scalability</td>
+      <td>Poor (bus bandwidth limit)</td>
+      <td>Good (no broadcast)</td>
+    </tr>
+    <tr>
+      <td>Complexity</td>
+      <td>Simpler</td>
+      <td>More complex (directory storage)</td>
+    </tr>
+    <tr>
+      <td>Latency</td>
+      <td>Low (single bus transaction)</td>
+      <td>Higher (directory lookup + messages)</td>
+    </tr>
+    <tr>
+      <td>Processors</td>
+      <td>Typically &le; 16-32</td>
+      <td>Hundreds to thousands</td>
+    </tr>
+    <tr>
+      <td>Used in</td>
+      <td>SMP, multi-core desktop/server</td>
+      <td>NUMA, large-scale multiprocessors</td>
+    </tr>
+  </table>
+
+  <p>
+    The directory stores for each block: which caches have a copy (bit vector or limited pointer set)
+    and the state (uncached, shared, exclusive/modified).
+  </p>
+
+  <!-- ================================================================== -->
+  <h2>6. Interconnection Networks</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    The interconnection network connects processors to memory (and to each other). The choice of
+    network topology significantly impacts performance, cost, and scalability.
+  </p>
+
+  <h3>6.1 Shared Bus</h3>
+
+  <div class="mermaid">
+    graph LR
+      P1B["CPU 1"] --- BUS2["Shared Bus"]
+      P2B["CPU 2"] --- BUS2
+      P3B["CPU 3"] --- BUS2
+      P4B["CPU 4"] --- BUS2
+      BUS2 --- MEM["Memory"]
+  </div>
+
+  <table>
+    <tr>
+      <th>Property</th>
+      <th>Value</th>
+    </tr>
+    <tr><td>Cost</td><td>O(N) — single bus, N interfaces</td></tr>
+    <tr><td>Bandwidth</td><td>Shared — does not scale with N</td></tr>
+    <tr><td>Scalability</td><td>Poor — typically limited to 16-32 processors</td></tr>
+    <tr><td>Latency</td><td>Low (single hop)</td></tr>
+    <tr><td>Arbitration</td><td>Required — only one transfer at a time</td></tr>
+  </table>
+
+  <h3>6.2 Crossbar Switch</h3>
+
+  <div class="mermaid">
+    graph TD
+      subgraph "Crossbar N x M"
+        P1C["P1"] --> SW["Switch<br>Matrix<br>N x M"]
+        P2C["P2"] --> SW
+        P3C["P3"] --> SW
+        P4C["P4"] --> SW
+        SW --> M1C["Mem 1"]
+        SW --> M2C["Mem 2"]
+        SW --> M3C["Mem 3"]
+        SW --> M4C["Mem 4"]
+      end
+  </div>
+
+  <table>
+    <tr>
+      <th>Property</th>
+      <th>Value</th>
+    </tr>
+    <tr><td>Cost</td><td>O(N<sup>2</sup>) — N &times; M crosspoints</td></tr>
+    <tr><td>Bandwidth</td><td>Maximum — N simultaneous connections possible</td></tr>
+    <tr><td>Scalability</td><td>Poor cost-wise (quadratic growth)</td></tr>
+    <tr><td>Latency</td><td>Lowest — single switch hop</td></tr>
+    <tr><td>Blocking</td><td>Non-blocking (if each memory has one port)</td></tr>
+  </table>
+
+  <h3>6.3 Multistage Interconnection Networks (MIN)</h3>
+
+  <p>
+    MINs provide a middle ground between bus (cheap, low bandwidth) and crossbar (expensive, high bandwidth).
+    They use multiple stages of smaller switches.
+  </p>
+
+  <h4>Omega Network (Example)</h4>
+
+  <p>
+    An N-input Omega network uses <strong>log<sub>2</sub> N stages</strong> of <strong>N/2 switches</strong>
+    each (2&times;2 crossbar switches). Routing is based on the destination address bits.
+  </p>
+
+  <pre><code>8-input Omega Network:
+  Stages: log2(8) = 3 stages
+  Switches per stage: 8/2 = 4 switches (2x2 each)
+  Total switches: 3 x 4 = 12
+  Compare: crossbar needs 8 x 8 = 64 crosspoints</code></pre>
+
+  <p><strong>Routing algorithm:</strong> For destination address d<sub>n-1</sub> d<sub>n-2</sub> ... d<sub>0</sub>,
+  at stage i, if bit d<sub>i</sub> = 0, take the upper output; if d<sub>i</sub> = 1, take the lower output.</p>
+
+  <h3>6.4 Comparison of Interconnection Networks</h3>
+
+  <table>
+    <tr>
+      <th>Network</th>
+      <th>Cost (Switches)</th>
+      <th>Bandwidth</th>
+      <th>Latency</th>
+      <th>Blocking?</th>
+    </tr>
+    <tr>
+      <td>Shared Bus</td>
+      <td>O(1)</td>
+      <td>Fixed</td>
+      <td>O(1)</td>
+      <td>Yes (one at a time)</td>
+    </tr>
+    <tr>
+      <td>Crossbar</td>
+      <td>O(N<sup>2</sup>)</td>
+      <td>O(N)</td>
+      <td>O(1)</td>
+      <td>Non-blocking</td>
+    </tr>
+    <tr>
+      <td>Omega (MIN)</td>
+      <td>O(N log N)</td>
+      <td>O(N)</td>
+      <td>O(log N)</td>
+      <td>Blocking possible</td>
+    </tr>
+    <tr>
+      <td>Mesh (2D)</td>
+      <td>O(N)</td>
+      <td>O(sqrt(N))</td>
+      <td>O(sqrt(N))</td>
+      <td>Non-blocking (wormhole)</td>
+    </tr>
+    <tr>
+      <td>Hypercube</td>
+      <td>O(N log N)</td>
+      <td>O(N)</td>
+      <td>O(log N)</td>
+      <td>Non-blocking</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>GATE Formula:</strong> For an N &times; N Omega network:
+    <br>Number of stages = log<sub>2</sub> N
+    <br>Switches per stage = N/2
+    <br>Total 2&times;2 switches = (N/2) &times; log<sub>2</sub> N
+    <br>Total crosspoints = 4 &times; (N/2) &times; log<sub>2</sub> N = 2N log<sub>2</sub> N
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>7. Amdahl's Law</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    <strong>Amdahl's Law</strong> (Gene Amdahl, 1967) gives the theoretical maximum speedup when
+    parallelizing a program, given that a fraction of the program must remain sequential.
+  </p>
+
+  <h3>7.1 The Formula</h3>
+
+  <pre><code>Speedup(N) =          1
+              ─────────────────
+              (1 - f) + f / N
+
+Where:
+  f = fraction of the program that can be parallelized (0 ≤ f ≤ 1)
+  (1 - f) = fraction that must remain sequential
+  N = number of processors</code></pre>
+
+  <h3>7.2 Maximum Speedup (N -> infinity)</h3>
+
+  <pre><code>As N → ∞:  f/N → 0
+
+Speedup_max =    1
+              ───────
+              (1 - f)
+
+Example: If 95% of a program is parallelizable (f = 0.95):
+  Speedup_max = 1 / (1 - 0.95) = 1 / 0.05 = 20x
+
+No matter how many processors you add, you cannot exceed 20x speedup!</code></pre>
+
+  <h3>7.3 Worked Examples</h3>
+
+  <p><strong>Example 1:</strong> A program has 80% parallelizable code. What is the speedup with 4 processors?</p>
+  <pre><code>Speedup(4) = 1 / ((1 - 0.8) + 0.8/4)
+           = 1 / (0.2 + 0.2)
+           = 1 / 0.4
+           = 2.5x</code></pre>
+
+  <p><strong>Example 2:</strong> Same program with 16 processors:</p>
+  <pre><code>Speedup(16) = 1 / ((1 - 0.8) + 0.8/16)
+            = 1 / (0.2 + 0.05)
+            = 1 / 0.25
+            = 4x</code></pre>
+
+  <p><strong>Example 3:</strong> Maximum speedup:</p>
+  <pre><code>Speedup_max = 1 / (1 - 0.8) = 1 / 0.2 = 5x
+
+Even with infinite processors, 80% parallelizable code gives at most 5x speedup.</code></pre>
+
+  <h3>7.4 Amdahl's Law Table</h3>
+
+  <table>
+    <tr>
+      <th>Parallel Fraction (f)</th>
+      <th>N = 2</th>
+      <th>N = 4</th>
+      <th>N = 8</th>
+      <th>N = 16</th>
+      <th>N = 64</th>
+      <th>N = 256</th>
+      <th>N = inf</th>
+    </tr>
+    <tr><td>50%</td><td>1.33</td><td>1.60</td><td>1.78</td><td>1.88</td><td>1.97</td><td>1.99</td><td>2.00</td></tr>
+    <tr><td>75%</td><td>1.60</td><td>2.29</td><td>2.91</td><td>3.37</td><td>3.82</td><td>3.95</td><td>4.00</td></tr>
+    <tr><td>90%</td><td>1.82</td><td>3.08</td><td>4.71</td><td>6.40</td><td>8.77</td><td>9.63</td><td>10.00</td></tr>
+    <tr><td>95%</td><td>1.90</td><td>3.48</td><td>5.93</td><td>9.14</td><td>15.42</td><td>18.26</td><td>20.00</td></tr>
+    <tr><td>99%</td><td>1.98</td><td>3.88</td><td>7.48</td><td>13.91</td><td>39.26</td><td>72.20</td><td>100.00</td></tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Insight:</strong> Amdahl's Law shows diminishing returns. Doubling processors does
+    NOT double speedup. The sequential fraction (1 - f) becomes the dominant bottleneck as N increases.
+    This is why optimizing the sequential portion is critical.
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>8. Gustafson's Law</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    <strong>Gustafson's Law</strong> (John Gustafson, 1988) provides a more optimistic view of parallel
+    speedup by changing the assumption: instead of fixing the problem size, we fix the execution time
+    and scale the problem size with the number of processors.
+  </p>
+
+  <h3>8.1 The Formula</h3>
+
+  <pre><code>Scaled Speedup(N) = N - (1 - f) x (N - 1)
+                  = N x f + (1 - f)
+                  = 1 + (N - 1) x f
+
+Where:
+  f = fraction of parallel execution time (on N processors)
+  N = number of processors</code></pre>
+
+  <h3>8.2 Comparison: Amdahl vs Gustafson</h3>
+
+  <table>
+    <tr>
+      <th>Aspect</th>
+      <th>Amdahl's Law</th>
+      <th>Gustafson's Law</th>
+    </tr>
+    <tr>
+      <td>Assumption</td>
+      <td>Fixed problem size</td>
+      <td>Fixed execution time, scaled problem size</td>
+    </tr>
+    <tr>
+      <td>Perspective</td>
+      <td>Pessimistic (diminishing returns)</td>
+      <td>Optimistic (scalable speedup)</td>
+    </tr>
+    <tr>
+      <td>Speedup limit</td>
+      <td>1 / (1 - f) — bounded</td>
+      <td>Grows linearly with N</td>
+    </tr>
+    <tr>
+      <td>Use case</td>
+      <td>Real-time constraints (fixed deadline)</td>
+      <td>Scientific computing (larger problems)</td>
+    </tr>
+    <tr>
+      <td>Formula</td>
+      <td>1 / ((1-f) + f/N)</td>
+      <td>1 + (N-1) x f</td>
+    </tr>
+  </table>
+
+  <h3>8.3 Worked Example</h3>
+
+  <pre><code>Given: f = 0.9 (90% parallel), N = 64 processors
+
+Amdahl's Law:
+  Speedup = 1 / (0.1 + 0.9/64) = 1 / (0.1 + 0.014) = 1 / 0.114 = 8.77x
+
+Gustafson's Law:
+  Speedup = 1 + (64 - 1) x 0.9 = 1 + 56.7 = 57.7x
+
+Gustafson is much more optimistic because it assumes the problem
+size has been scaled up to keep all 64 processors busy.</code></pre>
+
+  <div class="note">
+    <strong>Key Insight:</strong> Gustafson's Law argues that in practice, when we have more processors,
+    we solve <em>bigger</em> problems (not the same problem faster). The parallel portion scales with the
+    problem size, so the sequential fraction becomes proportionally smaller. This is commonly observed in
+    scientific simulations, weather modeling, and big data processing.
+  </div>
+
+  <!-- ================================================================== -->
+  <h2>9. Symmetric Multiprocessors (SMP)</h2>
+  <!-- ================================================================== -->
+
+  <p>
+    An <strong>SMP (Symmetric Multiprocessor)</strong> is a shared-memory multiprocessor where all
+    processors are identical and have equal access to all resources (memory, I/O).
+  </p>
+
+  <h3>9.1 SMP Characteristics</h3>
+
+  <ul>
+    <li>Two or more identical processors with similar capabilities</li>
+    <li>Processors share main memory and I/O facilities through a common bus or interconnect</li>
+    <li>All processors can perform the same functions (symmetry)</li>
+    <li>Single copy of the OS manages all processors</li>
+    <li>Processors share memory with uniform access time (UMA model)</li>
+  </ul>
+
+  <h3>9.2 SMP Organization</h3>
+
+  <div class="mermaid">
+    graph TD
+      subgraph "SMP System"
+        CPU1["CPU 1<br>+ L1 Cache"] --> L2A["L2 Cache"]
+        CPU2["CPU 2<br>+ L1 Cache"] --> L2B["L2 Cache"]
+        CPU3["CPU 3<br>+ L1 Cache"] --> L2C["L2 Cache"]
+        CPU4["CPU 4<br>+ L1 Cache"] --> L2D["L2 Cache"]
+        L2A --> SBUS["System Bus<br>(Coherence Protocol)"]
+        L2B --> SBUS
+        L2C --> SBUS
+        L2D --> SBUS
+        SBUS --> MC["Memory<br>Controller"]
+        MC --> DRAM2["Main Memory<br>(DRAM)"]
+        SBUS --> IOB["I/O Bridge"]
+        IOB --> IO["I/O Devices"]
+      end
+  </div>
+
+  <h3>9.3 SMP Advantages and Challenges</h3>
+
+  <table>
+    <tr>
+      <th>Advantages</th>
+      <th>Challenges</th>
+    </tr>
+    <tr>
+      <td>Performance: multiple processors share the workload</td>
+      <td>Bus contention: bandwidth bottleneck with many processors</td>
+    </tr>
+    <tr>
+      <td>Availability: if one processor fails, others continue</td>
+      <td>Cache coherence: must ensure data consistency across caches</td>
+    </tr>
+    <tr>
+      <td>Incremental growth: add processors to scale</td>
+      <td>OS complexity: scheduler must balance load across processors</td>
+    </tr>
+    <tr>
+      <td>Scaling: well-understood programming model (shared memory, threads)</td>
+      <td>Synchronization overhead: locks, barriers, etc. limit parallelism</td>
+    </tr>
+  </table>
+
+  <h3>9.4 SMP vs Cluster</h3>
+
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>SMP</th>
+      <th>Cluster</th>
+    </tr>
+    <tr>
+      <td>Memory</td>
+      <td>Shared physical memory</td>
+      <td>Each node has private memory</td>
+    </tr>
+    <tr>
+      <td>Communication</td>
+      <td>Shared memory (fast)</td>
+      <td>Network messages (slower)</td>
+    </tr>
+    <tr>
+      <td>Single system image</td>
+      <td>Yes (one OS)</td>
+      <td>Usually no (each node has its OS)</td>
+    </tr>
+    <tr>
+      <td>Scalability</td>
+      <td>Limited (bus bandwidth)</td>
+      <td>High (add more nodes)</td>
+    </tr>
+    <tr>
+      <td>Fault tolerance</td>
+      <td>Shared components are single points of failure</td>
+      <td>Individual node failure does not crash the system</td>
+    </tr>
+    <tr>
+      <td>Cost</td>
+      <td>Higher per-unit cost</td>
+      <td>Can use commodity hardware</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>10. Summary of Key Concepts for GATE</h2>
+  <!-- ================================================================== -->
+
+  <table>
+    <tr>
+      <th>Topic</th>
+      <th>Key Formula / Fact</th>
+    </tr>
+    <tr>
+      <td>Pipeline speedup</td>
+      <td>S = nk / (k + n - 1 + s), max = k</td>
+    </tr>
+    <tr>
+      <td>Pipeline CPI</td>
+      <td>CPI = 1 + stall cycles per instruction</td>
+    </tr>
+    <tr>
+      <td>Amdahl's Law</td>
+      <td>S = 1 / ((1-f) + f/N), max = 1/(1-f)</td>
+    </tr>
+    <tr>
+      <td>Gustafson's Law</td>
+      <td>S = 1 + (N-1) x f</td>
+    </tr>
+    <tr>
+      <td>Omega network</td>
+      <td>Stages = log<sub>2</sub> N, Switches = (N/2) log<sub>2</sub> N</td>
+    </tr>
+    <tr>
+      <td>Crossbar cost</td>
+      <td>N<sup>2</sup> crosspoints for N x N</td>
+    </tr>
+    <tr>
+      <td>Flynn's SIMD</td>
+      <td>One instruction, multiple data: GPUs, vector units</td>
+    </tr>
+    <tr>
+      <td>MESI states</td>
+      <td>Modified, Exclusive, Shared, Invalid</td>
+    </tr>
+    <tr>
+      <td>RAW hazard</td>
+      <td>True dependency — only type in in-order pipeline</td>
+    </tr>
+    <tr>
+      <td>UMA vs NUMA</td>
+      <td>UMA = uniform access; NUMA = local fast, remote slow</td>
+    </tr>
+  </table>
+
+  <!-- ================================================================== -->
+  <h2>Quiz: Parallel Processing and Multiprocessor Systems</h2>
+  <!-- ================================================================== -->
+
+  <script type="application/json" class="quiz-data">
+  {
+    "title": "Parallel Processing and Multiprocessor Systems",
+    "questions": [
+      {
+        "question": "Q1. According to Flynn's taxonomy, a GPU is best classified as:",
+        "options": ["(A) SISD", "(B) SIMD", "(C) MISD", "(D) MIMD"],
+        "answer": 1,
+        "explanation": "A GPU executes the same instruction (shader program) on multiple data elements (pixels, vertices) simultaneously. This is the Single Instruction, Multiple Data (SIMD) paradigm. Modern GPUs also have MIMD aspects (multiple warps), but in Flynn's classic taxonomy, SIMD is the best fit."
+      },
+      {
+        "question": "Q2. A 5-stage pipeline processes 100 instructions. Assuming no hazards or stalls, how many clock cycles are required?",
+        "options": ["(A) 500", "(B) 104", "(C) 105", "(D) 100"],
+        "answer": 1,
+        "explanation": "With a k-stage pipeline processing n instructions: T = k + (n - 1) = 5 + (100 - 1) = 5 + 99 = 104 clock cycles. The first instruction takes 5 cycles to complete, and each subsequent instruction completes one cycle later."
+      },
+      {
+        "question": "Q3. If 90% of a program is parallelizable, what is the maximum speedup according to Amdahl's Law?",
+        "options": ["(A) 9x", "(B) 10x", "(C) 90x", "(D) Infinite"],
+        "answer": 1,
+        "explanation": "Amdahl's Law maximum speedup = 1 / (1 - f) = 1 / (1 - 0.9) = 1 / 0.1 = 10x. No matter how many processors are used, the 10% sequential portion limits the speedup to at most 10x."
+      },
+      {
+        "question": "Q4. In the MESI cache coherence protocol, the 'Exclusive' state means:",
+        "options": ["(A) The line is modified and must be written back", "(B) The line is the only cached copy and is clean (same as memory)", "(C) The line is shared among multiple caches", "(D) The line is invalid and cannot be used"],
+        "answer": 1,
+        "explanation": "The Exclusive (E) state indicates that this cache has the only copy of the line and it is clean (identical to main memory). The advantage is that the processor can transition to Modified state (write) without any bus transaction, since no other cache has a copy."
+      },
+      {
+        "question": "Q5. A program is 75% parallelizable. Using Gustafson's Law with 8 processors, the scaled speedup is:",
+        "options": ["(A) 4.0", "(B) 6.25", "(C) 3.37", "(D) 8.0"],
+        "answer": 1,
+        "explanation": "Gustafson's Law: Speedup = 1 + (N - 1) x f = 1 + (8 - 1) x 0.75 = 1 + 7 x 0.75 = 1 + 5.25 = 6.25. Note that Amdahl's Law would give 1 / (0.25 + 0.75/8) = 1 / 0.34375 = 2.91, which is much lower."
+      },
+      {
+        "question": "Q6. An 8x8 Omega network requires how many 2x2 switches?",
+        "options": ["(A) 8", "(B) 12", "(C) 16", "(D) 24"],
+        "answer": 1,
+        "explanation": "For an N-input Omega network: stages = log2(N) = log2(8) = 3. Switches per stage = N/2 = 8/2 = 4. Total switches = 3 x 4 = 12. Compare with a crossbar which would need 64 crosspoints."
+      },
+      {
+        "question": "Q7. Which type of data hazard can occur in an in-order pipeline?",
+        "options": ["(A) WAR only", "(B) WAW only", "(C) RAW only", "(D) All three (RAW, WAR, WAW)"],
+        "answer": 2,
+        "explanation": "In a standard in-order pipeline, only RAW (Read After Write) hazards can occur. WAR (Write After Read) and WAW (Write After Write) hazards require out-of-order execution to manifest, since in-order execution naturally maintains the program order of reads and writes."
+      },
+      {
+        "question": "Q8. In a NUMA multiprocessor, what determines the memory access time?",
+        "options": ["(A) The size of the cache", "(B) Whether the memory is local to the processor or remote", "(C) The clock frequency", "(D) The number of pipeline stages"],
+        "answer": 1,
+        "explanation": "In NUMA (Non-Uniform Memory Access), each processor has local memory that can be accessed quickly and remote memory (attached to other processors) that takes longer due to the interconnection network latency. This non-uniformity in access time is the defining characteristic of NUMA."
+      },
+      {
+        "question": "Q9. The cost (number of crosspoints) of an N x N crossbar switch is:",
+        "options": ["(A) O(N)", "(B) O(N log N)", "(C) O(N^2)", "(D) O(2^N)"],
+        "answer": 2,
+        "explanation": "A crossbar switch connecting N inputs to N outputs requires a switching element at each intersection point, giving N x N = N^2 crosspoints. This O(N^2) cost makes crossbar switches expensive for large N, which motivates the use of multistage networks with O(N log N) cost."
+      },
+      {
+        "question": "Q10. If a program with f = 0.8 (80% parallel) runs on 4 processors, what is the speedup by Amdahl's Law?",
+        "options": ["(A) 2.0", "(B) 2.5", "(C) 3.2", "(D) 4.0"],
+        "answer": 1,
+        "explanation": "Amdahl's Law: Speedup = 1 / ((1 - f) + f/N) = 1 / ((1 - 0.8) + 0.8/4) = 1 / (0.2 + 0.2) = 1 / 0.4 = 2.5. With 4 processors and 80% parallel code, we only get 2.5x speedup (not 4x), because the 20% sequential portion limits the improvement."
+      }
+    ]
+  }
+  </script>
+
+</article>
+</body>
+</html>

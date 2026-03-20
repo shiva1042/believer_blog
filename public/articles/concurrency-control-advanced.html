@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Concurrency Control in DBMS — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <span class="article-section-tag">Databases</span>
+  <h1>Advanced Concurrency Control in DBMS</h1>
+  <p>
+    Concurrency control is the mechanism that ensures correct results when multiple transactions execute
+    simultaneously in a database system. While basic concurrency concepts (serializability, simple locking)
+    are covered elsewhere, this article dives deep into advanced concurrency control protocols as presented
+    in Chapter 18 of Korth/Silberschatz's <em>Database System Concepts</em>. This is a heavily tested
+    topic in GATE CSE.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2>1. Review: Serializability</h2>
+  <p>
+    Before discussing concurrency control protocols, let us review the two notions of serializability.
+  </p>
+
+  <h3>1.1 Conflict Serializability</h3>
+  <p>
+    Two operations <em>conflict</em> if they are from different transactions, access the same data item,
+    and at least one of them is a write.
+  </p>
+  <table>
+    <tr>
+      <th>Operation 1</th>
+      <th>Operation 2</th>
+      <th>Conflict?</th>
+    </tr>
+    <tr><td>Read(A)</td><td>Read(A)</td><td>No (both reads)</td></tr>
+    <tr><td>Read(A)</td><td>Write(A)</td><td><strong>Yes</strong> (read-write)</td></tr>
+    <tr><td>Write(A)</td><td>Read(A)</td><td><strong>Yes</strong> (write-read)</td></tr>
+    <tr><td>Write(A)</td><td>Write(A)</td><td><strong>Yes</strong> (write-write)</td></tr>
+    <tr><td>Read(A)</td><td>Write(B)</td><td>No (different items)</td></tr>
+  </table>
+
+  <p>
+    A schedule is <strong>conflict serializable</strong> if it can be transformed into a serial schedule
+    by swapping consecutive non-conflicting operations. Equivalently, a schedule is conflict serializable
+    if and only if its <strong>precedence graph</strong> (conflict graph) is <strong>acyclic</strong>.
+  </p>
+
+  <h3>1.2 View Serializability</h3>
+  <p>
+    A schedule S is <strong>view serializable</strong> if it is view-equivalent to some serial schedule.
+    Two schedules are view-equivalent if:
+  </p>
+  <ol>
+    <li>For each data item, the same transaction performs the initial read in both schedules.</li>
+    <li>For each data item, if T<sub>i</sub> reads a value written by T<sub>j</sub> in one schedule, the same holds in the other.</li>
+    <li>For each data item, the same transaction performs the final write in both schedules.</li>
+  </ol>
+
+  <div class="note">
+    <strong>Relationship:</strong> Every conflict-serializable schedule is view-serializable, but NOT
+    vice versa. The additional view-serializable (but not conflict-serializable) schedules involve
+    <strong>blind writes</strong>. Testing for view serializability is NP-complete.
+  </div>
+
+  <div class="mermaid">
+  flowchart TB
+    A["All Schedules"] --> B["Serializable Schedules"]
+    B --> C["View Serializable"]
+    C --> D["Conflict Serializable"]
+    D --> E["Serial Schedules"]
+    style A fill:#fdecea
+    style B fill:#fef9e7
+    style C fill:#d5f5e3
+    style D fill:#d4efdf
+    style E fill:#abebc6
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>2. Lock-Based Protocols</h2>
+
+  <h3>2.1 Shared and Exclusive Locks (Recap)</h3>
+  <table>
+    <tr>
+      <th>Lock Type</th>
+      <th>Notation</th>
+      <th>Purpose</th>
+      <th>Compatibility</th>
+    </tr>
+    <tr>
+      <td>Shared (S)</td>
+      <td>lock-S(Q)</td>
+      <td>Read data item Q</td>
+      <td>Compatible with other S locks</td>
+    </tr>
+    <tr>
+      <td>Exclusive (X)</td>
+      <td>lock-X(Q)</td>
+      <td>Read and write data item Q</td>
+      <td>Not compatible with any lock</td>
+    </tr>
+  </table>
+
+  <h4>Lock Compatibility Matrix</h4>
+  <table>
+    <tr>
+      <th></th>
+      <th>S</th>
+      <th>X</th>
+    </tr>
+    <tr>
+      <td><strong>S</strong></td>
+      <td>Compatible</td>
+      <td>Not Compatible</td>
+    </tr>
+    <tr>
+      <td><strong>X</strong></td>
+      <td>Not Compatible</td>
+      <td>Not Compatible</td>
+    </tr>
+  </table>
+
+  <h3>2.2 Two-Phase Locking (2PL)</h3>
+  <p>
+    The Two-Phase Locking protocol is the most widely used locking protocol. It divides a transaction's
+    execution into two phases:
+  </p>
+  <ol>
+    <li><strong>Growing phase:</strong> The transaction may acquire locks but may not release any lock.</li>
+    <li><strong>Shrinking phase:</strong> The transaction may release locks but may not acquire any new lock.</li>
+  </ol>
+  <p>
+    The point where the transaction has acquired all its locks is called the <strong>lock point</strong>.
+  </p>
+
+  <div class="mermaid">
+  flowchart LR
+    A3["Transaction Start"] --> B3["Growing Phase: Acquire locks"]
+    B3 --> C3["Lock Point (max locks)"]
+    C3 --> D3["Shrinking Phase: Release locks"]
+    D3 --> E3["Transaction End"]
+    style C3 fill:#f1c40f
+  </div>
+
+  <div class="important">
+    <strong>2PL Guarantees:</strong> 2PL ensures <strong>conflict serializability</strong>. The serialization
+    order of transactions is determined by their lock points. However, basic 2PL does NOT prevent deadlocks,
+    and does NOT prevent cascading rollbacks.
+  </div>
+
+  <h4>2.2.1 Variants of Two-Phase Locking</h4>
+
+  <table>
+    <tr>
+      <th>Variant</th>
+      <th>Rule</th>
+      <th>Prevents Cascading Rollback?</th>
+      <th>Ensures Conflict Serializability?</th>
+    </tr>
+    <tr>
+      <td><strong>Basic 2PL</strong></td>
+      <td>Locks released in shrinking phase, possibly before commit</td>
+      <td>No</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><strong>Strict 2PL</strong></td>
+      <td>All <em>exclusive (X)</em> locks held until commit/abort</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td><strong>Rigorous 2PL</strong></td>
+      <td>ALL locks (both S and X) held until commit/abort</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>Why Strict 2PL prevents cascading rollback:</strong> Since exclusive locks are held until
+    commit, no other transaction can read data modified by an uncommitted transaction. Therefore, if a
+    transaction aborts, no other transaction has read its dirty data, so no cascading rollback is needed.
+  </div>
+
+  <h4>Worked Example: Basic 2PL Allowing Cascading Rollback</h4>
+  <div class="note">
+    <pre><code>T1:  lock-X(A)  Write(A)  unlock(A)                         abort
+T2:                            lock-S(A)  Read(A)  ...  commit?</code></pre>
+    T2 reads A after T1 releases it (shrinking phase of T1). If T1 later aborts, T2 has read a dirty
+    value and must also be rolled back &mdash; a cascading rollback. Strict 2PL prevents this because
+    T1 would hold lock-X(A) until it commits or aborts.
+  </div>
+
+  <h3>2.3 Lock Conversion (Upgrade/Downgrade)</h3>
+  <p>
+    Lock conversion allows a transaction to change the type of lock it holds on a data item:
+  </p>
+  <ul>
+    <li><strong>Upgrade:</strong> Convert a shared lock (S) to an exclusive lock (X). Allowed only
+        during the <strong>growing phase</strong>.</li>
+    <li><strong>Downgrade:</strong> Convert an exclusive lock (X) to a shared lock (S). Allowed only
+        during the <strong>shrinking phase</strong>.</li>
+  </ul>
+  <p>
+    This is useful when a transaction initially reads a data item and later decides to modify it.
+    Without lock conversion, the transaction would need to request an X lock upfront (even if it might
+    not write), reducing concurrency.
+  </p>
+
+  <h4>Lock Conversion in 2PL</h4>
+  <pre><code>Growing Phase:  lock-S(A)  lock-S(B)  upgrade(A to X)
+                  ^--- can upgrade here (still growing)
+Lock Point
+Shrinking Phase:  downgrade(A to S)  unlock(B)  unlock(A)
+                  ^--- can downgrade here (now shrinking)</code></pre>
+
+  <div class="important">
+    <strong>Deadlock Risk with Upgrades:</strong> If T1 and T2 both hold S locks on the same item
+    and both try to upgrade to X, neither can proceed (each waits for the other to release the S lock).
+    This is a form of deadlock called <strong>conversion deadlock</strong>.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>3. Graph-Based Protocols (Tree Protocol)</h2>
+  <p>
+    Graph-based protocols exploit knowledge about the order in which data items are accessed. The most
+    well-known is the <strong>tree protocol</strong>.
+  </p>
+
+  <h3>3.1 Assumptions</h3>
+  <ul>
+    <li>A partial ordering exists among the data items (forming a tree/forest).</li>
+    <li>All data items are organized in a rooted tree (e.g., B+ tree index nodes).</li>
+    <li>Only <strong>exclusive locks</strong> are used.</li>
+  </ul>
+
+  <h3>3.2 Tree Protocol Rules</h3>
+  <ol>
+    <li>The <strong>first lock</strong> by a transaction may be on <strong>any data item</strong>.</li>
+    <li>Subsequently, a data item Q can only be locked if the <strong>parent of Q</strong> is currently
+        locked by the same transaction.</li>
+    <li>Data items may be <strong>unlocked at any time</strong> (no two-phase restriction).</li>
+    <li>A data item that has been locked and unlocked by a transaction <strong>cannot be re-locked</strong>
+        by the same transaction.</li>
+  </ol>
+
+  <div class="mermaid">
+  flowchart TB
+    R["A (root)"] --> B["B"]
+    R --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
+    C --> F["F"]
+    C --> G["G"]
+  </div>
+
+  <h4>Example: Valid vs Invalid Lock Sequences</h4>
+  <table>
+    <tr>
+      <th>Sequence</th>
+      <th>Valid?</th>
+      <th>Reason</th>
+    </tr>
+    <tr>
+      <td>lock(B), lock(D), lock(E), unlock(D), unlock(B), unlock(E)</td>
+      <td>Valid</td>
+      <td>B is parent of D and E; first lock can be on any node</td>
+    </tr>
+    <tr>
+      <td>lock(A), lock(C), lock(G), unlock(A), unlock(C), unlock(G)</td>
+      <td>Valid</td>
+      <td>A is parent of C, C is parent of G</td>
+    </tr>
+    <tr>
+      <td>lock(D), lock(B)</td>
+      <td>Invalid</td>
+      <td>To lock B, its parent A must be locked (D is a child of B, not parent)</td>
+    </tr>
+    <tr>
+      <td>lock(B), unlock(B), lock(B)</td>
+      <td>Invalid</td>
+      <td>Cannot re-lock an item after unlocking it (rule 4)</td>
+    </tr>
+  </table>
+
+  <h3>3.3 Properties of Tree Protocol</h3>
+  <table>
+    <tr>
+      <th>Property</th>
+      <th>Tree Protocol</th>
+      <th>2PL</th>
+    </tr>
+    <tr>
+      <td>Conflict serializable</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Deadlock-free</td>
+      <td><strong>Yes</strong></td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Prevents cascading rollback</td>
+      <td>No</td>
+      <td>No (basic), Yes (strict/rigorous)</td>
+    </tr>
+    <tr>
+      <td>May lock unnecessary items</td>
+      <td>Yes (must lock parent to reach child)</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Recoverability</td>
+      <td>Not guaranteed (needs additional protocol)</td>
+      <td>Not guaranteed (basic), Yes (strict)</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Key Point:</strong> The tree protocol is <strong>deadlock-free</strong> but may require
+    transactions to lock data items they do not actually need (to maintain a path from an ancestor).
+    It does NOT ensure recoverability or prevent cascading rollbacks by itself.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>4. Timestamp-Based Protocols</h2>
+  <p>
+    Timestamp-based protocols assign a unique timestamp to each transaction when it begins. The
+    timestamp determines the serialization order. No locks are used, so there are <strong>no deadlocks</strong>.
+  </p>
+
+  <h3>4.1 Timestamp Ordering Protocol</h3>
+  <p>Each data item Q maintains two timestamps:</p>
+  <ul>
+    <li><strong>W-timestamp(Q):</strong> The timestamp of the youngest (latest) transaction that successfully wrote Q.</li>
+    <li><strong>R-timestamp(Q):</strong> The timestamp of the youngest transaction that successfully read Q.</li>
+  </ul>
+
+  <h4>Rules for T<sub>i</sub> with timestamp TS(T<sub>i</sub>):</h4>
+
+  <p><strong>Read(Q) by T<sub>i</sub>:</strong></p>
+  <ul>
+    <li>If <code>TS(T<sub>i</sub>) &lt; W-timestamp(Q)</code>: T<sub>i</sub> is trying to read a value that was already overwritten by a younger transaction. <strong>Reject and rollback T<sub>i</sub>.</strong></li>
+    <li>If <code>TS(T<sub>i</sub>) &ge; W-timestamp(Q)</code>: Allow the read. Set <code>R-timestamp(Q) = max(R-timestamp(Q), TS(T<sub>i</sub>))</code>.</li>
+  </ul>
+
+  <p><strong>Write(Q) by T<sub>i</sub>:</strong></p>
+  <ul>
+    <li>If <code>TS(T<sub>i</sub>) &lt; R-timestamp(Q)</code>: A younger transaction has already read the current value. T<sub>i</sub>'s write would invalidate that read. <strong>Reject and rollback T<sub>i</sub>.</strong></li>
+    <li>If <code>TS(T<sub>i</sub>) &lt; W-timestamp(Q)</code>: A younger transaction has already written Q. T<sub>i</sub>'s write is obsolete. <strong>Reject and rollback T<sub>i</sub></strong> (or apply Thomas Write Rule).</li>
+    <li>Otherwise: Allow the write. Set <code>W-timestamp(Q) = TS(T<sub>i</sub>)</code>.</li>
+  </ul>
+
+  <h3>4.2 Thomas Write Rule</h3>
+  <p>
+    The Thomas Write Rule is a modification to the basic timestamp ordering protocol that handles
+    the case where <code>TS(T<sub>i</sub>) &lt; W-timestamp(Q)</code> for a write operation.
+  </p>
+
+  <div class="important">
+    <strong>Thomas Write Rule:</strong> If <code>TS(T<sub>i</sub>) &lt; W-timestamp(Q)</code>, instead of
+    rolling back T<sub>i</sub>, simply <strong>ignore the write</strong> (suppress it) and let T<sub>i</sub>
+    continue. The rationale: T<sub>i</sub>'s write is obsolete anyway since a younger transaction has
+    already written a newer value that overwrites it.
+  </div>
+
+  <p>
+    This allows more schedules to succeed without rollback. However, the Thomas Write Rule produces
+    schedules that are <strong>view serializable</strong> but may NOT be <strong>conflict serializable</strong>
+    (because it effectively introduces a blind write skip).
+  </p>
+
+  <h4>Worked Example: Thomas Write Rule</h4>
+  <div class="note">
+    <pre><code>TS(T1) = 5,  TS(T2) = 10
+
+Schedule:
+  T2: Write(A)    --> W-timestamp(A) = 10
+  T1: Write(A)    --> TS(T1)=5 < W-timestamp(A)=10
+
+Without Thomas Write Rule: T1 is rolled back.
+With Thomas Write Rule: T1's write is simply ignored. T1 continues.
+   A retains the value written by T2.
+
+This is safe because in any serial order where T1 comes before T2,
+T2's write would overwrite T1's anyway.</code></pre>
+  </div>
+
+  <h3>4.3 Properties of Timestamp Ordering</h3>
+  <table>
+    <tr>
+      <th>Property</th>
+      <th>Basic TO</th>
+      <th>TO + Thomas Write Rule</th>
+    </tr>
+    <tr>
+      <td>Conflict serializable</td>
+      <td>Yes</td>
+      <td>Not necessarily (view serializable)</td>
+    </tr>
+    <tr>
+      <td>Deadlock-free</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Starvation possible</td>
+      <td>Yes (repeated rollbacks)</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Cascading rollback</td>
+      <td>Possible</td>
+      <td>Possible</td>
+    </tr>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>5. Validation-Based (Optimistic) Concurrency Control</h2>
+  <p>
+    Optimistic concurrency control assumes that conflicts are rare. Transactions execute without
+    acquiring locks, and validation is performed before commit to check for conflicts.
+  </p>
+
+  <h3>5.1 Three Phases</h3>
+  <ol>
+    <li><strong>Read phase:</strong> The transaction reads from the database and writes to a private
+        (local) workspace. All reads and writes are on local copies.</li>
+    <li><strong>Validation phase:</strong> The system checks whether the transaction's operations
+        conflict with other committed or validating transactions. If validation fails, the transaction
+        is rolled back.</li>
+    <li><strong>Write phase:</strong> If validation succeeds, the local copies are written to the
+        actual database. For read-only transactions, this phase is skipped.</li>
+  </ol>
+
+  <div class="mermaid">
+  flowchart LR
+    A4["Read Phase"] --> B4["Validation Phase"]
+    B4 --> C4["Write Phase"]
+    B4 -- "Fail" --> D4["Rollback &amp; Restart"]
+    style B4 fill:#fef9e7
+    style D4 fill:#fdecea
+  </div>
+
+  <h3>5.2 Validation Conditions</h3>
+  <p>
+    Each transaction T<sub>i</sub> is assigned three timestamps:
+  </p>
+  <ul>
+    <li><code>Start(T<sub>i</sub>)</code>: when T<sub>i</sub> started its read phase</li>
+    <li><code>Validation(T<sub>i</sub>)</code>: when T<sub>i</sub> entered its validation phase</li>
+    <li><code>Finish(T<sub>i</sub>)</code>: when T<sub>i</sub> finished its write phase</li>
+  </ul>
+  <p>
+    The serialization order is determined by the <code>Validation</code> timestamp. For T<sub>i</sub>
+    to be validated successfully against an earlier transaction T<sub>j</sub> (where Validation(T<sub>j</sub>) &lt; Validation(T<sub>i</sub>)),
+    one of the following must hold:
+  </p>
+  <ol>
+    <li><code>Finish(T<sub>j</sub>) &lt; Start(T<sub>i</sub>)</code>: T<sub>j</sub> completed before T<sub>i</sub> started. No overlap at all.</li>
+    <li><code>Finish(T<sub>j</sub>) &lt; Validation(T<sub>i</sub>)</code> AND the set of data items written by T<sub>j</sub> does not intersect with the set of data items read by T<sub>i</sub>.</li>
+  </ol>
+
+  <h3>5.3 When to Use Optimistic CC</h3>
+  <ul>
+    <li>When conflicts are rare (mostly read-only workloads)</li>
+    <li>When the cost of locking overhead is high relative to conflict rates</li>
+    <li>When transactions are short</li>
+  </ul>
+
+  <div class="note">
+    <strong>Disadvantages:</strong> If conflicts are frequent, many transactions will fail validation
+    and be rolled back, wasting work. Also, the write phase may require exclusive access, creating a
+    bottleneck.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>6. Multi-Version Concurrency Control (MVCC)</h2>
+  <p>
+    MVCC maintains multiple versions of each data item. When a transaction writes, a new version is
+    created rather than overwriting the old value. Readers can access an appropriate older version
+    without being blocked by writers.
+  </p>
+
+  <h3>6.1 MVCC with Timestamp Ordering</h3>
+  <p>Each version Q<sub>k</sub> of data item Q has:</p>
+  <ul>
+    <li><code>W-timestamp(Q<sub>k</sub>)</code>: timestamp of the transaction that created this version</li>
+    <li><code>R-timestamp(Q<sub>k</sub>)</code>: largest timestamp of any transaction that read this version</li>
+    <li>The data value</li>
+  </ul>
+
+  <p><strong>Read(Q) by T<sub>i</sub>:</strong> Find the version Q<sub>k</sub> with the largest W-timestamp
+     that is &le; TS(T<sub>i</sub>). Return that version's value. Update R-timestamp(Q<sub>k</sub>) if needed.
+     <strong>Reads are never rejected.</strong></p>
+
+  <p><strong>Write(Q) by T<sub>i</sub>:</strong> Let Q<sub>k</sub> be the version with the largest
+     W-timestamp &le; TS(T<sub>i</sub>).</p>
+  <ul>
+    <li>If <code>TS(T<sub>i</sub>) &lt; R-timestamp(Q<sub>k</sub>)</code>: Rollback T<sub>i</sub>
+        (a younger transaction has already read this version).</li>
+    <li>If <code>TS(T<sub>i</sub>) = W-timestamp(Q<sub>k</sub>)</code>: Overwrite Q<sub>k</sub>'s value.</li>
+    <li>Otherwise: Create a new version with W-timestamp = TS(T<sub>i</sub>).</li>
+  </ul>
+
+  <h3>6.2 MVCC with 2PL (Snapshot Isolation)</h3>
+  <p>
+    A common practical approach (used in PostgreSQL, Oracle, etc.):
+  </p>
+  <ul>
+    <li>Each transaction sees a <strong>snapshot</strong> of the database as of its start time.</li>
+    <li>Writes create new versions; reads always see the snapshot (never blocked by writers).</li>
+    <li>At commit time, check for <strong>write-write conflicts</strong>: if another committed
+        transaction wrote the same item after this transaction's snapshot, abort (first-committer-wins).</li>
+  </ul>
+
+  <div class="important">
+    <strong>Key Advantage of MVCC:</strong> Readers never block writers, and writers never block readers.
+    This provides significantly higher concurrency than lock-based approaches for read-heavy workloads.<br><br>
+    <strong>GATE Note:</strong> Snapshot isolation does NOT guarantee serializability. It prevents dirty
+    reads, non-repeatable reads, and phantom reads, but can allow <strong>write skew anomalies</strong>.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>7. Multiple Granularity Locking</h2>
+  <p>
+    In practice, data items can be locked at different levels of granularity: the entire database, a
+    table, a page, or a single tuple. Fine granularity (tuple-level) allows more concurrency but has
+    higher overhead. Coarse granularity (table-level) has lower overhead but less concurrency.
+  </p>
+
+  <h3>7.1 Granularity Hierarchy</h3>
+  <div class="mermaid">
+  flowchart TB
+    DB["Database"] --> T1A["Table A"]
+    DB --> T2A["Table B"]
+    T1A --> P1["Page 1"]
+    T1A --> P2["Page 2"]
+    P1 --> R1["Tuple 1"]
+    P1 --> R2["Tuple 2"]
+    P2 --> R3["Tuple 3"]
+    P2 --> R4["Tuple 4"]
+  </div>
+
+  <h3>7.2 Intention Locks</h3>
+  <p>
+    To efficiently support multiple granularity, we introduce <strong>intention locks</strong>. Before
+    locking a node at a fine granularity, a transaction must acquire appropriate intention locks on all
+    ancestor nodes.
+  </p>
+
+  <table>
+    <tr>
+      <th>Lock Type</th>
+      <th>Notation</th>
+      <th>Meaning</th>
+    </tr>
+    <tr>
+      <td>Intention-Shared</td>
+      <td><strong>IS</strong></td>
+      <td>The transaction intends to acquire S locks on some descendant nodes</td>
+    </tr>
+    <tr>
+      <td>Intention-Exclusive</td>
+      <td><strong>IX</strong></td>
+      <td>The transaction intends to acquire X locks on some descendant nodes</td>
+    </tr>
+    <tr>
+      <td>Shared + Intention-Exclusive</td>
+      <td><strong>SIX</strong></td>
+      <td>The node is locked in S mode AND the transaction intends to acquire X locks on some descendants (S + IX)</td>
+    </tr>
+  </table>
+
+  <h3>7.3 Lock Compatibility Matrix (with Intention Locks)</h3>
+  <table>
+    <tr>
+      <th></th>
+      <th>IS</th>
+      <th>IX</th>
+      <th>S</th>
+      <th>SIX</th>
+      <th>X</th>
+    </tr>
+    <tr>
+      <td><strong>IS</strong></td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><strong>IX</strong></td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><strong>S</strong></td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><strong>SIX</strong></td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><strong>X</strong></td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Favorite:</strong> The multiple granularity lock compatibility matrix is a frequently
+    tested topic. Memorize it. A useful pattern: IS is most compatible, X is least compatible. SIX
+    is compatible only with IS.
+  </div>
+
+  <h3>7.4 Locking Rules</h3>
+  <ol>
+    <li>Lock compatibility must be checked before granting a lock.</li>
+    <li>The <strong>root of the tree must be locked first</strong> (in any mode).</li>
+    <li>A node can be locked in <strong>S or IS</strong> mode only if the parent is locked in <strong>IS or IX</strong> mode.</li>
+    <li>A node can be locked in <strong>X, IX, or SIX</strong> mode only if the parent is locked in <strong>IX or SIX</strong> mode.</li>
+    <li>A transaction can lock a node only if it has not previously unlocked any node (2PL is observed).</li>
+    <li>A transaction can unlock a node only if none of its children are currently locked by the transaction.</li>
+  </ol>
+
+  <h4>Example: Using Intention Locks</h4>
+  <div class="note">
+    <strong>Scenario:</strong> T1 wants to read all of Table A. T2 wants to update Tuple 3 in Page 2 of Table A.
+    <pre><code>T1: lock-IS(Database) -> lock-S(Table A)     [read all of Table A]
+T2: lock-IX(Database) -> lock-IX(Table A) -> lock-IX(Page 2) -> lock-X(Tuple 3)
+
+Can T1 and T2 proceed concurrently?
+- Database: T1 has IS, T2 wants IX -> Compatible? Yes (IS-IX = Yes)
+- Table A: T1 has S, T2 wants IX -> Compatible? No (S-IX = No)
+- T2 must WAIT for T1 to release its S lock on Table A.
+
+Alternative: If T1 also locked at tuple level:
+T1: lock-IS(Database) -> lock-IS(Table A) -> lock-IS(Page 1) -> lock-S(Tuple 1), lock-S(Tuple 2)
+                                           -> lock-IS(Page 2) -> lock-S(Tuple 3), lock-S(Tuple 4)
+Now at Table A: T1 has IS, T2 wants IX -> Compatible? Yes!
+But at Page 2: T1 has IS, T2 wants IX -> Compatible? Yes!
+But at Tuple 3: T1 has S, T2 wants X -> Not compatible. T2 waits for Tuple 3 only.</code></pre>
+    This shows how finer granularity locking increases concurrency.
+  </div>
+
+  <h3>7.5 Lock Escalation</h3>
+  <p>
+    Lock escalation is a technique to dynamically adjust lock granularity. When a transaction acquires
+    many fine-grained locks on the same object, the system may <strong>escalate</strong> these to a
+    single coarser-grained lock to reduce lock management overhead.
+  </p>
+  <ul>
+    <li>Example: If a transaction holds S locks on 80% of the tuples in a table, escalate to a single S lock on the entire table.</li>
+    <li>The threshold for escalation is typically configurable.</li>
+    <li>Escalation reduces lock overhead but may decrease concurrency.</li>
+  </ul>
+
+  <!-- ============================================================ -->
+  <h2>8. Deadlock in Databases</h2>
+  <p>
+    Deadlock occurs when two or more transactions are waiting for each other to release locks, creating
+    a cycle of dependencies.
+  </p>
+
+  <h3>8.1 Deadlock Prevention</h3>
+  <p>
+    Deadlock prevention schemes use transaction timestamps to decide which transaction should be
+    rolled back when a conflict arises. Let T<sub>i</sub> request a lock held by T<sub>j</sub>.
+  </p>
+
+  <h4>Wait-Die Scheme (Non-preemptive)</h4>
+  <ul>
+    <li>If T<sub>i</sub> is <strong>older</strong> than T<sub>j</sub> (TS(T<sub>i</sub>) &lt; TS(T<sub>j</sub>)): T<sub>i</sub> <strong>waits</strong>.</li>
+    <li>If T<sub>i</sub> is <strong>younger</strong> than T<sub>j</sub>: T<sub>i</sub> <strong>dies</strong> (is rolled back).</li>
+    <li><strong>Mnemonic:</strong> "Old waits for young; young dies."</li>
+  </ul>
+
+  <h4>Wound-Wait Scheme (Preemptive)</h4>
+  <ul>
+    <li>If T<sub>i</sub> is <strong>older</strong> than T<sub>j</sub>: T<sub>i</sub> <strong>wounds</strong> T<sub>j</sub> (forces T<sub>j</sub> to roll back).</li>
+    <li>If T<sub>i</sub> is <strong>younger</strong> than T<sub>j</sub>: T<sub>i</sub> <strong>waits</strong>.</li>
+    <li><strong>Mnemonic:</strong> "Old wounds young; young waits for old."</li>
+  </ul>
+
+  <table>
+    <tr>
+      <th>Scheme</th>
+      <th>T<sub>i</sub> older than T<sub>j</sub></th>
+      <th>T<sub>i</sub> younger than T<sub>j</sub></th>
+      <th>Type</th>
+    </tr>
+    <tr>
+      <td><strong>Wait-Die</strong></td>
+      <td>T<sub>i</sub> waits</td>
+      <td>T<sub>i</sub> dies (rolls back)</td>
+      <td>Non-preemptive</td>
+    </tr>
+    <tr>
+      <td><strong>Wound-Wait</strong></td>
+      <td>T<sub>j</sub> is wounded (rolls back)</td>
+      <td>T<sub>i</sub> waits</td>
+      <td>Preemptive</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Tip:</strong> In both schemes, when a rolled-back transaction is restarted, it retains
+    its <strong>original timestamp</strong>. This prevents starvation: as time passes, a repeatedly
+    rolled-back transaction becomes the oldest and will eventually be allowed to complete.
+  </div>
+
+  <h4>Worked Example: Wait-Die and Wound-Wait</h4>
+  <div class="note">
+    <strong>Given:</strong> TS(T1) = 5 (older), TS(T2) = 10 (younger). T2 holds a lock on item A.
+    T1 requests a conflicting lock on A.<br><br>
+
+    <strong>Wait-Die:</strong> T1 is older than T2, so T1 <strong>waits</strong> for T2.<br>
+    <strong>Wound-Wait:</strong> T1 is older than T2, so T1 <strong>wounds</strong> T2 (T2 is rolled back and T1 gets the lock).<br><br>
+
+    Now suppose T2 requests a conflicting lock on item B held by T1:<br>
+    <strong>Wait-Die:</strong> T2 is younger than T1, so T2 <strong>dies</strong> (T2 is rolled back).<br>
+    <strong>Wound-Wait:</strong> T2 is younger than T1, so T2 <strong>waits</strong> for T1.
+  </div>
+
+  <h3>8.2 Deadlock Detection: Wait-For Graph</h3>
+  <p>
+    Instead of preventing deadlocks, the system can allow them to occur and then detect and resolve them.
+  </p>
+  <ul>
+    <li>Maintain a <strong>wait-for graph</strong>: nodes are transactions, edge T<sub>i</sub> &rarr; T<sub>j</sub>
+        means T<sub>i</sub> is waiting for T<sub>j</sub> to release a lock.</li>
+    <li>Deadlock exists if and only if the wait-for graph contains a <strong>cycle</strong>.</li>
+    <li>The system periodically checks for cycles (or checks whenever a new edge is added).</li>
+    <li>When a cycle is found, a <strong>victim</strong> transaction is chosen and rolled back to break the cycle.</li>
+  </ul>
+
+  <h4>Victim Selection Criteria</h4>
+  <ul>
+    <li>How much work the transaction has already done</li>
+    <li>How much work remains</li>
+    <li>Number of cycles the transaction is involved in</li>
+    <li>Minimize total cost of rollback</li>
+    <li>Starvation prevention: do not always choose the same transaction as victim</li>
+  </ul>
+
+  <div class="mermaid">
+  flowchart LR
+    T1_2["T1"] --> T2_2["T2"]
+    T2_2 --> T3_2["T3"]
+    T3_2 --> T1_2
+    style T1_2 fill:#fdecea
+    style T2_2 fill:#fef9e7
+    style T3_2 fill:#d5f5e3
+  </div>
+  <p style="text-align:center"><em>Wait-for graph with cycle: T1 &rarr; T2 &rarr; T3 &rarr; T1 (deadlock detected)</em></p>
+
+  <h3>8.3 Timeout-Based Deadlock Detection</h3>
+  <p>
+    A simpler approach: if a transaction has been waiting for a lock for longer than a predefined
+    <strong>timeout</strong> period, assume deadlock and roll it back.
+  </p>
+  <ul>
+    <li><strong>Advantage:</strong> Simple to implement, no overhead of maintaining wait-for graph.</li>
+    <li><strong>Disadvantage:</strong> May cause unnecessary rollbacks (false positives) if timeout is
+        too short. May detect deadlocks late if timeout is too long.</li>
+  </ul>
+
+  <!-- ============================================================ -->
+  <h2>9. Phantom Problem and Predicate Locking</h2>
+
+  <h3>9.1 The Phantom Problem</h3>
+  <p>
+    The phantom problem occurs when a transaction reads a set of tuples satisfying some condition, and
+    another transaction inserts a new tuple that also satisfies the condition. The first transaction,
+    if it re-reads, sees a "phantom" tuple that was not there before.
+  </p>
+
+  <div class="note">
+    <strong>Example:</strong>
+    <pre><code>T1: SELECT COUNT(*) FROM student WHERE dept = 'CS'  --> returns 100
+T2: INSERT INTO student VALUES (..., 'CS', ...)     --> inserts new CS student
+T2: COMMIT
+T1: SELECT COUNT(*) FROM student WHERE dept = 'CS'  --> returns 101  (PHANTOM!)</code></pre>
+    Standard row-level locking does not prevent this because the new row did not exist when T1 acquired
+    its locks.
+  </div>
+
+  <h3>9.2 Predicate Locking</h3>
+  <p>
+    Predicate locking locks all tuples (existing and future) that satisfy a given predicate. For example,
+    <code>lock-S(dept = 'CS')</code> locks all current and future CS students.
+  </p>
+  <ul>
+    <li>Prevents the phantom problem because an insert that satisfies the predicate would conflict
+        with the predicate lock.</li>
+    <li><strong>Problem:</strong> Predicate locking is extremely expensive to implement because checking
+        whether two predicates conflict (overlap) is computationally hard in general.</li>
+  </ul>
+
+  <h3>9.3 Index Locking (Practical Solution)</h3>
+  <p>
+    A practical approximation to predicate locking: lock the <strong>index entries</strong> or
+    <strong>index leaf pages</strong> that correspond to the predicate.
+  </p>
+  <ul>
+    <li>If T1 reads using an index on <em>dept</em>, it locks the index leaf node for 'CS'.</li>
+    <li>T2's insert must update the same index leaf node, so it conflicts with T1's lock.</li>
+    <li>If no suitable index exists, the system may lock the entire table (very conservative).</li>
+  </ul>
+
+  <h3>9.4 Next-Key Locking</h3>
+  <p>
+    Used in some systems (e.g., InnoDB in MySQL). Locks the gaps between index entries in addition to
+    the entries themselves. This prevents insertion of new records that would fall in the locked range.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2>10. Comparison Table of All Concurrency Control Protocols</h2>
+
+  <table>
+    <tr>
+      <th>Protocol</th>
+      <th>Mechanism</th>
+      <th>Serializable?</th>
+      <th>Deadlock-Free?</th>
+      <th>Cascadeless?</th>
+      <th>Starvation-Free?</th>
+    </tr>
+    <tr>
+      <td>Basic 2PL</td>
+      <td>Locks (S/X)</td>
+      <td>Conflict</td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Strict 2PL</td>
+      <td>Locks (hold X till commit)</td>
+      <td>Conflict</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Rigorous 2PL</td>
+      <td>Locks (hold all till commit)</td>
+      <td>Conflict</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Tree Protocol</td>
+      <td>Locks on tree structure</td>
+      <td>Conflict</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Basic Timestamp</td>
+      <td>Timestamps</td>
+      <td>Conflict</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Thomas Write Rule</td>
+      <td>Timestamps</td>
+      <td>View</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Validation-Based</td>
+      <td>Timestamps + validation</td>
+      <td>Conflict</td>
+      <td>Yes</td>
+      <td>Yes (if done right)</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>MVCC (TO-based)</td>
+      <td>Versions + timestamps</td>
+      <td>Conflict</td>
+      <td>Yes</td>
+      <td>Yes (reads never wait)</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>Snapshot Isolation</td>
+      <td>Versions + first-committer</td>
+      <td>No (write skew)</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>No</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Master Table:</strong> This comparison table is essential. Key things to remember:
+    <ul>
+      <li>All lock-based protocols can have deadlocks (except tree protocol).</li>
+      <li>All timestamp-based protocols are deadlock-free but may have starvation.</li>
+      <li>Thomas Write Rule gives view serializability, not conflict serializability.</li>
+      <li>Strict/Rigorous 2PL prevents cascading rollbacks; basic 2PL does not.</li>
+      <li>Snapshot isolation is NOT serializable (write skew anomaly).</li>
+    </ul>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>11. Worked Examples</h2>
+
+  <h3>Example 1: Precedence Graph for Conflict Serializability</h3>
+  <div class="note">
+    <strong>Schedule S:</strong>
+    <pre><code>T1: R(A)        W(A)             R(B)  W(B)
+T2:      R(A)        W(A)  R(B)
+T3:                               W(A)        W(B)</code></pre>
+
+    <strong>Conflicts:</strong>
+    <ul>
+      <li>T1 R(A) before T2 W(A): T1 &rarr; T2</li>
+      <li>T1 W(A) before T2 R(A): T1 &rarr; T2</li>
+      <li>T1 W(A) before T2 W(A): T1 &rarr; T2</li>
+      <li>T1 W(A) before T3 W(A): T1 &rarr; T3</li>
+      <li>T2 W(A) before T3 W(A): T2 &rarr; T3</li>
+      <li>T2 R(B) before T1 W(B): T2 &rarr; T1</li>
+      <li>T2 R(B) before T3 W(B): T2 &rarr; T3</li>
+      <li>T1 R(B) before T3 W(B): T1 &rarr; T3</li>
+      <li>T1 W(B) before T3 W(B): T1 &rarr; T3</li>
+    </ul>
+
+    <strong>Precedence graph edges:</strong> T1 &rarr; T2, T2 &rarr; T1, T1 &rarr; T3, T2 &rarr; T3<br>
+    <strong>Cycle:</strong> T1 &rarr; T2 &rarr; T1<br>
+    <strong>Conclusion:</strong> NOT conflict serializable.
+  </div>
+
+  <h3>Example 2: 2PL Schedule Construction</h3>
+  <div class="note">
+    <strong>Task:</strong> Show a Strict 2PL schedule for:<br>
+    T1: R(A), W(A), R(B), W(B)<br>
+    T2: R(A), R(B), W(B)
+
+    <pre><code>T1: lock-X(A) R(A) W(A)                    lock-X(B) R(B) W(B) commit unlock(A) unlock(B)
+T2:                     lock-S(A) R(A)  ... WAIT ...                      lock-S(B)? WAIT...</code></pre>
+
+    With Strict 2PL, T1 holds lock-X(A) until commit. T2 cannot get lock-S(A) until T1 commits.
+    After T1 commits and releases all locks:
+    <pre><code>T2: lock-S(A) R(A) lock-S(B) R(B) lock-X(B)? upgrade(B to X) W(B) commit unlock(A) unlock(B)</code></pre>
+
+    Note: T2 needs to upgrade its S lock on B to X for the write. Since T2 is the only holder of S(B)
+    at that point, the upgrade succeeds.
+  </div>
+
+  <h3>Example 3: Timestamp Ordering</h3>
+  <div class="note">
+    <strong>Given:</strong> TS(T1) = 1, TS(T2) = 2, TS(T3) = 3.<br>
+    Initially: R-timestamp(A) = 0, W-timestamp(A) = 0.
+
+    <pre><code>1. T1: Read(A)   -- TS(T1)=1 >= W-ts(A)=0? Yes. Read allowed. R-ts(A) = 1
+2. T3: Write(A)  -- TS(T3)=3 >= R-ts(A)=1? Yes. TS(T3)=3 >= W-ts(A)=0? Yes. Write allowed. W-ts(A) = 3
+3. T2: Read(A)   -- TS(T2)=2 >= W-ts(A)=3? NO (2 < 3). T2 is ROLLED BACK.
+4. T1: Write(A)  -- TS(T1)=1 >= R-ts(A)=1? Yes. TS(T1)=1 >= W-ts(A)=3? NO (1 < 3).
+                    Without Thomas Write Rule: T1 is ROLLED BACK.
+                    With Thomas Write Rule: Write is IGNORED, T1 continues.</code></pre>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>12. Summary of Key Points for GATE</h2>
+  <ul>
+    <li><strong>2PL</strong> ensures conflict serializability. Strict 2PL also prevents cascading rollbacks.</li>
+    <li><strong>Tree protocol</strong> is deadlock-free but may require locking unnecessary items.</li>
+    <li><strong>Timestamp ordering</strong> is deadlock-free; the Thomas Write Rule allows ignoring obsolete writes (gives view serializability).</li>
+    <li><strong>Validation-based CC</strong> works well for low-conflict workloads (3 phases: read, validate, write).</li>
+    <li><strong>MVCC</strong> allows readers and writers to not block each other by maintaining multiple versions.</li>
+    <li><strong>Multiple granularity:</strong> Know the IS/IX/SIX/S/X compatibility matrix cold.</li>
+    <li><strong>Deadlock:</strong> Wait-Die (old waits, young dies), Wound-Wait (old wounds young, young waits). Both prevent starvation by preserving original timestamps.</li>
+    <li><strong>Phantom problem:</strong> Solved by predicate locking (theoretical) or index locking/next-key locking (practical).</li>
+  </ul>
+
+  <!-- ============================================================ -->
+  <h2>Quiz: Advanced Concurrency Control</h2>
+
+  <script type="application/json" class="quiz-data">
+  {
+    "title": "Advanced Concurrency Control Quiz",
+    "questions": [
+      {
+        "question": "Q1. In the Wait-Die deadlock prevention scheme, if an older transaction T1 requests a lock held by a younger transaction T2, what happens?",
+        "options": [
+          "(A) T1 is rolled back",
+          "(B) T2 is rolled back",
+          "(C) T1 waits for T2",
+          "(D) Both are rolled back"
+        ],
+        "answer": 2,
+        "explanation": "In Wait-Die, older transactions wait for younger ones. T1 is older, so T1 waits for T2. If T1 were younger, T1 would die (be rolled back)."
+      },
+      {
+        "question": "Q2. Which variant of 2PL prevents cascading rollbacks?",
+        "options": [
+          "(A) Basic 2PL only",
+          "(B) Strict 2PL and Rigorous 2PL",
+          "(C) All variants of 2PL",
+          "(D) None of them"
+        ],
+        "answer": 1,
+        "explanation": "Strict 2PL holds all exclusive locks until commit/abort, and Rigorous 2PL holds ALL locks until commit/abort. Both prevent cascading rollbacks because no transaction can read uncommitted data. Basic 2PL may release locks before commit, allowing cascading rollbacks."
+      },
+      {
+        "question": "Q3. The Thomas Write Rule modifies the timestamp ordering protocol by:",
+        "options": [
+          "(A) Rolling back transactions that attempt to write obsolete values",
+          "(B) Ignoring (suppressing) obsolete writes instead of rolling back the transaction",
+          "(C) Assigning new timestamps to conflicting transactions",
+          "(D) Converting write operations to read operations"
+        ],
+        "answer": 1,
+        "explanation": "When TS(Ti) < W-timestamp(Q), instead of rolling back Ti, the Thomas Write Rule simply ignores Ti's write (since a younger transaction has already written a newer value). Ti continues with its other operations."
+      },
+      {
+        "question": "Q4. In the multiple granularity locking compatibility matrix, which lock type is compatible with SIX?",
+        "options": [
+          "(A) S",
+          "(B) IX",
+          "(C) IS",
+          "(D) X"
+        ],
+        "answer": 2,
+        "explanation": "SIX (S + IX) is compatible only with IS. It is not compatible with S, IX, SIX, or X. This is because SIX means the node is read-locked AND there are intended exclusive locks on descendants."
+      },
+      {
+        "question": "Q5. The tree protocol guarantees which of the following?",
+        "options": [
+          "(A) Freedom from deadlock and cascading rollbacks",
+          "(B) Conflict serializability and freedom from deadlock",
+          "(C) View serializability only",
+          "(D) Conflict serializability and cascadelessness"
+        ],
+        "answer": 1,
+        "explanation": "The tree protocol guarantees conflict serializability and is deadlock-free. However, it does NOT prevent cascading rollbacks (a transaction may release locks on items that other transactions then read before the first transaction commits)."
+      },
+      {
+        "question": "Q6. In validation-based concurrency control, a transaction is rolled back if:",
+        "options": [
+          "(A) It takes too long to execute",
+          "(B) It conflicts with any other active transaction during the read phase",
+          "(C) Its read set overlaps with the write set of a concurrent committed transaction",
+          "(D) It acquires too many locks"
+        ],
+        "answer": 2,
+        "explanation": "During validation, the system checks if the transaction's read set overlaps with the write set of any concurrently executing transaction that committed. If there is an overlap, the validating transaction may have read stale data and is rolled back."
+      },
+      {
+        "question": "Q7. The phantom problem in databases refers to:",
+        "options": [
+          "(A) A transaction reading data that was never committed",
+          "(B) New tuples appearing in a repeated query due to another transaction's insert",
+          "(C) A deadlock involving more than two transactions",
+          "(D) Lost updates due to concurrent writes"
+        ],
+        "answer": 1,
+        "explanation": "The phantom problem occurs when a transaction re-executes a query and finds new 'phantom' tuples that were inserted by another transaction after the first execution. Standard row-level locking cannot prevent this."
+      },
+      {
+        "question": "Q8. MVCC's key advantage over traditional locking is:",
+        "options": [
+          "(A) It prevents all anomalies including write skew",
+          "(B) Readers never block writers and writers never block readers",
+          "(C) It eliminates the need for any form of concurrency control",
+          "(D) It uses less storage than locking"
+        ],
+        "answer": 1,
+        "explanation": "MVCC maintains multiple versions of data items, allowing readers to access an appropriate older version while writers create new versions. This means reads and writes on the same item do not block each other, significantly improving concurrency."
+      },
+      {
+        "question": "Q9. A schedule produced using the Thomas Write Rule is guaranteed to be:",
+        "options": [
+          "(A) Conflict serializable",
+          "(B) View serializable",
+          "(C) Both conflict and view serializable",
+          "(D) Neither conflict nor view serializable"
+        ],
+        "answer": 1,
+        "explanation": "The Thomas Write Rule allows ignoring obsolete writes, which effectively introduces blind-write-like behavior. The resulting schedules are view serializable but may NOT be conflict serializable (because the suppressed write changes the conflict structure)."
+      },
+      {
+        "question": "Q10. In the Wound-Wait scheme, if a younger transaction T2 requests a lock held by an older transaction T1, what happens?",
+        "options": [
+          "(A) T2 wounds T1 (T1 is rolled back)",
+          "(B) T2 dies (is rolled back)",
+          "(C) T2 waits for T1",
+          "(D) Both transactions are aborted"
+        ],
+        "answer": 2,
+        "explanation": "In Wound-Wait, younger transactions wait for older ones. Since T2 is younger and T1 is older, T2 waits for T1. If T2 were older and T1 younger, T2 would wound T1 (force T1 to roll back)."
+      }
+    ]
+  }
+  </script>
+
+</article>
+</body>
+</html>

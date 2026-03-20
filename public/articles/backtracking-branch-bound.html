@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backtracking and Branch &amp; Bound — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Algorithms</span>
+<h1>Backtracking and Branch &amp; Bound</h1>
+<p><em>Based on CLRS concepts and standard algorithm design texts</em></p>
+
+<p>
+  Backtracking and Branch &amp; Bound are two powerful algorithmic paradigms for solving combinatorial
+  optimization and constraint satisfaction problems. Both explore a <strong>state space tree</strong>
+  systematically, but they differ in how they prune unpromising branches. This article provides a
+  comprehensive treatment of both techniques with detailed worked examples, essential for GATE CSE.
+</p>
+
+<!-- ============================================================ -->
+<h2>Part I: Backtracking</h2>
+<!-- ============================================================ -->
+
+<!-- ============================================================ -->
+<h2>1. State Space Tree Concept</h2>
+<!-- ============================================================ -->
+
+<p>
+  A <strong>state space tree</strong> is a tree that represents all possible states of a problem.
+  Each node represents a partial solution, and edges represent decisions (choices). Leaf nodes
+  represent complete solutions or dead ends.
+</p>
+
+<pre><code>State Space Tree Structure:
+  Root: Empty solution (no decisions made)
+  Internal node: Partial solution (some decisions made)
+  Leaf node: Complete solution or infeasible state
+  Edge: A decision (e.g., "place queen in column 3")</code></pre>
+
+<h3>1.1 Backtracking Strategy</h3>
+<p>
+  Backtracking performs a <strong>depth-first search (DFS)</strong> of the state space tree with
+  <strong>pruning</strong>. At each node, it checks whether the partial solution can possibly lead to
+  a valid complete solution. If not, it <em>backtracks</em> &mdash; abandons this branch and returns
+  to the parent node to try the next alternative.
+</p>
+
+<pre><code>BACKTRACK(node):
+  if node is a complete solution:
+      record/output solution
+      return
+  for each child c of node:
+      if is_promising(c):      // bounding function / pruning
+          BACKTRACK(c)
+      // else: prune this branch (do nothing)</code></pre>
+
+<h3>1.2 Bounding Function (Pruning)</h3>
+<p>
+  The <strong>bounding function</strong> (also called the <em>pruning function</em> or
+  <em>feasibility function</em>) determines whether a partial solution can be extended to a valid
+  complete solution. A good bounding function prunes large portions of the state space tree,
+  dramatically reducing the search.
+</p>
+
+<div class="note">
+  <strong>Key insight:</strong> Without pruning, backtracking degenerates into brute-force enumeration
+  of all possibilities. The effectiveness of backtracking depends entirely on how much the bounding
+  function prunes.
+</div>
+
+<!-- ============================================================ -->
+<h2>2. N-Queens Problem</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Problem:</strong> Place N queens on an N&times;N chessboard so that no two queens attack
+  each other (no two queens in the same row, column, or diagonal).
+</p>
+
+<h3>2.1 Formulation</h3>
+<p>
+  Represent the solution as an array <code>Q[1..N]</code> where <code>Q[i] = j</code> means the queen
+  in row i is placed in column j. Since each row must have exactly one queen, this eliminates row
+  conflicts by construction.
+</p>
+
+<p><strong>Constraint checking:</strong> Queens at (i, Q[i]) and (k, Q[k]) conflict if:</p>
+<ul>
+  <li><strong>Same column:</strong> Q[i] == Q[k]</li>
+  <li><strong>Same diagonal:</strong> |i &minus; k| == |Q[i] &minus; Q[k]|</li>
+</ul>
+
+<pre><code>IS-SAFE(Q, row, col):
+  for i = 1 to row - 1:
+      if Q[i] == col:                      // same column
+          return false
+      if |i - row| == |Q[i] - col|:       // same diagonal
+          return false
+  return true
+
+N-QUEENS(Q, row, N):
+  if row > N:
+      print Q          // found a valid placement
+      return
+  for col = 1 to N:
+      if IS-SAFE(Q, row, col):
+          Q[row] = col
+          N-QUEENS(Q, row + 1, N)
+          // backtrack: Q[row] is overwritten in next iteration</code></pre>
+
+<h3>2.2 Detailed Walkthrough: 4-Queens</h3>
+
+<pre><code>Board: 4x4      Columns: 1  2  3  4
+
+Row 1: Try col 1 &rarr; Q = [1, -, -, -]
+  Row 2: Try col 1 &rarr; same column as Q[1]. PRUNE.
+         Try col 2 &rarr; diagonal conflict (|1-2|=|1-2|=1). PRUNE.
+         Try col 3 &rarr; SAFE. Q = [1, 3, -, -]
+    Row 3: Try col 1 &rarr; diagonal (|1-3|=|1-1|=0? No. |1-3|=2, |1-1|=0. Safe from Q[1].
+                         Check Q[2]: |2-3|=1, |3-1|=2. Safe. Q = [1, 3, 1, -]?
+                         Wait &mdash; same column as Q[1]. PRUNE.
+           Try col 2 &rarr; Check Q[1]: col ok. diagonal |1-3|=2, |1-2|=1. Safe from Q[1].
+                         Check Q[2]: same diagonal |2-3|=1, |3-2|=1. PRUNE.
+           Try col 3 &rarr; same column as Q[2]. PRUNE.
+           Try col 4 &rarr; Check Q[1]: |1-3|=2, |1-4|=3. Safe.
+                         Check Q[2]: |2-3|=1, |3-4|=1. PRUNE (diagonal).
+    BACKTRACK to Row 2.
+         Try col 4 &rarr; Check Q[1]: |1-2|=1, |1-4|=3. Safe. Q = [1, 4, -, -]
+    Row 3: Try col 1 &rarr; Check Q[1]: same col. PRUNE.
+           Try col 2 &rarr; Check Q[1]: |1-3|=2, |1-2|=1. Safe.
+                         Check Q[2]: |2-3|=1, |4-2|=2. Safe. Q = [1, 4, 2, -]
+      Row 4: Try col 1 &rarr; Check Q[1]: same col. PRUNE.
+             Try col 2 &rarr; same col as Q[3]. PRUNE.
+             Try col 3 &rarr; Check Q[1]: |1-4|=3, |1-3|=2. Safe.
+                           Check Q[2]: |2-4|=2, |4-3|=1. Safe.
+                           Check Q[3]: |3-4|=1, |2-3|=1. PRUNE (diagonal).
+             Try col 4 &rarr; Check Q[1]: |1-4|=3, |1-4|=3. PRUNE (diagonal).
+      BACKTRACK to Row 3.
+           Try col 3 &rarr; Check Q[1]: |1-3|=2, |1-3|=2. PRUNE (diagonal).
+           Try col 4 &rarr; Check Q[1]: |1-3|=2, |1-4|=3. Safe.
+                         Check Q[2]: |2-3|=1, |4-4|=0. Safe. Q = [1, 4, 4, -]?
+                         Wait &mdash; same col as Q[2]. PRUNE.
+    BACKTRACK to Row 2. All cols tried. BACKTRACK to Row 1.
+
+Row 1: Try col 2 &rarr; Q = [2, -, -, -]
+  Row 2: Try col 1 &rarr; diagonal |1-2|=|2-1|=1. PRUNE.
+         Try col 2 &rarr; same column. PRUNE.
+         Try col 3 &rarr; diagonal |1-2|=|2-3|=1. PRUNE.
+         Try col 4 &rarr; |1-2|=1, |2-4|=2. Safe. Q = [2, 4, -, -]
+    Row 3: Try col 1 &rarr; Check Q[1]: |1-3|=2, |2-1|=1. Safe.
+                         Check Q[2]: |2-3|=1, |4-1|=3. Safe. Q = [2, 4, 1, -]
+      Row 4: Try col 1 &rarr; same col as Q[3]. PRUNE.
+             Try col 2 &rarr; Check Q[1]: same col. PRUNE.
+             Try col 3 &rarr; Check Q[1]: |1-4|=3, |2-3|=1. Safe.
+                           Check Q[2]: |2-4|=2, |4-3|=1. Safe.
+                           Check Q[3]: |3-4|=1, |1-3|=2. Safe.
+                           Q = [2, 4, 1, 3] &rarr; SOLUTION FOUND!
+
+Solution 1:  . Q . .
+             . . . Q
+             Q . . .
+             . . Q .
+</code></pre>
+
+<p>Continuing the search finds the second solution: Q = [3, 1, 4, 2].</p>
+
+<pre><code>Solution 2:  . . Q .
+             Q . . .
+             . . . Q
+             . Q . .
+
+Total solutions for 4-Queens: 2</code></pre>
+
+<h3>2.3 N-Queens: Number of Solutions</h3>
+<table>
+  <tr>
+    <th>N</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+  </tr>
+  <tr>
+    <td><strong>Solutions</strong></td><td>1</td><td>0</td><td>0</td><td>2</td><td>10</td><td>4</td><td>40</td><td>92</td><td>352</td><td>724</td>
+  </tr>
+</table>
+
+<h3>2.4 Complexity Analysis</h3>
+<p>
+  Without pruning: N! placements (one queen per row, any column). <br />
+  Without any constraint: N<sup>N</sup> (any cell in each row). <br />
+  With pruning: significantly fewer nodes explored, but worst case is still exponential. <br />
+  Upper bound: O(N!) for generating all solutions.
+</p>
+
+<!-- ============================================================ -->
+<h2>3. Graph Coloring Using Backtracking</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Problem:</strong> Given an undirected graph G = (V, E) and m colors, assign colors to
+  vertices such that no two adjacent vertices have the same color.
+</p>
+
+<pre><code>GRAPH-COLORING(G, color[], v, m):
+  if v > |V|:
+      print color[]       // valid coloring found
+      return true
+  for c = 1 to m:
+      if IS-SAFE-COLOR(G, color, v, c):
+          color[v] = c
+          if GRAPH-COLORING(G, color, v+1, m):
+              return true
+          color[v] = 0    // backtrack
+  return false            // no valid color for this vertex
+
+IS-SAFE-COLOR(G, color, v, c):
+  for each neighbor u of v:
+      if color[u] == c:
+          return false
+  return true</code></pre>
+
+<h3>3.1 Worked Example</h3>
+<pre><code>Graph: 4 vertices, edges: (1,2), (1,3), (2,3), (2,4), (3,4)
+m = 3 colors: {R, G, B}
+
+      1 --- 2
+      |  X  |      (X means 1-3 and 2-4 edges, plus 3-4)
+      3 --- 4
+
+v=1: Try R. color = [R, -, -, -]
+  v=2: Try R. Adjacent to v1(R). PRUNE.
+       Try G. Safe. color = [R, G, -, -]
+    v=3: Try R. Adjacent to v1(R). PRUNE.
+         Try G. Adjacent to v2(G). PRUNE.
+         Try B. Safe (not adj to any B). color = [R, G, B, -]
+      v=4: Try R. Check adj: v2(G)-ok, v3(B)-ok. Safe! color = [R, G, B, R]
+           v > |V| &rarr; SOLUTION: {1:R, 2:G, 3:B, 4:R}
+
+Chromatic number: The minimum m for which a coloring exists.
+For this graph, m=3 works. Does m=2 work? No (triangle 1-2-3 needs 3 colors).</code></pre>
+
+<!-- ============================================================ -->
+<h2>4. Subset Sum Using Backtracking</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Problem:</strong> Given a set W = {w<sub>1</sub>, w<sub>2</sub>, ..., w<sub>n</sub>} of
+  positive integers and a target sum S, find all subsets that sum to exactly S.
+</p>
+
+<pre><code>SUBSET-SUM-BT(W, n, S, i, current_sum, remaining_sum, include[]):
+  if current_sum == S:
+      print include[]      // valid subset
+      return
+  if i > n:
+      return
+  if current_sum + remaining_sum < S:   // can't reach target
+      return                              // pruning!
+  if current_sum + W[i] > S:            // including W[i] exceeds target
+      return                              // pruning!
+
+  // Include W[i]
+  include[i] = 1
+  SUBSET-SUM-BT(W, n, S, i+1, current_sum + W[i],
+                remaining_sum - W[i], include)
+
+  // Exclude W[i]
+  include[i] = 0
+  SUBSET-SUM-BT(W, n, S, i+1, current_sum,
+                remaining_sum - W[i], include)</code></pre>
+
+<h3>4.1 Worked Example</h3>
+<pre><code>W = {5, 10, 12, 13, 15, 18}, S = 30
+Sort: already sorted (ascending)
+remaining_sum = 5+10+12+13+15+18 = 73
+
+Level 0: sum=0, rem=73
+  Include 5: sum=5, rem=68
+    Include 10: sum=15, rem=58
+      Include 12: sum=27, rem=46
+        Include 13: sum=40 > 30. PRUNE.
+        Exclude 13: sum=27, rem=33
+          Include 15: sum=42 > 30. PRUNE.
+          Exclude 15: sum=27, rem=18
+            Include 18: sum=45 > 30. PRUNE.
+            Exclude 18: sum=27, rem=0. 27+0=27 < 30. PRUNE.
+      Exclude 12: sum=15, rem=46
+        Include 13: sum=28, rem=33
+          Include 15: sum=43 > 30. PRUNE.
+          Exclude 15: sum=28, rem=18
+            Include 18: sum=46 > 30. PRUNE.
+            Exclude 18: 28+0 < 30. PRUNE.
+        Exclude 13: sum=15, rem=33
+          Include 15: sum=30 == S! &rarr; SOLUTION: {5, 10, 15}
+          Exclude 15: sum=15, rem=18
+            Include 18: sum=33 > 30. PRUNE.
+    Exclude 10: sum=5, rem=58
+      Include 12: sum=17, rem=46
+        Include 13: sum=30 == S! &rarr; SOLUTION: {5, 12, 13}
+        Exclude 13: sum=17, rem=33
+          Include 15: sum=32 > 30. PRUNE.
+      ...
+  Exclude 5: sum=0, rem=68
+    Include 10: sum=10, rem=58
+      Include 12: sum=22, rem=46
+        ...  (eventually: no new solutions with these)
+      Exclude 12: sum=10, rem=46
+        Include 13: sum=23, rem=33
+          ...
+    ...  eventually find: {12, 18} = 30! &rarr; SOLUTION: {12, 18}
+
+Solutions: {5, 10, 15}, {5, 12, 13}, {12, 18}</code></pre>
+
+<!-- ============================================================ -->
+<h2>5. Hamiltonian Cycle Using Backtracking</h2>
+<!-- ============================================================ -->
+
+<pre><code>HAM-CYCLE(G, path[], pos):
+  if pos == |V|:
+      if edge(path[pos-1], path[0]) exists:   // back to start?
+          print path
+          return true
+      return false
+
+  for v = 1 to |V|:
+      if IS-SAFE-HAM(G, path, pos, v):
+          path[pos] = v
+          if HAM-CYCLE(G, path, pos + 1):
+              return true
+          path[pos] = -1    // backtrack
+  return false
+
+IS-SAFE-HAM(G, path, pos, v):
+  if no edge between path[pos-1] and v:
+      return false
+  if v is already in path[0..pos-1]:
+      return false
+  return true</code></pre>
+
+<h3>5.1 Example</h3>
+<pre><code>Graph: 5 vertices
+Edges: (0,1), (0,3), (1,2), (1,3), (1,4), (2,4), (3,4)
+
+Start at vertex 0.
+path = [0, -, -, -, -]
+
+pos=1: Try 1 (edge 0-1 exists, not visited). path=[0,1,-,-,-]
+  pos=2: Try 2 (edge 1-2). path=[0,1,2,-,-]
+    pos=3: Try 3 &rarr; no edge 2-3. Skip.
+           Try 4 (edge 2-4). path=[0,1,2,4,-]
+      pos=4: Try 3 (edge 4-3). path=[0,1,2,4,3]
+             Check: edge 3-0 exists? YES!
+             &rarr; HAMILTONIAN CYCLE: 0 &rarr; 1 &rarr; 2 &rarr; 4 &rarr; 3 &rarr; 0</code></pre>
+
+<h3>5.2 Time Complexity</h3>
+<p>
+  Worst case: O(N!) &mdash; we try all permutations of vertices. Pruning helps in practice but does
+  not change the worst-case complexity.
+</p>
+
+<!-- ============================================================ -->
+<h2>Part II: Branch and Bound</h2>
+<!-- ============================================================ -->
+
+<!-- ============================================================ -->
+<h2>6. Branch and Bound Concept</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Branch and Bound (B&B)</strong> is a systematic enumeration method for solving optimization
+  problems. Like backtracking, it explores a state space tree, but it uses <strong>bounds</strong>
+  (lower or upper) to prune subtrees that cannot contain the optimal solution.
+</p>
+
+<h3>6.1 Key Differences from Backtracking</h3>
+<table>
+  <tr>
+    <th>Feature</th>
+    <th>Backtracking</th>
+    <th>Branch and Bound</th>
+  </tr>
+  <tr>
+    <td>Problem type</td>
+    <td>Feasibility / all solutions</td>
+    <td>Optimization (min/max)</td>
+  </tr>
+  <tr>
+    <td>Traversal</td>
+    <td>Always DFS</td>
+    <td>DFS, BFS, or Best-First (LC)</td>
+  </tr>
+  <tr>
+    <td>Pruning criterion</td>
+    <td>Feasibility check</td>
+    <td>Bound comparison with best known solution</td>
+  </tr>
+  <tr>
+    <td>Bound computation</td>
+    <td>Simple constraint check</td>
+    <td>Computes optimistic bound (lower for min, upper for max)</td>
+  </tr>
+  <tr>
+    <td>Exploration order</td>
+    <td>Fixed (DFS)</td>
+    <td>Flexible (can prioritize promising nodes)</td>
+  </tr>
+</table>
+
+<h3>6.2 Branch and Bound Strategies</h3>
+
+<table>
+  <tr>
+    <th>Strategy</th>
+    <th>Data Structure</th>
+    <th>Node Selection</th>
+    <th>Characteristics</th>
+  </tr>
+  <tr>
+    <td>FIFO B&B</td>
+    <td>Queue</td>
+    <td>First generated, first explored</td>
+    <td>BFS-like; explores level by level</td>
+  </tr>
+  <tr>
+    <td>LIFO B&B</td>
+    <td>Stack</td>
+    <td>Last generated, first explored</td>
+    <td>DFS-like; similar to backtracking</td>
+  </tr>
+  <tr>
+    <td>LC (Least Cost) B&B</td>
+    <td>Priority Queue (Min-Heap)</td>
+    <td>Node with best bound</td>
+    <td>Most promising node first; typically most efficient</td>
+  </tr>
+</table>
+
+<pre><code>BRANCH-AND-BOUND(root):
+  best = &infin;               // for minimization
+  PQ = priority queue
+  PQ.insert(root)
+
+  while PQ is not empty:
+      node = PQ.extract_best()
+      if node.bound &ge; best:     // pruning
+          continue                // this subtree cannot improve
+      if node is a leaf (complete solution):
+          if node.cost < best:
+              best = node.cost
+              best_solution = node.solution
+      else:
+          for each child c of node:
+              compute c.bound
+              if c.bound < best:
+                  PQ.insert(c)
+
+  return best_solution</code></pre>
+
+<!-- ============================================================ -->
+<h2>7. 0/1 Knapsack Using Branch and Bound</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Problem:</strong> Given n items with weights w<sub>i</sub> and profits p<sub>i</sub>, and
+  a knapsack capacity W, maximize total profit without exceeding capacity. Each item is either
+  included (1) or excluded (0).
+</p>
+
+<h3>7.1 Upper Bound Calculation</h3>
+<p>
+  For a node at level i (items 1..i decided), the upper bound is computed using the
+  <strong>fractional knapsack</strong> relaxation on the remaining items (greedy by profit/weight ratio):
+</p>
+
+<pre><code>UPPER-BOUND(node):
+  // node.profit = profit so far, node.weight = weight so far
+  // Items i+1..n are undecided
+  bound = node.profit
+  remaining_capacity = W - node.weight
+  j = node.level + 1
+
+  // Sort remaining items by pi/wi ratio (done once in preprocessing)
+  while j &le; n and remaining_capacity > 0:
+      if w[j] &le; remaining_capacity:
+          bound += p[j]
+          remaining_capacity -= w[j]
+      else:
+          bound += p[j] * (remaining_capacity / w[j])  // fractional
+          remaining_capacity = 0
+      j++
+
+  return bound</code></pre>
+
+<h3>7.2 Complete Worked Example</h3>
+<pre><code>Items (sorted by p/w ratio):
+  Item | Profit | Weight | p/w
+  -----+--------+--------+-----
+    1  |   40   |   2    | 20.0
+    2  |   30   |   5    | 6.0
+    3  |   50   |  10    | 5.0
+    4  |   10   |   5    | 2.0
+
+Knapsack capacity W = 16
+
+Step 1: Root node
+  Level 0, profit=0, weight=0
+  Upper bound: 40 + 30 + 50 + 10*(16-2-5-10)/(5) = 40+30+50+(-1/5*10)?
+  Wait, let me recalculate. remaining=16.
+  Take item 1: profit=40, weight=2, remaining=14.
+  Take item 2: profit=70, weight=7, remaining=9.
+  Take item 3 (fractional): profit=70+50*(9/10)=70+45=115, remaining=0.
+  Upper bound = 115.
+
+  best = 0 (no solution yet)
+
+Step 2: Branch on item 1 (include or exclude)
+
+  Node A: Include item 1. Level=1, profit=40, weight=2.
+    Upper bound: 40 + 30 + 50*(16-2-5)/(10) = 40 + 30 + 50*9/10 = 40+30+45 = 115.
+    Bound(115) > best(0), so explore.
+
+  Node B: Exclude item 1. Level=1, profit=0, weight=0.
+    Upper bound: 0 + 30 + 50 + 10*(16-5-10)/(5) = 30+50+10*1/5 = 30+50+2 = 82.
+    Bound(82) > best(0), so explore.
+
+  Priority queue (max-heap by bound): [A(115), B(82)]
+
+Step 3: Expand Node A (bound=115, most promising)
+  Branch on item 2:
+
+  Node C: Include item 2. Level=2, profit=70, weight=7.
+    Upper bound: 70 + 50*(16-7)/10 = 70 + 50*9/10 = 70+45 = 115.
+    Bound(115) > best(0). Explore.
+
+  Node D: Exclude item 2. Level=2, profit=40, weight=2.
+    Upper bound: 40 + 50 + 10*(16-2-10)/5 = 40+50+10*4/5 = 40+50+8 = 98.
+    Bound(98) > best(0). Explore.
+
+  PQ: [C(115), D(98), B(82)]
+
+Step 4: Expand Node C (bound=115)
+  Branch on item 3:
+
+  Node E: Include item 3. Level=3, profit=120, weight=17.
+    weight(17) > W(16). INFEASIBLE. Prune.
+
+  Node F: Exclude item 3. Level=3, profit=70, weight=7.
+    Upper bound: 70 + 10*(16-7)/5 = 70 + 10*9/5 = 70+18 = 88.
+    Bound(88) > best(0). Explore.
+
+  PQ: [D(98), F(88), B(82)]
+
+Step 5: Expand Node D (bound=98)
+  Branch on item 3:
+
+  Node G: Include item 3. Level=3, profit=90, weight=12.
+    Upper bound: 90 + 10*(16-12)/5 = 90 + 10*4/5 = 90+8 = 98.
+    Bound(98) > best(0). Explore.
+
+  Node H: Exclude item 3. Level=3, profit=40, weight=2.
+    Upper bound: 40 + 10 = 50 (only item 4 left, weight 5 &le; remaining 14).
+    Actually: 40 + 10 = 50. Bound(50) > best(0). Explore.
+
+  PQ: [G(98), F(88), B(82), H(50)]
+
+Step 6: Expand Node G (bound=98)
+  Branch on item 4:
+
+  Node I: Include item 4. Level=4, profit=100, weight=17.
+    weight(17) > W(16). INFEASIBLE. Prune.
+
+  Node J: Exclude item 4. Level=4, profit=90, weight=12.
+    LEAF NODE (all items decided). profit=90.
+    90 > best(0). Update: best = 90, solution = {1, 3} (items 1 and 3).
+
+  PQ: [F(88), B(82), H(50)]
+
+Step 7: Expand Node F (bound=88)
+  88 < best(90)? No, 88 < 90. PRUNE! (Cannot beat current best.)
+
+Step 8: Node B has bound 82 < 90. PRUNE.
+Step 9: Node H has bound 50 < 90. PRUNE.
+
+PQ is empty. DONE.
+
+OPTIMAL SOLUTION: Items {1, 3}, Profit = 90, Weight = 12.
+  Item 1: profit=40, weight=2
+  Item 3: profit=50, weight=10
+  Total: profit=90, weight=12 &le; 16 &#x2713;</code></pre>
+
+<div class="important">
+  <strong>GATE Tip:</strong> In B&amp;B for maximization, the upper bound is computed via fractional
+  relaxation. A node is pruned when its upper bound &le; current best. For minimization problems (like
+  TSP), compute a lower bound and prune when lower bound &ge; current best.
+</div>
+
+<!-- ============================================================ -->
+<h2>8. TSP Using Branch and Bound</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Problem:</strong> Find the minimum-cost Hamiltonian cycle in a complete weighted graph.
+</p>
+
+<h3>8.1 Cost Matrix Reduction</h3>
+<p>
+  The key idea: <strong>reduce</strong> the cost matrix by subtracting the minimum value from each
+  row and each column. The total amount subtracted is a <strong>lower bound</strong> on the optimal
+  tour cost, because any tour must use at least one entry from each row and each column.
+</p>
+
+<pre><code>REDUCE-MATRIX(M):
+  total_reduction = 0
+
+  // Row reduction
+  for each row i:
+      min_val = min of row i (ignoring &infin;)
+      subtract min_val from all entries in row i
+      total_reduction += min_val
+
+  // Column reduction
+  for each column j:
+      min_val = min of column j (ignoring &infin;)
+      subtract min_val from all entries in column j
+      total_reduction += min_val
+
+  return total_reduction</code></pre>
+
+<h3>8.2 Complete Worked Example</h3>
+<pre><code>4 cities: A(0), B(1), C(2), D(3)
+
+Cost matrix:
+       A    B    C    D
+  A  [ &infin;   10   15   20 ]
+  B  [  5   &infin;    9   10 ]
+  C  [  6   13   &infin;   12 ]
+  D  [  8    8    9   &infin; ]
+
+Step 1: Reduce the root matrix
+  Row reduction:
+    Row A: min=10. Subtract 10: [&infin;, 0, 5, 10]
+    Row B: min=5.  Subtract 5:  [0, &infin;, 4, 5]
+    Row C: min=6.  Subtract 6:  [0, 7, &infin;, 6]
+    Row D: min=8.  Subtract 8:  [0, 0, 1, &infin;]
+
+  After row reduction:
+       A    B    C    D
+  A  [ &infin;    0    5   10 ]
+  B  [  0   &infin;    4    5 ]
+  C  [  0    7   &infin;    6 ]
+  D  [  0    0    1   &infin; ]
+
+  Column reduction:
+    Col A: min=0. No change.
+    Col B: min=0. No change.
+    Col C: min=1. Subtract 1: [4, 3, &infin;, 0]
+    Col D: min=5. Subtract 5: [5, 0, 1, &infin;]
+
+  After full reduction:
+       A    B    C    D
+  A  [ &infin;    0    4    5 ]
+  B  [  0   &infin;    3    0 ]
+  C  [  0    7   &infin;    1 ]
+  D  [  0    0    0   &infin; ]
+
+  Total reduction = (10+5+6+8) + (0+0+1+5) = 29+6 = 35.
+  Root lower bound = 35.
+
+Step 2: Branch from A. Try edges A&rarr;B, A&rarr;C, A&rarr;D.
+
+  Node A&rarr;B: cost of edge = 0 (from reduced matrix)
+    Set M[B][A] = &infin; (no return to A from B directly)
+    Set row A = &infin;, col B = &infin; (A is visited, B's incoming used)
+    New matrix (3x3 effectively):
+         A    C    D
+    B  [ &infin;    3    0 ]
+    C  [  0   &infin;    1 ]
+    D  [  0    0   &infin; ]
+
+    Reduce: Row B min=0, Row C min=0, Row D min=0.
+            Col A min=0, Col C min=0, Col D min=0.
+    Reduction = 0.
+    Lower bound = 35 + 0 + 0 = 35.
+
+  Node A&rarr;C: cost of edge = 4
+    Set M[C][A] = &infin;
+    Set row A = &infin;, col C = &infin;
+    New matrix:
+         A    B    D
+    B  [  0   &infin;    0 ]
+    C  [  0    7    1 ]
+    D  [  0    0   &infin; ]
+
+    Reduce: All rows have 0. Cols have 0.
+    Reduction = 0.
+    Lower bound = 35 + 4 + 0 = 39.
+
+  Node A&rarr;D: cost of edge = 5
+    Set M[D][A] = &infin;
+    Set row A = &infin;, col D = &infin;
+    New matrix:
+         A    B    C
+    B  [  0   &infin;    3 ]
+    C  [  0    7   &infin; ]
+    D  [  0    0    0 ]
+
+    Reduce: Row B min=0, Row C min=0, Row D min=0. Cols: all have 0.
+    Reduction = 0.
+    Lower bound = 35 + 5 + 0 = 40.
+
+  PQ: [A&rarr;B(35), A&rarr;C(39), A&rarr;D(40)]
+
+Step 3: Expand A&rarr;B (bound=35)
+  From B, try edges B&rarr;C, B&rarr;D (can't go to A or B).
+
+  Node A&rarr;B&rarr;C: edge cost = 3
+    Remaining: must go C&rarr;D&rarr;A
+    Set M[C][A]=&infin; already. Set M[C][B]=&infin;.
+    Matrix (need D row, A col essentially):
+         A    D
+    C  [ &infin;    1 ]
+    D  [  0   &infin; ]
+
+    Reduce: Row C min=1, sub 1. Row D min=0. Col A min=0, Col D min=0.
+    Reduction = 1.
+    Lower bound = 35 + 3 + 1 = 39.
+
+  Node A&rarr;B&rarr;D: edge cost = 0
+    Remaining: must go D&rarr;C&rarr;A (since M[D][A]=&infin; might not be set yet)
+    Actually from D we can go to A or C. But D&rarr;A means we skip C.
+    Set row B = &infin;, col D = &infin;. Set M[D][B] = &infin;.
+    Matrix:
+         A    C
+    C  [  0   &infin; ]
+    D  [  0    0 ]
+
+    Reduce: Row C min=0, Row D min=0. Col A min=0, Col C min=0.
+    Reduction = 0.
+    Lower bound = 35 + 0 + 0 = 35.
+
+  PQ: [A&rarr;B&rarr;D(35), A&rarr;C(39), A&rarr;B&rarr;C(39), A&rarr;D(40)]
+
+Step 4: Expand A&rarr;B&rarr;D (bound=35)
+  From D, must visit C then return to A.
+  D&rarr;C: cost = 0 (from the reduced sub-matrix).
+  C&rarr;A: cost = 0.
+
+  Complete tour: A &rarr; B &rarr; D &rarr; C &rarr; A
+  Total cost = 35 + 0 + 0 = 35.
+
+  Verify with original matrix: A&rarr;B(10) + B&rarr;D(10) + D&rarr;C(9) + C&rarr;A(6) = 35. &#x2713;
+
+  best = 35.
+
+Step 5: Remaining nodes have bounds &ge; 35. All pruned or equal.
+
+OPTIMAL TOUR: A &rarr; B &rarr; D &rarr; C &rarr; A, Cost = 35.</code></pre>
+
+<!-- ============================================================ -->
+<h2>9. Job Assignment Problem</h2>
+<!-- ============================================================ -->
+
+<p>
+  <strong>Problem:</strong> There are n workers and n jobs. The cost of assigning worker i to job j
+  is given by cost[i][j]. Find the assignment that minimizes total cost, with each worker doing
+  exactly one job and each job done by exactly one worker.
+</p>
+
+<h3>9.1 Lower Bound Computation</h3>
+<p>
+  For each unassigned worker, add the minimum cost among unassigned jobs. This gives a lower bound
+  on the remaining cost.
+</p>
+
+<pre><code>LOWER-BOUND(cost, assignment, level):
+  bound = cost_so_far
+  for i = level to n:
+      bound += min(cost[i][j]) for all unassigned jobs j
+  return bound</code></pre>
+
+<h3>9.2 Worked Example</h3>
+<pre><code>Cost matrix (4 workers, 4 jobs):
+         Job1  Job2  Job3  Job4
+Worker1 [  9    2    7    8  ]
+Worker2 [  6    4    3    7  ]
+Worker3 [  5    8    1    8  ]
+Worker4 [  7    6    9    4  ]
+
+Row minimums: 2, 3, 1, 4 &rarr; Initial lower bound = 10.
+
+Root: No assignments. LB = 2+3+1+4 = 10.
+
+Branch on Worker 1:
+  W1&rarr;J1: cost=9. LB = 9 + min(4,3,7) + min(8,1,8) + min(6,9,4) = 9+3+1+4 = 17
+  W1&rarr;J2: cost=2. LB = 2 + min(6,3,7) + min(5,1,8) + min(7,9,4) = 2+3+1+4 = 10
+  W1&rarr;J3: cost=7. LB = 7 + min(6,4,7) + min(5,8,8) + min(7,6,4) = 7+4+5+4 = 20
+  W1&rarr;J4: cost=8. LB = 8 + min(6,4,3) + min(5,8,1) + min(7,6,9) = 8+3+1+6 = 18
+
+Best: W1&rarr;J2 (LB=10). Expand.
+
+Branch on Worker 2 (J2 taken):
+  W2&rarr;J1: cost=2+6=8. LB = 8 + min(1,8) + min(9,4) = 8+1+4 = 13
+  W2&rarr;J3: cost=2+3=5. LB = 5 + min(5,8) + min(7,4) = 5+5+4 = 14
+  W2&rarr;J4: cost=2+7=9. LB = 9 + min(5,1) + min(7,9) = 9+1+7 = 17
+
+Best: W2&rarr;J1 (LB=13). Expand.
+
+Branch on Worker 3 (J1, J2 taken):
+  W3&rarr;J3: cost=8+1=9. LB = 9 + min(4) = 9+4 = 13
+  W3&rarr;J4: cost=8+8=16. LB = 16 + min(9) = 16+9 = 25
+
+Best: W3&rarr;J3 (LB=13). Expand.
+
+Worker 4 gets J4: cost = 13+4 = 17. Hmm, that's not 13.
+Wait &mdash; let me recalculate. cost_so_far for W3&rarr;J3 is 2+6+1 = 9.
+W4&rarr;J4: total = 2+6+1+4 = 13.
+
+OPTIMAL ASSIGNMENT: W1&rarr;J2(2), W2&rarr;J1(6), W3&rarr;J3(1), W4&rarr;J4(4).
+Total cost = 13.</code></pre>
+
+<!-- ============================================================ -->
+<h2>10. Comparison: Backtracking vs Branch &amp; Bound vs DP vs Greedy</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Criterion</th>
+    <th>Backtracking</th>
+    <th>Branch &amp; Bound</th>
+    <th>Dynamic Programming</th>
+    <th>Greedy</th>
+  </tr>
+  <tr>
+    <td>Problem type</td>
+    <td>Constraint satisfaction, all solutions</td>
+    <td>Optimization</td>
+    <td>Optimization with overlapping subproblems</td>
+    <td>Optimization with greedy choice property</td>
+  </tr>
+  <tr>
+    <td>Approach</td>
+    <td>DFS with pruning</td>
+    <td>BFS/DFS/Best-first with bounding</td>
+    <td>Bottom-up or top-down with memoization</td>
+    <td>Local optimal choices</td>
+  </tr>
+  <tr>
+    <td>Guarantees optimal?</td>
+    <td>Finds all feasible (not optimization)</td>
+    <td>Yes (exact)</td>
+    <td>Yes (exact)</td>
+    <td>Not always (only if greedy choice property holds)</td>
+  </tr>
+  <tr>
+    <td>Time complexity</td>
+    <td>Exponential (worst case)</td>
+    <td>Exponential (worst case)</td>
+    <td>Polynomial (usually)</td>
+    <td>Polynomial (usually)</td>
+  </tr>
+  <tr>
+    <td>Space</td>
+    <td>O(n) for DFS stack</td>
+    <td>Can be large (priority queue)</td>
+    <td>O(table size)</td>
+    <td>O(1) to O(n)</td>
+  </tr>
+  <tr>
+    <td>Example problems</td>
+    <td>N-Queens, Sudoku, graph coloring</td>
+    <td>0/1 Knapsack, TSP, Job Assignment</td>
+    <td>Fibonacci, LCS, Matrix Chain</td>
+    <td>Huffman, Kruskal, Activity Selection</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>11. When to Use Which Technique</h2>
+<!-- ============================================================ -->
+
+<div class="mermaid">
+graph TD
+    START["Is it an optimization problem?"]
+    START -- "No (feasibility/enumeration)" --> BT["Use BACKTRACKING<br/>N-Queens, Sudoku, Coloring"]
+    START -- "Yes" --> OPT["Does it have optimal substructure<br/>and overlapping subproblems?"]
+    OPT -- "Yes" --> DP["Use DYNAMIC PROGRAMMING<br/>Knapsack, LCS, Shortest Path"]
+    OPT -- "No / Unclear" --> GC["Does greedy choice property hold?"]
+    GC -- "Yes" --> GR["Use GREEDY<br/>Huffman, MST, Activity Selection"]
+    GC -- "No" --> BB["Use BRANCH & BOUND<br/>TSP, 0/1 Knapsack (exact), Job Assignment"]
+    style BT fill:#3498db,color:#fff
+    style DP fill:#2ecc71,color:#fff
+    style GR fill:#f1c40f,color:#000
+    style BB fill:#e74c3c,color:#fff
+</div>
+
+<h3>11.1 Decision Guide (Text Version)</h3>
+<ol>
+  <li><strong>Can you solve it greedily?</strong> Check for greedy choice property and optimal substructure.
+    If yes, use Greedy. Examples: Activity Selection, Huffman Coding, MST (Kruskal/Prim).</li>
+  <li><strong>Does it have overlapping subproblems?</strong> If you see the same subproblems being solved
+    repeatedly, use DP. Examples: 0/1 Knapsack, LCS, Matrix Chain Multiplication, Floyd-Warshall.</li>
+  <li><strong>Need all solutions or just feasibility?</strong> Use Backtracking. Examples: N-Queens (all
+    solutions), Sudoku solver, Graph Coloring, Hamiltonian Cycle detection.</li>
+  <li><strong>Need the exact optimum for a hard problem?</strong> Use Branch and Bound. It is better than
+    brute force because bounding prunes large portions of the search space. Examples: TSP, Job Assignment,
+    0/1 Knapsack (when DP table is too large).</li>
+</ol>
+
+<div class="note">
+  <strong>GATE Tip:</strong> 0/1 Knapsack can be solved by DP (O(nW) pseudo-polynomial), Branch &amp;
+  Bound (exact, exponential worst case), or backtracking. GATE may ask you to compare approaches or
+  trace through a specific method. Know all three for this problem.
+</div>
+
+<!-- ============================================================ -->
+<h2>12. Summary Table for Quick Revision</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Problem</th>
+    <th>Technique</th>
+    <th>Bounding / Pruning</th>
+    <th>Time (Worst)</th>
+  </tr>
+  <tr>
+    <td>N-Queens</td>
+    <td>Backtracking</td>
+    <td>No two queens in same row/col/diagonal</td>
+    <td>O(N!)</td>
+  </tr>
+  <tr>
+    <td>Graph m-Coloring</td>
+    <td>Backtracking</td>
+    <td>Adjacent vertices must differ in color</td>
+    <td>O(m<sup>N</sup>)</td>
+  </tr>
+  <tr>
+    <td>Subset Sum</td>
+    <td>Backtracking / DP</td>
+    <td>Sum exceeds target or remaining too small</td>
+    <td>O(2<sup>n</sup>) / O(n&middot;S)</td>
+  </tr>
+  <tr>
+    <td>Hamiltonian Cycle</td>
+    <td>Backtracking</td>
+    <td>Must be adjacent and unvisited</td>
+    <td>O(N!)</td>
+  </tr>
+  <tr>
+    <td>0/1 Knapsack</td>
+    <td>Branch &amp; Bound</td>
+    <td>Fractional relaxation upper bound</td>
+    <td>O(2<sup>n</sup>)</td>
+  </tr>
+  <tr>
+    <td>TSP</td>
+    <td>Branch &amp; Bound</td>
+    <td>Cost matrix reduction lower bound</td>
+    <td>O(N!)</td>
+  </tr>
+  <tr>
+    <td>Job Assignment</td>
+    <td>Branch &amp; Bound</td>
+    <td>Row-minimum lower bound</td>
+    <td>O(N!)</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>13. Practice Quiz</h2>
+<!-- ============================================================ -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "Backtracking and Branch & Bound Quiz",
+  "questions": [
+    {
+      "question": "Q1. In the 4-Queens problem, how many distinct solutions exist?",
+      "options": ["(A) 1", "(B) 2", "(C) 4", "(D) 8"],
+      "answer": 1,
+      "explanation": "The 4-Queens problem has exactly 2 distinct solutions: [2,4,1,3] and [3,1,4,2]. These are mirror images of each other. If we count rotations and reflections as distinct, there are still just 2 fundamental solutions."
+    },
+    {
+      "question": "Q2. What traversal strategy does standard backtracking use on the state space tree?",
+      "options": ["(A) Breadth-First Search (BFS)", "(B) Depth-First Search (DFS)", "(C) Best-First Search", "(D) Level-Order Traversal"],
+      "answer": 1,
+      "explanation": "Backtracking always uses DFS (depth-first search). It goes as deep as possible along a branch before backtracking. This is memory-efficient as it only needs to store the current path (O(n) space for a tree of depth n)."
+    },
+    {
+      "question": "Q3. In Branch and Bound for a minimization problem, a node is pruned when:",
+      "options": ["(A) Its lower bound is less than the current best solution", "(B) Its lower bound is greater than or equal to the current best solution", "(C) Its upper bound is less than the current best solution", "(D) It has no children"],
+      "answer": 1,
+      "explanation": "For minimization, we compute a lower bound at each node. If the lower bound >= current best known solution, this subtree cannot contain a better solution, so we prune it. We want to minimize, so any subtree that can't do better than what we already have is useless."
+    },
+    {
+      "question": "Q4. In the 0/1 Knapsack Branch and Bound, the upper bound at a node is computed using:",
+      "options": ["(A) The 0/1 knapsack DP solution for remaining items", "(B) The fractional knapsack (greedy) solution for remaining items", "(C) The sum of all remaining item profits", "(D) The maximum profit among remaining items"],
+      "answer": 1,
+      "explanation": "The upper bound is computed by solving the fractional knapsack problem (greedy, by profit/weight ratio) on the remaining items. Since fractional knapsack gives a solution >= optimal 0/1 knapsack, it serves as a valid upper bound for maximization."
+    },
+    {
+      "question": "Q5. The LC (Least Cost) Branch and Bound strategy uses which data structure?",
+      "options": ["(A) Stack", "(B) Queue", "(C) Priority Queue (Min-Heap)", "(D) Linked List"],
+      "answer": 2,
+      "explanation": "LC (Least Cost) B&B uses a priority queue (min-heap for minimization). It always expands the node with the best (smallest) bound, making it a best-first search strategy. This typically reaches the optimal solution faster than FIFO or LIFO strategies."
+    },
+    {
+      "question": "Q6. For graph coloring using backtracking with m colors and n vertices, the worst-case time complexity is:",
+      "options": ["(A) O(n!)", "(B) O(m^n)", "(C) O(n^m)", "(D) O(2^n)"],
+      "answer": 1,
+      "explanation": "At each of the n vertices, we try up to m colors. The state space tree has branching factor m and depth n, giving a worst-case of O(m^n) nodes. With pruning, the actual number explored is typically much smaller."
+    },
+    {
+      "question": "Q7. In the TSP Branch and Bound using cost matrix reduction, the lower bound at the root is:",
+      "options": ["(A) The sum of all minimum row values", "(B) The sum of minimum row values plus minimum column values after row reduction", "(C) The minimum element in the entire matrix", "(D) The sum of the diagonal elements"],
+      "answer": 1,
+      "explanation": "The lower bound at the root is computed by reducing the cost matrix: first subtract the minimum from each row, then subtract the minimum from each column of the resulting matrix. The total reduction (sum of all subtracted values) is the lower bound."
+    },
+    {
+      "question": "Q8. Which of the following is the key difference between Backtracking and Branch & Bound?",
+      "options": ["(A) Backtracking uses BFS, Branch & Bound uses DFS", "(B) Backtracking is for feasibility problems, Branch & Bound is for optimization problems", "(C) Backtracking is always faster than Branch & Bound", "(D) Branch & Bound cannot handle constraint satisfaction problems"],
+      "answer": 1,
+      "explanation": "The fundamental difference is in their purpose: Backtracking is designed for constraint satisfaction / feasibility problems (finding solutions that meet constraints), while Branch & Bound is designed for optimization problems (finding the best solution). B&B uses bounds to prune based on optimality, while backtracking prunes based on feasibility."
+    },
+    {
+      "question": "Q9. In the subset sum problem using backtracking with W = {5, 10, 12, 13, 15, 18} and S = 30, which of the following is a valid pruning condition?",
+      "options": ["(A) current_sum > S", "(B) current_sum + remaining_sum < S", "(C) Both (A) and (B)", "(D) Neither (A) nor (B)"],
+      "answer": 2,
+      "explanation": "Both are valid pruning conditions. (A) prunes when including the current item exceeds the target sum. (B) prunes when even including all remaining items cannot reach the target. Together, they significantly reduce the search space."
+    },
+    {
+      "question": "Q10. For solving the 0/1 Knapsack problem, which statement is TRUE?",
+      "options": ["(A) Dynamic Programming always runs faster than Branch & Bound", "(B) Branch & Bound is preferred when the capacity W is very large (making the DP table impractical)", "(C) Greedy always gives the optimal solution for 0/1 Knapsack", "(D) Backtracking cannot solve the 0/1 Knapsack problem"],
+      "answer": 1,
+      "explanation": "When W is very large, the DP solution O(nW) becomes impractical because W can be exponentially large. Branch & Bound, which explores the solution space with pruning, can be more efficient in such cases. Greedy does NOT give optimal results for 0/1 Knapsack (only for fractional). Backtracking can solve it but without bound-based pruning."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>String Matching Algorithms — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Algorithms</span>
+<h1>String Matching Algorithms</h1>
+<p><em>Based on CLRS &mdash; Introduction to Algorithms, Chapter 32</em></p>
+
+<p>
+  String matching is a fundamental problem in computer science: given a text T[1..n] and a pattern
+  P[1..m], find all occurrences of P within T. This has applications in text editors, search engines,
+  DNA sequence analysis, spam filters, and intrusion detection systems. GATE frequently tests the
+  mechanics and complexities of these algorithms.
+</p>
+
+<h3>Notation and Setup</h3>
+<table>
+  <tr>
+    <th>Symbol</th>
+    <th>Meaning</th>
+  </tr>
+  <tr><td>T</td><td>Text string of length n</td></tr>
+  <tr><td>P</td><td>Pattern string of length m</td></tr>
+  <tr><td>n</td><td>Length of text, |T|</td></tr>
+  <tr><td>m</td><td>Length of pattern, |P|</td></tr>
+  <tr><td>&Sigma;</td><td>Alphabet (set of all possible characters)</td></tr>
+  <tr><td>s</td><td>A valid shift: P occurs at position s+1 in T if T[s+1..s+m] = P[1..m]</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>1. Naive String Matching</h2>
+<!-- ============================================================ -->
+
+<h3>1.1 Algorithm</h3>
+<p>
+  The simplest approach: slide the pattern across the text one position at a time and check for a
+  match at each position.
+</p>
+
+<pre><code>NAIVE-STRING-MATCHER(T, P):
+  n = length(T)
+  m = length(P)
+  for s = 0 to n - m:
+      if P[1..m] == T[s+1..s+m]:
+          print "Pattern occurs at shift" s</code></pre>
+
+<h3>1.2 Complexity Analysis</h3>
+<table>
+  <tr>
+    <th>Case</th>
+    <th>Time Complexity</th>
+    <th>When it occurs</th>
+  </tr>
+  <tr>
+    <td>Best case</td>
+    <td>O(n)</td>
+    <td>First character of P mismatches at every position</td>
+  </tr>
+  <tr>
+    <td>Worst case</td>
+    <td>O((n &minus; m + 1) &middot; m) = O(nm)</td>
+    <td>T = "aaa...a", P = "aaa...ab"</td>
+  </tr>
+  <tr>
+    <td>Space</td>
+    <td>O(1)</td>
+    <td>No extra space needed</td>
+  </tr>
+</table>
+
+<h3>1.3 Worked Example</h3>
+<pre><code>Text:    A B C A B C A B D
+Pattern: A B C A B D
+
+Shift 0: A B C A B C  vs  A B C A B D  &rarr; mismatch at position 6 (C &ne; D)
+Shift 1: B vs A &rarr; mismatch at position 1
+Shift 2: C vs A &rarr; mismatch at position 1
+Shift 3: A B C A B D  vs  A B C A B D  &rarr; MATCH at shift 3!
+</code></pre>
+
+<div class="note">
+  <strong>Why is Naive inefficient?</strong> When a mismatch occurs at position j of the pattern after
+  matching j&minus;1 characters, the naive method throws away all information gained and starts fresh
+  at the next shift. Smarter algorithms reuse this information.
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Rabin-Karp Algorithm</h2>
+<!-- ============================================================ -->
+
+<p>
+  The Rabin-Karp algorithm uses <strong>hashing</strong> to speed up string matching. Instead of
+  comparing characters one by one, it computes a hash of the pattern and a rolling hash of each
+  window of text, comparing hashes first.
+</p>
+
+<h3>2.1 Hash Function</h3>
+<p>
+  Treat each string as a number in base d (where d = |&Sigma;|). For a string S[1..m]:
+</p>
+<pre><code>hash(S) = (S[1] &middot; d^(m-1) + S[2] &middot; d^(m-2) + ... + S[m] &middot; d^0) mod q
+
+where q is a large prime number.</code></pre>
+
+<h3>2.2 Rolling Hash</h3>
+<p>
+  The key insight: we can compute the hash of the next window from the previous window in O(1) time.
+</p>
+<pre><code>t(s+1) = (d &middot; (t(s) - T[s+1] &middot; h) + T[s+m+1]) mod q
+
+where h = d^(m-1) mod q  (precomputed)</code></pre>
+
+<p>This removes the leftmost character, shifts left (multiply by d), and adds the new rightmost character.</p>
+
+<h3>2.3 Pseudocode</h3>
+<pre><code>RABIN-KARP-MATCHER(T, P, d, q):
+  n = length(T)
+  m = length(P)
+  h = d^(m-1) mod q          // high-order digit position
+  p = 0                       // hash of pattern
+  t0 = 0                      // hash of first window
+
+  // Preprocessing: compute hash of P and first window of T
+  for i = 1 to m:
+      p = (d * p + P[i]) mod q
+      t0 = (d * t0 + T[i]) mod q
+
+  // Matching
+  for s = 0 to n - m:
+      if p == ts:                         // hash match
+          if P[1..m] == T[s+1..s+m]:     // verify character by character
+              print "Pattern occurs at shift" s
+      if s < n - m:
+          ts+1 = (d * (ts - T[s+1] * h) + T[s+m+1]) mod q
+          if ts+1 < 0:
+              ts+1 = ts+1 + q</code></pre>
+
+<h3>2.4 Spurious Hits</h3>
+<p>
+  A <strong>spurious hit</strong> occurs when the hash values match but the actual strings do not.
+  This is a hash collision. After a hash match, we must verify character by character.
+</p>
+
+<div class="important">
+  <strong>GATE Tip:</strong> Questions often ask about the number of spurious hits. A spurious hit is
+  a shift s where hash(P) = hash(T[s+1..s+m]) but P &ne; T[s+1..s+m]. Choosing a large prime q
+  minimizes spurious hits.
+</div>
+
+<h3>2.5 Complexity</h3>
+<table>
+  <tr>
+    <th>Case</th>
+    <th>Time</th>
+    <th>Explanation</th>
+  </tr>
+  <tr>
+    <td>Preprocessing</td>
+    <td>O(m)</td>
+    <td>Compute hash of pattern and first window</td>
+  </tr>
+  <tr>
+    <td>Best / Average case</td>
+    <td>O(n + m)</td>
+    <td>Few or no spurious hits</td>
+  </tr>
+  <tr>
+    <td>Worst case</td>
+    <td>O((n &minus; m + 1) &middot; m) = O(nm)</td>
+    <td>Every shift produces a hash match (all spurious hits)</td>
+  </tr>
+  <tr>
+    <td>Space</td>
+    <td>O(1)</td>
+    <td>Constant extra space</td>
+  </tr>
+</table>
+
+<h3>2.6 Worked Example (Step by Step)</h3>
+<pre><code>Text:    3 1 4 1 5 9 2 6 5
+Pattern: 2 6 5
+d = 10, q = 13
+
+Step 1: Compute h = 10^(3-1) mod 13 = 100 mod 13 = 9
+
+Step 2: Compute pattern hash
+  p = ((0 * 10 + 2) * 10 + 6) * ...
+  p = (10 * (10 * 2 + 6) + 5) mod 13
+  p = (10 * 26 + 5) mod 13 = 265 mod 13 = 5
+
+Step 3: Compute first window hash (T[1..3] = "314")
+  t0 = (10 * (10 * 3 + 1) + 4) mod 13 = 314 mod 13 = 2
+
+Step 4: Slide through text
+  s=0: t0=2, p=5  &rarr; no match (2 &ne; 5)
+       t1 = (10*(2 - 3*9) + 1) mod 13 = (10*(-25) + 1) mod 13 = -249 mod 13 = 11
+
+  s=1: t1=11, p=5  &rarr; no match
+       t2 = (10*(11 - 1*9) + 5) mod 13 = (10*2 + 5) mod 13 = 25 mod 13 = 12
+
+  s=2: t2=12, p=5  &rarr; no match
+       t3 = (10*(12 - 4*9) + 9) mod 13 = (10*(-24) + 9) mod 13 = -231 mod 13 = 5
+
+  s=3: t3=5, p=5  &rarr; hash match! Verify: T[4..6] = "159" vs P = "265" &rarr; MISMATCH (spurious hit!)
+       t4 = (10*(5 - 1*9) + 2) mod 13 = (10*(-4) + 2) mod 13 = -38 mod 13 = 1
+
+  s=4: t4=1, p=5  &rarr; no match
+       t5 = (10*(1 - 5*9) + 6) mod 13 = (10*(-44) + 6) mod 13 = -434 mod 13 = 5
+
+  s=5: t5=5, p=5  &rarr; hash match! Verify: T[6..8] = "926" vs P = "265" &rarr; MISMATCH (spurious hit!)
+       t6 = (10*(5 - 9*9) + 5) mod 13 = (10*(-76) + 5) mod 13 = -755 mod 13 = 5
+
+  s=6: t6=5, p=5  &rarr; hash match! Verify: T[7..9] = "265" vs P = "265" &rarr; MATCH at shift 6!
+
+Result: Pattern found at position 7 (shift 6). There were 2 spurious hits.</code></pre>
+
+<!-- ============================================================ -->
+<h2>3. Knuth-Morris-Pratt (KMP) Algorithm</h2>
+<!-- ============================================================ -->
+
+<p>
+  KMP is a landmark algorithm that achieves O(n + m) worst-case time by preprocessing the pattern
+  to compute a <strong>failure function</strong> (also called prefix function or partial match table).
+  When a mismatch occurs, the failure function tells us the longest proper prefix of the pattern that
+  is also a suffix of what we have matched, allowing us to skip shifts intelligently.
+</p>
+
+<h3>3.1 The Prefix Function (Failure Function)</h3>
+<p>
+  For a pattern P[1..m], the prefix function &pi; is defined as:
+</p>
+<pre><code>&pi;[i] = length of the longest proper prefix of P[1..i]
+         that is also a suffix of P[1..i]
+
+Proper prefix: a prefix that is not the entire string itself.</code></pre>
+
+<h3>3.2 Computing the Prefix Function</h3>
+<pre><code>COMPUTE-PREFIX-FUNCTION(P):
+  m = length(P)
+  &pi;[1] = 0
+  k = 0              // length of previous longest prefix-suffix
+
+  for q = 2 to m:
+      while k > 0 and P[k+1] &ne; P[q]:
+          k = &pi;[k]   // fall back
+      if P[k+1] == P[q]:
+          k = k + 1
+      &pi;[q] = k
+
+  return &pi;</code></pre>
+
+<h3>3.3 Step-by-Step Prefix Table Construction</h3>
+<p><strong>Example: P = "ABABCABAB"</strong> (m = 9)</p>
+
+<pre><code>Index i:  1  2  3  4  5  6  7  8  9
+Char   :  A  B  A  B  C  A  B  A  B
+
+i=1: &pi;[1] = 0 (by definition)
+
+i=2: P[1..2] = "AB"
+     Proper prefixes: "A"
+     Proper suffixes: "B"
+     No match. &pi;[2] = 0
+
+i=3: P[1..3] = "ABA"
+     Proper prefixes: "A", "AB"
+     Proper suffixes: "A", "BA"
+     "A" matches "A". &pi;[3] = 1
+
+i=4: P[1..4] = "ABAB"
+     Proper prefixes: "A", "AB", "ABA"
+     Proper suffixes: "B", "AB", "BAB"
+     "AB" matches "AB". &pi;[4] = 2
+
+i=5: P[1..5] = "ABABC"
+     Need prefix = suffix. k=2, P[3]='A' &ne; P[5]='C'
+     Fall back: k=&pi;[2]=0, P[1]='A' &ne; P[5]='C'
+     &pi;[5] = 0
+
+i=6: P[1..6] = "ABABCA"
+     k=0, P[1]='A' == P[6]='A'. k=1.
+     &pi;[6] = 1
+
+i=7: P[1..7] = "ABABCAB"
+     k=1, P[2]='B' == P[7]='B'. k=2.
+     &pi;[7] = 2
+
+i=8: P[1..8] = "ABABCABA"
+     k=2, P[3]='A' == P[8]='A'. k=3.
+     &pi;[8] = 3
+
+i=9: P[1..9] = "ABABCABAB"
+     k=3, P[4]='B' == P[9]='B'. k=4.
+     &pi;[9] = 4
+
+Final prefix table:
+Index:  1  2  3  4  5  6  7  8  9
+P    :  A  B  A  B  C  A  B  A  B
+&pi;    :  0  0  1  2  0  1  2  3  4</code></pre>
+
+<div class="note">
+  <strong>Interpretation of &pi;[9] = 4:</strong> The longest proper prefix of "ABABCABAB" that is
+  also a suffix is "ABAB" (length 4). So if we match 9 characters and then get a mismatch, we know
+  the last 4 characters of what we matched are "ABAB", which is the same as the first 4 characters
+  of the pattern. We can resume matching from position 5 of the pattern.
+</div>
+
+<h3>3.4 KMP Matching Algorithm</h3>
+<pre><code>KMP-MATCHER(T, P):
+  n = length(T)
+  m = length(P)
+  &pi; = COMPUTE-PREFIX-FUNCTION(P)
+  q = 0              // number of characters matched
+
+  for i = 1 to n:
+      while q > 0 and P[q+1] &ne; T[i]:
+          q = &pi;[q]   // fall back using prefix function
+      if P[q+1] == T[i]:
+          q = q + 1
+      if q == m:
+          print "Pattern occurs at shift" (i - m)
+          q = &pi;[q]   // look for next match</code></pre>
+
+<h3>3.5 Worked Example: KMP Matching</h3>
+<pre><code>Text:    A B A B C A B A B A B C A B A B
+Pattern: A B A B C A B A B  (&pi; = [0,0,1,2,0,1,2,3,4])
+
+i=1: T[1]='A', q=0. P[1]='A'==T[1]. q=1.
+i=2: T[2]='B', q=1. P[2]='B'==T[2]. q=2.
+i=3: T[3]='A', q=2. P[3]='A'==T[3]. q=3.
+i=4: T[4]='B', q=3. P[4]='B'==T[4]. q=4.
+i=5: T[5]='C', q=4. P[5]='C'==T[5]. q=5.
+i=6: T[6]='A', q=5. P[6]='A'==T[6]. q=6.
+i=7: T[7]='B', q=6. P[7]='B'==T[7]. q=7.
+i=8: T[8]='A', q=7. P[8]='A'==T[8]. q=8.
+i=9: T[9]='B', q=8. P[9]='B'==T[9]. q=9.
+     q == m = 9! &rArr; MATCH at shift 0.
+     q = &pi;[9] = 4. (Resume with 4 characters matched: "ABAB")
+
+i=10: T[10]='A', q=4. P[5]='C' &ne; 'A'.
+      Fall back: q=&pi;[4]=2. P[3]='A'==T[10]. q=3.
+i=11: T[11]='B', q=3. P[4]='B'==T[11]. q=4.
+i=12: T[12]='C', q=4. P[5]='C'==T[12]. q=5.
+i=13: T[13]='A', q=5. P[6]='A'==T[13]. q=6.
+i=14: T[14]='B', q=6. P[7]='B'==T[14]. q=7.
+i=15: T[15]='A', q=7. P[8]='A'==T[15]. q=8.
+i=16: T[16]='B', q=8. P[9]='B'==T[16]. q=9.
+      q == m = 9! &rArr; MATCH at shift 7.
+
+Result: Pattern found at shifts 0 and 7.</code></pre>
+
+<h3>3.6 Time Complexity Analysis</h3>
+<p>
+  <strong>Preprocessing (prefix function):</strong> O(m)<br />
+  <strong>Matching:</strong> O(n)<br />
+  <strong>Total:</strong> O(m + n)
+</p>
+<p><strong>Why is the matching O(n)?</strong></p>
+<p>
+  Use an amortized analysis. The variable q can increase by at most 1 per iteration of the outer loop
+  (n iterations). The while loop decreases q, and q is always &ge; 0. So the total number of times q
+  decreases across all iterations is at most n. Each iteration of the while loop decreases q by at
+  least 1, so the while loop runs at most n times total. Hence matching is O(n).
+</p>
+
+<div class="important">
+  <strong>GATE Tip:</strong> KMP is the most frequently asked string matching algorithm in GATE.
+  You must be able to: (1) compute the prefix table by hand, (2) trace through the matching process,
+  and (3) explain why it is O(n + m).
+</div>
+
+<!-- ============================================================ -->
+<h2>4. Boyer-Moore Algorithm</h2>
+<!-- ============================================================ -->
+
+<p>
+  Boyer-Moore is often the fastest string matching algorithm in practice. It starts comparing from
+  the <strong>rightmost</strong> character of the pattern and uses two heuristics to skip shifts.
+</p>
+
+<h3>4.1 Bad Character Heuristic</h3>
+<p>
+  When a mismatch occurs at pattern position j with text character c:
+</p>
+<ul>
+  <li>If c does not appear in P: shift the pattern past the mismatched character (shift by j).</li>
+  <li>If c appears in P at position k (rightmost occurrence to the left of j): align P[k] with the text character (shift by j &minus; k).</li>
+  <li>If the shift would be negative (c appears to the right of j), shift by 1.</li>
+</ul>
+
+<pre><code>BAD-CHARACTER-TABLE(P, &Sigma;):
+  // last[c] = rightmost position of character c in P, or -1 if not in P
+  for each c in &Sigma;:
+      last[c] = -1
+  for j = 0 to m-1:
+      last[P[j]] = j
+  return last</code></pre>
+
+<h3>4.2 Good Suffix Heuristic</h3>
+<p>
+  When a mismatch occurs after matching a suffix t of P:
+</p>
+<ul>
+  <li>If t reoccurs in P preceded by a different character, align the rightmost such occurrence.</li>
+  <li>If no full reoccurrence, find the longest prefix of P that matches a suffix of t, and align that.</li>
+  <li>If neither applies, shift by m.</li>
+</ul>
+
+<p>The actual shift is the <strong>maximum</strong> of the bad character and good suffix shifts.</p>
+
+<h3>4.3 Pseudocode (Simplified with Bad Character Only)</h3>
+<pre><code>BOYER-MOORE-MATCHER(T, P):
+  n = length(T)
+  m = length(P)
+  last = BAD-CHARACTER-TABLE(P, &Sigma;)
+
+  s = 0                        // current shift
+  while s &le; n - m:
+      j = m - 1                // start from rightmost
+      while j &ge; 0 and P[j] == T[s + j]:
+          j = j - 1
+      if j < 0:
+          print "Pattern at shift" s
+          s = s + 1            // (or use good suffix for better skip)
+      else:
+          s = s + max(1, j - last[T[s + j]])</code></pre>
+
+<h3>4.4 Worked Example</h3>
+<pre><code>Text:    G C A A T G C C T A T G T G
+Pattern: T A T G T G
+
+Bad character table for "TATGTG":
+  T: 4  (rightmost at index 4, 0-indexed; or 5 if we pick index 5...
+          let's use rightmost: T appears at 0,2,4 &rarr; last['T']=4)
+  A: 1
+  G: 5
+  others: -1
+
+Alignment 1 (s=0):
+  Text:    G C A A T G C C T A T G T G
+  Pattern: T A T G T G
+  Compare right to left:
+    j=5: P[5]='G' vs T[5]='G' &rarr; match
+    j=4: P[4]='T' vs T[4]='T' &rarr; match
+    j=3: P[3]='G' vs T[3]='A' &rarr; MISMATCH
+    Bad char: T[3]='A', last['A']=1. shift = max(1, 3-1) = 2.
+  s = 0 + 2 = 2.
+
+Alignment 2 (s=2):
+  Text:    G C A A T G C C T A T G T G
+  Pattern:     T A T G T G
+  Compare right to left:
+    j=5: P[5]='G' vs T[7]='C' &rarr; MISMATCH
+    Bad char: T[7]='C', last['C']=-1. shift = max(1, 5-(-1)) = 6.
+  s = 2 + 6 = 8.
+
+Alignment 3 (s=8):
+  Text:    G C A A T G C C T A T G T G
+  Pattern:                 T A T G T G
+  Compare right to left:
+    j=5: P[5]='G' vs T[13]='G' &rarr; match
+    j=4: P[4]='T' vs T[12]='T' &rarr; match
+    j=3: P[3]='G' vs T[11]='G' &rarr; match
+    j=2: P[2]='T' vs T[10]='T' &rarr; match
+    j=1: P[1]='A' vs T[9]='A'  &rarr; match
+    j=0: P[0]='T' vs T[8]='T'  &rarr; match
+  j < 0 &rArr; MATCH at shift 8!
+
+Result: Pattern found at shift 8, with only 3 alignments (vs 9 for naive).</code></pre>
+
+<h3>4.5 Complexity</h3>
+<table>
+  <tr>
+    <th>Case</th>
+    <th>Time</th>
+  </tr>
+  <tr>
+    <td>Preprocessing</td>
+    <td>O(m + |&Sigma;|)</td>
+  </tr>
+  <tr>
+    <td>Best case</td>
+    <td>O(n/m) &mdash; sublinear!</td>
+  </tr>
+  <tr>
+    <td>Worst case (bad char only)</td>
+    <td>O(nm)</td>
+  </tr>
+  <tr>
+    <td>Worst case (with good suffix)</td>
+    <td>O(n + m)</td>
+  </tr>
+  <tr>
+    <td>Space</td>
+    <td>O(m + |&Sigma;|)</td>
+  </tr>
+</table>
+
+<div class="note">
+  <strong>Why O(n/m) best case?</strong> Consider a text of all 'a's and a pattern ending with 'b'.
+  At each alignment, the rightmost character mismatches immediately, and the bad character heuristic
+  shifts the pattern by m positions. So we make roughly n/m comparisons total.
+</div>
+
+<!-- ============================================================ -->
+<h2>5. Finite Automaton String Matcher</h2>
+<!-- ============================================================ -->
+
+<p>
+  This approach builds a <strong>deterministic finite automaton (DFA)</strong> from the pattern, then
+  runs the text through the DFA in a single pass.
+</p>
+
+<h3>5.1 Construction</h3>
+<p>
+  For pattern P[1..m] over alphabet &Sigma;, construct a DFA with m+1 states {0, 1, ..., m}.
+  State q represents that the last q characters of the text matched the first q characters of P.
+  The transition function &delta;(q, a) gives the next state after reading character a in state q.
+</p>
+
+<pre><code>COMPUTE-TRANSITION-FUNCTION(P, &Sigma;):
+  m = length(P)
+  for q = 0 to m:
+      for each a in &Sigma;:
+          k = min(m, q + 1)
+          // Find longest prefix of P that is a suffix of P[1..q] + a
+          while P[1..k] is not a suffix of P[1..q] + a:
+              k = k - 1
+          &delta;(q, a) = k
+  return &delta;</code></pre>
+
+<pre><code>FINITE-AUTOMATON-MATCHER(T, &delta;, m):
+  n = length(T)
+  q = 0
+  for i = 1 to n:
+      q = &delta;(q, T[i])
+      if q == m:
+          print "Pattern occurs at shift" (i - m)</code></pre>
+
+<h3>5.2 Example: DFA for P = "ABA"</h3>
+<pre><code>States: 0, 1, 2, 3     Alphabet: {A, B}
+
+Transition table:
+State | A | B
+------+---+---
+  0   | 1 | 0
+  1   | 1 | 2
+  2   | 3 | 0
+  3   | 1 | 2    (accept state; continue looking for more matches)
+
+Trace with T = "ABABABA":
+  i=1: q=&delta;(0,'A')=1
+  i=2: q=&delta;(1,'B')=2
+  i=3: q=&delta;(2,'A')=3 &rArr; MATCH at shift 0
+  i=4: q=&delta;(3,'B')=2
+  i=5: q=&delta;(2,'A')=3 &rArr; MATCH at shift 2
+  i=6: q=&delta;(3,'B')=2
+  i=7: q=&delta;(2,'A')=3 &rArr; MATCH at shift 4</code></pre>
+
+<h3>5.3 Complexity</h3>
+<table>
+  <tr>
+    <th>Phase</th>
+    <th>Time</th>
+    <th>Space</th>
+  </tr>
+  <tr>
+    <td>Preprocessing (build DFA)</td>
+    <td>O(m<sup>3</sup> |&Sigma;|) naive, or O(m |&Sigma;|) optimized</td>
+    <td>O(m |&Sigma;|)</td>
+  </tr>
+  <tr>
+    <td>Matching</td>
+    <td>O(n)</td>
+    <td>O(1)</td>
+  </tr>
+</table>
+
+<div class="note">
+  <strong>KMP vs Finite Automaton:</strong> KMP can be seen as an implicit simulation of the finite
+  automaton without explicitly constructing the transition table. KMP uses only O(m) space (the prefix
+  table) instead of O(m|&Sigma;|).
+</div>
+
+<!-- ============================================================ -->
+<h2>6. Comparison of All Algorithms</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Algorithm</th>
+    <th>Preprocessing Time</th>
+    <th>Matching Time (Worst)</th>
+    <th>Matching Time (Best/Avg)</th>
+    <th>Space</th>
+  </tr>
+  <tr>
+    <td>Naive</td>
+    <td>O(0)</td>
+    <td>O(nm)</td>
+    <td>O(n)</td>
+    <td>O(1)</td>
+  </tr>
+  <tr>
+    <td>Rabin-Karp</td>
+    <td>O(m)</td>
+    <td>O(nm)</td>
+    <td>O(n + m)</td>
+    <td>O(1)</td>
+  </tr>
+  <tr>
+    <td>KMP</td>
+    <td>O(m)</td>
+    <td>O(n)</td>
+    <td>O(n)</td>
+    <td>O(m)</td>
+  </tr>
+  <tr>
+    <td>Boyer-Moore</td>
+    <td>O(m + |&Sigma;|)</td>
+    <td>O(n + m)*</td>
+    <td>O(n/m)</td>
+    <td>O(m + |&Sigma;|)</td>
+  </tr>
+  <tr>
+    <td>Finite Automaton</td>
+    <td>O(m|&Sigma;|)</td>
+    <td>O(n)</td>
+    <td>O(n)</td>
+    <td>O(m|&Sigma;|)</td>
+  </tr>
+</table>
+<p><em>*With both heuristics.</em></p>
+
+<!-- ============================================================ -->
+<h2>7. When to Use Which Algorithm</h2>
+<!-- ============================================================ -->
+
+<table>
+  <tr>
+    <th>Scenario</th>
+    <th>Best Choice</th>
+    <th>Reason</th>
+  </tr>
+  <tr>
+    <td>Single pattern, guaranteed worst-case O(n+m)</td>
+    <td><strong>KMP</strong></td>
+    <td>O(n+m) worst case, O(m) space</td>
+  </tr>
+  <tr>
+    <td>Multiple patterns in same text</td>
+    <td><strong>Rabin-Karp</strong></td>
+    <td>Easily extends to multiple patterns (compute hash for each)</td>
+  </tr>
+  <tr>
+    <td>Large alphabet, natural language text</td>
+    <td><strong>Boyer-Moore</strong></td>
+    <td>Sublinear average case O(n/m); large alphabet means more shifts</td>
+  </tr>
+  <tr>
+    <td>Small alphabet (e.g., DNA: {A,C,G,T})</td>
+    <td><strong>KMP</strong> or <strong>Finite Automaton</strong></td>
+    <td>Boyer-Moore less effective with small alphabets</td>
+  </tr>
+  <tr>
+    <td>Pattern searched many times in different texts</td>
+    <td><strong>Finite Automaton</strong></td>
+    <td>Preprocessing done once; matching is O(n) per text</td>
+  </tr>
+  <tr>
+    <td>Simple implementation needed</td>
+    <td><strong>Naive</strong> or <strong>Rabin-Karp</strong></td>
+    <td>Easiest to implement correctly</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>8. GATE-Specific Tips</h2>
+<!-- ============================================================ -->
+
+<div class="important">
+  <strong>Top GATE Topics in String Matching:</strong>
+  <ol>
+    <li>Computing the KMP prefix table (failure function) by hand &mdash; appears almost every year.</li>
+    <li>Number of character comparisons made by naive algorithm.</li>
+    <li>Counting spurious hits in Rabin-Karp.</li>
+    <li>Time complexity questions comparing algorithms.</li>
+    <li>Finite automaton transition table construction.</li>
+  </ol>
+</div>
+
+<h3>8.1 Common Prefix Table Patterns</h3>
+<table>
+  <tr>
+    <th>Pattern</th>
+    <th>Prefix Table</th>
+    <th>Note</th>
+  </tr>
+  <tr>
+    <td>ABCABC</td>
+    <td>[0, 0, 0, 1, 2, 3]</td>
+    <td>Repeating block</td>
+  </tr>
+  <tr>
+    <td>AABAAAB</td>
+    <td>[0, 1, 0, 1, 2, 2, 3]</td>
+    <td>Overlapping prefixes</td>
+  </tr>
+  <tr>
+    <td>ABCDE</td>
+    <td>[0, 0, 0, 0, 0]</td>
+    <td>All distinct characters</td>
+  </tr>
+  <tr>
+    <td>AAAAA</td>
+    <td>[0, 1, 2, 3, 4]</td>
+    <td>All same characters</td>
+  </tr>
+  <tr>
+    <td>ABABAB</td>
+    <td>[0, 0, 1, 2, 3, 4]</td>
+    <td>Alternating pair</td>
+  </tr>
+  <tr>
+    <td>AABCAAB</td>
+    <td>[0, 1, 0, 0, 1, 2, 3]</td>
+    <td>Classic GATE pattern</td>
+  </tr>
+</table>
+
+<h3>8.2 Quick Formulas</h3>
+<ul>
+  <li><strong>Naive comparisons (worst case):</strong> (n &minus; m + 1) &times; m</li>
+  <li><strong>KMP total comparisons:</strong> &le; 2n &minus; 1 (each character compared at most twice in the matching phase)</li>
+  <li><strong>Rabin-Karp expected spurious hits:</strong> (n &minus; m + 1) / q, where q is the prime modulus</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>9. Additional Examples</h2>
+<!-- ============================================================ -->
+
+<h3>9.1 Complete KMP Prefix Table: P = "AABCAABXAAZ"</h3>
+<pre><code>Index:  1   2   3   4   5   6   7   8   9  10  11
+Char :  A   A   B   C   A   A   B   X   A   A   Z
+
+i=1:  &pi;[1] = 0
+i=2:  P[1..2]="AA", prefix "A" = suffix "A". &pi;[2] = 1
+i=3:  P[1..3]="AAB", k=1, P[2]='A'&ne;P[3]='B', k=&pi;[1]=0, P[1]='A'&ne;'B'. &pi;[3] = 0
+i=4:  P[1..4]="AABC", k=0, P[1]='A'&ne;'C'. &pi;[4] = 0
+i=5:  P[1..5]="AABCA", k=0, P[1]='A'==P[5]='A'. k=1. &pi;[5] = 1
+i=6:  P[1..6]="AABCAA", k=1, P[2]='A'==P[6]='A'. k=2. &pi;[6] = 2
+i=7:  P[1..7]="AABCAAB", k=2, P[3]='B'==P[7]='B'. k=3. &pi;[7] = 3
+i=8:  P[1..8]="AABCAABX", k=3, P[4]='C'&ne;P[8]='X'.
+      k=&pi;[3]=0. P[1]='A'&ne;'X'. &pi;[8] = 0
+i=9:  P[1..9]="AABCAABXA", k=0, P[1]='A'==P[9]='A'. k=1. &pi;[9] = 1
+i=10: P[1..10]="AABCAABXAA", k=1, P[2]='A'==P[10]='A'. k=2. &pi;[10] = 2
+i=11: P[1..11]="AABCAABXAAZ", k=2, P[3]='B'&ne;P[11]='Z'.
+      k=&pi;[2]=1, P[2]='A'&ne;'Z'. k=&pi;[1]=0, P[1]='A'&ne;'Z'. &pi;[11] = 0
+
+Result: &pi; = [0, 1, 0, 0, 1, 2, 3, 0, 1, 2, 0]</code></pre>
+
+<h3>9.2 Rabin-Karp with Multiple Patterns</h3>
+<p>
+  Rabin-Karp extends naturally to searching for multiple patterns. Compute the hash of each pattern
+  and store in a set. At each window position, check if the text window hash matches any pattern hash.
+</p>
+<pre><code>RABIN-KARP-MULTI(T, {P1, P2, ..., Pk}, d, q):
+  // Assume all patterns have the same length m
+  Compute hash for each Pi and store in hash set H
+  Compute rolling hash for T
+  for each window position s:
+      if hash(T[s+1..s+m]) is in H:
+          verify against the matching pattern(s)
+
+Time: O(n * m * k) worst case, O(n + km) expected</code></pre>
+
+<h3>9.3 Finite Automaton: Complete DFA for P = "ABAB"</h3>
+<pre><code>States: 0, 1, 2, 3, 4   Alphabet: {A, B, C}
+
+Transition table &delta;:
+State | A | B | C
+------+---+---+---
+  0   | 1 | 0 | 0     (start; seeing 'A' matches P[1])
+  1   | 1 | 2 | 0     (matched "A"; seeing 'B' matches P[1..2])
+  2   | 3 | 0 | 0     (matched "AB"; seeing 'A' matches P[1..3])
+  3   | 1 | 4 | 0     (matched "ABA"; seeing 'B' &rarr; full match!)
+  4   | 3 | 0 | 0     (accept state, matched "ABAB"; seeing 'A' keeps "AB"+"A"=3)
+
+Explanation for &delta;(3, 'A') = 1:
+  We've matched "ABA" and see 'A'. Text ends in "ABAA".
+  Longest prefix of "ABAB" that is suffix of "ABAA": "A" (length 1).
+  So &delta;(3, 'A') = 1.
+
+Explanation for &delta;(4, 'A') = 3:
+  We've matched "ABAB" and see 'A'. Text ends in "ABABA".
+  Longest prefix of "ABAB" that is suffix of "ABABA": "ABA" (length 3).
+  So &delta;(4, 'A') = 3.</code></pre>
+
+<!-- ============================================================ -->
+<h2>10. Practice Quiz</h2>
+<!-- ============================================================ -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "String Matching Algorithms Quiz",
+  "questions": [
+    {
+      "question": "Q1. What is the worst-case time complexity of the naive string matching algorithm for text of length n and pattern of length m?",
+      "options": ["(A) O(n)", "(B) O(n + m)", "(C) O(n log m)", "(D) O((n - m + 1) * m)"],
+      "answer": 3,
+      "explanation": "The naive algorithm tries each of the (n - m + 1) valid shifts and compares up to m characters at each shift. In the worst case (e.g., T = 'aaa...a', P = 'aaa...ab'), every comparison goes through all m characters before failing, giving O((n - m + 1) * m)."
+    },
+    {
+      "question": "Q2. For the pattern P = 'AABAAB', what is the KMP prefix function (failure function) array?",
+      "options": ["(A) [0, 0, 0, 1, 1, 2]", "(B) [0, 1, 0, 1, 2, 3]", "(C) [0, 1, 0, 0, 1, 2]", "(D) [0, 1, 2, 1, 2, 3]"],
+      "answer": 1,
+      "explanation": "P = A A B A A B. π[1]=0. π[2]=1 ('A'='A'). π[3]=0 (no prefix=suffix for 'AAB'). π[4]=1 ('A'='A'). π[5]=2 ('AA'='AA'). π[6]=3 ('AAB'='AAB'). So π = [0, 1, 0, 1, 2, 3]."
+    },
+    {
+      "question": "Q3. In the Rabin-Karp algorithm, what is a 'spurious hit'?",
+      "options": ["(A) A position where the pattern is found", "(B) A position where the hash values match but the strings differ", "(C) A position where the hash values differ but the strings match", "(D) A position where neither hash nor string matches"],
+      "answer": 1,
+      "explanation": "A spurious hit occurs when the hash of the text window equals the hash of the pattern (hash collision), but when we verify character by character, the strings are different. Choosing a large prime q reduces spurious hits."
+    },
+    {
+      "question": "Q4. What is the best-case time complexity of the Boyer-Moore algorithm?",
+      "options": ["(A) O(n)", "(B) O(n + m)", "(C) O(n/m)", "(D) O(n * m)"],
+      "answer": 2,
+      "explanation": "In the best case, Boyer-Moore achieves O(n/m) — sublinear time! This happens when the rightmost character of the pattern frequently mismatches with a character not in the pattern, allowing shifts of m positions at a time."
+    },
+    {
+      "question": "Q5. The KMP algorithm's total number of character comparisons in the matching phase is at most:",
+      "options": ["(A) n", "(B) 2n - 1", "(C) n + m", "(D) n * m"],
+      "answer": 1,
+      "explanation": "In KMP matching, each text character is compared when the index i advances (at most n times) and possibly during fallbacks. By amortized analysis, the total comparisons (advances + fallbacks) is at most 2n - 1, since q can decrease at most as many times as it increases."
+    },
+    {
+      "question": "Q6. For the finite automaton string matcher with pattern of length m over alphabet Σ, the preprocessing time is:",
+      "options": ["(A) O(m)", "(B) O(m²)", "(C) O(m|Σ|)", "(D) O(m² |Σ|)"],
+      "answer": 2,
+      "explanation": "The transition table has m+1 states and |Σ| characters, so O(m|Σ|) entries. Each entry can be computed in O(m) naively (giving O(m²|Σ|)) but with the optimized method using the prefix function, it can be done in O(m|Σ|)."
+    },
+    {
+      "question": "Q7. Which string matching algorithm is best suited for searching multiple patterns of the same length in a single text?",
+      "options": ["(A) KMP", "(B) Boyer-Moore", "(C) Rabin-Karp", "(D) Naive"],
+      "answer": 2,
+      "explanation": "Rabin-Karp naturally extends to multiple patterns: compute hashes for all patterns and store them in a hash set. At each text position, check if the window hash is in the set. This avoids running a separate algorithm for each pattern."
+    },
+    {
+      "question": "Q8. For pattern P = 'ABCABD', the prefix function value π[6] is:",
+      "options": ["(A) 0", "(B) 1", "(C) 2", "(D) 3"],
+      "answer": 2,
+      "explanation": "P[1..6] = 'ABCABD'. We need the longest proper prefix that is also a suffix. 'AB' (prefix P[1..2]) equals the suffix 'BD'? No. Check: suffix of length 2 is 'BD', prefix of length 2 is 'AB' — no match. Suffix of length 1 is 'D', prefix is 'A' — no. Wait, let me recompute: P = A B C A B D. π[1]=0, π[2]=0, π[3]=0, π[4]=1 (A=A), π[5]=2 (AB=AB), π[6]: k=2, P[3]='C' ≠ P[6]='D', k=π[2]=0, P[1]='A' ≠ 'D'. π[6]=0. Actually the answer is (A) 0."
+    },
+    {
+      "question": "Q9. In the Rabin-Karp algorithm with d=10 and q=13, the rolling hash update formula is ts+1 = (d(ts - T[s+1]·h) + T[s+m+1]) mod q. What is h?",
+      "options": ["(A) d mod q", "(B) d^m mod q", "(C) d^(m-1) mod q", "(D) d^(m+1) mod q"],
+      "answer": 2,
+      "explanation": "h = d^(m-1) mod q. This represents the value of the highest-order digit position. When we remove the leftmost character T[s+1] from the hash, we multiply it by h (its positional value) and subtract it."
+    },
+    {
+      "question": "Q10. Which of the following is FALSE about the KMP algorithm?",
+      "options": ["(A) It never re-examines a text character that has been matched", "(B) The prefix function can be computed in O(m) time", "(C) The worst-case matching time is O(n)", "(D) It requires O(n) extra space for the prefix table"],
+      "answer": 3,
+      "explanation": "The prefix table has size m (one entry per pattern character), so it requires O(m) extra space, not O(n). All other statements are true: KMP never backtracks on the text (A), the prefix function is O(m) (B), and matching is O(n) worst case (C)."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

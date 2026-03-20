@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Query Processing and Optimization — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <span class="article-section-tag">Databases</span>
+  <h1>Query Processing and Optimization</h1>
+  <p>
+    Query processing refers to the range of activities involved in extracting data from a database.
+    It includes translating queries expressed in high-level database languages (such as SQL) into
+    expressions that can be used at the physical level of the file system, a variety of query-optimizing
+    transformations, and actual evaluation of queries. This article covers Chapters 15 and 16 of
+    Korth/Silberschatz's <em>Database System Concepts</em> and is essential for GATE CSE preparation.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2>1. Overview of Query Processing Steps</h2>
+  <p>
+    The processing of a query in a relational database system goes through three major phases:
+  </p>
+  <ol>
+    <li><strong>Parsing and Translation:</strong> The SQL query is parsed, validated against the schema, and translated into an equivalent relational algebra expression (or an internal query tree).</li>
+    <li><strong>Optimization:</strong> The query optimizer generates multiple equivalent evaluation plans and chooses the one with the lowest estimated cost.</li>
+    <li><strong>Evaluation:</strong> The chosen query-evaluation plan is executed by the query-evaluation engine, and the result is returned to the user.</li>
+  </ol>
+
+  <div class="mermaid">
+  flowchart LR
+    A["SQL Query"] --> B["Parser &amp; Translator"]
+    B --> C["Relational Algebra Expression"]
+    C --> D["Query Optimizer"]
+    D --> E["Execution Plan"]
+    E --> F["Evaluation Engine"]
+    F --> G["Query Result"]
+    D -- "Statistics from catalog" --> D
+  </div>
+
+  <div class="note">
+    <strong>Key Insight:</strong> The query optimizer does NOT find the absolute best plan. It finds a
+    <em>reasonably good</em> plan while avoiding the worst plans. An exhaustive search of all plans
+    is often too expensive, so heuristics and cost-based pruning are used.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>2. Measures of Query Cost</h2>
+  <p>
+    To compare different evaluation strategies, we need a way to estimate the cost of each. The major
+    cost components are:
+  </p>
+
+  <table>
+    <tr>
+      <th>Cost Component</th>
+      <th>Description</th>
+      <th>Typical Weight</th>
+    </tr>
+    <tr>
+      <td>Disk I/O</td>
+      <td>Number of block transfers (reads/writes) between disk and memory</td>
+      <td>Dominant factor</td>
+    </tr>
+    <tr>
+      <td>Seek Time</td>
+      <td>Number of disk seeks required</td>
+      <td>Significant (5-10ms per seek)</td>
+    </tr>
+    <tr>
+      <td>CPU Cost</td>
+      <td>Time for in-memory processing (comparisons, hashing, etc.)</td>
+      <td>Usually secondary</td>
+    </tr>
+    <tr>
+      <td>Network Cost</td>
+      <td>Cost of transferring data over network (distributed databases)</td>
+      <td>Relevant in distributed settings</td>
+    </tr>
+  </table>
+
+  <p>The standard cost model uses two parameters:</p>
+  <ul>
+    <li><code>t<sub>T</sub></code> = time for one block transfer (typically 0.1 ms)</li>
+    <li><code>t<sub>S</sub></code> = time for one disk seek (typically 4-10 ms)</li>
+  </ul>
+  <p>
+    <strong>Total Cost = (number of block transfers) &times; t<sub>T</sub> + (number of seeks) &times; t<sub>S</sub></strong>
+  </p>
+
+  <div class="important">
+    <strong>GATE Convention:</strong> In most GATE problems, the cost is measured purely in terms of
+    the <em>number of disk block transfers</em> (ignoring seek time and CPU cost), unless stated otherwise.
+  </div>
+
+  <h3>2.1 Notation Used</h3>
+  <table>
+    <tr><th>Symbol</th><th>Meaning</th></tr>
+    <tr><td><code>b<sub>r</sub></code></td><td>Number of disk blocks containing records of relation <em>r</em></td></tr>
+    <tr><td><code>n<sub>r</sub></code></td><td>Number of tuples in relation <em>r</em></td></tr>
+    <tr><td><code>f<sub>r</sub></code></td><td>Blocking factor of <em>r</em> (tuples per block)</td></tr>
+    <tr><td><code>V(A, r)</code></td><td>Number of distinct values of attribute <em>A</em> in relation <em>r</em></td></tr>
+    <tr><td><code>h<sub>i</sub></code></td><td>Height of index <em>i</em> (for B+ tree indices)</td></tr>
+    <tr><td><code>M</code></td><td>Number of memory buffer blocks available</td></tr>
+  </table>
+  <p>Recall: <code>b<sub>r</sub> = ceil(n<sub>r</sub> / f<sub>r</sub>)</code></p>
+
+  <!-- ============================================================ -->
+  <h2>3. Selection Operation</h2>
+  <p>
+    The selection operation <code>&sigma;<sub>&theta;</sub>(r)</code> retrieves tuples from relation
+    <em>r</em> that satisfy the predicate &theta;. Several algorithms exist with different costs.
+  </p>
+
+  <h3>3.1 Linear Search (Full Table Scan)</h3>
+  <p>
+    Scan every block of the relation and test each tuple against the selection condition.
+  </p>
+  <ul>
+    <li><strong>Cost (general predicate):</strong> <code>b<sub>r</sub></code> block transfers + 1 seek</li>
+    <li><strong>Cost (key attribute equality):</strong> Average case = <code>b<sub>r</sub>/2</code> block transfers + 1 seek (stop after finding the match)</li>
+  </ul>
+  <p>
+    Linear search is always applicable regardless of selection condition, ordering of the file, or
+    availability of indices. It is the baseline algorithm.
+  </p>
+
+  <h3>3.2 Binary Search</h3>
+  <p>
+    Applicable only when the file is <strong>sorted on the selection attribute</strong> and the condition
+    is an equality comparison on that attribute.
+  </p>
+  <ul>
+    <li><strong>Cost:</strong> <code>ceil(log<sub>2</sub>(b<sub>r</sub>))</code> block transfers for the search + seeks</li>
+    <li>If multiple records match (non-key), add the cost of reading contiguous overflow blocks.</li>
+  </ul>
+  <p>
+    <strong>Formula for non-key equality:</strong>
+    <code>ceil(log<sub>2</sub>(b<sub>r</sub>)) + ceil(n<sub>r</sub> / V(A,r) / f<sub>r</sub>) - 1</code>
+  </p>
+
+  <h3>3.3 Index Scan</h3>
+  <p>Selection using an index. The type of index determines the cost.</p>
+
+  <h4>3.3.1 Primary Index (Clustering Index), Equality on Key</h4>
+  <ul>
+    <li>Traverse the B+ tree from root to leaf, then read one data block.</li>
+    <li><strong>Cost:</strong> <code>(h<sub>i</sub> + 1)</code> block transfers + <code>(h<sub>i</sub> + 1)</code> seeks</li>
+  </ul>
+
+  <h4>3.3.2 Primary Index, Equality on Non-Key</h4>
+  <ul>
+    <li>Multiple records may match; they are stored contiguously.</li>
+    <li><strong>Cost:</strong> <code>h<sub>i</sub> + ceil(n<sub>r</sub> / V(A,r) / f<sub>r</sub>)</code> block transfers</li>
+  </ul>
+
+  <h4>3.3.3 Secondary Index (Non-clustering), Equality on Key</h4>
+  <ul>
+    <li><strong>Cost:</strong> <code>(h<sub>i</sub> + 1)</code> block transfers (same as primary key case)</li>
+  </ul>
+
+  <h4>3.3.4 Secondary Index, Equality on Non-Key</h4>
+  <ul>
+    <li>Each matching record may be on a different block (worst case).</li>
+    <li><strong>Cost:</strong> <code>h<sub>i</sub> + n<sub>r</sub> / V(A,r)</code> block transfers (up to one seek per record)</li>
+  </ul>
+
+  <div class="important">
+    <strong>GATE Trap:</strong> Secondary index on a non-key attribute can be <em>more expensive</em> than
+    a linear scan when the number of matching tuples is large, because each record fetch may require a
+    separate disk block read.
+  </div>
+
+  <h3>3.4 Cost Summary Table for Selection</h3>
+  <table>
+    <tr>
+      <th>Algorithm</th>
+      <th>Condition</th>
+      <th>Block Transfers</th>
+    </tr>
+    <tr>
+      <td>Linear search (key)</td>
+      <td>Equality on key</td>
+      <td>b<sub>r</sub>/2 (avg)</td>
+    </tr>
+    <tr>
+      <td>Linear search (general)</td>
+      <td>Any</td>
+      <td>b<sub>r</sub></td>
+    </tr>
+    <tr>
+      <td>Binary search (key)</td>
+      <td>Equality on sort key</td>
+      <td>ceil(log<sub>2</sub>(b<sub>r</sub>))</td>
+    </tr>
+    <tr>
+      <td>Primary index, key</td>
+      <td>Equality on key</td>
+      <td>h<sub>i</sub> + 1</td>
+    </tr>
+    <tr>
+      <td>Primary index, non-key</td>
+      <td>Equality on non-key</td>
+      <td>h<sub>i</sub> + ceil(sc(A,r)/f<sub>r</sub>)</td>
+    </tr>
+    <tr>
+      <td>Secondary index, key</td>
+      <td>Equality on key</td>
+      <td>h<sub>i</sub> + 1</td>
+    </tr>
+    <tr>
+      <td>Secondary index, non-key</td>
+      <td>Equality on non-key</td>
+      <td>h<sub>i</sub> + sc(A,r)</td>
+    </tr>
+  </table>
+  <p>Where <code>sc(A,r) = n<sub>r</sub> / V(A,r)</code> is the selection cardinality.</p>
+
+  <!-- ============================================================ -->
+  <h2>4. Join Operations</h2>
+  <p>
+    The join operation is one of the most expensive and frequently used operations in query processing.
+    Several algorithms have been developed. We use <em>r</em> and <em>s</em> to denote the two relations
+    being joined, with <code>b<sub>r</sub></code>, <code>b<sub>s</sub></code> blocks and <code>n<sub>r</sub></code>, <code>n<sub>s</sub></code> tuples respectively.
+  </p>
+
+  <h3>4.1 Nested-Loop Join (Simple / Tuple-Based)</h3>
+  <pre><code>for each tuple t_r in r:
+    for each tuple t_s in s:
+        if (t_r, t_s) satisfies join condition:
+            output (t_r, t_s)</code></pre>
+
+  <p><strong>Cost Analysis:</strong></p>
+  <ul>
+    <li>For each tuple in <em>r</em> (the outer relation), we scan all of <em>s</em> (the inner relation).</li>
+    <li><strong>Block transfers:</strong> <code>n<sub>r</sub> &times; b<sub>s</sub> + b<sub>r</sub></code></li>
+    <li><strong>Seeks:</strong> <code>n<sub>r</sub> + b<sub>r</sub></code></li>
+  </ul>
+  <div class="note">
+    <strong>Tip:</strong> The relation with fewer tuples should be the outer relation to minimize cost.
+  </div>
+
+  <h3>4.2 Block Nested-Loop Join</h3>
+  <p>
+    Instead of iterating tuple-by-tuple in the outer loop, we iterate block-by-block. For each block
+    of the outer relation, we scan all blocks of the inner relation.
+  </p>
+  <pre><code>for each block B_r of r:
+    for each block B_s of s:
+        for each tuple t_r in B_r:
+            for each tuple t_s in B_s:
+                if (t_r, t_s) satisfies join condition:
+                    output (t_r, t_s)</code></pre>
+
+  <p><strong>Cost Analysis:</strong></p>
+  <ul>
+    <li><strong>Block transfers:</strong> <code>b<sub>r</sub> &times; b<sub>s</sub> + b<sub>r</sub></code></li>
+    <li><strong>Seeks:</strong> <code>2 &times; b<sub>r</sub></code></li>
+  </ul>
+
+  <h4>Improvement with M Memory Blocks</h4>
+  <p>
+    If we have <code>M</code> buffer blocks, use <code>(M-2)</code> blocks for the outer relation,
+    1 block for the inner, and 1 block for output.
+  </p>
+  <ul>
+    <li><strong>Block transfers:</strong> <code>ceil(b<sub>r</sub>/(M-2)) &times; b<sub>s</sub> + b<sub>r</sub></code></li>
+    <li><strong>Seeks:</strong> <code>2 &times; ceil(b<sub>r</sub>/(M-2))</code></li>
+  </ul>
+
+  <div class="important">
+    <strong>GATE Favorite:</strong> Block nested-loop join cost formula with M buffers is a frequently
+    tested topic. Always make the smaller relation the outer to minimize the number of scans of the inner.
+  </div>
+
+  <h3>4.3 Sort-Merge Join</h3>
+  <p>
+    Both relations are first sorted on the join attribute, then merged in a manner similar to the merge
+    step of merge sort.
+  </p>
+  <pre><code>1. Sort r on join attribute A  (if not already sorted)
+2. Sort s on join attribute A  (if not already sorted)
+3. Merge:
+   pr = first tuple of r
+   ps = first tuple of s
+   while (pr != null and ps != null):
+       if pr.A == ps.A:
+           output all matching pairs
+       else if pr.A < ps.A:
+           advance pr
+       else:
+           advance ps</code></pre>
+
+  <p><strong>Cost Analysis:</strong></p>
+  <ul>
+    <li><strong>Sorting cost for r:</strong> <code>2 &times; b<sub>r</sub> &times; ceil(log<sub>M-1</sub>(ceil(b<sub>r</sub>/M)))</code> (for external sort, explained below)</li>
+    <li><strong>Sorting cost for s:</strong> <code>2 &times; b<sub>s</sub> &times; ceil(log<sub>M-1</sub>(ceil(b<sub>s</sub>/M)))</code></li>
+    <li><strong>Merge cost:</strong> <code>b<sub>r</sub> + b<sub>s</sub></code> (assuming no duplicates spanning many blocks)</li>
+    <li><strong>Total (if not pre-sorted):</strong> Sort cost for r + Sort cost for s + <code>b<sub>r</sub> + b<sub>s</sub></code></li>
+  </ul>
+
+  <div class="note">
+    <strong>When is sort-merge efficient?</strong> When one or both relations are already sorted on the
+    join attribute, or when the result needs to be sorted anyway. It scales well for large relations.
+  </div>
+
+  <h3>4.4 Hash Join</h3>
+  <p>
+    Uses a hash function on the join attribute to partition both relations into corresponding buckets,
+    then matches tuples within the same bucket.
+  </p>
+  <pre><code>Phase 1 (Partition):
+  Hash r into n partitions: r_0, r_1, ..., r_(n-1)
+  Hash s into n partitions: s_0, s_1, ..., s_(n-1)
+
+Phase 2 (Build &amp; Probe):
+  for each partition i:
+      Build hash table on r_i (smaller partition)
+      Probe with each tuple of s_i
+      Output matching pairs</code></pre>
+
+  <p><strong>Cost Analysis (no overflow):</strong></p>
+  <ul>
+    <li><strong>Partitioning phase:</strong> <code>2 &times; (b<sub>r</sub> + b<sub>s</sub>)</code> block transfers (read + write each block once)</li>
+    <li><strong>Matching phase:</strong> <code>b<sub>r</sub> + b<sub>s</sub></code> block transfers</li>
+    <li><strong>Total:</strong> <code>3 &times; (b<sub>r</sub> + b<sub>s</sub>)</code> block transfers</li>
+  </ul>
+
+  <p><strong>Memory requirement:</strong> The smaller relation (say <em>r</em>) must satisfy <code>b<sub>r</sub> &le; M &times; (M-1)</code> or equivalently each partition of the build input must fit in memory. Typically requires <code>M &ge; ceil(sqrt(b<sub>s</sub>)) + 1</code> where <em>s</em> is the larger relation (but the build is done on the smaller).</p>
+
+  <h3>4.5 Join Cost Comparison Table</h3>
+  <table>
+    <tr>
+      <th>Algorithm</th>
+      <th>Block Transfers</th>
+      <th>Memory Needed</th>
+      <th>Best When</th>
+    </tr>
+    <tr>
+      <td>Simple nested-loop</td>
+      <td>n<sub>r</sub> &times; b<sub>s</sub> + b<sub>r</sub></td>
+      <td>3 blocks</td>
+      <td>Tiny outer relation</td>
+    </tr>
+    <tr>
+      <td>Block nested-loop</td>
+      <td>ceil(b<sub>r</sub>/(M-2)) &times; b<sub>s</sub> + b<sub>r</sub></td>
+      <td>M blocks</td>
+      <td>Small relations, limited memory</td>
+    </tr>
+    <tr>
+      <td>Sort-merge join</td>
+      <td>Sort costs + b<sub>r</sub> + b<sub>s</sub></td>
+      <td>M blocks</td>
+      <td>Pre-sorted data or sort needed later</td>
+    </tr>
+    <tr>
+      <td>Hash join</td>
+      <td>3(b<sub>r</sub> + b<sub>s</sub>)</td>
+      <td>sqrt(b<sub>smaller</sub>)</td>
+      <td>Equi-joins, adequate memory</td>
+    </tr>
+    <tr>
+      <td>Index nested-loop</td>
+      <td>b<sub>r</sub> + n<sub>r</sub> &times; c</td>
+      <td>Minimal + index</td>
+      <td>Index exists on inner join attr</td>
+    </tr>
+  </table>
+  <p>Where <code>c</code> is the cost of a single index lookup and retrieval on the inner relation.</p>
+
+  <!-- ============================================================ -->
+  <h2>5. External Sorting (Multi-Way Merge Sort)</h2>
+  <p>
+    When the data to be sorted does not fit in main memory, we use <strong>external sorting</strong>.
+    The standard algorithm is the multi-way merge sort.
+  </p>
+
+  <h3>5.1 Algorithm</h3>
+  <ol>
+    <li><strong>Create initial sorted runs:</strong> Read <code>M</code> blocks into memory, sort them in-memory, write them out as a sorted run. Repeat until all data is processed. This creates <code>ceil(b<sub>r</sub>/M)</code> initial runs.</li>
+    <li><strong>Merge passes:</strong> In each pass, merge up to <code>(M-1)</code> runs at a time (using 1 block per run for input and 1 block for output). Repeat until only one run remains.</li>
+  </ol>
+
+  <h3>5.2 Cost Formula</h3>
+  <p>Let <code>b<sub>r</sub></code> be the number of blocks in the relation and <code>M</code> be the number of available memory blocks.</p>
+  <ul>
+    <li><strong>Number of initial runs:</strong> <code>N<sub>0</sub> = ceil(b<sub>r</sub>/M)</code></li>
+    <li><strong>Number of merge passes:</strong> <code>ceil(log<sub>M-1</sub>(N<sub>0</sub>))</code></li>
+    <li><strong>Total number of passes:</strong> <code>1 + ceil(log<sub>M-1</sub>(N<sub>0</sub>))</code> (including the initial run creation pass)</li>
+    <li><strong>Total block transfers:</strong> <code>2 &times; b<sub>r</sub> &times; (1 + ceil(log<sub>M-1</sub>(ceil(b<sub>r</sub>/M))))</code></li>
+  </ul>
+  <p>
+    The factor of 2 arises because each pass reads and writes all blocks. The final pass write may
+    not be counted if the output is pipelined.
+  </p>
+
+  <h3>5.3 Worked Example</h3>
+  <div class="note">
+    <strong>Example:</strong> Sort a relation with <code>b<sub>r</sub> = 1000</code> blocks using
+    <code>M = 10</code> buffer blocks.
+    <ul>
+      <li>Initial runs: <code>ceil(1000/10) = 100</code> runs, each of 10 blocks</li>
+      <li>Pass 1: Merge 9 runs at a time &rarr; <code>ceil(100/9) = 12</code> runs</li>
+      <li>Pass 2: Merge 9 at a time &rarr; <code>ceil(12/9) = 2</code> runs</li>
+      <li>Pass 3: Merge 2 runs &rarr; 1 final sorted run</li>
+      <li>Number of merge passes: <code>ceil(log<sub>9</sub>(100)) = ceil(2.096) = 3</code></li>
+      <li>Total passes: 1 + 3 = 4</li>
+      <li>Total block transfers: <code>2 &times; 1000 &times; 4 = 8000</code></li>
+    </ul>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>6. Evaluation of Expressions</h2>
+  <p>
+    A query typically involves multiple operations (selections, joins, projections). There are two
+    broad approaches to evaluating the full expression.
+  </p>
+
+  <h3>6.1 Materialization</h3>
+  <p>
+    Each intermediate operation is computed in full and its result is <strong>materialized</strong>
+    (stored temporarily on disk) before being used as input to the next operation.
+  </p>
+  <ul>
+    <li><strong>Advantage:</strong> Simple to implement; each operation can use any algorithm.</li>
+    <li><strong>Disadvantage:</strong> High I/O cost due to writing and reading intermediate results.</li>
+  </ul>
+
+  <h3>6.2 Pipelining</h3>
+  <p>
+    Tuples are passed directly from one operation to the next as they are generated, without being
+    written to disk. Operations run concurrently.
+  </p>
+  <ul>
+    <li><strong>Advantage:</strong> Eliminates the cost of writing/reading intermediate results. Reduced memory usage.</li>
+    <li><strong>Disadvantage:</strong> Not always possible (e.g., sorting requires all input before producing output). More complex to implement.</li>
+  </ul>
+
+  <h4>Types of Pipelining</h4>
+  <table>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Mechanism</th>
+    </tr>
+    <tr>
+      <td>Demand-driven (lazy/pull)</td>
+      <td>Each operator requests tuples from its child when needed</td>
+      <td>Iterator model with <code>open()</code>, <code>next()</code>, <code>close()</code></td>
+    </tr>
+    <tr>
+      <td>Producer-driven (eager/push)</td>
+      <td>Each operator pushes tuples to its parent as soon as available</td>
+      <td>Uses buffers between operators</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>Blocking vs Non-blocking operators:</strong> A blocking operator (e.g., sort, hash-join build phase)
+    must consume all its input before producing any output. Non-blocking operators (e.g., select, project)
+    can produce output tuple-by-tuple. Pipelining is most effective with non-blocking operators.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>7. Query Optimization</h2>
+
+  <h3>7.1 Equivalence Rules for Relational Algebra</h3>
+  <p>
+    The query optimizer uses algebraic equivalence rules to transform a query expression into different
+    but equivalent forms. The key equivalence rules are:
+  </p>
+
+  <table>
+    <tr><th>#</th><th>Rule</th><th>Description</th></tr>
+    <tr>
+      <td>1</td>
+      <td>&sigma;<sub>&theta;1 AND &theta;2</sub>(E) = &sigma;<sub>&theta;1</sub>(&sigma;<sub>&theta;2</sub>(E))</td>
+      <td>Cascade of selections</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>&sigma;<sub>&theta;1</sub>(&sigma;<sub>&theta;2</sub>(E)) = &sigma;<sub>&theta;2</sub>(&sigma;<sub>&theta;1</sub>(E))</td>
+      <td>Commutativity of selection</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>&Pi;<sub>L1</sub>(&Pi;<sub>L2</sub>(...(&Pi;<sub>Ln</sub>(E))...)) = &Pi;<sub>L1</sub>(E)</td>
+      <td>Cascade of projections (if L1 &sube; L2 &sube; ... &sube; Ln)</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>E1 &bowtie; E2 = E2 &bowtie; E1</td>
+      <td>Commutativity of join</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>(E1 &bowtie; E2) &bowtie; E3 = E1 &bowtie; (E2 &bowtie; E3)</td>
+      <td>Associativity of join</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>&sigma;<sub>&theta;</sub>(E1 &bowtie; E2) = &sigma;<sub>&theta;</sub>(E1) &bowtie; E2</td>
+      <td>Selection pushdown (if &theta; involves only E1's attributes)</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>&Pi;<sub>L</sub>(E1 &bowtie; E2) = &Pi;<sub>L1</sub>(E1) &bowtie; &Pi;<sub>L2</sub>(E2)</td>
+      <td>Projection pushdown (with appropriate attribute sets)</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>E1 &cup; E2 = E2 &cup; E1</td>
+      <td>Commutativity of union</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>E1 &cap; E2 = E2 &cap; E1</td>
+      <td>Commutativity of intersection</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>&sigma;<sub>&theta;</sub>(E1 - E2) = &sigma;<sub>&theta;</sub>(E1) - E2</td>
+      <td>Selection distributes over set difference</td>
+    </tr>
+  </table>
+
+  <h3>7.2 Heuristic Optimization</h3>
+  <p>
+    Heuristic (rule-based) optimization applies a set of transformation rules that are <em>almost always</em>
+    beneficial, without estimating actual costs:
+  </p>
+  <ol>
+    <li><strong>Push selections down:</strong> Perform selections as early as possible to reduce the
+        size of intermediate results. This is the single most important heuristic.</li>
+    <li><strong>Push projections down:</strong> Eliminate unnecessary attributes early to reduce tuple width.</li>
+    <li><strong>Perform most restrictive selections first:</strong> Among multiple selections, apply
+        the one that eliminates the most tuples first.</li>
+    <li><strong>Avoid Cartesian products:</strong> Replace Cartesian products followed by selections with
+        join operations.</li>
+    <li><strong>Choose optimal join ordering:</strong> For multi-way joins, the order of joins can dramatically
+        affect performance.</li>
+  </ol>
+
+  <div class="mermaid">
+  flowchart TB
+    A["&Pi;(name)"] --> B["&sigma;(dept='CS' AND salary>80000)"]
+    B --> C["student &times; instructor"]
+    style A fill:#e8f8f5
+    style B fill:#fef9e7
+    style C fill:#fdecea
+  </div>
+  <p style="text-align:center"><em>Before optimization: Selection happens after Cartesian product</em></p>
+
+  <div class="mermaid">
+  flowchart TB
+    A2["&Pi;(name)"] --> B2["&bowtie;"]
+    B2 --> C2["&sigma;(dept='CS')(student)"]
+    B2 --> D2["&sigma;(salary>80000)(instructor)"]
+    style A2 fill:#e8f8f5
+    style C2 fill:#d5f5e3
+    style D2 fill:#d5f5e3
+  </div>
+  <p style="text-align:center"><em>After optimization: Selections pushed down, Cartesian product replaced with join</em></p>
+
+  <h3>7.3 Cost-Based Optimization</h3>
+  <p>
+    Cost-based optimization uses statistical information from the system catalog to estimate the cost of
+    different evaluation plans and selects the cheapest.
+  </p>
+  <h4>Statistics Used</h4>
+  <ul>
+    <li><code>n<sub>r</sub></code>: number of tuples in relation <em>r</em></li>
+    <li><code>b<sub>r</sub></code>: number of blocks</li>
+    <li><code>V(A, r)</code>: number of distinct values of attribute <em>A</em></li>
+    <li>Histogram information (distribution of values)</li>
+    <li>Index information (type, height, etc.)</li>
+  </ul>
+
+  <h4>Size Estimation</h4>
+  <p>The optimizer estimates the size of intermediate results:</p>
+  <table>
+    <tr><th>Operation</th><th>Estimated Size (tuples)</th></tr>
+    <tr><td>&sigma;<sub>A=v</sub>(r)</td><td>n<sub>r</sub> / V(A,r)</td></tr>
+    <tr><td>&sigma;<sub>A&le;v</sub>(r)</td><td>n<sub>r</sub> &times; (v - min(A,r)) / (max(A,r) - min(A,r)) (uniform assumption)</td></tr>
+    <tr><td>r &bowtie; s (on common attribute)</td><td>n<sub>r</sub> &times; n<sub>s</sub> / max(V(A,r), V(A,s))</td></tr>
+    <tr><td>r &times; s</td><td>n<sub>r</sub> &times; n<sub>s</sub></td></tr>
+    <tr><td>&Pi;<sub>A</sub>(r)</td><td>V(A,r)</td></tr>
+  </table>
+
+  <div class="important">
+    <strong>GATE Important:</strong> The join size estimation formula
+    <code>n<sub>r</sub> &times; n<sub>s</sub> / max(V(A,r), V(A,s))</code> is frequently tested.
+    Know it cold.
+  </div>
+
+  <h4>Join Ordering</h4>
+  <p>
+    For <em>n</em> relations, there are <code>(2(n-1))! / (n-1)!</code> possible join orderings
+    (Catalan number growth). For n=4, that is already 120 possible orderings. Dynamic programming
+    is used to find the optimal plan in O(3<sup>n</sup>) time by building up optimal plans for
+    subsets of relations.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2>8. Query Execution Plans</h2>
+  <p>
+    A query execution plan (or evaluation plan) specifies not just the order of operations but also
+    the algorithm to use for each operation. It includes:
+  </p>
+  <ul>
+    <li>The order in which operations are performed</li>
+    <li>The algorithm for each operation (e.g., hash join vs sort-merge join)</li>
+    <li>How results are passed between operations (materialization vs pipelining)</li>
+    <li>Which indices to use</li>
+  </ul>
+
+  <div class="mermaid">
+  flowchart TB
+    A3["&Pi; name, salary (pipeline)"] --> B3["Hash Join on dept_id (pipeline)"]
+    B3 --> C3["Index Scan on instructor (B+ tree on dept_id)"]
+    B3 --> D3["Full Scan on department with &sigma; building='Watson'"]
+  </div>
+  <p style="text-align:center"><em>Example execution plan with algorithms and pipeline annotations</em></p>
+
+  <!-- ============================================================ -->
+  <h2>9. Worked Examples with Cost Calculations</h2>
+
+  <h3>Example 1: Choosing a Selection Algorithm</h3>
+  <div class="note">
+    <strong>Given:</strong> Relation <em>student</em> with <code>n<sub>r</sub> = 10,000</code> tuples,
+    <code>f<sub>r</sub> = 20</code> tuples per block, so <code>b<sub>r</sub> = 500</code> blocks.
+    There is a B+ tree index on <em>dept_name</em> with height <code>h<sub>i</sub> = 3</code>.
+    <code>V(dept_name, student) = 25</code>.<br><br>
+    <strong>Query:</strong> <code>&sigma;<sub>dept_name='CS'</sub>(student)</code><br><br>
+    <strong>Solution:</strong><br>
+    <strong>Option A - Linear scan:</strong> Cost = 500 block transfers<br>
+    <strong>Option B - B+ tree index (secondary):</strong> Cost = h<sub>i</sub> + sc(dept_name, student) = 3 + 10000/25 = 3 + 400 = 403 block transfers<br><br>
+    Index scan (403) is better than linear scan (500) in this case.<br><br>
+    But if <code>V(dept_name, student) = 5</code>, then index cost = 3 + 10000/5 = 2003, which is
+    <em>much worse</em> than linear scan. This illustrates why the optimizer must consider selectivity.
+  </div>
+
+  <h3>Example 2: Choosing a Join Algorithm</h3>
+  <div class="note">
+    <strong>Given:</strong>
+    <ul>
+      <li>Relation <em>r</em>: b<sub>r</sub> = 100 blocks, n<sub>r</sub> = 5000 tuples</li>
+      <li>Relation <em>s</em>: b<sub>s</sub> = 400 blocks, n<sub>s</sub> = 10000 tuples</li>
+      <li>Available memory: M = 52 blocks</li>
+    </ul>
+    <strong>Compare join costs:</strong><br><br>
+    <strong>Block nested-loop join (r as outer):</strong><br>
+    Cost = ceil(100/50) &times; 400 + 100 = 2 &times; 400 + 100 = 900 block transfers<br><br>
+    <strong>Block nested-loop join (s as outer):</strong><br>
+    Cost = ceil(400/50) &times; 100 + 400 = 8 &times; 100 + 400 = 1200 block transfers<br><br>
+    <strong>Hash join:</strong><br>
+    Cost = 3 &times; (100 + 400) = 1500 block transfers<br>
+    Memory check: sqrt(100) + 1 = 11 &le; 52, so hash join is feasible.<br><br>
+    <strong>Sort-merge join:</strong><br>
+    Sort r: 2 &times; 100 &times; (1 + ceil(log<sub>51</sub>(2))) = 2 &times; 100 &times; 2 = 400<br>
+    Sort s: 2 &times; 400 &times; (1 + ceil(log<sub>51</sub>(8))) = 2 &times; 400 &times; 2 = 1600<br>
+    Merge: 100 + 400 = 500<br>
+    Total: 400 + 1600 + 500 = 2500 block transfers<br><br>
+    <strong>Winner: Block nested-loop join with r as outer = 900 block transfers.</strong>
+  </div>
+
+  <h3>Example 3: Heuristic Optimization</h3>
+  <div class="note">
+    <strong>Query:</strong>
+    <pre><code>SELECT name
+FROM student, takes, course
+WHERE student.ID = takes.ID
+  AND takes.course_id = course.course_id
+  AND course.dept_name = 'CS'
+  AND student.tot_cred > 100</code></pre>
+
+    <strong>Initial relational algebra:</strong><br>
+    &Pi;<sub>name</sub>(&sigma;<sub>course.dept='CS' AND student.tot_cred>100</sub>(student &times; takes &times; course))<br><br>
+
+    <strong>After heuristic optimization:</strong><br>
+    1. Push selections down:<br>
+    &Pi;<sub>name</sub>((&sigma;<sub>tot_cred>100</sub>(student)) &bowtie;<sub>ID</sub> takes &bowtie;<sub>course_id</sub> (&sigma;<sub>dept='CS'</sub>(course)))<br><br>
+    2. Push projections down:<br>
+    &Pi;<sub>name</sub>((&Pi;<sub>ID,name</sub>(&sigma;<sub>tot_cred>100</sub>(student))) &bowtie;<sub>ID</sub> (&Pi;<sub>ID,course_id</sub>(takes)) &bowtie;<sub>course_id</sub> (&Pi;<sub>course_id</sub>(&sigma;<sub>dept='CS'</sub>(course))))<br><br>
+    This dramatically reduces the size of intermediate results.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>10. Summary of Key Points for GATE</h2>
+  <ul>
+    <li>Know all selection algorithm costs by heart.</li>
+    <li>Block nested-loop join with M buffers: <code>ceil(b<sub>r</sub>/(M-2)) &times; b<sub>s</sub> + b<sub>r</sub></code></li>
+    <li>Hash join cost: <code>3(b<sub>r</sub> + b<sub>s</sub>)</code> (no overflow).</li>
+    <li>External sort: total passes = <code>1 + ceil(log<sub>M-1</sub>(ceil(b<sub>r</sub>/M)))</code>.</li>
+    <li>Join size estimation: <code>n<sub>r</sub> &times; n<sub>s</sub> / max(V(A,r), V(A,s))</code>.</li>
+    <li>Pushing selections and projections down is the primary heuristic optimization.</li>
+    <li>Pipelining avoids materialization costs but is not always possible (blocking operators).</li>
+  </ul>
+
+  <!-- ============================================================ -->
+  <h2>Quiz: Query Processing and Optimization</h2>
+
+  <script type="application/json" class="quiz-data">
+  {
+    "title": "Query Processing and Optimization Quiz",
+    "questions": [
+      {
+        "question": "Q1. A relation r has b_r = 1000 blocks and is to be sorted using external merge sort with M = 11 buffer blocks. How many passes are needed in total (including the initial run creation pass)?",
+        "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 5"],
+        "answer": 1,
+        "explanation": "Initial runs = ceil(1000/11) = 91. Number of merge passes = ceil(log_10(91)) = ceil(1.959) = 2. Total passes = 1 + 2 = 3."
+      },
+      {
+        "question": "Q2. Relations r (b_r = 200) and s (b_s = 500) are joined using block nested-loop join with M = 22 blocks of memory. What is the minimum cost in block transfers if r is the outer relation?",
+        "options": ["(A) 5200", "(B) 5700", "(C) 700", "(D) 5000"],
+        "answer": 0,
+        "explanation": "Cost = ceil(200/20) * 500 + 200 = 10 * 500 + 200 = 5200. We use M-2 = 20 blocks for the outer relation."
+      },
+      {
+        "question": "Q3. Which of the following is NOT a valid equivalence rule for relational algebra?",
+        "options": [
+          "(A) Selection is commutative: sigma_a(sigma_b(E)) = sigma_b(sigma_a(E))",
+          "(B) Natural join is commutative: r join s = s join r",
+          "(C) Set difference is commutative: r - s = s - r",
+          "(D) Selection distributes over join if it involves only one relation's attributes"
+        ],
+        "answer": 2,
+        "explanation": "Set difference is NOT commutative. r - s gives tuples in r but not in s, while s - r gives tuples in s but not in r. These are generally different."
+      },
+      {
+        "question": "Q4. The cost of a hash join (without overflow) for relations with b_r = 150 and b_s = 250 blocks is:",
+        "options": ["(A) 400", "(B) 800", "(C) 1200", "(D) 1600"],
+        "answer": 2,
+        "explanation": "Hash join cost = 3 * (b_r + b_s) = 3 * (150 + 250) = 3 * 400 = 1200 block transfers."
+      },
+      {
+        "question": "Q5. A secondary B+ tree index of height 4 exists on a non-key attribute A of relation r with n_r = 20000 and V(A,r) = 50. What is the cost of the selection sigma_{A=v}(r) using this index?",
+        "options": ["(A) 54", "(B) 404", "(C) 400", "(D) 204"],
+        "answer": 1,
+        "explanation": "For a secondary index on a non-key attribute: cost = h_i + n_r/V(A,r) = 4 + 20000/50 = 4 + 400 = 404 block transfers. Each matching record may be on a different block."
+      },
+      {
+        "question": "Q6. Which heuristic optimization rule is considered the most important?",
+        "options": [
+          "(A) Push projections down",
+          "(B) Push selections down",
+          "(C) Use hash join over sort-merge join",
+          "(D) Use pipelining over materialization"
+        ],
+        "answer": 1,
+        "explanation": "Pushing selections down is the single most important heuristic. It reduces the size of intermediate results dramatically by filtering tuples early, which makes all subsequent operations cheaper."
+      },
+      {
+        "question": "Q7. In the iterator model for pipelining, each operator implements which three functions?",
+        "options": [
+          "(A) init(), fetch(), done()",
+          "(B) open(), next(), close()",
+          "(C) start(), get(), stop()",
+          "(D) begin(), read(), end()"
+        ],
+        "answer": 1,
+        "explanation": "The iterator model (demand-driven/pull-based pipelining) uses three functions: open() to initialize the operator, next() to get the next tuple, and close() to clean up."
+      },
+      {
+        "question": "Q8. For estimating the size of a natural join r join s on attribute A, the formula (assuming uniform distribution) is:",
+        "options": [
+          "(A) n_r + n_s",
+          "(B) n_r * n_s",
+          "(C) n_r * n_s / min(V(A,r), V(A,s))",
+          "(D) n_r * n_s / max(V(A,r), V(A,s))"
+        ],
+        "answer": 3,
+        "explanation": "The estimated size of r join s on attribute A is n_r * n_s / max(V(A,r), V(A,s)). This is a fundamental formula for cost-based query optimization."
+      },
+      {
+        "question": "Q9. Which join algorithm CANNOT be used for non-equi-join conditions (like r.A > s.B)?",
+        "options": [
+          "(A) Nested-loop join",
+          "(B) Block nested-loop join",
+          "(C) Hash join",
+          "(D) Sort-merge join"
+        ],
+        "answer": 2,
+        "explanation": "Hash join relies on hashing the join attribute values to the same bucket, which only works for equality conditions. Non-equi-joins cannot use hash join. Nested-loop and sort-merge can handle non-equi-join conditions."
+      },
+      {
+        "question": "Q10. A blocking operator in the context of query pipelining is one that:",
+        "options": [
+          "(A) Blocks other queries from executing",
+          "(B) Must consume all input before producing any output",
+          "(C) Requires exclusive locks on the relation",
+          "(D) Cannot be parallelized"
+        ],
+        "answer": 1,
+        "explanation": "A blocking operator must read its entire input before producing any output. The sort operator is a classic example: you cannot output the smallest element until you have seen all elements. This limits pipelining opportunities."
+      }
+    ]
+  }
+  </script>
+
+</article>
+</body>
+</html>

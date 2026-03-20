@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recovery Systems and Log-Based Recovery — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+  <span class="article-section-tag">Databases</span>
+  <h1>Recovery Systems and Log-Based Recovery</h1>
+  <p>
+    A database system must be prepared to handle failures at any time. Transactions may be interrupted,
+    the system may crash, or storage media may fail. The recovery system is responsible for restoring
+    the database to a consistent state after such failures. This article covers Chapter 19 of
+    Korth/Silberschatz's <em>Database System Concepts</em> and is a core topic for GATE CSE.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2>1. Failure Classification</h2>
+  <p>
+    Failures in a database system can be classified into three broad categories based on their severity
+    and the type of storage they affect:
+  </p>
+
+  <h3>1.1 Transaction Failure</h3>
+  <p>
+    A transaction fails to complete its execution. This can occur due to:
+  </p>
+  <ul>
+    <li><strong>Logical errors:</strong> The transaction cannot complete due to some internal condition
+        (e.g., bad input, overflow, resource limit exceeded).</li>
+    <li><strong>System errors:</strong> The DBMS must abort the transaction due to an undesirable
+        condition such as deadlock.</li>
+  </ul>
+
+  <h3>1.2 System Failure (System Crash)</h3>
+  <p>
+    A hardware malfunction, a bug in the database software or operating system, or a power failure
+    causes the loss of the content of <strong>volatile storage</strong> (main memory). The contents
+    of non-volatile storage (disk) survive.
+  </p>
+  <ul>
+    <li>The assumption is called the <strong>fail-stop assumption</strong>: the system halts and does
+        not perform any further actions.</li>
+    <li>All data in memory buffers that were not yet written to disk are lost.</li>
+  </ul>
+
+  <h3>1.3 Media Failure (Disk Failure)</h3>
+  <p>
+    A disk block or an entire disk loses its contents. This is the most catastrophic failure type.
+  </p>
+  <ul>
+    <li>Handled by maintaining <strong>archival dumps</strong> (backups) and <strong>stable storage</strong>.</li>
+    <li>Recovery from media failure is typically slower and may require restoring from backup.</li>
+  </ul>
+
+  <div class="mermaid">
+  flowchart TB
+    A["Failure Types"] --> B["Transaction Failure"]
+    A --> C["System Failure"]
+    A --> D["Media Failure"]
+    B --> B1["Logical Error"]
+    B --> B2["System Error (deadlock)"]
+    C --> C1["Loss of volatile storage"]
+    D --> D1["Loss of non-volatile storage"]
+    style B fill:#d5f5e3
+    style C fill:#fef9e7
+    style D fill:#fdecea
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>2. Storage Types</h2>
+  <p>
+    The recovery system's design is closely linked to the types of storage available:
+  </p>
+
+  <table>
+    <tr>
+      <th>Storage Type</th>
+      <th>Survives</th>
+      <th>Examples</th>
+      <th>Characteristics</th>
+    </tr>
+    <tr>
+      <td><strong>Volatile Storage</strong></td>
+      <td>Neither system crash nor media failure</td>
+      <td>Main memory, cache</td>
+      <td>Fast access, data lost on power failure</td>
+    </tr>
+    <tr>
+      <td><strong>Non-volatile Storage</strong></td>
+      <td>System crash, but NOT media failure</td>
+      <td>Hard disk, SSD, flash</td>
+      <td>Survives power failure; can lose data on disk failure</td>
+    </tr>
+    <tr>
+      <td><strong>Stable Storage</strong></td>
+      <td>All failure types (theoretically)</td>
+      <td>RAID, mirrored disks, remote backup</td>
+      <td>Approximated by replication; never truly achievable but practically reliable</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>Key Point:</strong> Stable storage is a <em>theoretical concept</em>. In practice, it is
+    approximated using techniques like RAID (mirroring) and remote backup. The log is always stored on
+    stable storage (or its approximation).
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>3. Recovery and Atomicity</h2>
+  <p>
+    The fundamental challenge of recovery is to guarantee the <strong>atomicity</strong> property of
+    transactions: either all effects of a transaction are reflected in the database, or none are.
+  </p>
+  <p>
+    If a transaction T<sub>i</sub> has committed, its effects must persist (durability). If it has
+    aborted or was active at the time of failure, all its effects must be undone. The recovery system
+    must be able to determine for each transaction whether to <strong>redo</strong> or <strong>undo</strong>
+    its operations.
+  </p>
+
+  <h3>3.1 The Problem</h3>
+  <p>Consider this scenario:</p>
+  <pre><code>T1: Read(A)         -- A = 1000
+    A = A - 50
+    Write(A)        -- A = 950 (in buffer)
+    Read(B)         -- B = 2000
+    B = B + 50
+    Write(B)        -- B = 2050 (in buffer)
+    Commit
+
+--- System crash here ---
+--- Buffer for A was flushed to disk, but buffer for B was NOT ---</code></pre>
+  <p>
+    After the crash, A = 950 on disk and B = 2000 on disk. The sum has changed from 3000 to 2950,
+    violating consistency. Without a recovery mechanism, we cannot fix this.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2>4. Log-Based Recovery</h2>
+  <p>
+    The most widely used technique for recovery. A <strong>log</strong> (also called a journal) is a
+    sequence of log records that records all update activities in the database. The log is stored on
+    <strong>stable storage</strong>.
+  </p>
+
+  <h3>4.1 Log Record Format</h3>
+  <p>Each log record has one of the following forms:</p>
+
+  <table>
+    <tr>
+      <th>Log Record</th>
+      <th>Meaning</th>
+    </tr>
+    <tr>
+      <td><code>&lt;T<sub>i</sub>, start&gt;</code></td>
+      <td>Transaction T<sub>i</sub> has started</td>
+    </tr>
+    <tr>
+      <td><code>&lt;T<sub>i</sub>, X, V<sub>old</sub>, V<sub>new</sub>&gt;</code></td>
+      <td>T<sub>i</sub> has written data item X; old value was V<sub>old</sub>, new value is V<sub>new</sub></td>
+    </tr>
+    <tr>
+      <td><code>&lt;T<sub>i</sub>, commit&gt;</code></td>
+      <td>Transaction T<sub>i</sub> has committed</td>
+    </tr>
+    <tr>
+      <td><code>&lt;T<sub>i</sub>, abort&gt;</code></td>
+      <td>Transaction T<sub>i</sub> has aborted</td>
+    </tr>
+    <tr>
+      <td><code>&lt;checkpoint L&gt;</code></td>
+      <td>Checkpoint with list L of active transactions</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>Note:</strong> Some formulations use <code>&lt;T<sub>i</sub>, X, V<sub>old</sub>&gt;</code> for
+    undo-only logging and <code>&lt;T<sub>i</sub>, X, V<sub>new</sub>&gt;</code> for redo-only logging.
+    The general form with both old and new values supports both undo and redo.
+  </div>
+
+  <h3>4.2 Write-Ahead Logging (WAL) Protocol</h3>
+  <p>
+    The <strong>Write-Ahead Logging (WAL)</strong> protocol is the cornerstone of log-based recovery.
+    It mandates:
+  </p>
+  <ol>
+    <li><strong>Undo rule:</strong> Before a data item is written to the database on disk, the log
+        record containing the <em>old value</em> must be flushed to stable storage.</li>
+    <li><strong>Redo rule:</strong> Before a transaction commits, <em>all</em> its log records
+        (including the commit record) must be flushed to stable storage.</li>
+  </ol>
+
+  <div class="important">
+    <strong>WAL Guarantee:</strong> WAL ensures that even if the system crashes at any point, the log
+    on stable storage has enough information to undo uncommitted changes and redo committed changes.
+    <br><br>
+    <strong>Mnemonic:</strong> "Log before data, commit log before declaring committed."
+  </div>
+
+  <h3>4.3 Deferred Database Modification</h3>
+  <p>
+    In this scheme, the actual database writes are <strong>deferred</strong> until the transaction
+    commits. During execution, all writes go to the log only.
+  </p>
+  <ul>
+    <li>When a transaction commits, the log records are used to perform the actual writes to the database.</li>
+    <li>If the transaction aborts or the system crashes before commit, no undo is needed because the
+        database was never modified.</li>
+    <li><strong>Recovery:</strong> Only <strong>redo</strong> is needed for committed transactions whose
+        updates may not have reached disk.</li>
+  </ul>
+
+  <h4>Recovery Procedure (Deferred Modification)</h4>
+  <pre><code>redo(T_i):
+    For each log record &lt;T_i, X, V_new&gt; in order:
+        Write V_new to data item X on disk
+
+Recovery:
+    For each transaction T_i:
+        if &lt;T_i, commit&gt; is in the log:
+            redo(T_i)
+        else:
+            ignore T_i  (no undo needed)</code></pre>
+
+  <h3>4.4 Immediate Database Modification</h3>
+  <p>
+    In this scheme, database modifications are written to disk <strong>before</strong> the transaction
+    commits (but after the log record is written, per WAL). This means uncommitted changes may be on disk.
+  </p>
+  <ul>
+    <li>If a transaction commits, its changes are already (partially or fully) on disk.</li>
+    <li>If a transaction aborts or crashes before commit, its changes may already be on disk and must
+        be <strong>undone</strong>.</li>
+    <li><strong>Recovery:</strong> Both <strong>undo</strong> and <strong>redo</strong> are needed.</li>
+  </ul>
+
+  <h4>Recovery Procedure (Immediate Modification)</h4>
+  <pre><code>undo(T_i):
+    For each log record &lt;T_i, X, V_old, V_new&gt; in REVERSE order:
+        Write V_old to data item X on disk
+    Write &lt;T_i, abort&gt; to log
+
+redo(T_i):
+    For each log record &lt;T_i, X, V_old, V_new&gt; in FORWARD order:
+        Write V_new to data item X on disk
+
+Recovery:
+    For each transaction T_i:
+        if &lt;T_i, commit&gt; is in the log:
+            redo(T_i)
+        else:
+            undo(T_i)</code></pre>
+
+  <div class="note">
+    <strong>Key Difference:</strong><br>
+    <strong>Deferred:</strong> No undo needed, only redo for committed transactions.<br>
+    <strong>Immediate:</strong> Both undo (for uncommitted) and redo (for committed) needed.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>5. Undo and Redo Operations</h2>
+  <p>Understanding when undo and redo are needed:</p>
+
+  <table>
+    <tr>
+      <th>Transaction State at Crash</th>
+      <th>Action Required</th>
+      <th>Reason</th>
+    </tr>
+    <tr>
+      <td>Committed, changes on disk</td>
+      <td>None</td>
+      <td>Already durable</td>
+    </tr>
+    <tr>
+      <td>Committed, changes NOT fully on disk</td>
+      <td><strong>Redo</strong></td>
+      <td>Must ensure durability</td>
+    </tr>
+    <tr>
+      <td>Not committed, changes on disk</td>
+      <td><strong>Undo</strong></td>
+      <td>Must ensure atomicity</td>
+    </tr>
+    <tr>
+      <td>Not committed, changes NOT on disk</td>
+      <td>None</td>
+      <td>No effect to reverse</td>
+    </tr>
+  </table>
+
+  <div class="important">
+    <strong>Idempotency:</strong> Both undo and redo operations must be <strong>idempotent</strong> &mdash;
+    applying them multiple times produces the same result as applying them once. This is crucial because
+    the system may crash during recovery, and recovery must be restartable.
+  </div>
+
+  <h3>5.1 Undo Operation Details</h3>
+  <ul>
+    <li>Scan the log <strong>backwards</strong> (from most recent to oldest).</li>
+    <li>For each write record of the transaction, restore the old value.</li>
+    <li>After all writes are undone, write an <code>&lt;T<sub>i</sub>, abort&gt;</code> record to the log.</li>
+    <li>Compensation Log Records (CLRs) may be written during undo to track progress.</li>
+  </ul>
+
+  <h3>5.2 Redo Operation Details</h3>
+  <ul>
+    <li>Scan the log <strong>forwards</strong> (from oldest to most recent).</li>
+    <li>For each write record of the committed transaction, apply the new value.</li>
+    <li>Redo is applied regardless of whether the change is already on disk (idempotency).</li>
+  </ul>
+
+  <!-- ============================================================ -->
+  <h2>6. Checkpointing</h2>
+
+  <h3>6.1 Why Checkpoints Are Needed</h3>
+  <p>
+    Without checkpoints, recovery would require scanning the <em>entire</em> log from the beginning,
+    which could take an impractically long time. Checkpoints limit the amount of log that needs to be
+    examined during recovery.
+  </p>
+
+  <h3>6.2 Checkpoint Procedure</h3>
+  <p>A simple checkpointing procedure:</p>
+  <ol>
+    <li><strong>Stop</strong> accepting new transactions temporarily (in simple checkpointing).</li>
+    <li><strong>Wait</strong> for all currently active transactions to either commit or abort (in simple checkpointing).</li>
+    <li><strong>Flush</strong> all modified buffer blocks to disk (force-write all dirty pages).</li>
+    <li><strong>Write</strong> a <code>&lt;checkpoint&gt;</code> record to the log and flush the log to stable storage.</li>
+    <li><strong>Resume</strong> normal transaction processing.</li>
+  </ol>
+
+  <div class="note">
+    <strong>Simple vs Fuzzy Checkpoints:</strong> The simple checkpoint described above requires stopping
+    all processing, which is impractical. In practice, <strong>fuzzy checkpoints</strong> (or
+    non-quiescent checkpoints) are used, which allow transactions to continue during the checkpoint.
+  </div>
+
+  <h3>6.3 Non-Quiescent (Fuzzy) Checkpointing</h3>
+  <p>
+    A more practical approach that does not halt transaction processing:
+  </p>
+  <ol>
+    <li>Write <code>&lt;checkpoint L&gt;</code> to the log, where <code>L</code> is the list of all currently active transactions.</li>
+    <li>Flush the log to stable storage.</li>
+    <li>Flush all dirty buffer pages to disk (can be done in the background).</li>
+    <li>Write <code>&lt;checkpoint-end&gt;</code> when flushing is complete.</li>
+  </ol>
+
+  <h3>6.4 Recovery with Checkpoints</h3>
+  <p>
+    During recovery with checkpoints (immediate modification):
+  </p>
+  <ol>
+    <li>Find the <strong>last checkpoint</strong> record in the log.</li>
+    <li>The set of transactions to consider = transactions in list L at checkpoint + transactions that started after the checkpoint.</li>
+    <li><strong>Redo phase:</strong> Scan forward from the checkpoint, redo all updates of all transactions.</li>
+    <li><strong>Undo phase:</strong> Scan backward, undo updates of transactions that did not commit.</li>
+  </ol>
+
+  <div class="mermaid">
+  flowchart LR
+    A["Log Start"] --> B["...older records..."]
+    B --> C["&lt;checkpoint {T1, T2}&gt;"]
+    C --> D["T1 writes"]
+    D --> E["T3 start"]
+    E --> F["T1 commit"]
+    F --> G["T2 writes"]
+    G --> H["T3 writes"]
+    H --> I["CRASH"]
+    style C fill:#d5f5e3
+    style I fill:#fdecea
+  </div>
+  <p>
+    In this scenario at crash time: T1 is committed (redo), T2 and T3 are not committed (undo).
+    We only need to examine the log from the checkpoint record onwards.
+  </p>
+
+  <!-- ============================================================ -->
+  <h2>7. ARIES Recovery Algorithm (Overview)</h2>
+  <p>
+    ARIES (Algorithm for Recovery and Isolation Exploiting Semantics) is the most widely used recovery
+    algorithm in commercial database systems. It was developed at IBM Research.
+  </p>
+
+  <h3>7.1 Key Principles of ARIES</h3>
+  <ol>
+    <li><strong>Write-Ahead Logging (WAL):</strong> Log records written before data pages are flushed.</li>
+    <li><strong>Repeating History During Redo:</strong> During recovery, redo ALL actions (including those
+        of uncommitted transactions) to bring the database to the exact state at the time of crash.</li>
+    <li><strong>Logging Changes During Undo:</strong> Compensation Log Records (CLRs) are written during
+        undo to prevent repeated undo work if there is a crash during recovery.</li>
+  </ol>
+
+  <h3>7.2 ARIES Data Structures</h3>
+  <table>
+    <tr>
+      <th>Structure</th>
+      <th>Purpose</th>
+    </tr>
+    <tr>
+      <td><strong>Log</strong></td>
+      <td>Sequential record of all changes; each record has a unique LSN (Log Sequence Number)</td>
+    </tr>
+    <tr>
+      <td><strong>Transaction Table</strong></td>
+      <td>Tracks active transactions and their last LSN</td>
+    </tr>
+    <tr>
+      <td><strong>Dirty Page Table</strong></td>
+      <td>Tracks pages in buffer that have been modified but not yet written to disk. Records the recLSN (LSN of first log record that dirtied the page).</td>
+    </tr>
+    <tr>
+      <td><strong>Page LSN</strong></td>
+      <td>Each page on disk stores the LSN of the last log record that modified it</td>
+    </tr>
+  </table>
+
+  <h3>7.3 ARIES Three-Phase Recovery</h3>
+
+  <h4>Phase 1: Analysis</h4>
+  <p>
+    Scan the log forward from the last checkpoint to determine:
+  </p>
+  <ul>
+    <li>Which transactions were active at the time of crash (need undo)</li>
+    <li>Which pages might be dirty (may need redo)</li>
+    <li>Rebuild the Transaction Table and Dirty Page Table</li>
+  </ul>
+
+  <h4>Phase 2: Redo</h4>
+  <p>
+    Scan the log forward from the <strong>smallest recLSN</strong> in the Dirty Page Table.
+    For each update log record:
+  </p>
+  <ul>
+    <li>If the page is in the Dirty Page Table AND the record's LSN &ge; recLSN of the page AND
+        the pageLSN on disk &lt; the record's LSN, then redo the update.</li>
+    <li>This "repeats history" including updates of uncommitted transactions.</li>
+  </ul>
+
+  <h4>Phase 3: Undo</h4>
+  <p>
+    Scan the log backward, undoing all updates of transactions that were active at crash time.
+    For each undo, write a <strong>Compensation Log Record (CLR)</strong>.
+  </p>
+  <ul>
+    <li>CLRs have an <code>undoNextLSN</code> field pointing to the next record to be undone.</li>
+    <li>CLRs are never undone themselves (they are redo-only records).</li>
+    <li>This ensures that if the system crashes during recovery, undo work is not repeated.</li>
+  </ul>
+
+  <div class="mermaid">
+  flowchart LR
+    A2["Last Checkpoint"] --> B2["Analysis Phase (forward scan)"]
+    B2 --> C2["Redo Phase (forward from min recLSN)"]
+    C2 --> D2["Undo Phase (backward scan)"]
+    style B2 fill:#d5f5e3
+    style C2 fill:#fef9e7
+    style D2 fill:#fdecea
+  </div>
+
+  <div class="important">
+    <strong>GATE Takeaway on ARIES:</strong> Remember the three phases (Analysis, Redo, Undo) and the
+    key principle of "repeating history" during redo. Also remember that CLRs prevent repeated undo work.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>8. Shadow Paging</h2>
+  <p>
+    Shadow paging is an alternative to log-based recovery that avoids writing a log altogether
+    (in its simplest form).
+  </p>
+
+  <h3>8.1 How It Works</h3>
+  <ul>
+    <li>The database maintains two page tables: the <strong>current page table</strong> and the
+        <strong>shadow page table</strong>.</li>
+    <li>At the start of a transaction, the shadow page table is a copy of the current page table.
+        Both point to the same actual pages on disk.</li>
+    <li>When a page is modified, a <strong>new copy</strong> of the page is written to a different
+        disk location, and the current page table is updated to point to the new page. The shadow page
+        table still points to the old page.</li>
+    <li><strong>To commit:</strong> The current page table becomes the new shadow page table (e.g., by
+        writing its location to a fixed disk location). The old pages can be freed.</li>
+    <li><strong>To abort/recover:</strong> Discard the current page table and revert to the shadow page
+        table. The new pages can be freed.</li>
+  </ul>
+
+  <h3>8.2 Advantages and Disadvantages</h3>
+  <table>
+    <tr>
+      <th>Advantages</th>
+      <th>Disadvantages</th>
+    </tr>
+    <tr>
+      <td>No log overhead (no WAL)</td>
+      <td>Data fragmentation (pages scattered on disk)</td>
+    </tr>
+    <tr>
+      <td>Recovery is instant (just use shadow)</td>
+      <td>Difficult to extend to concurrent transactions</td>
+    </tr>
+    <tr>
+      <td>Simple commit protocol</td>
+      <td>Overhead of copying page table</td>
+    </tr>
+    <tr>
+      <td>No undo/redo needed</td>
+      <td>Garbage collection of old pages needed</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>Practical Note:</strong> Shadow paging is rarely used in modern systems because of its
+    limitations with concurrent transactions and data fragmentation. Log-based recovery (especially ARIES)
+    is the dominant approach. However, shadow paging appears in GATE questions.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>9. Recovery with Concurrent Transactions</h2>
+  <p>
+    In a real system, multiple transactions run concurrently, and the log is a single interleaved
+    sequence of records from all transactions. Recovery must handle this correctly.
+  </p>
+
+  <h3>9.1 Classification During Recovery</h3>
+  <p>At the time of a crash, transactions fall into categories:</p>
+  <ul>
+    <li><strong>Committed transactions:</strong> Have <code>&lt;T<sub>i</sub>, commit&gt;</code> in the log. Must be <strong>redone</strong>.</li>
+    <li><strong>Aborted transactions:</strong> Have <code>&lt;T<sub>i</sub>, abort&gt;</code> in the log. Already handled.</li>
+    <li><strong>Active (incomplete) transactions:</strong> Have <code>&lt;T<sub>i</sub>, start&gt;</code> but neither commit nor abort. Must be <strong>undone</strong>.</li>
+  </ul>
+
+  <h3>9.2 Recovery Procedure with Concurrent Transactions</h3>
+  <pre><code>Recovery Algorithm:
+1. Scan log forward from last checkpoint to end:
+   - Build redo-list: all T_i with &lt;T_i, commit&gt; in log
+   - Build undo-list: all T_i with &lt;T_i, start&gt; but no commit/abort
+
+2. Redo phase (scan forward from checkpoint):
+   For each log record &lt;T_i, X, V_old, V_new&gt;:
+       if T_i is in redo-list:
+           write V_new to X
+
+3. Undo phase (scan backward from end of log):
+   For each log record &lt;T_i, X, V_old, V_new&gt;:
+       if T_i is in undo-list:
+           write V_old to X
+   Write &lt;T_i, abort&gt; for each T_i in undo-list</code></pre>
+
+  <h3>9.3 Interaction with Concurrency Control</h3>
+  <p>
+    If <strong>strict two-phase locking</strong> is used (locks held until commit/abort), then
+    uncommitted changes are not visible to other transactions. This simplifies recovery because:
+  </p>
+  <ul>
+    <li>No <strong>cascading rollbacks</strong> are needed.</li>
+    <li>Undoing one transaction's changes does not affect other committed transactions.</li>
+  </ul>
+
+  <!-- ============================================================ -->
+  <h2>10. Worked Examples: Crash Recovery Scenarios</h2>
+
+  <h3>Example 1: Simple Log Recovery</h3>
+  <div class="note">
+    <strong>Given Log (Immediate Modification):</strong>
+    <pre><code>&lt;T1, start&gt;
+&lt;T1, A, 100, 200&gt;
+&lt;T2, start&gt;
+&lt;T2, B, 300, 400&gt;
+&lt;T1, C, 500, 600&gt;
+&lt;T1, commit&gt;
+&lt;T2, D, 700, 800&gt;
+--- CRASH ---</code></pre>
+
+    <strong>Analysis:</strong>
+    <ul>
+      <li>T1 has committed &rarr; <strong>Redo</strong> all of T1's updates</li>
+      <li>T2 has NOT committed &rarr; <strong>Undo</strong> all of T2's updates</li>
+    </ul>
+
+    <strong>Recovery Actions:</strong><br>
+    <strong>Redo (forward scan):</strong>
+    <ul>
+      <li>Set A = 200 (redo T1's write)</li>
+      <li>Set C = 600 (redo T1's write)</li>
+    </ul>
+    <strong>Undo (backward scan):</strong>
+    <ul>
+      <li>Set D = 700 (undo T2's write to D)</li>
+      <li>Set B = 300 (undo T2's write to B)</li>
+      <li>Write <code>&lt;T2, abort&gt;</code></li>
+    </ul>
+
+    <strong>Final state:</strong> A=200, B=300, C=600, D=700
+  </div>
+
+  <h3>Example 2: Recovery with Checkpoint</h3>
+  <div class="note">
+    <strong>Given Log:</strong>
+    <pre><code>&lt;T1, start&gt;
+&lt;T1, A, 10, 20&gt;
+&lt;T2, start&gt;
+&lt;T2, B, 30, 40&gt;
+&lt;checkpoint {T1, T2}&gt;
+&lt;T3, start&gt;
+&lt;T1, C, 50, 60&gt;
+&lt;T1, commit&gt;
+&lt;T3, D, 70, 80&gt;
+&lt;T2, E, 90, 100&gt;
+&lt;T2, commit&gt;
+--- CRASH ---</code></pre>
+
+    <strong>Analysis (from checkpoint):</strong>
+    <ul>
+      <li>Active at checkpoint: T1, T2</li>
+      <li>Started after checkpoint: T3</li>
+      <li>T1 committed &rarr; Redo</li>
+      <li>T2 committed &rarr; Redo</li>
+      <li>T3 NOT committed &rarr; Undo</li>
+    </ul>
+
+    <strong>Redo (forward from checkpoint):</strong>
+    <ul>
+      <li>Set C = 60 (T1)</li>
+      <li>Set D = 80 (T3 &mdash; we redo even uncommitted in ARIES; in simple recovery, skip this)</li>
+      <li>Set E = 100 (T2)</li>
+    </ul>
+    <strong>Note:</strong> In simple (non-ARIES) recovery, we only redo committed transactions. For T1 and T2, we must also redo records before the checkpoint since the checkpoint doesn't guarantee those pages were flushed.<br><br>
+
+    <strong>Undo (backward from end):</strong>
+    <ul>
+      <li>Set D = 70 (undo T3)</li>
+      <li>Write <code>&lt;T3, abort&gt;</code></li>
+    </ul>
+
+    <strong>Final state:</strong> A=20, B=40, C=60, D=70, E=100
+  </div>
+
+  <h3>Example 3: Deferred Modification Recovery</h3>
+  <div class="note">
+    <strong>Given Log (Deferred Modification):</strong>
+    <pre><code>&lt;T1, start&gt;
+&lt;T1, A, _, 500&gt;
+&lt;T2, start&gt;
+&lt;T1, B, _, 600&gt;
+&lt;T2, C, _, 700&gt;
+&lt;T1, commit&gt;
+&lt;T2, D, _, 800&gt;
+--- CRASH ---</code></pre>
+
+    <strong>Analysis:</strong> With deferred modification, database writes are NOT performed until commit.
+    So only T1's committed writes need to be redone. T2 never modified the database (its writes were deferred).
+    <br><br>
+    <strong>Recovery:</strong> Only redo T1.
+    <ul>
+      <li>Set A = 500</li>
+      <li>Set B = 600</li>
+    </ul>
+    T2 is simply ignored (no undo needed since database was never modified by T2).
+  </div>
+
+  <h3>Example 4: Multiple Crashes</h3>
+  <div class="note">
+    <strong>Scenario:</strong> The system crashes during recovery. Is this a problem?<br><br>
+    <strong>Answer:</strong> No! Because undo and redo are <strong>idempotent</strong>, recovery can simply
+    be restarted from the beginning. In ARIES, Compensation Log Records (CLRs) written during the first
+    recovery attempt ensure that completed undo work is not repeated, making repeated recovery efficient.
+  </div>
+
+  <!-- ============================================================ -->
+  <h2>11. Comparison of Recovery Techniques</h2>
+  <table>
+    <tr>
+      <th>Technique</th>
+      <th>Undo?</th>
+      <th>Redo?</th>
+      <th>Concurrent Txns?</th>
+      <th>Practical?</th>
+    </tr>
+    <tr>
+      <td>Deferred modification</td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>Difficult</td>
+      <td>Limited use</td>
+    </tr>
+    <tr>
+      <td>Immediate modification</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Widely used</td>
+    </tr>
+    <tr>
+      <td>Shadow paging</td>
+      <td>No</td>
+      <td>No</td>
+      <td>Difficult</td>
+      <td>Rarely used</td>
+    </tr>
+    <tr>
+      <td>ARIES</td>
+      <td>Yes (with CLR)</td>
+      <td>Yes (repeat history)</td>
+      <td>Yes</td>
+      <td>Industry standard</td>
+    </tr>
+  </table>
+
+  <!-- ============================================================ -->
+  <h2>12. Summary of Key Points for GATE</h2>
+  <ul>
+    <li><strong>WAL Protocol:</strong> Log record must be written to stable storage before the corresponding data page is written to disk. Commit record must be on stable storage before transaction is considered committed.</li>
+    <li><strong>Deferred modification:</strong> Only redo needed (no undo). Database not modified until commit.</li>
+    <li><strong>Immediate modification:</strong> Both undo and redo needed. Database modified before commit.</li>
+    <li><strong>Checkpoint:</strong> Limits the extent of log scanning during recovery.</li>
+    <li><strong>ARIES:</strong> Three phases (Analysis, Redo, Undo). Repeats history during redo. Uses CLRs during undo.</li>
+    <li><strong>Idempotency:</strong> Undo and redo must be idempotent for crash-during-recovery safety.</li>
+    <li><strong>Shadow paging:</strong> No log needed, but impractical for concurrent transactions.</li>
+    <li>Stable storage is theoretical; approximated by RAID/mirroring.</li>
+  </ul>
+
+  <!-- ============================================================ -->
+  <h2>Quiz: Recovery Systems</h2>
+
+  <script type="application/json" class="quiz-data">
+  {
+    "title": "Recovery Systems and Log-Based Recovery Quiz",
+    "questions": [
+      {
+        "question": "Q1. The Write-Ahead Logging (WAL) protocol requires that:",
+        "options": [
+          "(A) Data must be written to disk before the log record",
+          "(B) The log record must be written to stable storage before the corresponding data is written to disk",
+          "(C) All log records must be written after the transaction commits",
+          "(D) The log is written to volatile storage first"
+        ],
+        "answer": 1,
+        "explanation": "WAL requires that the log record (specifically, the undo information) be written to stable storage BEFORE the corresponding data page is written to disk. This ensures we can always undo changes if needed."
+      },
+      {
+        "question": "Q2. In deferred database modification, which recovery operation is needed?",
+        "options": [
+          "(A) Only Undo",
+          "(B) Only Redo",
+          "(C) Both Undo and Redo",
+          "(D) Neither Undo nor Redo"
+        ],
+        "answer": 1,
+        "explanation": "In deferred modification, the database is not modified until the transaction commits. So uncommitted transactions have not affected the database (no undo needed). Committed transactions may not have had all their changes written to disk (redo needed)."
+      },
+      {
+        "question": "Q3. Given the log: <T1,start> <T1,A,10,20> <T2,start> <T2,B,30,40> <T1,commit> <T2,C,50,60> CRASH. Using immediate modification, what is the value of B after recovery?",
+        "options": ["(A) 30", "(B) 40", "(C) 50", "(D) Cannot determine"],
+        "answer": 0,
+        "explanation": "T2 has not committed (no <T2,commit> in log). With immediate modification, T2's changes must be undone. B was changed from 30 to 40 by T2, so undo restores B = 30."
+      },
+      {
+        "question": "Q4. The primary purpose of checkpointing is to:",
+        "options": [
+          "(A) Prevent transaction failures",
+          "(B) Speed up normal transaction processing",
+          "(C) Reduce the amount of log that must be scanned during recovery",
+          "(D) Ensure all transactions commit before system shutdown"
+        ],
+        "answer": 2,
+        "explanation": "Checkpoints record the state of active transactions and flush dirty pages, so during recovery we only need to scan the log from the last checkpoint instead of from the beginning."
+      },
+      {
+        "question": "Q5. In ARIES, 'repeating history during redo' means:",
+        "options": [
+          "(A) Only committed transactions are redone",
+          "(B) All logged updates (including uncommitted) are redone to reach the crash-time state",
+          "(C) The redo phase is repeated multiple times for safety",
+          "(D) History tables are reconstructed from the log"
+        ],
+        "answer": 1,
+        "explanation": "ARIES redoes ALL updates (including those of uncommitted transactions) during the redo phase to bring the database to the exact state at the time of crash. Then the undo phase rolls back uncommitted transactions."
+      },
+      {
+        "question": "Q6. Shadow paging is rarely used in practice because:",
+        "options": [
+          "(A) It requires too much log space",
+          "(B) It is difficult to extend to concurrent transactions and causes data fragmentation",
+          "(C) It does not support atomicity",
+          "(D) It is slower than log-based recovery for single transactions"
+        ],
+        "answer": 1,
+        "explanation": "Shadow paging's main practical limitations are: (1) difficulty with concurrent transactions (each transaction needs its own shadow page table), and (2) data fragmentation because modified pages are written to new locations, destroying spatial locality."
+      },
+      {
+        "question": "Q7. Compensation Log Records (CLRs) in ARIES are important because:",
+        "options": [
+          "(A) They record the original values for undo",
+          "(B) They prevent repeated undo work if the system crashes during recovery",
+          "(C) They replace the need for checkpoints",
+          "(D) They speed up the analysis phase"
+        ],
+        "answer": 1,
+        "explanation": "CLRs are written during the undo phase. If the system crashes during recovery, the CLRs ensure that already-undone operations are not undone again. CLRs have an undoNextLSN field that allows skipping already-undone records."
+      },
+      {
+        "question": "Q8. Which storage type is used to store the database log?",
+        "options": [
+          "(A) Volatile storage",
+          "(B) Non-volatile storage only",
+          "(C) Stable storage",
+          "(D) Any storage type"
+        ],
+        "answer": 2,
+        "explanation": "The log must be stored on stable storage (or its practical approximation using mirroring/RAID) to survive all types of failures. This is essential for the correctness of log-based recovery."
+      },
+      {
+        "question": "Q9. Given log with checkpoint: ... <checkpoint {T1}> <T2,start> <T1,A,10,20> <T2,B,30,40> <T1,commit> CRASH. Which transactions need redo and which need undo?",
+        "options": [
+          "(A) Redo: T1, T2. Undo: none",
+          "(B) Redo: T1. Undo: T2",
+          "(C) Redo: T2. Undo: T1",
+          "(D) Redo: none. Undo: T1, T2"
+        ],
+        "answer": 1,
+        "explanation": "T1 committed (has <T1,commit>), so it must be redone. T2 started after the checkpoint but has no commit record, so it must be undone."
+      },
+      {
+        "question": "Q10. Why must undo and redo operations be idempotent?",
+        "options": [
+          "(A) To support concurrent transactions",
+          "(B) To allow the database to be used during recovery",
+          "(C) Because the system may crash during recovery, and recovery must be restartable",
+          "(D) To reduce the size of the log"
+        ],
+        "answer": 2,
+        "explanation": "If the system crashes during recovery, recovery must be restarted from the beginning. Idempotency ensures that re-applying undo or redo operations that were already applied produces the same correct result."
+      }
+    ]
+  }
+  </script>
+
+</article>
+</body>
+</html>

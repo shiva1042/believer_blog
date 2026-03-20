@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OS Structure, System Calls, and Kernel Design — GATE CS</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true});</script>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; line-height: 1.7; color: #222; }
+    h1 { border-bottom: 3px solid #2c3e50; padding-bottom: 0.5rem; }
+    h2 { color: #2c3e50; margin-top: 2rem; }
+    h3 { color: #34495e; }
+    .article-section-tag { background: #ecf0f1; display: inline-block; padding: 0.3rem 1rem; border-radius: 4px; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #bdc3c7; padding: 0.5rem 1rem; text-align: left; }
+    th { background: #2c3e50; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    code { background: #f4f4f4; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
+    pre { background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; color: inherit; }
+    .note { background: #fef9e7; border-left: 4px solid #f1c40f; padding: 0.8rem 1rem; margin: 1rem 0; }
+    .important { background: #fdecea; border-left: 4px solid #e74c3c; padding: 0.8rem 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+<article>
+
+<span class="article-section-tag">Operating System</span>
+<h1>OS Structure, System Calls, and Kernel Design</h1>
+<p><em>Reference: Silberschatz, Galvin, Gagne &mdash; Operating System Concepts (Chapters 1&ndash;2)</em></p>
+
+<p>
+Understanding how an operating system is structured and how user programs communicate with the kernel through system calls is fundamental to cracking GATE CS questions on operating systems. This article provides a comprehensive treatment of OS services, the system call interface, parameter-passing mechanisms, and every major kernel architecture &mdash; all illustrated with diagrams, comparison tables, and worked examples.
+</p>
+
+<!-- ============================================================ -->
+<h2>1. Operating System Services</h2>
+<!-- ============================================================ -->
+
+<p>An operating system provides a set of services that are helpful to the user and to the system itself. These can be grouped into two broad categories.</p>
+
+<h3>1.1 Services for the User</h3>
+<ul>
+  <li><strong>User Interface (UI):</strong> Command-line interface (CLI), Graphical User Interface (GUI), or touch-screen interface.</li>
+  <li><strong>Program Execution:</strong> The OS loads a program into memory, runs it, and terminates it (normally or abnormally).</li>
+  <li><strong>I/O Operations:</strong> Users cannot directly access I/O devices; the OS provides controlled access.</li>
+  <li><strong>File-System Manipulation:</strong> Create, delete, read, write, search files/directories; manage permissions.</li>
+  <li><strong>Communications:</strong> Inter-process communication via shared memory or message passing.</li>
+  <li><strong>Error Detection:</strong> The OS must detect and handle errors in CPU, memory, I/O, and user programs.</li>
+</ul>
+
+<h3>1.2 Services for Efficient System Operation</h3>
+<ul>
+  <li><strong>Resource Allocation:</strong> CPU scheduling cycles, memory blocks, I/O devices &mdash; all shared among concurrent processes.</li>
+  <li><strong>Logging / Accounting:</strong> Track resource usage per user or process (important for billing and tuning).</li>
+  <li><strong>Protection and Security:</strong> Ensure controlled access to resources; authenticate users; defend against external attacks.</li>
+</ul>
+
+<div class="mermaid">
+graph TB
+    A["User Programs / Applications"]
+    B["System Call Interface"]
+    C["OS Services"]
+    D1["Process Mgmt"]
+    D2["Memory Mgmt"]
+    D3["File System"]
+    D4["I/O Subsystem"]
+    D5["Protection & Security"]
+    E["Hardware"]
+    A --> B
+    B --> C
+    C --> D1
+    C --> D2
+    C --> D3
+    C --> D4
+    C --> D5
+    D1 --> E
+    D2 --> E
+    D3 --> E
+    D4 --> E
+</div>
+
+<!-- ============================================================ -->
+<h2>2. System Calls</h2>
+<!-- ============================================================ -->
+
+<p>
+A <strong>system call</strong> is the programmatic interface through which a user-level process requests a service from the operating system kernel. System calls form the boundary between user mode and kernel mode.
+</p>
+
+<h3>2.1 System Call Interface and API</h3>
+
+<p>
+Most programmers never make raw system calls. Instead, they use a higher-level <strong>Application Programming Interface (API)</strong> such as:
+</p>
+<ul>
+  <li><strong>Win32 API</strong> &mdash; Windows</li>
+  <li><strong>POSIX API</strong> &mdash; UNIX, Linux, macOS</li>
+  <li><strong>Java API</strong> &mdash; Java Virtual Machine</li>
+</ul>
+
+<p>
+The API function internally invokes the correct system call. The <strong>system call interface</strong> maintains an indexed table of system call handlers. The caller passes a system call number (index) and the OS dispatches to the corresponding kernel routine.
+</p>
+
+<div class="mermaid">
+sequenceDiagram
+    participant App as User Application
+    participant API as API Layer (e.g. libc)
+    participant SCI as System Call Interface
+    participant Kernel as OS Kernel
+    App->>API: open("file.txt", O_RDONLY)
+    API->>SCI: syscall #5 (sys_open)
+    SCI->>Kernel: Dispatch to sys_open handler
+    Kernel-->>SCI: Return file descriptor (fd=3)
+    SCI-->>API: Return fd
+    API-->>App: Return fd=3
+</div>
+
+<div class="note">
+<strong>GATE Tip:</strong> A system call causes a <strong>trap</strong> (software interrupt) that switches the CPU from user mode to kernel mode. After servicing, the CPU returns to user mode.
+</div>
+
+<h3>2.2 Types of System Calls</h3>
+
+<p>Galvin classifies system calls into five categories:</p>
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>Examples (UNIX / Linux)</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td><strong>Process Control</strong></td>
+    <td><code>fork()</code>, <code>exec()</code>, <code>exit()</code>, <code>wait()</code>, <code>kill()</code></td>
+    <td>Create, terminate, load, execute processes; wait for events</td>
+  </tr>
+  <tr>
+    <td><strong>File Management</strong></td>
+    <td><code>open()</code>, <code>close()</code>, <code>read()</code>, <code>write()</code>, <code>lseek()</code></td>
+    <td>Create, delete, open, close, read, write files</td>
+  </tr>
+  <tr>
+    <td><strong>Device Management</strong></td>
+    <td><code>ioctl()</code>, <code>read()</code>, <code>write()</code></td>
+    <td>Request/release device, read/write device, get/set attributes</td>
+  </tr>
+  <tr>
+    <td><strong>Information Maintenance</strong></td>
+    <td><code>getpid()</code>, <code>alarm()</code>, <code>time()</code>, <code>uname()</code></td>
+    <td>Get/set time, date, system data, process attributes</td>
+  </tr>
+  <tr>
+    <td><strong>Communication</strong></td>
+    <td><code>pipe()</code>, <code>shmget()</code>, <code>mmap()</code>, <code>socket()</code>, <code>send()</code>, <code>recv()</code></td>
+    <td>Create connection, send/receive messages, shared memory</td>
+  </tr>
+</table>
+
+<h3>2.3 System Call Parameter Passing Methods</h3>
+
+<p>When a system call requires parameters (e.g., filename, buffer address, size), the OS must receive them from the user process. Three general methods exist:</p>
+
+<table>
+  <tr>
+    <th>Method</th>
+    <th>Mechanism</th>
+    <th>Advantage</th>
+    <th>Limitation</th>
+  </tr>
+  <tr>
+    <td><strong>Registers</strong></td>
+    <td>Parameters are placed in CPU registers before the trap instruction</td>
+    <td>Fastest; no memory access needed</td>
+    <td>Number of registers is limited; fails for large parameter sets</td>
+  </tr>
+  <tr>
+    <td><strong>Block / Table</strong></td>
+    <td>Parameters stored in a block (table) in memory; address of block passed in a register</td>
+    <td>No limit on number of parameters</td>
+    <td>Extra memory access to read the block</td>
+  </tr>
+  <tr>
+    <td><strong>Stack</strong></td>
+    <td>Parameters pushed onto the program stack by the user; popped by the OS</td>
+    <td>No limit on number or length of parameters</td>
+    <td>Slightly slower due to push/pop overhead</td>
+  </tr>
+</table>
+
+<div class="important">
+<strong>Key Point:</strong> Linux on x86-64 uses registers for system call parameters (up to 6 parameters in <code>rdi</code>, <code>rsi</code>, <code>rdx</code>, <code>r10</code>, <code>r8</code>, <code>r9</code>), with the system call number in <code>rax</code>. If more than 6 parameters are needed, a pointer to a memory block is passed.
+</div>
+
+<div class="mermaid">
+graph LR
+    subgraph "Method 1: Registers"
+        R1["Param1 → R1"] --> TRAP1["Trap to Kernel"]
+        R2["Param2 → R2"] --> TRAP1
+        R3["Param3 → R3"] --> TRAP1
+    end
+    subgraph "Method 2: Block in Memory"
+        BLK["Memory Block<br/>param1, param2, ..., paramN"] --> REG["Block address → Register"]
+        REG --> TRAP2["Trap to Kernel"]
+    end
+    subgraph "Method 3: Stack"
+        S1["push param3"] --> S2["push param2"]
+        S2 --> S3["push param1"]
+        S3 --> TRAP3["Trap to Kernel<br/>(pops from stack)"]
+    end
+</div>
+
+<h3>2.4 The fork() and exec() System Calls &mdash; Worked Example</h3>
+
+<p>The <code>fork()</code> system call creates a child process that is a copy of the parent. The <code>exec()</code> family replaces the process image with a new program.</p>
+
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/wait.h&gt;
+
+int main() {
+    pid_t pid = fork();   // System call: process control
+
+    if (pid < 0) {
+        // fork failed
+        perror("fork");
+        return 1;
+    } else if (pid == 0) {
+        // Child process
+        printf("Child PID = %d\n", getpid());   // System call: info maintenance
+        execlp("/bin/ls", "ls", "-l", NULL);     // System call: process control
+    } else {
+        // Parent process
+        wait(NULL);  // System call: process control
+        printf("Child finished. Parent PID = %d\n", getpid());
+    }
+    return 0;
+}
+</code></pre>
+
+<p><strong>Execution trace:</strong></p>
+<ol>
+  <li><code>fork()</code> creates child &rarr; both processes continue from after <code>fork()</code>.</li>
+  <li>Child (pid == 0): calls <code>execlp</code> to replace itself with <code>ls -l</code>.</li>
+  <li>Parent (pid &gt; 0): waits for child to finish via <code>wait()</code>.</li>
+  <li>After child exits, parent resumes and prints its message.</li>
+</ol>
+
+<div class="note">
+<strong>GATE Tip:</strong> <code>fork()</code> returns <strong>0</strong> to the child and the <strong>child's PID</strong> to the parent. After <code>fork()</code>, both parent and child execute concurrently (the order depends on the scheduler).
+</div>
+
+<h3>2.5 Counting fork() Calls &mdash; Classic GATE Problem</h3>
+
+<p><strong>Problem:</strong> How many processes are created by the following code?</p>
+<pre><code>fork();
+fork();
+fork();
+</code></pre>
+
+<p><strong>Solution:</strong> Each <code>fork()</code> doubles the number of processes.</p>
+<ul>
+  <li>After 1st <code>fork()</code>: 2 processes</li>
+  <li>After 2nd <code>fork()</code>: 4 processes</li>
+  <li>After 3rd <code>fork()</code>: 8 processes</li>
+</ul>
+<p>
+Formula: With <em>n</em> consecutive <code>fork()</code> calls, total processes = <strong>2<sup>n</sup></strong>.
+<br/>New child processes created = 2<sup>n</sup> &minus; 1 = 8 &minus; 1 = <strong>7</strong>.
+</p>
+
+<div class="mermaid">
+graph TD
+    P0["P0 (original)"]
+    P0 -->|"fork #1"| P1["P1"]
+    P0 -->|"fork #2"| P2["P2"]
+    P0 -->|"fork #3"| P3["P3"]
+    P1 -->|"fork #2"| P4["P4"]
+    P1 -->|"fork #3"| P5["P5"]
+    P2 -->|"fork #3"| P6["P6"]
+    P4 -->|"fork #3"| P7["P7"]
+</div>
+
+<!-- ============================================================ -->
+<h2>3. User Mode vs Kernel Mode</h2>
+<!-- ============================================================ -->
+
+<p>
+Modern CPUs support at least two modes of operation indicated by a <strong>mode bit</strong> in the processor status register:
+</p>
+
+<table>
+  <tr>
+    <th>Aspect</th>
+    <th>User Mode (Mode bit = 1)</th>
+    <th>Kernel Mode (Mode bit = 0)</th>
+  </tr>
+  <tr>
+    <td>Privilege</td>
+    <td>Restricted; cannot execute privileged instructions</td>
+    <td>Full access to all instructions and hardware</td>
+  </tr>
+  <tr>
+    <td>Memory Access</td>
+    <td>Only own address space</td>
+    <td>Entire physical memory</td>
+  </tr>
+  <tr>
+    <td>Transition</td>
+    <td>Switches to kernel mode via system call (trap)</td>
+    <td>Returns to user mode after servicing</td>
+  </tr>
+  <tr>
+    <td>Examples of code</td>
+    <td>Application programs, shell commands</td>
+    <td>Interrupt handlers, device drivers, scheduler</td>
+  </tr>
+  <tr>
+    <td>Failure impact</td>
+    <td>Only the process crashes</td>
+    <td>Entire system may crash (kernel panic)</td>
+  </tr>
+</table>
+
+<div class="mermaid">
+graph LR
+    UM["User Mode<br/>(mode bit = 1)"]
+    KM["Kernel Mode<br/>(mode bit = 0)"]
+    UM -->|"System Call / Interrupt / Trap"| KM
+    KM -->|"Return from kernel<br/>(iret / sysret)"| UM
+</div>
+
+<div class="important">
+<strong>Privileged Instructions</strong> (can only execute in kernel mode):
+<ul>
+  <li>I/O instructions (<code>in</code>, <code>out</code>)</li>
+  <li>Halt instruction (<code>hlt</code>)</li>
+  <li>Interrupt enable/disable (<code>cli</code>, <code>sti</code>)</li>
+  <li>Modify page table base register</li>
+  <li>Switch from kernel to user mode (setting mode bit)</li>
+  <li>Access I/O ports</li>
+</ul>
+<strong>Note:</strong> A trap to OS (system call) is <em>not</em> a privileged instruction &mdash; it is executed from user mode. Switching from user mode to kernel mode is <em>not</em> privileged (the hardware does it on trap). But switching <em>from kernel to user</em> mode (clearing the mode bit) IS privileged.
+</div>
+
+<!-- ============================================================ -->
+<h2>4. Operating System Structures</h2>
+<!-- ============================================================ -->
+
+<p>The internal design of an OS can vary dramatically. The structure determines modularity, performance, reliability, and ease of maintenance. We cover six major designs.</p>
+
+<h3>4.1 Simple / Monolithic Structure</h3>
+
+<p>
+The earliest operating systems had <strong>no well-defined structure</strong>. All OS functionality was packed into a single program running in kernel mode.
+</p>
+
+<p><strong>Example: MS-DOS</strong></p>
+<ul>
+  <li>No separation between user and kernel space (no dual mode).</li>
+  <li>Applications could directly access hardware and I/O ports.</li>
+  <li>No memory protection &mdash; a buggy application could crash the entire system.</li>
+</ul>
+
+<p><strong>Example: Early UNIX (Traditional Monolithic)</strong></p>
+<ul>
+  <li>Two separable parts: kernel and system programs.</li>
+  <li>The kernel itself was one massive program in kernel mode.</li>
+  <li>Everything below the system call interface and above the hardware constitutes the kernel.</li>
+  <li>File system, CPU scheduling, memory management, device drivers &mdash; all in one binary.</li>
+</ul>
+
+<div class="mermaid">
+graph TB
+    subgraph "Monolithic Kernel"
+        SC["System Call Interface"]
+        FS["File System"]
+        PM["Process Mgmt"]
+        MM["Memory Mgmt"]
+        DD["Device Drivers"]
+        NS["Networking Stack"]
+        SC --> FS
+        SC --> PM
+        SC --> MM
+        SC --> DD
+        SC --> NS
+    end
+    APP["User Applications"] --> SC
+    FS --> HW["Hardware"]
+    PM --> HW
+    MM --> HW
+    DD --> HW
+</div>
+
+<table>
+  <tr>
+    <th>Advantages</th>
+    <th>Disadvantages</th>
+  </tr>
+  <tr>
+    <td>High performance (no inter-module IPC overhead)</td>
+    <td>Difficult to maintain and extend</td>
+  </tr>
+  <tr>
+    <td>Direct function calls within the kernel</td>
+    <td>A bug in any component can crash the whole OS</td>
+  </tr>
+  <tr>
+    <td>Simple to implement for small systems</td>
+    <td>Poor isolation &mdash; no modularity</td>
+  </tr>
+</table>
+
+<h3>4.2 Layered Approach</h3>
+
+<p>
+The OS is divided into <strong>N layers</strong> (numbered 0 to N&minus;1). Layer 0 is hardware; layer N&minus;1 is the user interface. Each layer uses functions and services only of <strong>lower layers</strong>.
+</p>
+
+<div class="mermaid">
+graph TB
+    L5["Layer N-1: User Interface"]
+    L4["Layer N-2: I/O Management"]
+    L3["Layer N-3: Device Drivers"]
+    L2["Layer 2: Memory Management"]
+    L1["Layer 1: CPU Scheduling"]
+    L0["Layer 0: Hardware"]
+    L5 --> L4
+    L4 --> L3
+    L3 --> L2
+    L2 --> L1
+    L1 --> L0
+</div>
+
+<table>
+  <tr>
+    <th>Advantages</th>
+    <th>Disadvantages</th>
+  </tr>
+  <tr>
+    <td>Simplicity of construction and debugging</td>
+    <td>Difficult to define layers (circular dependencies)</td>
+  </tr>
+  <tr>
+    <td>Each layer verified independently</td>
+    <td>Performance overhead: each layer adds function call overhead</td>
+  </tr>
+  <tr>
+    <td>Good abstraction and information hiding</td>
+    <td>Inflexible: changing one layer may affect others</td>
+  </tr>
+</table>
+
+<div class="note">
+<strong>GATE Tip:</strong> The THE operating system (by Dijkstra, 1968) was the first layered OS. Layer ordering is critical: if the file system needs virtual memory, it must be in a higher layer than the memory manager.
+</div>
+
+<h3>4.3 Microkernel</h3>
+
+<p>
+A microkernel moves as much functionality as possible <strong>out of the kernel</strong> into user-space servers. The kernel retains only the absolute minimum:
+</p>
+<ul>
+  <li>Inter-process communication (IPC)</li>
+  <li>Basic memory management</li>
+  <li>CPU scheduling (minimal)</li>
+</ul>
+
+<p>Services like file systems, device drivers, and networking run as user-space processes and communicate via message passing.</p>
+
+<div class="mermaid">
+graph TB
+    subgraph "User Space"
+        FS2["File Server"]
+        DD2["Device Driver"]
+        NS2["Network Server"]
+        APP2["Application"]
+    end
+    subgraph "Microkernel (Kernel Space)"
+        IPC["IPC"]
+        BMM["Basic Memory Mgmt"]
+        SCH["Scheduler"]
+    end
+    HW2["Hardware"]
+    APP2 -->|"message"| IPC
+    IPC -->|"message"| FS2
+    IPC -->|"message"| DD2
+    IPC -->|"message"| NS2
+    SCH --> HW2
+    BMM --> HW2
+</div>
+
+<p><strong>Examples:</strong> Mach, QNX, L4, MINIX 3, seL4</p>
+
+<table>
+  <tr>
+    <th>Advantages</th>
+    <th>Disadvantages</th>
+  </tr>
+  <tr>
+    <td>High reliability &mdash; failure in a server doesn't crash the kernel</td>
+    <td>Performance penalty due to frequent user-kernel mode switches and IPC</td>
+  </tr>
+  <tr>
+    <td>Easy to extend &mdash; add new services without modifying the kernel</td>
+    <td>Increased system call overhead (message passing vs direct function call)</td>
+  </tr>
+  <tr>
+    <td>More secure &mdash; services have limited privileges</td>
+    <td>More complex design for achieving good performance</td>
+  </tr>
+  <tr>
+    <td>Portable &mdash; only the small kernel needs to be ported</td>
+    <td>&mdash;</td>
+  </tr>
+</table>
+
+<div class="important">
+<strong>GATE Favorite:</strong> In a microkernel, a simple file read requires: Application &rarr; message to kernel &rarr; kernel forwards to file server &rarr; file server processes &rarr; message back through kernel &rarr; Application. This involves <strong>at least 2 context switches and 2 message copies</strong> more than a monolithic kernel.
+</div>
+
+<h3>4.4 Modular Approach (Loadable Kernel Modules)</h3>
+
+<p>
+The modern standard. The kernel has a core set of components and can dynamically load additional modules at boot time or runtime (e.g., Linux kernel modules via <code>insmod</code>/<code>modprobe</code>).
+</p>
+
+<ul>
+  <li>Each module has a defined interface and can communicate with any other module.</li>
+  <li>Similar to a layered system but more flexible &mdash; any module can call any other module (not restricted to adjacent layers).</li>
+  <li>Similar to microkernel but more efficient &mdash; modules run in kernel space (no IPC overhead).</li>
+</ul>
+
+<p><strong>Example:</strong> Linux, Solaris</p>
+
+<div class="mermaid">
+graph TB
+    CORE["Core Kernel"]
+    M1["File System Module"]
+    M2["Network Module"]
+    M3["Device Driver Module"]
+    M4["Security Module"]
+    CORE <--> M1
+    CORE <--> M2
+    CORE <--> M3
+    CORE <--> M4
+    M1 <--> M2
+    M3 <--> M4
+</div>
+
+<h3>4.5 Hybrid Systems</h3>
+
+<p>
+Most modern operating systems are <strong>not purely one type</strong>. They combine multiple approaches for performance, security, and modularity.
+</p>
+
+<h4>macOS / iOS (XNU kernel)</h4>
+<ul>
+  <li>Combines Mach microkernel + BSD monolithic components in a single kernel address space.</li>
+  <li>Mach provides IPC, memory management, thread scheduling.</li>
+  <li>BSD provides POSIX API, file system, networking.</li>
+  <li>I/O Kit (modular framework) for device drivers.</li>
+</ul>
+
+<h4>Windows NT</h4>
+<ul>
+  <li>Microkernel-inspired design but most services (file system, networking, graphics) run in kernel mode for performance.</li>
+  <li>Executive layer provides object management, I/O, security, etc.</li>
+  <li>HAL (Hardware Abstraction Layer) at the bottom.</li>
+</ul>
+
+<h4>Android</h4>
+<ul>
+  <li>Based on Linux kernel (monolithic with loadable modules).</li>
+  <li>Adds Android Runtime (ART), middleware, and application framework on top.</li>
+</ul>
+
+<h3>4.6 Exokernel</h3>
+
+<p>
+An exokernel provides <strong>minimal abstraction</strong>. It allocates physical resources (CPU time, memory pages, disk blocks) directly to application-level <em>library operating systems</em> (libOSes). Each application can implement its own OS abstractions.
+</p>
+
+<ul>
+  <li>The exokernel only ensures <strong>protection</strong> (no application can access another's resources).</li>
+  <li>Applications have maximum flexibility to optimize resource usage.</li>
+  <li>Developed at MIT (Aegis / ExOS).</li>
+</ul>
+
+<div class="mermaid">
+graph TB
+    subgraph "Application Space"
+        A1["App1 + LibOS1<br/>(custom file system)"]
+        A2["App2 + LibOS2<br/>(custom networking)"]
+    end
+    EXO["Exokernel<br/>(resource protection & allocation only)"]
+    HW3["Hardware Resources"]
+    A1 --> EXO
+    A2 --> EXO
+    EXO --> HW3
+</div>
+
+<h3>4.7 Comprehensive Comparison Table</h3>
+
+<table>
+  <tr>
+    <th>Structure</th>
+    <th>Performance</th>
+    <th>Reliability</th>
+    <th>Extensibility</th>
+    <th>Security</th>
+    <th>Example</th>
+  </tr>
+  <tr>
+    <td>Simple/Monolithic</td>
+    <td>High</td>
+    <td>Low</td>
+    <td>Low</td>
+    <td>Low</td>
+    <td>MS-DOS, early UNIX</td>
+  </tr>
+  <tr>
+    <td>Layered</td>
+    <td>Medium-Low</td>
+    <td>Medium</td>
+    <td>Low</td>
+    <td>Medium</td>
+    <td>THE, early OS/2</td>
+  </tr>
+  <tr>
+    <td>Microkernel</td>
+    <td>Low-Medium</td>
+    <td>High</td>
+    <td>High</td>
+    <td>High</td>
+    <td>Mach, QNX, MINIX 3</td>
+  </tr>
+  <tr>
+    <td>Modular</td>
+    <td>High</td>
+    <td>Medium-High</td>
+    <td>High</td>
+    <td>Medium</td>
+    <td>Linux, Solaris</td>
+  </tr>
+  <tr>
+    <td>Hybrid</td>
+    <td>High</td>
+    <td>High</td>
+    <td>High</td>
+    <td>High</td>
+    <td>macOS, Windows NT</td>
+  </tr>
+  <tr>
+    <td>Exokernel</td>
+    <td>Very High</td>
+    <td>Medium</td>
+    <td>Very High</td>
+    <td>Medium</td>
+    <td>MIT Aegis/ExOS</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>5. System Boot Process</h2>
+<!-- ============================================================ -->
+
+<p>The process of starting an OS involves several stages:</p>
+
+<ol>
+  <li><strong>Power On / Reset:</strong> CPU begins executing at a fixed memory address (reset vector).</li>
+  <li><strong>Firmware (BIOS/UEFI):</strong> Initializes hardware, performs POST (Power-On Self Test), locates bootable device.</li>
+  <li><strong>Boot Loader:</strong> A small program (e.g., GRUB for Linux, Windows Boot Manager) loaded from the boot sector. It knows just enough to load the OS kernel into memory.</li>
+  <li><strong>Kernel Initialization:</strong> The kernel initializes its data structures, starts drivers, mounts root file system.</li>
+  <li><strong>Init Process:</strong> The first user-space process (PID 1) is started. On modern Linux, this is <code>systemd</code>. It spawns all other services and login processes.</li>
+</ol>
+
+<div class="mermaid">
+graph LR
+    A["Power On"] --> B["BIOS/UEFI<br/>(POST, find boot device)"]
+    B --> C["Boot Loader<br/>(GRUB / Windows BM)"]
+    C --> D["Load Kernel<br/>into memory"]
+    D --> E["Kernel Init<br/>(drivers, mount root FS)"]
+    E --> F["Init Process<br/>(PID 1: systemd)"]
+    F --> G["User Login / Services"]
+</div>
+
+<div class="note">
+<strong>Bootstrap Program / Bootstrap Loader:</strong> The firmware / boot loader is sometimes collectively called the <em>bootstrap program</em>. It is stored in ROM or EEPROM (non-volatile). On modern UEFI systems, the boot manager is more sophisticated and can understand file systems.
+</div>
+
+<!-- ============================================================ -->
+<h2>6. Virtual Machines</h2>
+<!-- ============================================================ -->
+
+<p>
+A <strong>virtual machine (VM)</strong> provides an interface identical to the underlying bare hardware. The operating system creates the illusion that a process has its own processor and memory (via virtual CPU and virtual memory).
+</p>
+
+<h3>6.1 Types of Virtualization</h3>
+
+<table>
+  <tr>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Example</th>
+  </tr>
+  <tr>
+    <td><strong>Type 1 Hypervisor (Bare-metal)</strong></td>
+    <td>Runs directly on hardware; manages guest OSes</td>
+    <td>VMware ESXi, Xen, Hyper-V</td>
+  </tr>
+  <tr>
+    <td><strong>Type 2 Hypervisor (Hosted)</strong></td>
+    <td>Runs on a host OS as an application</td>
+    <td>VirtualBox, VMware Workstation</td>
+  </tr>
+  <tr>
+    <td><strong>Paravirtualization</strong></td>
+    <td>Guest OS is modified to work with hypervisor for better performance</td>
+    <td>Xen (paravirt mode)</td>
+  </tr>
+  <tr>
+    <td><strong>Containers</strong></td>
+    <td>OS-level virtualization; share host kernel</td>
+    <td>Docker, LXC</td>
+  </tr>
+</table>
+
+<div class="mermaid">
+graph TB
+    subgraph "Type 1 Hypervisor"
+        G1["Guest OS 1"]
+        G2["Guest OS 2"]
+        G3["Guest OS 3"]
+        HYP1["Hypervisor (bare-metal)"]
+        HW4["Hardware"]
+        G1 --> HYP1
+        G2 --> HYP1
+        G3 --> HYP1
+        HYP1 --> HW4
+    end
+</div>
+
+<h3>6.2 Benefits of Virtual Machines</h3>
+<ul>
+  <li><strong>Isolation:</strong> Each VM is completely isolated from others.</li>
+  <li><strong>Consolidation:</strong> Multiple OS instances on a single physical machine.</li>
+  <li><strong>Testing / Development:</strong> Run different OS versions safely.</li>
+  <li><strong>Security:</strong> If one VM is compromised, others are unaffected.</li>
+  <li><strong>Live Migration:</strong> Move running VMs between physical machines.</li>
+</ul>
+
+<div class="important">
+<strong>GATE Concept &mdash; Trap-and-Emulate:</strong> In Type 1 hypervisors, when a guest OS tries to execute a privileged instruction, it traps to the hypervisor. The hypervisor emulates the instruction on behalf of the guest. This requires that all sensitive instructions are a subset of privileged instructions (true for most architectures, but was historically problematic on x86 before hardware virtualization support like Intel VT-x).
+</div>
+
+<!-- ============================================================ -->
+<h2>7. Worked Examples for GATE</h2>
+<!-- ============================================================ -->
+
+<h3>Example 1: Identifying System Calls</h3>
+<p><strong>Problem:</strong> In the following C program, identify all the system calls:</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int fd = open("data.txt", O_RDONLY);   // (1) open - file management
+    char buf[100];
+    int n = read(fd, buf, 100);            // (2) read - file management
+    write(STDOUT_FILENO, buf, n);          // (3) write - file management (or device)
+    close(fd);                             // (4) close - file management
+    return 0;                              // exit() called implicitly - process control
+}
+</code></pre>
+<p><strong>Answer:</strong> Five system calls: <code>open()</code>, <code>read()</code>, <code>write()</code>, <code>close()</code>, and the implicit <code>exit()</code> when <code>main()</code> returns.</p>
+
+<div class="note">
+<strong>Note:</strong> <code>printf()</code> is a <strong>library function</strong>, not a system call. Internally, <code>printf()</code> eventually calls the <code>write()</code> system call. Similarly, <code>malloc()</code> is a library function that internally may invoke <code>brk()</code> or <code>mmap()</code> system calls.
+</div>
+
+<h3>Example 2: fork() Output Analysis</h3>
+<p><strong>Problem:</strong> What is the output of the following program?</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int x = 10;
+    pid_t pid = fork();
+    if (pid == 0) {
+        x = x + 5;
+    } else {
+        x = x - 5;
+    }
+    printf("x = %d\n", x);
+    return 0;
+}
+</code></pre>
+<p><strong>Solution:</strong></p>
+<ul>
+  <li>After <code>fork()</code>, both parent and child have their own copy of <code>x = 10</code>.</li>
+  <li>Child (pid == 0): <code>x = 10 + 5 = 15</code> &rarr; prints <code>x = 15</code></li>
+  <li>Parent (pid &gt; 0): <code>x = 10 - 5 = 5</code> &rarr; prints <code>x = 5</code></li>
+</ul>
+<p>Output (order may vary):</p>
+<pre><code>x = 15
+x = 5</code></pre>
+
+<h3>Example 3: Number of printf Executions</h3>
+<p><strong>Problem:</strong> How many times is "hello" printed?</p>
+<pre><code>fork();
+fork();
+printf("hello\n");
+fork();
+printf("hello\n");
+</code></pre>
+<p><strong>Solution:</strong></p>
+<ol>
+  <li>After 2 <code>fork()</code> calls: 2<sup>2</sup> = 4 processes.</li>
+  <li>All 4 processes print "hello" &rarr; 4 prints from 1st <code>printf</code>.</li>
+  <li>Then each of the 4 processes calls <code>fork()</code> &rarr; 8 processes total.</li>
+  <li>All 8 processes print "hello" &rarr; 8 prints from 2nd <code>printf</code>.</li>
+  <li>Total: 4 + 8 = <strong>12 times</strong>.</li>
+</ol>
+
+<h3>Example 4: Microkernel vs Monolithic for File Read</h3>
+<p><strong>Problem:</strong> Compare the number of mode switches for reading a file in a monolithic kernel vs. a microkernel.</p>
+<p><strong>Monolithic Kernel:</strong></p>
+<ol>
+  <li>Application (user mode) &rarr; system call <code>read()</code> &rarr; trap to kernel mode (1 switch)</li>
+  <li>Kernel reads file, returns data</li>
+  <li>Return to user mode (1 switch)</li>
+  <li><strong>Total: 2 mode switches</strong></li>
+</ol>
+
+<p><strong>Microkernel:</strong></p>
+<ol>
+  <li>Application (user mode) &rarr; send message to kernel (1 switch to kernel)</li>
+  <li>Kernel routes message to file server &rarr; switch to user mode (1 switch)</li>
+  <li>File server processes request &rarr; sends message back to kernel (1 switch)</li>
+  <li>Kernel routes response to application &rarr; switch to user mode (1 switch)</li>
+  <li><strong>Total: 4 mode switches (minimum)</strong></li>
+</ol>
+
+<div class="important">
+<strong>Key Insight:</strong> Microkernels trade performance (extra mode switches and message copies) for reliability and modularity.
+</div>
+
+<h3>Example 5: System Call Parameter Passing</h3>
+<p><strong>Problem:</strong> A system call requires 8 parameters. Which parameter passing method(s) can be used?</p>
+<p><strong>Answer:</strong></p>
+<ul>
+  <li><strong>Register method:</strong> Not feasible if fewer than 8 general-purpose registers are available for parameters. On x86-64 Linux, only 6 registers are used for syscall parameters, so this method alone is insufficient.</li>
+  <li><strong>Block/Table method:</strong> Store all 8 parameters in a memory block; pass the block address in a register. This works regardless of parameter count.</li>
+  <li><strong>Stack method:</strong> Push all 8 parameters onto the stack. Also works regardless of count.</li>
+  <li><strong>Hybrid:</strong> Pass some parameters in registers and use a block pointer for the rest (used in practice for Linux system calls with many parameters, like <code>clone()</code>).</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>8. Additional GATE-Relevant Concepts</h2>
+<!-- ============================================================ -->
+
+<h3>8.1 System Programs vs Application Programs</h3>
+<p>
+<strong>System programs</strong> (also called system utilities) provide a convenient environment for program development and execution. They are distinct from the kernel. Examples include: file management tools (<code>cp</code>, <code>mv</code>), compilers, assemblers, loaders, text editors, shell.
+</p>
+
+<h3>8.2 Linker and Loader</h3>
+<ul>
+  <li><strong>Compiler:</strong> Source code &rarr; object file (.o)</li>
+  <li><strong>Linker:</strong> Combines object files + libraries into a single executable</li>
+  <li><strong>Loader:</strong> Loads the executable into memory for execution</li>
+</ul>
+<p>For dynamically linked libraries (DLLs / shared objects), the linker records references, and the <strong>dynamic linker/loader</strong> resolves them at runtime.</p>
+
+<h3>8.3 Why Applications Are OS-Specific</h3>
+<p>
+Applications compiled for one OS generally do not run on another because:
+</p>
+<ul>
+  <li>Different system call interfaces and APIs</li>
+  <li>Different executable file formats (ELF for Linux, PE for Windows, Mach-O for macOS)</li>
+  <li>Different ABIs (Application Binary Interfaces)</li>
+  <li>Different CPU instruction sets (though ISA compatibility is a separate issue)</li>
+</ul>
+
+<h3>8.4 Policy vs Mechanism</h3>
+<p>
+A key design principle in OS design is the separation of <strong>policy</strong> (what will be done) from <strong>mechanism</strong> (how to do it). For example:
+</p>
+<ul>
+  <li><strong>Mechanism:</strong> Timer interrupt for CPU protection.</li>
+  <li><strong>Policy:</strong> How long the timer should be set (time quantum for round-robin).</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>9. Summary Diagram: Putting It All Together</h2>
+<!-- ============================================================ -->
+
+<div class="mermaid">
+graph TB
+    subgraph "User Space"
+        UP["User Programs"]
+        SP["System Programs<br/>(shell, compiler, editor)"]
+        LIB["Libraries<br/>(libc, POSIX API)"]
+    end
+    subgraph "Kernel Space"
+        SCI2["System Call Interface"]
+        subgraph "Kernel Components"
+            PM2["Process<br/>Management"]
+            MM2["Memory<br/>Management"]
+            FS3["File<br/>System"]
+            IO2["I/O<br/>Subsystem"]
+            NET2["Network<br/>Stack"]
+        end
+    end
+    HW5["Hardware<br/>(CPU, Memory, Disk, NIC)"]
+    UP --> LIB
+    SP --> LIB
+    LIB -->|"System Calls"| SCI2
+    SCI2 --> PM2
+    SCI2 --> MM2
+    SCI2 --> FS3
+    SCI2 --> IO2
+    SCI2 --> NET2
+    PM2 --> HW5
+    MM2 --> HW5
+    FS3 --> HW5
+    IO2 --> HW5
+    NET2 --> HW5
+</div>
+
+<!-- ============================================================ -->
+<h2>10. GATE Practice Quiz</h2>
+<!-- ============================================================ -->
+
+<script type="application/json" class="quiz-data">
+{
+  "title": "OS Structure, System Calls, and Kernel Design Quiz",
+  "questions": [
+    {
+      "question": "Q1. Which of the following is NOT a type of system call as classified by Galvin?",
+      "options": ["(A) Process control", "(B) File management", "(C) Memory allocation", "(D) Information maintenance"],
+      "answer": 2,
+      "explanation": "Galvin classifies system calls into five categories: Process Control, File Management, Device Management, Information Maintenance, and Communication. 'Memory allocation' is not a separate category -- memory-related operations fall under process control (e.g., brk, mmap) or are library functions (malloc)."
+    },
+    {
+      "question": "Q2. In a microkernel-based OS, which of the following typically runs in user space?",
+      "options": ["(A) CPU scheduler", "(B) Inter-process communication", "(C) File system server", "(D) Basic memory management"],
+      "answer": 2,
+      "explanation": "In a microkernel, only the most essential services (IPC, basic scheduling, basic memory management) remain in the kernel. File systems, device drivers, and network services run as user-space server processes. The file system server communicates with applications and the kernel via message passing."
+    },
+    {
+      "question": "Q3. How many processes are created (including the original) by the following code?\nfork(); fork(); fork(); fork();",
+      "options": ["(A) 4", "(B) 8", "(C) 15", "(D) 16"],
+      "answer": 3,
+      "explanation": "With n consecutive fork() calls, the total number of processes = 2^n. Here n = 4, so total processes = 2^4 = 16. The number of NEW processes created is 16 - 1 = 15, but the question asks for total processes including the original, so the answer is 16."
+    },
+    {
+      "question": "Q4. Which of the following is a privileged instruction?",
+      "options": ["(A) System call (trap instruction)", "(B) Reading the system clock", "(C) Disabling interrupts (CLI)", "(D) Addition of two registers"],
+      "answer": 2,
+      "explanation": "Disabling interrupts (CLI - Clear Interrupt Flag) is a privileged instruction that can only be executed in kernel mode. A trap instruction (system call) is NOT privileged -- it is deliberately designed to be called from user mode. Reading the clock and arithmetic operations are typically non-privileged."
+    },
+    {
+      "question": "Q5. Which parameter passing method for system calls has no inherent limit on the number of parameters?",
+      "options": ["(A) Register method only", "(B) Block/table method and stack method", "(C) Register method and stack method", "(D) None of these -- all methods have limits"],
+      "answer": 1,
+      "explanation": "The register method is limited by the number of available CPU registers. Both the block/table method (parameters in memory, address in register) and the stack method (parameters pushed onto stack) have no inherent limit on the number of parameters, constrained only by available memory."
+    },
+    {
+      "question": "Q6. In the layered approach to OS design, a layer at level N can invoke services of:",
+      "options": ["(A) Any layer from 0 to N+1", "(B) Only layer N-1", "(C) Any layer from 0 to N-1", "(D) Only layers N-1 and N+1"],
+      "answer": 2,
+      "explanation": "In the strict layered approach, a layer at level N can use functions and services of layers at levels 0 through N-1 (all lower layers). It cannot use services of higher layers. In practice, most implementations restrict a layer to invoking only the immediately lower layer (N-1), but conceptually, any lower layer is accessible."
+    },
+    {
+      "question": "Q7. What is the main disadvantage of a monolithic kernel compared to a microkernel?",
+      "options": ["(A) Slower system call execution", "(B) More context switches required", "(C) A bug in any kernel component can crash the entire system", "(D) Cannot support multiple users"],
+      "answer": 2,
+      "explanation": "In a monolithic kernel, all OS services run in kernel mode in a single address space. A bug in any component (e.g., a device driver) can corrupt kernel memory and crash the entire system. Microkernels isolate services in user-space processes, so a bug in one server does not affect the kernel. Monolithic kernels are actually FASTER for system calls (option A is wrong)."
+    },
+    {
+      "question": "Q8. The concept of a Virtual Machine was first implemented in:",
+      "options": ["(A) IBM VM/370", "(B) VMware ESXi", "(C) Xen hypervisor", "(D) Microsoft Hyper-V"],
+      "answer": 0,
+      "explanation": "IBM's CP/CMS system (later VM/370) in the late 1960s and 1970s was the first commercially available virtual machine system. It allowed multiple CMS (Conversational Monitor System) instances to run simultaneously on a single IBM mainframe, each believing it had its own dedicated hardware."
+    },
+    {
+      "question": "Q9. In a Type 1 hypervisor, when a guest OS executes a privileged instruction, what happens?",
+      "options": ["(A) The instruction executes normally", "(B) The guest OS crashes", "(C) A trap occurs and the hypervisor emulates the instruction", "(D) The instruction is ignored silently"],
+      "answer": 2,
+      "explanation": "Type 1 hypervisors use the trap-and-emulate approach. The guest OS runs in user mode (not kernel mode). When it tries to execute a privileged instruction, a trap occurs (since privileged instructions cannot run in user mode). The hypervisor catches this trap and emulates the intended behavior, maintaining the illusion that the guest has full hardware control."
+    },
+    {
+      "question": "Q10. Consider the following code:\nint main() {\n    fork();\n    fork();\n    printf(\"hello\\n\");\n    return 0;\n}\nHow many times is 'hello' printed?",
+      "options": ["(A) 2", "(B) 3", "(C) 4", "(D) 8"],
+      "answer": 2,
+      "explanation": "After the first fork(), there are 2 processes. After the second fork(), each of the 2 processes forks, creating 4 processes total (2^2 = 4). All 4 processes then execute printf(\"hello\\n\"), so 'hello' is printed 4 times."
+    }
+  ]
+}
+</script>
+
+</article>
+</body>
+</html>

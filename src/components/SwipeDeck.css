@@ -86,7 +86,6 @@
   width: 100%;
   height: 100%;
   border-radius: 16px;
-  will-change: transform;
 }
 
 .deck-card-active {
@@ -180,6 +179,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   background: #ffffff !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* All text: black */
@@ -327,21 +327,40 @@
   border-radius: 8px;
   padding: 0.5rem;
   background: #fafafa;
-  /* Hide raw mermaid code text — SVG will override this */
-  color: transparent !important;
-  font-size: 0;
-  line-height: 0;
+  position: relative;
 }
 
-/* Once processed, restore for hint text */
+/* Hide raw mermaid source code before processing */
+.deck-card-body .mermaid:not([data-processed]) {
+  font-size: 0;
+  line-height: 0;
+  color: transparent !important;
+  min-height: 60px;
+}
+
+/* Once processed, show diagram and hint text */
 .deck-card-body .mermaid[data-processed] {
   font-size: inherit;
   line-height: inherit;
+  color: inherit !important;
 }
 
 .deck-card-body .mermaid svg {
   max-width: 100%;
   font-size: 14px !important;
+}
+
+/* Ensure SVG text is visible — override the card body * color rule */
+.deck-card-body .mermaid svg text,
+.deck-card-body .mermaid svg tspan {
+  fill: currentColor;
+}
+
+.deck-card-body .mermaid svg .nodeLabel,
+.deck-card-body .mermaid svg .edgeLabel,
+.deck-card-body .mermaid svg .label {
+  color: #111 !important;
+  fill: #111 !important;
 }
 
 /* Zoom hint */

@@ -94,7 +94,23 @@ export default function Article() {
   }, [slug])
 
   useEffect(() => {
-    if (!loading && !error && contentRef.current) {
+    if (!contentRef.current) return
+
+    if (viewMode === 'swipe') {
+      // Temporarily disable mermaid class on hidden scroll div so it doesn't
+      // interfere with SwipeDeck's mermaid rendering (no IDs clash)
+      contentRef.current.querySelectorAll('.mermaid').forEach((div) => {
+        div.classList.replace('mermaid', 'mermaid-paused')
+      })
+      return
+    }
+
+    // Restore any paused mermaid divs when switching back to scroll
+    contentRef.current.querySelectorAll('.mermaid-paused').forEach((div) => {
+      div.classList.replace('mermaid-paused', 'mermaid')
+    })
+
+    if (!loading && !error) {
       const mermaidDivs = contentRef.current.querySelectorAll('.mermaid')
       if (mermaidDivs.length === 0) return
 

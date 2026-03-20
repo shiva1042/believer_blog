@@ -318,16 +318,34 @@
   border-radius: 8px;
   padding: 0.75rem;
   background: #fafafa;
-  /* Hide raw mermaid code text — SVG will override this */
+}
+
+/* Hide raw mermaid source code before processing */
+.article-content .mermaid:not([data-processed]) {
   color: transparent !important;
   font-size: 0;
   line-height: 0;
+  min-height: 60px;
 }
 
-/* Once processed, restore for hint text */
+/* Once processed, show diagram and hint text */
 .article-content .mermaid[data-processed] {
   font-size: inherit;
   line-height: inherit;
+  color: inherit !important;
+}
+
+/* Ensure SVG text is visible — override the * color rule */
+.article-content .mermaid svg text,
+.article-content .mermaid svg tspan {
+  fill: currentColor;
+}
+
+.article-content .mermaid svg .nodeLabel,
+.article-content .mermaid svg .edgeLabel,
+.article-content .mermaid svg .label {
+  color: #111 !important;
+  fill: #111 !important;
 }
 
 .article-content .mermaid svg {

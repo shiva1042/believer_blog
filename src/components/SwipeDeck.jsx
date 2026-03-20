@@ -237,18 +237,35 @@ export default function SwipeDeck({ htmlContent }) {
       return
     }
 
-    // First time: let mermaid render, then cache the result
-    mermaidDivs.forEach((div) => div.removeAttribute('data-processed'))
+    // Assign unique IDs to avoid conflicts with other mermaid instances
+    mermaidDivs.forEach((div, i) => {
+      div.removeAttribute('data-processed')
+      div.id = `swipe-mermaid-${currentIndex}-${i}`
+    })
 
-    mermaid.run({ nodes: Array.from(mermaidDivs) }).then(() => {
-      // Cache the rendered SVGs
-      const svgs = {}
-      mermaidDivs.forEach((div, i) => {
-        svgs[i] = div.innerHTML
+    // Small delay to ensure DOM is ready after React re-render
+    const timer = setTimeout(() => {
+      if (!cardBodyRef.current) return
+      const nodes = cardBodyRef.current.querySelectorAll('.mermaid:not([data-processed])')
+      if (nodes.length === 0) return
+
+      mermaid.run({ nodes: Array.from(nodes) }).then(() => {
+        // Cache the rendered SVGs
+        const svgs = {}
+        const renderedDivs = cardBodyRef.current?.querySelectorAll('.mermaid')
+        if (renderedDivs) {
+          renderedDivs.forEach((div, i) => {
+            svgs[i] = div.innerHTML
+          })
+          mermaidCache.current[currentIndex] = svgs
+        }
+        if (cardBodyRef.current) attachMermaidZoom(cardBodyRef.current)
+      }).catch((err) => {
+        console.warn('Mermaid render failed in swipe card:', err)
       })
-      mermaidCache.current[currentIndex] = svgs
-      if (cardBodyRef.current) attachMermaidZoom(cardBodyRef.current)
-    }).catch(() => {})
+    }, 50)
+
+    return () => clearTimeout(timer)
   }, [currentIndex, slides])
 
   const goTo = useCallback((index) => {
@@ -271,7 +288,7 @@ export default function SwipeDeck({ htmlContent }) {
   }, [currentIndex, goTo])
 
   const handlePointerDown = useCallback((e) => {
-    if (e.target.closest('a, button, .quiz-swipe-opt, .quiz-swipe-check')) return
+    if (e.target.closest('a, button, .quiz-swipe-opt, .quiz-swipe-check, .mermaid, svg')) return
     setIsDragging(true)
     startX.current = e.clientX ?? e.touches?.[0]?.clientX ?? 0
     startY.current = e.clientY ?? e.touches?.[0]?.clientY ?? 0
@@ -323,10 +340,13 @@ export default function SwipeDeck({ htmlContent }) {
 
   const slide = slides[currentIndex]
   const rotation = dragOffset * 0.04
+  const isAtRest = !exitDirection && dragOffset === 0
   const cardTransform = exitDirection === 'left'
     ? 'translateX(-110%) rotate(-10deg)'
     : exitDirection === 'right'
     ? 'translateX(110%) rotate(10deg)'
+    : isAtRest
+    ? 'none'
     : `translateX(${dragOffset}px) rotate(${rotation}deg)`
 
   const progress = slides.length > 1 ? (currentIndex / (slides.length - 1)) * 100 : 100
@@ -377,7 +397,7 @@ export default function SwipeDeck({ htmlContent }) {
           className={`deck-card deck-card-active ${isDragging ? 'dragging' : ''} ${isDragging && dragOffset < -30 ? 'swiping-left' : ''} ${isDragging && dragOffset > 30 ? 'swiping-right' : ''}`}
           style={{
             transform: cardTransform,
-            transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
+            transition: isAtRest ? 'none' : isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
           <div className="deck-card-header">
